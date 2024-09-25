@@ -139,6 +139,11 @@ export class ChatUtils {
     });
   }
 
+  static removeSocketListeners() {
+    socketService?.socket?.off('message received');
+    socketService?.socket?.off('message read');
+  }
+
   static socketIOMessageReaction(chatMessages, username, setConversationId, setChatMessages) {
     socketService?.socket?.on('message reaction', (data) => {
       if (data.senderUsername.toLowerCase() === username || data.receiverUsername.toLowerCase() === username) {

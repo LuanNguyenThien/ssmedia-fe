@@ -108,7 +108,7 @@ const ChatList = () => {
     setSelectedUser(user);
     const params = ChatUtils.chatUrlParams(user, profile);
     ChatUtils.joinRoomEvent(user, profile);
-    ChatUtils.privateChatMessages = [];
+    // ChatUtils.privateChatMessages = [];
     return params;
   };
 

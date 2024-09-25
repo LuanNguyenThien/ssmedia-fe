@@ -104,12 +104,22 @@ const ChatWindow = () => {
   }, [getUserProfileByUserId, getNewUserMessages, searchParams, rendered]);
 
   useEffect(() => {
+    const username = searchParams.get('username');
+  
     if (rendered) {
-      ChatUtils.socketIOMessageReceived(chatMessages, searchParams.get('username'), setConversationId, setChatMessages);
+      console.log(chatMessages);
+      ChatUtils.socketIOMessageReceived(chatMessages, username, setConversationId, setChatMessages);
     }
+  
     if (!rendered) setRendered(true);
+  
     ChatUtils.usersOnline(setOnlineUsers);
     ChatUtils.usersOnChatPage();
+  
+    // Cleanup function to remove event listeners
+    return () => {
+      ChatUtils.removeSocketListeners();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, rendered]);
 
