@@ -71,6 +71,7 @@ const ChatList = () => {
       );
       if (!findUser) {
         const newChatList = [newUser, ...chatMessageList];
+        console.log(newChatList);
         setChatMessageList(newChatList);
         if (!chatList.length) {
           dispatch(setSelectedChatUser({ isLoading: false, user: newUser }));
