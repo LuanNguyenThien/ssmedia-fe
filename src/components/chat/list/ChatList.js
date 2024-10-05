@@ -64,13 +64,14 @@ const ChatList = () => {
         body: ''
       };
       ChatUtils.joinRoomEvent(user, profile);
-      ChatUtils.privateChatMessages = [];
+      // ChatUtils.privateChatMessages = [];
       const findUser = find(
         chatMessageList,
         (chat) => chat.receiverId === searchParams.get('id') || chat.senderId === searchParams.get('id')
       );
       if (!findUser) {
         const newChatList = [newUser, ...chatMessageList];
+        console.log(newChatList);
         setChatMessageList(newChatList);
         if (!chatList.length) {
           dispatch(setSelectedChatUser({ isLoading: false, user: newUser }));
