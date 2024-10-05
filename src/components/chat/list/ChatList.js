@@ -64,7 +64,7 @@ const ChatList = () => {
         body: ''
       };
       ChatUtils.joinRoomEvent(user, profile);
-      ChatUtils.privateChatMessages = [];
+      // ChatUtils.privateChatMessages = [];
       const findUser = find(
         chatMessageList,
         (chat) => chat.receiverId === searchParams.get('id') || chat.senderId === searchParams.get('id')
