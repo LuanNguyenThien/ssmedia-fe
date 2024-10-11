@@ -74,11 +74,6 @@
     padding: 7px;
     outline: none;
     cursor: pointer;
-
-    &:disabled {
-      opacity: 0.5; // Màu mờ mờ
-      cursor: not-allowed; // Con trỏ chuột thay đổi khi nút bị vô hiệu hóa
-    }
   }
 }
 

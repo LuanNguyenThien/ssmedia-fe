@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
-import Input from '@components/input/Input';
-import Button from '@components/button/Button';
+// import Input from '@components/input/Input';
+// import Button from '@components/button/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import '@pages/auth/login/Login.scss';
@@ -9,6 +9,23 @@ import { authService } from '@services/api/auth/auth.service';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { Utils } from '@services/utils/utils.service';
 import useSessionStorage from '@hooks/useSessionStorage';
+import {
+  Flex,
+  Box,
+  FormControl,
+  FormLabel,
+  Input,
+  Checkbox,
+  Stack,
+  Button,
+  Heading,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react'
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -19,6 +36,8 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [alertType, setAlertType] = useState('');
   const [user, setUser] = useState();
+  // const [usernameTouched, setUsernameTouched] = useState(false);
+  // const [passwordTouched, setPasswordTouched] = useState(false);
   const [setStoredUsername] = useLocalStorage('username', 'set');
   const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'set');
   const [pageReload] = useSessionStorage('pageReload', 'set');
@@ -52,58 +71,78 @@ const Login = () => {
   }, [loading, user, navigate]);
 
   return (
-    <div className="auth-inner">
-      {hasError && errorMessage && (
-        <div className={`alerts ${alertType}`} role="alert">
-          {errorMessage}
-        </div>
-      )}
-      <form className="auth-form" onSubmit={loginUser}>
-        <div className="form-input-container">
-          <Input
-            id="username"
-            name="username"
-            type="text"
-            value={username}
-            labelText="Username"
-            placeholder="Enter Username"
-            style={{ border: `${hasError ? '1px solid #fa9b8a' : ''}` }}
-            handleChange={(event) => setUsername(event.target.value)}
-          />
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            value={password}
-            labelText="Password"
-            placeholder="Enter Password"
-            style={{ border: `${hasError ? '1px solid #fa9b8a' : ''}` }}
-            handleChange={(event) => setPassword(event.target.value)}
-          />
-          <label className="checkmark-container" htmlFor="checkbox">
-            <Input
-              id="checkbox"
-              name="checkbox"
-              type="checkbox"
-              value={keepLoggedIn}
-              handleChange={() => setKeepLoggedIn(!keepLoggedIn)}
-            />
-            Keep me signed in
-          </label>
-        </div>
-        <Button
-          label={`${loading ? 'SIGNIN IN PROGRESS...' : 'SIGNIN'}`}
-          className="auth-button button"
-          disabled={!username || !password}
-        />
-
-        <Link to={'/forgot-password'}>
-          <span className="forgot-password">
-            Forgot password? <FaArrowRight className="arrow-right" />
-          </span>
-        </Link>
-      </form>
-    </div>
+    <Flex
+      // minH={'100vh'}
+      // align={'center'}
+      // justify={'center'}
+      >
+      <Stack spacing={4} mx={'auto'} maxW={'lg'} py={8} px={6}>
+        <Box
+          rounded={'lg'}
+          bg={useColorModeValue('white', 'gray.700')}
+          boxShadow={'lg'}
+          p={8}>
+          {hasError && errorMessage && (
+            <div className={`alerts ${alertType}`} role="alert">
+              {errorMessage}
+            </div>
+          )}
+          <form onSubmit={loginUser}>
+            <Stack spacing={6}>
+              <FormControl id="username" isRequired>
+                <FormLabel>Tài khoản</FormLabel>
+                <Input
+                  type="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </FormControl>
+              <FormControl id="password" isRequired>
+                <FormLabel>Mật khẩu</FormLabel>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </FormControl>
+              <Stack spacing={10}>
+                <Stack
+                  direction={{ base: 'column', sm: 'row' }}
+                  align={'start'}
+                  justify={'space-between'}>
+                  <Checkbox
+                    colorScheme="red"
+                    // isChecked={keepLoggedIn}
+                    onChange={() => setKeepLoggedIn(!keepLoggedIn)}
+                    >
+                    Ghi nhớ đăng nhập
+                  </Checkbox>
+                  <Link to={'/forgot-password'}>
+                    <Box as="span" color={'red.400'}>
+                      Quên mật khẩu?
+                    </Box>
+                  </Link>
+                </Stack>
+                <Button
+                  type="submit"
+                  fontFamily={'heading'}
+                  w={'full'}
+                  bgGradient="linear(to-r, red.400,pink.400)"
+                  color={'white'}
+                  _hover={{
+                    bgGradient: 'linear(to-r, red.400,pink.400)',
+                    boxShadow: 'xl',
+                  }}
+                  disabled={!username || !password}
+                  >
+                  {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                </Button>
+              </Stack>
+            </Stack>
+          </form>
+        </Box>
+      </Stack>
+    </Flex>
   );
 };
 

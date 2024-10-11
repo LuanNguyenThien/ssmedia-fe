@@ -1,11 +1,12 @@
+// import { Box, Flex, Avatar, Input, IconButton, Text, Tooltip } from '@chakra-ui/react';
 import Avatar from '@components/avatar/Avatar';
 import Input from '@components/input/Input';
 import { Utils } from '@services/utils/utils.service';
-import { FaSearch, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaTimes, FaCheck, FaCircle } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import '@components/chat/list/ChatList.scss';
 import SearchList from '@components/chat/list/search-list/SearchList';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { userService } from '@services/api/user/user.service';
 import useDebounce from '@hooks/useDebounce';
 import { ChatUtils } from '@services/utils/chat-utils.service';
@@ -276,6 +277,132 @@ const ChatList = () => {
         </div>
       </div>
     </div>
+    // <Box 
+    //   data-testid="chatList" 
+    //   p={4} 
+    //   borderWidth={1} 
+    //   borderRadius="md" 
+    //   boxShadow="md" 
+    //   height="100vh" // Chiều cao 100% của viewport
+    //   bg="white" // Màu nền trắng
+    // >
+    //   {/* Header */}
+    //   <Flex align="center" mb={4} className="conversation-container-header">
+    //     <Avatar
+    //       name={profile?.username}
+    //       bgColor={profile?.avatarColor}
+    //       textColor="#ffffff"
+    //       size="md"
+    //       src={profile?.profilePicture}
+    //     />
+    //     <Text ml={3} fontWeight="bold" fontSize="18px" className="title-text">{profile?.username}</Text>
+    //   </Flex>
+
+    //   {/* Search Bar */}
+    //   <Flex align="center" mb={4} className="conversation-container-search" data-testid="search-container">
+    //     <IconButton
+    //       aria-label="Search"
+    //       icon={<FaSearch />}
+    //       variant="outline"
+    //       mr={2}
+    //       colorScheme="blue"
+    //     />
+    //     <Input
+    //       id="message"
+    //       name="message"
+    //       type="text"
+    //       value={search}
+    //       placeholder="Search"
+    //       className="search-input"
+    //       onChange={(event) => {
+    //         setIsSearching(true);
+    //         setSearch(event.target.value);
+    //       }}
+    //     />
+    //     {search && (
+    //       <IconButton
+    //         aria-label="Clear Search"
+    //         icon={<FaTimes />}
+    //         variant="outline"
+    //         onClick={() => {
+    //           setSearch('');
+    //           setIsSearching(false);
+    //           setSearchResult([]);
+    //         }}
+    //         ml={2}
+    //         colorScheme="red"
+    //       />
+    //     )}
+    //   </Flex>
+
+    //   {/* Conversation List */}
+    //   <Box className="conversation-container-body" overflowY="auto">
+    //     {!search && (
+    //       <Box className="conversation">
+    //         {chatMessageList.map((data) => (
+    //           <Flex
+    //             key={Utils.generateString(10)}
+    //             data-testid="conversation-item"
+    //             align="center"
+    //             justify="space-between"
+    //             p={2}
+    //             borderRadius="md"
+    //             bg={searchParams.get('username') === data?.receiverUsername.toLowerCase() || searchParams.get('username') === data?.senderUsername.toLowerCase() ? 'gray.100' : 'transparent'}
+    //             onClick={() => addUsernameToUrlQuery(data)}
+    //             _hover={{ bg: 'gray.200' }}
+    //             className={`conversation-item ${selectedUser && !data.body ? 'active' : ''}`}
+    //           >
+    //             <Avatar
+    //               name={data.receiverUsername === profile?.username ? profile?.username : data?.receiverUsername}
+    //               bgColor={data.receiverUsername === profile?.username ? profile?.avatarColor : data?.receiverAvatarColor}
+    //               textColor="#ffffff"
+    //               size="md"
+    //               src={data.receiverUsername !== profile?.username ? data.receiverProfilePicture : data?.senderProfilePicture}
+    //             />
+    //             <Box flex="1" ml={3} display="flex" justifyContent="space-between" alignItems="center">
+    //               <Text fontWeight={selectedUser && !data.body ? 'bold' : 'normal'} className="title-text">
+    //                 {data.receiverUsername !== profile?.username ? data.receiverUsername : data?.senderUsername}
+    //               </Text>
+    //               <Text fontSize="sm" color="gray.500" className="created-date">{timeAgo.transform(data?.createdAt)}</Text>
+    //             </Box>
+    //             {/* Loại bỏ biểu tượng trạng thái đã xem */}
+    //             {!data?.body && (
+    //               <IconButton
+    //                 aria-label="Remove User"
+    //                 icon={<FaTimes />}
+    //                 onClick={removeSelectedUserFromList}
+    //                 variant="outline"
+    //               />
+    //             )}
+    //             {data?.body && !data?.deleteForMe && !data.deleteForEveryone && (
+    //               <ChatListBody data={data} profile={profile} />
+    //             )}
+    //             {data?.deleteForMe && data?.deleteForEveryone && (
+    //               <Text color="red.500">message deleted</Text>
+    //             )}
+    //             {data?.deleteForMe && !data.deleteForEveryone && data.senderUsername !== profile?.username && (
+    //               <Text color="red.500">message deleted</Text>
+    //             )}
+    //             {data?.deleteForMe && !data.deleteForEveryone && data.receiverUsername !== profile?.username && (
+    //               <ChatListBody data={data} profile={profile} />
+    //             )}
+    //           </Flex>
+    //         ))}
+    //       </Box>
+    //     )}
+
+    //     <SearchList
+    //       searchTerm={search}
+    //       result={searchResult}
+    //       isSearching={isSearching}
+    //       setSearchResult={setSearchResult}
+    //       setIsSearching={setIsSearching}
+    //       setSearch={setSearch}
+    //       setSelectedUser={setSelectedUser}
+    //       setComponentType={setComponentType}
+    //     />
+    //   </Box>
+    // </Box>
   );
 };
 export default ChatList;

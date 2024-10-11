@@ -1,3 +1,4 @@
+// import { Box, Text, Icon } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { FaCheck, FaCircle } from 'react-icons/fa';
 import doubleCheckmark from '@assets/images/double-checkmark.png';

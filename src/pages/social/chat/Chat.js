@@ -4,6 +4,7 @@ import useEffectOnce from '@hooks/useEffectOnce';
 import '@pages/social/chat/Chat.scss';
 import { getConversationList } from '@redux/api/chat';
 import { useDispatch, useSelector } from 'react-redux';
+// import { Box, Text, Flex } from '@chakra-ui/react';
 
 const Chat = () => {
   const { selectedChatUser, chatList } = useSelector((state) => state.chat);
@@ -29,6 +30,22 @@ const Chat = () => {
         </div>
       </div>
     </div>
+    // <Box className="private-chat-wrapper" p={4}>
+    //   <Flex className="private-chat-wrapper-content" direction={{ base: 'column', md: 'row' }} height="100%">
+    //     <Box className="private-chat-wrapper-content-side" flex="1" borderRight={{ base: 'none', md: '1px solid' }} borderColor="gray.200" pr={{ base: 0, md: 4 }}>
+    //       <ChatList />
+    //     </Box>
+    //     <Box className="private-chat-wrapper-content-conversation" flex="2" pl={{ base: 0, md: 4 }}>
+    //       {(selectedChatUser || chatList.length > 0) ? (
+    //         <ChatWindow />
+    //       ) : (
+    //         <Box className="no-chat" data-testid="no-chat" textAlign="center" p={4}>
+    //           <Text fontSize="lg" color="gray.500">Select or Search for users to chat with</Text>
+    //         </Box>
+    //       )}
+    //     </Box>
+    //   </Flex>
+    // </Box>
   );
 };
 export default Chat;

@@ -60,12 +60,6 @@ const MessageInput = ({ setChatMessage }) => {
     setShowGifContainer(false);
   };
 
-  const handleImageClick = () => {
-    message = message || 'Sent an Image';
-    setChatMessage(message.replace(/ +(?= )/g, ''), '', base64File);
-    reset();
-  };
-
   const fileInputClicked = () => {
     fileInputRef.current.click();
   };
@@ -166,10 +160,12 @@ const MessageInput = ({ setChatMessage }) => {
             onBlur={() => setHasFocus(false)}
             handleChange={(event) => setMessage(event.target.value)}
           />
+          <Button 
+            type="submit"
+            label={<FaPaperPlane />} 
+            className="paper" 
+            disabled={!message && !showImagePreview}/>
         </form>
-        {showImagePreview && !message && (
-          <Button label={<FaPaperPlane />} className="paper" handleClick={handleImageClick} />
-        )}
       </div>
     </>
   );

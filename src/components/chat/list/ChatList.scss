@@ -82,7 +82,7 @@
 
   &-body {
     overflow-y: scroll;
-    height: 780px;
+    height: calc(100vh - 180px);
 
     .conversation {
       grid-area: conversation-list;
