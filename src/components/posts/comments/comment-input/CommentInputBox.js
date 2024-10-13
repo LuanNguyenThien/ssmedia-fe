@@ -19,7 +19,7 @@ const EmojiPickerComponent = loadable(() => import('@components/chat/window/mess
   fallback: <p id="loading">Loading...</p>
 });
 
-const CommentInputBox = ({ post }) => {
+const CommentInputBox = ({ post, parentId = null, onCommentAdded }) => {
   const { profile } = useSelector((state) => state.user);
   const [comment, setComment] = useState('');
   const [showEmojiContainer, setShowEmojiContainer] = useState(false);
@@ -71,12 +71,16 @@ const CommentInputBox = ({ post }) => {
         comment: comment.trim(),
         selectedImage: base64File || '',
         commentsCount: post.commentsCount,
-        profilePicture: profile?.profilePicture
+        profilePicture: profile?.profilePicture,
+        parentId
       };
       socketService?.socket?.emit('comment', commentBody);
       await postService.addComment(commentBody);
       reset();
       setComment('');
+      if (onCommentAdded) {
+        onCommentAdded(); // Gọi callback khi bình luận được thêm
+      }
     } catch (error) {
       Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
     }
@@ -170,6 +174,8 @@ const CommentInputBox = ({ post }) => {
   );
 };
 CommentInputBox.propTypes = {
-  post: PropTypes.object
+  post: PropTypes.object,
+  parentId: PropTypes.string,
+  onCommentAdded: PropTypes.func
 };
 export default CommentInputBox;

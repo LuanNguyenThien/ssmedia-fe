@@ -34,38 +34,121 @@
       margin: 0;
 
       &-item {
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         padding: 5px 10px;
 
         &-display {
-          display: grid;
-          grid-template-areas: "img comment";
-          grid-template-columns: 50px 1fr;
-          grid-template-rows: 1fr;
+          display: flex;
+          align-items: flex-start;
+
+          .user-img {
+            margin-right: 10px;
+          }
 
           &-block {
-            grid-area: comment;
+            flex: 1;
 
-            .comment-data {
-              background: var(--white-10);
-              padding: 8px 15px;
-              border-radius: 20px;
+            .comment-header {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
 
-              h1 {
-                font-size: 16px;
-                color: var(--black-5);
-                font-weight: bold;
-                word-wrap: break-word;
+              .comment-data {
+                background: var(--white-10);
+                padding: 8px 15px;
+                border-radius: 20px;
+
+                h1 {
+                  font-size: 16px;
+                  color: var(--black-5);
+                  font-weight: bold;
+                  word-wrap: break-word;
+                }
+
+                p {
+                  margin-bottom: 0;
+                  font-size: 15px;
+                }
+
+                .comment-image {
+                  margin-top: 10px; /* Khoảng cách giữa hình ảnh và phần trên */
+                }
+                
+                .comment-image-img {
+                  width: 100px;
+                  height: auto;
+                  border-radius: 10px; /* Bo góc tròn */
+                }
               }
 
-              p {
-                margin-bottom: 0;
-                font-size: 15px;
+              .more-options {
+                position: relative;
+
+                .more-options-button {
+                  background: none;
+                  border: none;
+                  color: var(--blue-5);
+                  cursor: pointer;
+                  font-size: 14px;
+                }
+
+                &:hover .more-options-menu {
+                  display: block;
+                }
+
+                .more-options-menu {
+                  display: none;
+                  position: absolute;
+                  top: 20px;
+                  right: 0;
+                  background: var(--white-1);
+                  border: 1px solid var(--gray-3);
+                  border-radius: 5px;
+                  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                  z-index: 10;
+
+                  .edit-button,
+                  .delete-button {
+                    background: none;
+                    border: none;
+                    color: var(--black-5);
+                    cursor: pointer;
+                    padding: 10px;
+                    width: 100%;
+                    text-align: left;
+
+                    &:hover {
+                      background: var(--gray-1);
+                    }
+                  }
+                }
+              }
+            }
+
+            .comment-actions {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              margin-top: 10px;
+
+              .reaction-button,
+              .reply-button {
+                background: none;
+                border: none;
+                color: var(--blue-5);
+                cursor: pointer;
+                font-size: 14px;
               }
             }
           }
         }
       }
     }
+  }
+
+  &-replies {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0 0px; /* Indent replies */
   }
 }
