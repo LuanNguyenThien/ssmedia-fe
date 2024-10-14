@@ -22,6 +22,7 @@ const Photos = lazy(() => import('@pages/social/photos/Photos'));
 const Videos = lazy(() => import('@pages/social/videos/Videos'));
 const Profile = lazy(() => import('@pages/social/profile/Profile'));
 const Streams = lazy(() => import('@pages/social/streams/Streams'));
+const PostDetail = lazy(() => import('@pages/social/streams/PostDetail'));
 
 export const AppRouter = () => {
   const elements = useRoutes([
@@ -55,6 +56,14 @@ export const AppRouter = () => {
               <Streams />
             </Suspense>
           )
+        },
+        {
+          path:"post/:postId",
+            element:(
+              <Suspense fallback={<StreamsSkeleton />}>
+                <PostDetail />
+              </Suspense>
+            )
         },
         {
           path: 'chat/messages',
