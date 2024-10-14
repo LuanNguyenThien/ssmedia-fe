@@ -124,8 +124,8 @@ const Register = ({ onSetType }) => {
     <Flex
     // minH={'100vh'} align={'center'} justify={'center'} bg={useColorModeValue('gray.50', 'gray.800')}
     >
-      <Stack spacing={4} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Box rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} p={8}>
+      <Stack spacing={4} mx={'auto'} w={400} maxW={'lg'} py={12} px={6}>
+        <Box w="full" rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} p={8}>
           {hasError && errorMessage && (
             <div className={`alerts ${alertType}`} role="alert">
               {errorMessage}
@@ -159,11 +159,13 @@ const Register = ({ onSetType }) => {
               <Stack spacing={10} pt={2}>
                 <Button
                   type="submit"
-                  size="lg"
-                  bg={'blue.400'}
+                  fontFamily={'heading'}
+                  w={'full'}
+                  bgGradient="linear(to-r, red.400,pink.400)"
                   color={'white'}
                   _hover={{
-                    bg: 'blue.500'
+                    bgGradient: 'linear(to-r, red.400,pink.400)',
+                    boxShadow: 'xl'
                   }}
                   disabled={!username || !email || !password}
                 >
@@ -172,7 +174,7 @@ const Register = ({ onSetType }) => {
               </Stack>
               <Text mt={4} align={'center'}>
                 Đã có tài khoản?{' '}
-                <Button variant="link" onClick={() => onSetType('Sign In')} color={'blue.400'}>
+                <Button variant="link" onClick={() => onSetType('Sign In')} color={'red.400'}>
                   Đăng nhập
                 </Button>
               </Text>

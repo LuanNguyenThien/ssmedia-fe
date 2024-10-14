@@ -81,8 +81,8 @@ const Login = ({ onSetType }) => {
     // align={'center'}
     // justify={'center'}
     >
-      <Stack spacing={4} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Box rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} p={8}>
+      <Stack spacing={4} mx={'auto'} w={400} maxW={'lg'} py={12} px={6}>
+        <Box w="full" rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} p={8}>
           {hasError && errorMessage && (
             <div className={`alerts ${alertType}`} role="alert">
               {errorMessage}
