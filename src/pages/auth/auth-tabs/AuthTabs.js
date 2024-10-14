@@ -20,31 +20,31 @@ import {
   AvatarGroup,
   useBreakpointValue,
   IconProps,
-  Icon,
-} from '@chakra-ui/react'
+  Icon
+} from '@chakra-ui/react';
 
 const avatars = [
   {
     name: 'Ryan Florence',
-    url: 'https://bit.ly/ryan-florence',
+    url: 'https://bit.ly/ryan-florence'
   },
   {
     name: 'Segun Adebayo',
-    url: 'https://bit.ly/sage-adebayo',
+    url: 'https://bit.ly/sage-adebayo'
   },
   {
     name: 'Kent Dodds',
-    url: 'https://bit.ly/kent-c-dodds',
+    url: 'https://bit.ly/kent-c-dodds'
   },
   {
     name: 'Prosper Otemuyiwa',
-    url: 'https://bit.ly/prosper-baba',
+    url: 'https://bit.ly/prosper-baba'
   },
   {
     name: 'Christian Nwamba',
-    url: 'https://bit.ly/code-beast',
-  },
-]
+    url: 'https://bit.ly/code-beast'
+  }
+];
 
 const Blur = (props) => {
   return (
@@ -55,7 +55,8 @@ const Blur = (props) => {
       viewBox="0 0 528 560"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...props}>
+      {...props}
+    >
       <circle cx="71" cy="61" r="111" fill="#F56565" />
       <circle cx="244" cy="106" r="139" fill="#ED64A6" />
       <circle cy="291" r="139" fill="#ED64A6" />
@@ -64,8 +65,8 @@ const Blur = (props) => {
       <circle cx="70.5" cy="458.5" r="101.5" fill="#48BB78" />
       <circle cx="426.5" cy="-0.5" r="101.5" fill="#4299E1" />
     </Icon>
-  )
-}
+  );
+};
 
 const AuthTabs = () => {
   const [type, setType] = useState('Sign In');
@@ -120,12 +121,10 @@ const AuthTabs = () => {
             maxW={'7xl'}
             columns={{ base: 1, md: 2 }}
             spacing={{ base: 10, lg: 32 }}
-            py={{ base: 5, sm: 5, lg: '4.5rem' }}>
-            <Stack spacing={{ base: 10, md: 20 }}
-              py={{ base: 5, sm: 5, lg: '4rem' }}>
-              <Heading
-                lineHeight={1.1}
-                fontSize={{ base: '3xl', sm: '4xl', md: '5xl', lg: '6xl' }}>
+            py={{ base: 5, sm: 5, lg: '4.5rem' }}
+          >
+            <Stack spacing={{ base: 10, md: 20 }} py={{ base: 5, sm: 5, lg: '4rem' }}>
+              <Heading lineHeight={1.1} fontSize={{ base: '3xl', sm: '4xl', md: '5xl', lg: '6xl' }}>
                 Cộng đồng trao đổi học tập{' '}
                 <Text as={'span'} bgGradient="linear(to-r, red.400,pink.400)" bgClip="text">
                   &
@@ -153,7 +152,7 @@ const AuthTabs = () => {
                         position: 'absolute',
                         zIndex: -1,
                         top: 0,
-                        left: 0,
+                        left: 0
                       }}
                     />
                   ))}
@@ -182,8 +181,9 @@ const AuthTabs = () => {
                     position: 'absolute',
                     zIndex: -1,
                     top: 0,
-                    left: 0,
-                  }}>
+                    left: 0
+                  }}
+                >
                   YOU
                 </Flex>
               </Stack>
@@ -197,9 +197,10 @@ const AuthTabs = () => {
               maxW={{ lg: 'lg' }}
               rounded={'xl'}
               bg="transparent"
-              position="relative">
+              position="relative"
+            >
               <Blur position="absolute" top={0} left={0} style={{ filter: 'blur(120px)' }} />
-              
+
               <Stack>
                 {/* Tabs cho Sign In và Sign Up */}
                 {/* <Box>
@@ -234,13 +235,8 @@ const AuthTabs = () => {
                     </Button>
                   </Stack>
                 </Box> */}
-                <Stack spacing={4}
-                  
-                >
-                  <Heading
-                    color={'gray.800'}
-                    lineHeight={1.1}
-                    fontSize={{ base: '2xl', sm: '3xl', md: '4xl' }}>
+                <Stack spacing={4}>
+                  <Heading color={'gray.800'} lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl', md: '4xl' }}>
                     Tham gia cùng chúng tôi
                     <Text as={'span'} bgGradient="linear(to-r, red.400,pink.400)" bgClip="text">
                       !
@@ -251,24 +247,24 @@ const AuthTabs = () => {
                 {/* Hiển thị form đăng nhập hoặc đăng ký */}
                 {type === 'Sign In' && (
                   <div className="tab-item">
-                    <Login />
-                    <Text mt={4}>
+                    <Login onSetType={setType} />
+                    {/* <Text mt={4}>
                       Bạn chưa có tài khoản?{' '}
                       <Button variant="link" onClick={() => setType('Sign Up')} color={'red.400'}>
                         Đăng ký
                       </Button>
-                    </Text>
+                    </Text> */}
                   </div>
                 )}
                 {type === 'Sign Up' && (
                   <div className="tab-item">
-                    <Register />
-                    <Text mt={4}>
+                    <Register onSetType={setType} />
+                    {/* <Text mt={4}>
                       Đã có tài khoản?{' '}
                       <Button variant="link" onClick={() => setType('Sign In')} color={'red.400'}>
                         Đăng nhập
                       </Button>
-                    </Text>
+                    </Text> */}
                   </div>
                 )}
               </Stack>

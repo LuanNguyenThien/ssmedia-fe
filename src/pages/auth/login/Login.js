@@ -15,6 +15,8 @@ import {
   FormControl,
   FormLabel,
   Input,
+  InputGroup,
+  InputRightElement,
   Checkbox,
   Stack,
   Button,
@@ -24,10 +26,12 @@ import {
   AlertTitle,
   AlertDescription,
   Text,
-  useColorModeValue,
-} from '@chakra-ui/react'
+  useColorModeValue
+} from '@chakra-ui/react';
 
-const Login = () => {
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+
+const Login = ({ onSetType }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
@@ -36,6 +40,7 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [alertType, setAlertType] = useState('');
   const [user, setUser] = useState();
+  const [showPassword, setShowPassword] = useState(false);
   // const [usernameTouched, setUsernameTouched] = useState(false);
   // const [passwordTouched, setPasswordTouched] = useState(false);
   const [setStoredUsername] = useLocalStorage('username', 'set');
@@ -72,49 +77,46 @@ const Login = () => {
 
   return (
     <Flex
-      // minH={'100vh'}
-      // align={'center'}
-      // justify={'center'}
-      >
-      <Stack spacing={4} mx={'auto'} maxW={'lg'} py={8} px={6}>
-        <Box
-          rounded={'lg'}
-          bg={useColorModeValue('white', 'gray.700')}
-          boxShadow={'lg'}
-          p={8}>
+    // minH={'100vh'}
+    // align={'center'}
+    // justify={'center'}
+    >
+      <Stack spacing={4} mx={'auto'} w={400} maxW={'lg'} py={12} px={6}>
+        <Box w="full" rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} p={8}>
           {hasError && errorMessage && (
             <div className={`alerts ${alertType}`} role="alert">
               {errorMessage}
             </div>
           )}
           <form onSubmit={loginUser}>
-            <Stack spacing={6}>
+            <Stack spacing={4}>
               <FormControl id="username" isRequired>
                 <FormLabel>Tài khoản</FormLabel>
-                <Input
-                  type="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
+                <Input type="username" value={username} onChange={(e) => setUsername(e.target.value)} />
               </FormControl>
               <FormControl id="password" isRequired>
                 <FormLabel>Mật khẩu</FormLabel>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                {/* <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /> */}
+                <InputGroup>
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <InputRightElement h={'full'}>
+                    <Button variant={'ghost'} onClick={() => setShowPassword((showPassword) => !showPassword)}>
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
               </FormControl>
               <Stack spacing={10}>
-                <Stack
-                  direction={{ base: 'column', sm: 'row' }}
-                  align={'start'}
-                  justify={'space-between'}>
+                <Stack direction={{ base: 'column', sm: 'row' }} align={'start'} justify={'space-between'}>
                   <Checkbox
                     colorScheme="red"
                     // isChecked={keepLoggedIn}
                     onChange={() => setKeepLoggedIn(!keepLoggedIn)}
-                    >
+                  >
                     Ghi nhớ đăng nhập
                   </Checkbox>
                   <Link to={'/forgot-password'}>
@@ -131,13 +133,19 @@ const Login = () => {
                   color={'white'}
                   _hover={{
                     bgGradient: 'linear(to-r, red.400,pink.400)',
-                    boxShadow: 'xl',
+                    boxShadow: 'xl'
                   }}
                   disabled={!username || !password}
-                  >
+                >
                   {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                 </Button>
               </Stack>
+              <Text mt={4} align={'center'}>
+                Bạn chưa có tài khoản?{' '}
+                <Button variant="link" onClick={() => onSetType('Sign Up')} color={'red.400'}>
+                  Đăng ký
+                </Button>
+              </Text>
             </Stack>
           </form>
         </Box>
