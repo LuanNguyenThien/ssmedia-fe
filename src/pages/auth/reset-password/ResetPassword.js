@@ -1,11 +1,20 @@
 import '@pages/auth/reset-password/ResetPassword.scss';
+import { authService } from '@services/api/auth/auth.service';
 import { useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
-import Input from '@components/input/Input';
-import Button from '@components/button/Button';
 import { Link, useSearchParams } from 'react-router-dom';
-import backgroundImage from '@assets/images/background.jpg';
-import { authService } from '@services/api/auth/auth.service';
+
+import {
+  Button,
+  ChakraProvider,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Stack,
+  useColorModeValue
+} from '@chakra-ui/react';
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
@@ -35,66 +44,71 @@ const ResetPassword = () => {
       setResponseMessage(error?.response?.data?.message);
     }
   };
-
   return (
-    <div className="container-wrapper" style={{ backgroundImage: `url(${backgroundImage})` }}>
-      <div className="environment">DEV</div>
-      <div className="container-wrapper-auth">
-        <div className="tabs reset-password-tabs" style={{ height: `${responseMessage ? '400px' : ''}` }}>
-          <div className="tabs-auth">
-            <ul className="tab-group">
-              <li className="tab">
-                <div className="login reset-password">Reset Password</div>
-              </li>
-            </ul>
-            <div className="tab-item">
-              <div className="auth-inner">
-                {responseMessage && (
-                  <div className={`alerts ${alertType}`} role="alert">
-                    {responseMessage}
-                  </div>
-                )}
-                <form className="reset-password-form" onSubmit={resetPassword}>
-                  <div className="form-input-container">
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      value={password}
-                      labelText="New Password"
-                      placeholder="New Password"
-                      style={{ border: `${showAlert ? '1px solid #fa9b8a' : ''}` }}
-                      handleChange={(e) => setPassword(e.target.value)}
-                    />
-                    <Input
-                      id="cpassword"
-                      name="cpassword"
-                      type="password"
-                      value={confirmPassword}
-                      labelText="Confirm Password"
-                      placeholder="Confirm Password"
-                      style={{ border: `${showAlert ? '1px solid #fa9b8a' : ''}` }}
-                      handleChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                  </div>
-                  <Button
-                    label={`${loading ? 'RESET PASSWORD IN PROGRESS...' : 'RESET PASSWORD'}`}
-                    className="auth-button button"
-                    disabled={!password || !confirmPassword}
-                  />
-
-                  <Link to={'/'}>
-                    <span className="login">
-                      <FaArrowLeft className="arrow-left" /> Back to Login
-                    </span>
-                  </Link>
-                </form>
-              </div>
+    <ChakraProvider>
+      {' '}
+      <Flex minH={'100vh'} align={'center'} justify={'center'} bg={useColorModeValue('gray.50', 'gray.800')}>
+        <Stack
+          spacing={4}
+          w={'full'}
+          maxW={'md'}
+          bg={useColorModeValue('white', 'gray.700')}
+          rounded={'xl'}
+          boxShadow={'lg'}
+          p={6}
+          my={12}
+        >
+          <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
+            Enter new password
+          </Heading>
+          {responseMessage && (
+            <div className={`alerts ${alertType}`} role="alert">
+              {responseMessage}
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          )}
+          <form onSubmit={resetPassword}>
+            <FormControl id="password" isRequired>
+              <FormLabel>Password</FormLabel>
+              <Input
+                type="password"
+                value={password}
+                placeholder="New Password"
+                style={{ border: `${showAlert ? '1px solid #fa9b8a' : ''}` }}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </FormControl>
+            <FormControl id="password" isRequired>
+              <FormLabel>Confirm Password</FormLabel>
+              <Input
+                type="password"
+                value={confirmPassword}
+                placeholder="Confirm Password"
+                style={{ border: `${showAlert ? '1px solid #fa9b8a' : ''}` }}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </FormControl>
+            <Stack spacing={6}>
+              <Button
+                bg={'blue.400'}
+                color={'white'}
+                _hover={{
+                  bg: 'blue.500'
+                }}
+                className="auth-button button"
+                disabled={!password || !confirmPassword}
+              >
+                {loading ? 'RESET PASSWORD IN PROGRESS...' : 'RESET PASSWORD'}
+              </Button>
+            </Stack>
+          </form>
+          <Link to={'/'}>
+            <span className="login">
+              <FaArrowLeft className="arrow-left" /> Back to Login
+            </span>
+          </Link>
+        </Stack>
+      </Flex>
+    </ChakraProvider>
   );
 };
 
