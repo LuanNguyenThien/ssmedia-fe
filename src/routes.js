@@ -35,7 +35,11 @@ export const AppRouter = () => {
     },
     {
       path: '/forgot-password',
-      element: <ForgotPassword />
+      
+      element: 
+      <ChakraProvider>
+         <ForgotPassword />
+      </ChakraProvider>
     },
     {
       path: '/reset-password',
