@@ -2,7 +2,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import '@pages/auth/forgot-password/ForgotPassword.scss';
 import { authService } from '@services/api/auth/auth.service';
 import { useEffect, useState } from 'react';
-import useLocalStorage from '@hooks/useLocalStorage';
+import { Link } from 'react-router-dom';
 import {
   Box,
   Flex,
@@ -64,20 +64,25 @@ const ForgotPassword = () => {
     }
   };
 
-  
+
   const sendLinkEmail = (event) => {
     event.preventDefault();
     forgotPassword();
   };
   return (
     <Box position={'relative'} className="forgot-password-container">
-        <Flex
-          minH={'100vh'}
-          align={'center'}
-          justify={'center'}
-        >
-          <Blur position="absolute" bottom={-10} right={-10} style={{ filter: 'blur(120px)' }} />
-          <form onSubmit={sendLinkEmail}>
+      <Link to={'/'} className="back-to-login">
+        <span className="login">
+          <FaArrowLeft className="arrow-left" /> Back
+        </span>
+      </Link>
+      <Flex
+        minH={'100vh'}
+        align={'center'}
+        justify={'center'}
+      >
+        <Blur position="absolute" bottom={-10} right={-10} style={{ filter: 'blur(120px)' }} />
+        <form onSubmit={sendLinkEmail}>
           <Stack
             spacing={4}
             w={'full'}
@@ -98,39 +103,40 @@ const ForgotPassword = () => {
               Gửi liên kết để đặt lại mật khẩu qua email
             </Text>
 
-            
+
             <Stack spacing={6}>
               <FormControl id="email" isRequired>
                 <FormLabel>Email</FormLabel>
                 <Input
-                 placeholder="your-email@example.com"
-                 _placeholder={{ color: 'gray.500' }}
+                  placeholder="your-email@example.com"
+                  _placeholder={{ color: 'gray.500' }}
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </FormControl>
-            
-            <Button
-                  type="submit"
-                  fontFamily={'heading'}
-                  w={'full'}
-                  bgGradient="linear(to-r, red.400,pink.400)"
-                  color={'white'}
-                  _hover={{
-                    bgGradient: 'linear(to-r, red.400,pink.400)',
-                    boxShadow: 'xl',
-                  }}
-                  disabled={!email}
-                  >
-                  {loading ? 'Đang gửi liên kết...' : 'Gửi mã'}
-                </Button>
+
+              <Button
+                type="submit"
+                fontFamily={'heading'}
+                w={'full'}
+                bgGradient="linear(to-r, red.400,pink.400)"
+                color={'white'}
+                _hover={{
+                  bgGradient: 'linear(to-r, red.400,pink.400)',
+                  boxShadow: 'xl',
+                }}
+                disabled={!email}
+              >
+                {loading ? 'Đang gửi liên kết...' : 'Gửi mã'}
+              </Button>
 
             </Stack>
-            
           </Stack>
-          </form>
-        </Flex>
+
+        </form>
+
+      </Flex>
       <Blur position={'absolute'} top={-10} left={-10} style={{ filter: 'blur(80px)' }} />
     </Box>
   );
