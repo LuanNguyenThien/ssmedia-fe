@@ -28,18 +28,20 @@ export const AppRouter = () => {
   const elements = useRoutes([
     {
       path: '/',
-      element: 
-      <ChakraProvider>
-        <AuthTabs />
-      </ChakraProvider>
+      element: (
+        <ChakraProvider>
+          <AuthTabs />
+        </ChakraProvider>
+      )
     },
     {
       path: '/forgot-password',
-      
-      element: 
-      <ChakraProvider>
-         <ForgotPassword />
-      </ChakraProvider>
+
+      element: (
+        <ChakraProvider>
+          <ForgotPassword />
+        </ChakraProvider>
+      )
     },
     {
       path: '/reset-password',
@@ -62,27 +64,31 @@ export const AppRouter = () => {
           )
         },
         {
-          path:"post/:postId",
-            element:(
-              <Suspense fallback={<StreamsSkeleton />}>
-                <PostDetail />
-              </Suspense>
-            )
+          path: 'post/:postId',
+          element: (
+            <Suspense fallback={<StreamsSkeleton />}>
+              <PostDetail />
+            </Suspense>
+          )
         },
         {
           path: 'chat/messages',
           element: (
-            <Suspense fallback={<ChatSkeleton />}>
-              <Chat />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<ChatSkeleton />}>
+                <Chat />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
           path: 'people',
           element: (
-            <Suspense fallback={<CardSkeleton />}>
-              <People />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<CardSkeleton />}>
+                <People />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
