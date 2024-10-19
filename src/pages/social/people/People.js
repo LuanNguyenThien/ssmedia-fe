@@ -119,7 +119,7 @@ const People = () => {
                 overflow={'hidden'}
               >
                 <Image
-                  h={'120px'}
+                  h={'140px'}
                   w={'full'}
                   src={
                     data.bgImageId

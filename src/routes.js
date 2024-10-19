@@ -94,17 +94,21 @@ export const AppRouter = () => {
         {
           path: 'followers',
           element: (
-            <Suspense fallback={<CardSkeleton />}>
-              <Followers />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<CardSkeleton />}>
+                <Followers />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
           path: 'following',
           element: (
-            <Suspense fallback={<CardSkeleton />}>
-              <Following />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<CardSkeleton />}>
+                <Following />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
