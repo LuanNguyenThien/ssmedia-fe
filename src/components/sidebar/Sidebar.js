@@ -30,7 +30,11 @@ const Sidebar = () => {
     if (name === 'Streams') {
       dispatch(getPosts());
     }
-
+    if (name === 'Save') {
+      // Nếu mục là Save, chuyển hướng đến Streams
+      url = '/app/social/streams';
+      dispatch(getPosts());
+    }
     if (name === 'Chat') {
       setChatPageName('Chat');
     } else {

@@ -3,12 +3,12 @@
 
   &-sidebar {
     flex: 2;
-    max-width: 15%;
+    max-width: 17%;
   }
 
   &-content {
-    flex: 6;
+    flex: 5;
     height: 100vh;
-    background-color: var(--gray-1);
+    background-color: #f5f7fc;
   }
 }

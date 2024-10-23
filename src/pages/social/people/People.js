@@ -144,7 +144,6 @@ const People = () => {
                     <Heading fontSize={'2xl'} fontWeight={500} fontFamily={'body'}>
                       {data?.username}
                     </Heading>
-                    <Text color={'gray.500'}>Frontend Developer</Text>
                   </Stack>
 
                   <Stack direction={'row'} justify={'center'} spacing={6}>

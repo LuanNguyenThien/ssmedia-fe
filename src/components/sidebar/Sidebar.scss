@@ -2,12 +2,12 @@
   background-color: var(--white-1);
   border: 1px solid var(--white-2);
   color: var(--dark-blue-2);
-  border-radius: 50px;
+  border-radius: 10px;
   text-decoration: none;
 }
 
 .app-side-menu {
-  background-color: var(--white-10);
+  background-color: white;
   box-shadow: 1px 5px 5px var(--gray-16);
   height: 100vh;
 
@@ -23,7 +23,7 @@
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        width: 100%;
+        width: 120%;
         padding-bottom: 0.6rem;
 
         .sidebar-link {
@@ -38,10 +38,17 @@
 
           &:hover {
             @include sidebar-styles;
+            background-color: #e8f0fa; // Màu nền khi hover
 
             .menu-icon {
               .icon {
-                color: var(--primary-1);
+                color: var(--primary-1); // Màu icon khi hover
+              }
+            }
+
+            .menu-link {
+              span {
+                color: #007bff; // Màu chữ khi hover (giống active)
               }
             }
           }
@@ -49,16 +56,24 @@
 
         .active {
           @include sidebar-styles;
+          background-color: #e8f0fa;
 
           .menu-icon {
             .icon {
               color: var(--primary-1);
             }
           }
+
+          .menu-link {
+            span {
+              color: #007bff; // Màu chữ khi active
+            }
+          }
         }
 
         .menu-icon {
           margin-top: 5px;
+
           .icon {
             color: var(--gray-13);
             font-weight: 500;
