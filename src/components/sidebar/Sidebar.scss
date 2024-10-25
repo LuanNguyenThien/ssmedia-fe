@@ -98,3 +98,23 @@
 .sidebar-link:hover span {
   color: var(--dark-blue-2);
 }
+
+.app-side-menu {
+  display: block;
+}
+
+// Ẩn sidebar khi màn hình nhỏ hơn 768px và hiển thị nút toggle
+@media screen and (max-width: 768px) {
+  .app-side-menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    width: 250px;
+    z-index: 1000;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .app-side-menu.open {
+    display: block;
+  }
+}

@@ -1,8 +1,22 @@
 .chat-window-container {
   display: grid;
+  width: 100vh; // Kích thước mặc định theo chiều cao màn hình
   grid:
-    "message-header"
-    "message-container";
+    'message-header'
+    'message-container';
+
+  // Khi thay đổi kích thước màn hình, điều chỉnh width
+  @media (max-width: 1200px) {
+    width: 80vw; // Chiều rộng sẽ là 80% của chiều rộng màn hình
+  }
+
+  @media (max-width: 992px) {
+    width: 100vw; // Chiều rộng sẽ chiếm toàn bộ chiều rộng màn hình
+  }
+
+  @media (max-width: 768px) {
+    width: 60vw; // Đảm bảo kích thước phù hợp với các màn hình nhỏ hơn
+  }
 
   .chat-title {
     grid-area: message-header;
@@ -23,8 +37,8 @@
     &-items {
       display: grid;
       grid-template-areas:
-        "name"
-        "active";
+        'name'
+        'active';
       grid-template-columns: 1fr;
       grid-template-rows: max-content max-content;
       padding-top: 3px;
@@ -56,9 +70,9 @@
     grid-area: message-container;
     display: grid;
     grid-template-areas:
-      "message-body"
-      "image-preview"
-      "message-form";
+      'message-body'
+      'image-preview'
+      'message-form';
     grid-template-columns: 1fr;
     grid-template-rows: 1fr max-content 45px;
     height: calc(100vh - 180px);

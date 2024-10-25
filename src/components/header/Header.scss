@@ -96,6 +96,9 @@
           width: 50px;
           text-align: center;
         }
+        .header-list-icon:hover {
+          transform: scale(1.2); /* Phóng to icon lên 1.2 lần khi hover */
+        }
 
         .header-list-name {
           .bg-danger-dots {
@@ -117,7 +120,7 @@
             padding: 0;
             position: absolute;
             top: -5px;
-            animation: shadow-pulse-dots 1s infinite;
+            animation: shadow-pulse-dots 0.5s infinite;
             border-radius: 50%;
           }
         }

@@ -154,34 +154,6 @@ const Followers = () => {
                 </Box>
               </Box>
             </Center>
-            //     <div className="card-element-item" key={data?._id} data-testid="card-element-item">
-            //       <div className="card-element-header">
-            //         <div className="card-element-header-bg"></div>
-            //         <Avatar
-            //           name={data?.username}
-            //           bgColor={data?.avatarColor}
-            //           textColor="#ffffff"
-            //           size={120}
-            //           avatarSrc={data?.profilePicture}
-            //         />
-            //         <div className="card-element-header-text">
-            //           <span className="card-element-header-name">{data?.username}</span>
-            //         </div>
-            //       </div>
-            //       <CardElementStats
-            //         postsCount={data?.postsCount}
-            //         followersCount={data?.followersCount}
-            //         followingCount={data?.followingCount}
-            //       />
-            //       <CardElementButtons
-            //         isChecked={Utils.checkIfUserIsBlocked(blockedUsers, data?._id)}
-            //         btnTextOne="Block"
-            //         btnTextTwo="Unblock"
-            //         onClickBtnOne={() => blockUser(data)}
-            //         onClickBtnTwo={() => unblockUser(data)}
-            //         onNavigateToProfile={() => ProfileUtils.navigateToProfile(data, navigate)}
-            //       />
-            //     </div>
           ))}
         </div>
       )}
@@ -199,3 +171,32 @@ const Followers = () => {
   );
 };
 export default Followers;
+
+//     <div className="card-element-item" key={data?._id} data-testid="card-element-item">
+//       <div className="card-element-header">
+//         <div className="card-element-header-bg"></div>
+//         <Avatar
+//           name={data?.username}
+//           bgColor={data?.avatarColor}
+//           textColor="#ffffff"
+//           size={120}
+//           avatarSrc={data?.profilePicture}
+//         />
+//         <div className="card-element-header-text">
+//           <span className="card-element-header-name">{data?.username}</span>
+//         </div>
+//       </div>
+//       <CardElementStats
+//         postsCount={data?.postsCount}
+//         followersCount={data?.followersCount}
+//         followingCount={data?.followingCount}
+//       />
+//       <CardElementButtons
+//         isChecked={Utils.checkIfUserIsBlocked(blockedUsers, data?._id)}
+//         btnTextOne="Block"
+//         btnTextTwo="Unblock"
+//         onClickBtnOne={() => blockUser(data)}
+//         onClickBtnTwo={() => unblockUser(data)}
+//         onNavigateToProfile={() => ProfileUtils.navigateToProfile(data, navigate)}
+//       />
+//     </div>
