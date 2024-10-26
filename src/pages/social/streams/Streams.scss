@@ -6,7 +6,7 @@
 
   &-content {
     display: grid;
-    grid-template-areas: "post suggestions";
+    grid-template-areas: 'post suggestions';
     grid-template-columns: 1fr 330px;
     grid-template-rows: 1fr;
     column-gap: 20px;
@@ -27,6 +27,17 @@
       background-color: var(--white-1);
       max-height: 600px;
       border-radius: 16px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .streams-content {
+    grid-template-areas: 'post';
+    grid-template-columns: 1fr;
+    margin: 0 20px;
+    .streams-suggestions {
+      display: none;
     }
   }
 }
