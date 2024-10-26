@@ -4,6 +4,9 @@
   &-sidebar {
     flex: 2;
     max-width: 17%;
+    // @media (max-width: 768px) {
+    //   display: none;
+    // }
   }
 
   &-content {

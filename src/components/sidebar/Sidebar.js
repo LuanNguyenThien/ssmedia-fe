@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { sideBarItems, fontAwesomeIcons } from '@services/utils/static.data';
 import { useLocation, createSearchParams, useNavigate } from 'react-router-dom';
-import '@components//sidebar/Sidebar.scss';
+import '@components/sidebar/Sidebar.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPosts } from '@redux/api/posts';
 import { Utils } from '@services/utils/utils.service';
@@ -14,9 +14,14 @@ const Sidebar = () => {
   const { chatList } = useSelector((state) => state.chat);
   const [sidebar, setSideBar] = useState([]);
   const [chatPageName, setChatPageName] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State để quản lý trạng thái của sidebar
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen); // Đảo ngược trạng thái mở/đóng của sidebar
+  };
 
   const checkUrl = (name) => {
     return location.pathname.includes(name.toLowerCase());
@@ -31,7 +36,6 @@ const Sidebar = () => {
       dispatch(getPosts());
     }
     if (name === 'Save') {
-      // Nếu mục là Save, chuyển hướng đến Streams
       url = '/app/social/streams';
       dispatch(getPosts());
     }
@@ -103,20 +107,26 @@ const Sidebar = () => {
   }, [chatList, chatPageName, createChatUrlParams, markMessagesAsRad, navigate]);
 
   return (
-    <div className="app-side-menu">
-      <div className="side-menu">
-        <ul className="list-unstyled">
-          {sidebar.map((data) => (
-            <li key={data.index} onClick={() => navigateToPage(data.name, data.url)}>
-              <div data-testid="sidebar-list" className={`sidebar-link ${checkUrl(data.name) ? 'active' : ''}`}>
-                <div className="menu-icon">{fontAwesomeIcons[data.iconName]}</div>
-                <div className="menu-link">
-                  <span>{`${data.name}`}</span>
+    <div>
+      {/* Button toggle xuất hiện khi màn hình nhỏ hơn 768px */}
+      <button className="toggle-button" onClick={toggleSidebar}>
+        ☰
+      </button>
+      <div className={`app-side-menu ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="side-menu">
+          <ul className="list-unstyled">
+            {sidebar.map((data) => (
+              <li key={data.index} onClick={() => navigateToPage(data.name, data.url)}>
+                <div data-testid="sidebar-list" className={`sidebar-link ${checkUrl(data.name) ? 'active' : ''}`}>
+                  <div className="menu-icon">{fontAwesomeIcons[data.iconName]}</div>
+                  <div className="menu-link">
+                    <span>{data.name}</span>
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

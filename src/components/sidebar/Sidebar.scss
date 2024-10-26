@@ -6,10 +6,29 @@
   text-decoration: none;
 }
 
+.toggle-button {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1100;
+  background-color: var(--primary-1);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
 .app-side-menu {
   background-color: white;
   box-shadow: 1px 5px 5px var(--gray-16);
   height: 100vh;
+  transition: all 0.3s ease;
+
+  &.open {
+    display: block;
+  }
 
   .side-menu {
     padding: 2rem 1.5rem;
@@ -107,7 +126,7 @@
 @media screen and (max-width: 768px) {
   .app-side-menu {
     display: none;
-    position: absolute;
+    position: fixed;
     left: 0;
     width: 250px;
     z-index: 1000;
@@ -115,6 +134,10 @@
   }
 
   .app-side-menu.open {
+    display: block;
+  }
+
+  .toggle-button {
     display: block;
   }
 }
