@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { sideBarItems, fontAwesomeIcons } from '@services/utils/static.data';
 import { useLocation, createSearchParams, useNavigate } from 'react-router-dom';
 import '@components/sidebar/Sidebar.scss';
@@ -18,6 +18,7 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const sidebarRef = useRef(null); // Tham chiếu đến sidebar
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen); // Đảo ngược trạng thái mở/đóng của sidebar
@@ -115,13 +116,28 @@ const Sidebar = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Hàm xử lý sự kiện click bên ngoài sidebar
+  const handleClickOutside = (event) => {
+    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      setIsSidebarOpen(false); // Ẩn sidebar nếu click bên ngoài
+    }
+  };
+
+  useEffect(() => {
+    // Thêm sự kiện click để ẩn sidebar khi click bên ngoài
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div>
       {/* Button toggle xuất hiện khi màn hình nhỏ hơn 768px */}
       <button className="toggle-button" onClick={toggleSidebar}>
         ☰
       </button>
-      <div className={`app-side-menu ${isSidebarOpen ? 'open' : ''}`}>
+      <div ref={sidebarRef} className={`app-side-menu ${isSidebarOpen ? 'open' : ''}`}>
         <div className="side-menu">
           <ul className="list-unstyled">
             {sidebar.map((data) => (
@@ -140,4 +156,5 @@ const Sidebar = () => {
     </div>
   );
 };
+
 export default Sidebar;
