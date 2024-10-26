@@ -106,6 +106,15 @@ const Sidebar = () => {
     }
   }, [chatList, chatPageName, createChatUrlParams, markMessagesAsRad, navigate]);
 
+  useEffect(() => {
+    // Đóng sidebar khi màn hình lớn hơn 768px
+    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 768);
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div>
       {/* Button toggle xuất hiện khi màn hình nhỏ hơn 768px */}
