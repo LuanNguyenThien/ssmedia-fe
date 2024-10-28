@@ -10,7 +10,7 @@
     justify-self: center;
     grid-template-columns: 300px 1fr;
     grid-template-rows: 1fr;
-    grid-template-areas: "side message";
+    grid-template-areas: 'side message';
     flex-grow: 1;
     background-color: var(--white-1);
     height: 95vh;

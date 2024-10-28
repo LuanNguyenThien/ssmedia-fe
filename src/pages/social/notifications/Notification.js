@@ -9,7 +9,7 @@ import useEffectOnce from '@hooks/useEffectOnce';
 import { NotificationUtils } from '@services/utils/notification-utils.service';
 import NotificationPreview from '@components/dialog/NotificationPreview';
 import { timeAgo } from '@services/utils/timeago.utils';
-
+import filtericon from '@assets/images/filter.svg';
 const Notification = () => {
   const { profile } = useSelector((state) => state.user);
   const [notifications, setNotifications] = useState([]);
@@ -37,6 +37,8 @@ const Notification = () => {
   const markAsRead = async (notification) => {
     try {
       NotificationUtils.markMessageAsRead(notification?._id, notification, setNotificationDialogContent);
+      notification.read = true; // Đánh dấu thông báo là đã đọc
+      setNotifications([...notifications]); // Cập nhật state
     } catch (error) {
       Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
     }
@@ -83,12 +85,15 @@ const Notification = () => {
         />
       )}
       <div className="notifications-container">
-        <div className="notifications">Notifications</div>
+        <div className="notifications">
+          Notifications
+          <img src={filtericon} alt="Filter" className="filter-icon"></img>
+        </div>
         {notifications.length > 0 && (
           <div className="notifications-box">
             {notifications.map((notification) => (
               <div
-                className="notification-box"
+                className={`notification-box ${notification?.read ? 'read' : ''}`}
                 data-testid="notification-box"
                 key={notification?._id}
                 onClick={() => markAsRead(notification)}
@@ -139,4 +144,5 @@ const Notification = () => {
     </>
   );
 };
+
 export default Notification;
