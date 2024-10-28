@@ -10,6 +10,7 @@ import PhotoSkeleton from '@pages/social/photos/PhotoSkeleton';
 import ProfileSkeleton from '@pages/social/profile/ProfileSkeleton';
 import ChatSkeleton from '@pages/social/chat/ChatSkeleton';
 import VideoSkeleton from '@pages/social/videos/VideoSkeleton';
+import { ChakraProvider } from '@chakra-ui/react';
 
 const Social = lazy(() => import('@pages/social/Social'));
 const Chat = lazy(() => import('@pages/social/chat/Chat'));
@@ -21,16 +22,26 @@ const Photos = lazy(() => import('@pages/social/photos/Photos'));
 const Videos = lazy(() => import('@pages/social/videos/Videos'));
 const Profile = lazy(() => import('@pages/social/profile/Profile'));
 const Streams = lazy(() => import('@pages/social/streams/Streams'));
+const PostDetail = lazy(() => import('@pages/social/streams/PostDetail'));
 
 export const AppRouter = () => {
   const elements = useRoutes([
     {
       path: '/',
-      element: <AuthTabs />
+      element: (
+        <ChakraProvider>
+          <AuthTabs />
+        </ChakraProvider>
+      )
     },
     {
       path: '/forgot-password',
-      element: <ForgotPassword />
+
+      element: (
+        <ChakraProvider>
+          <ForgotPassword />
+        </ChakraProvider>
+      )
     },
     {
       path: '/reset-password',
@@ -53,35 +64,51 @@ export const AppRouter = () => {
           )
         },
         {
+          path: 'post/:postId',
+          element: (
+            <Suspense fallback={<StreamsSkeleton />}>
+              <PostDetail />
+            </Suspense>
+          )
+        },
+        {
           path: 'chat/messages',
           element: (
-            <Suspense fallback={<ChatSkeleton />}>
-              <Chat />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<ChatSkeleton />}>
+                <Chat />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
           path: 'people',
           element: (
-            <Suspense fallback={<CardSkeleton />}>
-              <People />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<CardSkeleton />}>
+                <People />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
           path: 'followers',
           element: (
-            <Suspense fallback={<CardSkeleton />}>
-              <Followers />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<CardSkeleton />}>
+                <Followers />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
           path: 'following',
           element: (
-            <Suspense fallback={<CardSkeleton />}>
-              <Following />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<CardSkeleton />}>
+                <Following />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {

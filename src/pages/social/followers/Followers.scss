@@ -10,6 +10,17 @@
   padding: 24px;
   border-radius: 16px;
 
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
   &-item {
     width: 247px;
     height: 350px;
@@ -150,7 +161,7 @@
 
     &-content {
       display: grid;
-      grid-template-areas: "avatar user button";
+      grid-template-areas: 'avatar user button';
       grid-template-rows: 1fr;
       grid-template-columns: max-content 1fr 100px;
 

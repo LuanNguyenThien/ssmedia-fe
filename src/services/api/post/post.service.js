@@ -1,6 +1,10 @@
 import axios from '@services/axios';
 
 class PostService {
+  async getPost(id) {
+    const response = await axios.get(`/post/${id}`);
+    return response;
+  }
   async getAllPosts(page) {
     const response = await axios.get(`/post/all/${page}`);
     return response;

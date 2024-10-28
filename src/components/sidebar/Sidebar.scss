@@ -2,14 +2,33 @@
   background-color: var(--white-1);
   border: 1px solid var(--white-2);
   color: var(--dark-blue-2);
-  border-radius: 50px;
+  border-radius: 10px;
   text-decoration: none;
 }
 
+.toggle-button {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1100;
+  background-color: var(--primary-1);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
 .app-side-menu {
-  background-color: var(--white-10);
+  background-color: white;
   box-shadow: 1px 5px 5px var(--gray-16);
   height: 100vh;
+  transition: all 0.3s ease;
+
+  &.open {
+    display: block;
+  }
 
   .side-menu {
     padding: 2rem 1.5rem;
@@ -23,7 +42,7 @@
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        width: 100%;
+        width: 120%;
         padding-bottom: 0.6rem;
 
         .sidebar-link {
@@ -38,10 +57,17 @@
 
           &:hover {
             @include sidebar-styles;
+            background-color: #e8f0fa; // Màu nền khi hover
 
             .menu-icon {
               .icon {
-                color: var(--primary-1);
+                color: var(--primary-1); // Màu icon khi hover
+              }
+            }
+
+            .menu-link {
+              span {
+                color: #007bff; // Màu chữ khi hover (giống active)
               }
             }
           }
@@ -49,16 +75,24 @@
 
         .active {
           @include sidebar-styles;
+          background-color: #e8f0fa;
 
           .menu-icon {
             .icon {
               color: var(--primary-1);
             }
           }
+
+          .menu-link {
+            span {
+              color: #007bff; // Màu chữ khi active
+            }
+          }
         }
 
         .menu-icon {
           margin-top: 5px;
+
           .icon {
             color: var(--gray-13);
             font-weight: 500;
@@ -82,4 +116,28 @@
 
 .sidebar-link:hover span {
   color: var(--dark-blue-2);
+}
+
+.app-side-menu {
+  display: block;
+}
+
+// Ẩn sidebar khi màn hình nhỏ hơn 768px và hiển thị nút toggle
+@media screen and (max-width: 768px) {
+  .app-side-menu {
+    display: none;
+    position: fixed;
+    left: 0;
+    width: 250px;
+    z-index: 1000;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .app-side-menu.open {
+    display: block;
+  }
+
+  .toggle-button {
+    display: block;
+  }
 }

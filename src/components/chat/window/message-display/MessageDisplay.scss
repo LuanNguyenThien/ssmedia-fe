@@ -1,5 +1,5 @@
 .message-page {
-  max-height: 780px;
+  max-height: calc(100vh - 230px);
   overflow-y: scroll;
   font-weight: 500;
   scroll-behavior: smooth;
@@ -18,13 +18,12 @@
     .message {
       display: flex;
       align-items: flex-end;
-      margin-bottom: 10px;
 
       .message-content {
         display: grid;
         grid-template-areas:
-          "bubble"
-          "image";
+          'bubble'
+          'image';
         grid-template-columns: 1fr;
         grid-template-rows: max-content 1fr;
         position: relative;
@@ -83,18 +82,18 @@
       cursor: pointer;
       display: grid;
       grid-template-areas:
-        "reactions"
-        "chatBubble";
+        'reactions'
+        'chatBubble';
       grid-template-columns: 1fr;
       grid-template-rows: max-content 1fr;
 
       .message-reactions-container {
         grid-area: reactions;
-        margin-bottom: 10px;
         width: 100%;
-        height: 30px;
+        height: 10px;
         justify-content: flex-start;
         display: flex;
+        z-index: 50;
 
         .reactions {
           background-color: var(--white-5);
@@ -124,7 +123,7 @@
         .message-img {
           width: 40px;
           height: 40px;
-          margin-right: 10px;
+
           align-self: flex-start;
         }
 
@@ -203,10 +202,9 @@
 
             img {
               border-radius: 5px;
-              padding: 3px 4px;
+
               width: 17px;
               height: 17px;
-              border: 1px solid var(--primary-1);
               box-sizing: content-box;
             }
           }
@@ -218,17 +216,17 @@
       cursor: pointer;
       display: grid;
       grid-template-areas:
-        "rightReactions"
-        "rightChatBubble"
-        "rightContentBottom";
+        'rightReactions'
+        'rightChatBubble'
+        'rightContentBottom';
 
       .message-right-reactions-container {
         grid-area: rightReactions;
-        margin-bottom: 10px;
         width: 100%;
-        height: 30px;
+        height: 5px;
         justify-content: flex-end;
         display: flex;
+        z-index: 50;
 
         .reactions {
           background-color: var(--white-5);
@@ -254,7 +252,7 @@
       .message-right-content-container-wrapper {
         grid-area: rightChatBubble;
         display: grid;
-        grid-template-areas: "reactionIcon chatBubble";
+        grid-template-areas: 'reactionIcon chatBubble';
         grid-template-columns: 1fr;
         grid-template-rows: max-content 1fr;
 
@@ -316,8 +314,8 @@
         justify-self: flex-end;
         display: grid;
         grid-template-areas:
-          "reaction"
-          "time";
+          'reaction'
+          'time';
         grid-template-columns: 1fr;
         grid-template-rows: max-content 1fr;
 
@@ -332,10 +330,8 @@
 
           img {
             border-radius: 5px;
-            padding: 3px 4px;
             width: 17px;
             height: 17px;
-            border: 1px solid var(--primary-1);
             box-sizing: content-box;
           }
         }

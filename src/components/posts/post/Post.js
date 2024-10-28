@@ -19,6 +19,7 @@ import { clearPost, updatePostItem } from '@redux/reducers/post/post.reducer';
 import Dialog from '@components/dialog/Dialog';
 import { postService } from '@services/api/post/post.service';
 import { ImageUtils } from '@services/utils/image-utils.service';
+import { Link } from 'react-router-dom';
 
 const Post = ({ post, showIcons }) => {
   const { _id } = useSelector((state) => state.post);
@@ -129,7 +130,10 @@ const Post = ({ post, showIcons }) => {
 
               {post?.createdAt && (
                 <p className="time-text-display" data-testid="time-display">
-                  {timeAgo.transform(post?.createdAt)} &middot; {getPrivacy(post?.privacy)}
+                  <Link to={`/app/social/post/${post._id}`} className="time-link">
+                    {timeAgo.transform(post?.createdAt)}
+                  </Link>
+                  &nbsp;&middot; {getPrivacy(post?.privacy)}
                 </p>
               )}
             </div>

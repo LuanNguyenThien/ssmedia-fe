@@ -98,6 +98,15 @@
           margin-top: 2px;
           margin-left: 4px;
         }
+
+        .time-link {
+          color: inherit; /* Giữ nguyên màu sắc cũ */
+          text-decoration: none; /* Loại bỏ gạch chân */
+        }
+        
+        .time-link:hover {
+          cursor: pointer; /* Thay đổi con trỏ chuột thành biểu tượng bàn tay */
+        }
       }
     }
 

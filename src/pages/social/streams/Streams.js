@@ -30,7 +30,7 @@ const Streams = () => {
   const storedUsername = useLocalStorage('username', 'get');
   const [deleteSelectedPostId] = useLocalStorage('selectedPostId', 'delete');
   useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
-  const PAGE_SIZE = 8;
+  const PAGE_SIZE = 10;
 
   function fetchPostData() {
     let pageNum = currentPage;
