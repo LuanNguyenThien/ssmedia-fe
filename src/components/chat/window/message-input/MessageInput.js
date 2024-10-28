@@ -43,13 +43,13 @@ const MessageInput = ({ setChatMessage }) => {
   const addToPreview = async (file) => {
     let type;
     if (file.type.startsWith('image/')) {
-        type = 'image';
+      type = 'image';
     } else if (file.type.startsWith('video/')) {
-        type = 'video';
+      type = 'video';
     } else {
-        // Nếu không phải là hình ảnh hoặc video, có thể xử lý lỗi ở đây
-        window.alert(`File ${file.name} is not a valid image or video.`);
-        return;
+      // Nếu không phải là hình ảnh hoặc video, có thể xử lý lỗi ở đây
+      window.alert(`File ${file.name} is not a valid image or video.`);
+      return;
     }
     ImageUtils.checkFile(file, type);
     setFile(URL.createObjectURL(file));
@@ -100,9 +100,12 @@ const MessageInput = ({ setChatMessage }) => {
             }}
           />
         )}
+
+
+        {/* Bottom chat input area */}
         <form onSubmit={handleClick}>
-          <ul className="chat-list" style={{ borderColor: `${hasFocus ? '#50b5ff' : '#f1f0f0'}` }}>
-            <li
+          <div className="chat-list" style={{ borderColor: `${hasFocus ? '#50b5ff' : '#f1f0f0'}` }}>
+            <div
               className="chat-list-item"
               onClick={() => {
                 fileInputClicked();
@@ -125,8 +128,8 @@ const MessageInput = ({ setChatMessage }) => {
                 handleChange={(event) => addToPreview(event.target.files[0])}
               />
               <img src={photo} alt="" />
-            </li>
-            <li
+            </div>
+            <div
               className="chat-list-item"
               onClick={() => {
                 setShowGifContainer(!showGifContainer);
@@ -135,8 +138,8 @@ const MessageInput = ({ setChatMessage }) => {
               }}
             >
               <img src={gif} alt="" />
-            </li>
-            <li
+            </div>
+            <div
               className="chat-list-item"
               onClick={() => {
                 setShowEmojiContainer(!showEmojiContainer);
@@ -145,8 +148,8 @@ const MessageInput = ({ setChatMessage }) => {
               }}
             >
               <img src={feeling} alt="" />
-            </li>
-          </ul>
+            </div>
+          </div>
           <Input
             ref={messageInputRef}
             id="message"
@@ -160,11 +163,7 @@ const MessageInput = ({ setChatMessage }) => {
             onBlur={() => setHasFocus(false)}
             handleChange={(event) => setMessage(event.target.value)}
           />
-          <Button 
-            type="submit"
-            label={<FaPaperPlane />} 
-            className="paper" 
-            disabled={!message && !showImagePreview}/>
+          <Button type="submit" label={<FaPaperPlane />} className="paper" disabled={!message && !showImagePreview} />
         </form>
       </div>
     </>
