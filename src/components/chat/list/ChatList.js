@@ -50,7 +50,6 @@ const ChatList = () => {
     },
     [dispatch]
   );
-
   const addSelectedUserToList = useCallback(
     (user) => {
       const newUser = {
@@ -84,7 +83,6 @@ const ChatList = () => {
     },
     [chatList, chatMessageList, dispatch, searchParams, profile]
   );
-
   const removeSelectedUserFromList = (event) => {
     event.stopPropagation();
     chatMessageList = cloneDeep(chatMessageList);
@@ -105,7 +103,6 @@ const ChatList = () => {
       });
     }
   };
-
   const updateQueryParams = (user) => {
     setSelectedUser(user);
     const params = ChatUtils.chatUrlParams(user, profile);
@@ -113,7 +110,6 @@ const ChatList = () => {
     // ChatUtils.privateChatMessages = [];
     return params;
   };
-
   // this is for when a user already exist in the chat list
   const addUsernameToUrlQuery = async (user) => {
     try {
@@ -137,7 +133,6 @@ const ChatList = () => {
       Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
     }
   };
-
   useEffect(() => {
     if (debouncedValue) {
       searchUsers(debouncedValue);

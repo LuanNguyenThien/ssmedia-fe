@@ -132,7 +132,7 @@ const ChatWindow = () => {
       {isLoading ? (
         <div className="message-loading" data-testid="message-loading"></div>
       ) : (
-        <div data-testid="chatWindow">
+        <div data-testid="chatWindow" className='chatWindow'>
           <div className="chat-title" data-testid="chat-title">
             {receiver && (
               <div className="chat-title-avatar">
