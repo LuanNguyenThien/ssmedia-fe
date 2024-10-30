@@ -23,7 +23,7 @@ const Videos = lazy(() => import('@pages/social/videos/Videos'));
 const Profile = lazy(() => import('@pages/social/profile/Profile'));
 const Streams = lazy(() => import('@pages/social/streams/Streams'));
 const PostDetail = lazy(() => import('@pages/social/streams/PostDetail'));
-
+const SavePage = lazy(() => import('@pages/social/streams/SavePage'));
 export const AppRouter = () => {
   const elements = useRoutes([
     {
@@ -60,6 +60,14 @@ export const AppRouter = () => {
           element: (
             <Suspense fallback={<StreamsSkeleton />}>
               <Streams />
+            </Suspense>
+          )
+        },
+        {
+          path: 'save',
+          element: (
+            <Suspense fallback={<StreamsSkeleton />}>
+              <SavePage />
             </Suspense>
           )
         },
