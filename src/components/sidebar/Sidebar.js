@@ -37,7 +37,7 @@ const Sidebar = () => {
       dispatch(getPosts());
     }
     if (name === 'Save') {
-      url = '/app/social/streams';
+      url = '/app/social/save';
       dispatch(getPosts());
     }
     if (name === 'Chat') {

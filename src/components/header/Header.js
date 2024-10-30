@@ -202,7 +202,6 @@ const Header = () => {
               </div>
             </div>
 
-            {/* Thêm khung tìm kiếm */}
             <div className="search-container">
               <input
                 type="text"
