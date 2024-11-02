@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { FaRegCommentAlt } from 'react-icons/fa';
+import { FaRegCommentAlt, FaRegHeart } from 'react-icons/fa';
 import '@components/posts/comment-area/CommentArea.scss';
 import Reactions from '@components/posts/reactions/Reactions';
 import { useCallback, useEffect, useState } from 'react';
@@ -46,6 +46,18 @@ const CommentArea = ({ post }) => {
     } else {
       setSelectedPostId(post?._id);
       dispatch(updatePostItem(post));
+    }
+  };
+
+  const addFavoritePost = async () => {
+    try{
+      const favPostData = {
+        userId: profile?._id,
+        postId: post?._id
+      };
+      await postService.addfavPost(favPostData);
+    } catch (error) {
+      Utils.dispatchNotification(error?.response?.data?.message, 'error', dispatch);
     }
   };
 
@@ -168,6 +180,11 @@ const CommentArea = ({ post }) => {
       <div className="comment-block" onClick={toggleCommentInput}>
         <span className="comments-text">
           <FaRegCommentAlt className="comment-alt" /> <span>Comments</span>
+        </span>
+      </div>
+      <div className="favorite-block" onClick={addFavoritePost}>
+        <span className="favorite-text">
+          <FaRegHeart className="favorite-icon" /> <span>Add to Favorites</span>
         </span>
       </div>
     </div>
