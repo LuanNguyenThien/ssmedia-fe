@@ -7,7 +7,7 @@ import { Utils } from '@services/utils/utils.service';
 import { useDispatch } from 'react-redux';
 
 const Toast = (props) => {
-  const { toastList, position, autoDelete, autoDeleteTime = 2000 } = props;
+  const { toastList, position, autoDelete, autoDeleteTime = 3000 } = props;
   const [list, setList] = useState(toastList);
   const listData = useRef([]);
   const dispatch = useDispatch();

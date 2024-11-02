@@ -140,6 +140,7 @@ const Header = () => {
   }, [chatList, profile]);
 
   useEffect(() => {
+    NotificationUtils.socketIOAnalyzeNotifications(profile, dispatch);
     NotificationUtils.socketIONotification(profile, notifications, setNotifications, 'header', setNotificationCount);
     NotificationUtils.socketIOMessageNotification(
       profile,
