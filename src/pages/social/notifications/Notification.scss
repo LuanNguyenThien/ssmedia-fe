@@ -3,20 +3,42 @@
   height: 100vh;
   max-width: 1152px;
   margin: auto;
+  .notifications {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #faf6f0;
 
+    .filter {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      .filter-icon {
+        width: 24px;
+        height: 24px;
+        padding-top: 120px;
+        margin-right: 52px; // Khoảng cách giữa icon và chữ "Filter"
+        vertical-align: middle;
+      }
+    }
+  }
   .notifications-box {
     padding: 15px 24px 24px;
     margin-bottom: 100px;
     margin-top: 30px;
     justify-items: center;
-    background-color: var(--white-1);
-    border-radius: 16px;
+    background-color: #faf6f0;
+    border-radius: 5px;
 
     .notification-box {
       margin: auto;
       max-width: 1152px;
-      background: var(--white-1);
-      border-radius: 5px;
+      background: #e4eaeb;
+      border-radius: 10px;
       transition: all 0.3s;
       position: relative;
       z-index: 2;
@@ -24,6 +46,10 @@
       margin-top: 20px;
       cursor: pointer;
       box-shadow: rgb(145 158 171 / 20%) 0 0 2px 0, rgb(145 158 171 / 12%) 0 12px 24px -4px;
+
+      &.read {
+        opacity: 0.5; // Tạo hiệu ứng mờ cho thông báo đã đọc
+      }
 
       &-sub-card {
         font-size: inherit;
@@ -35,7 +61,7 @@
 
         &-media {
           display: grid;
-          grid-template-areas: "image content";
+          grid-template-areas: 'image content';
           grid-template-columns: max-content 1fr;
           grid-template-rows: 1fr;
           align-items: center;

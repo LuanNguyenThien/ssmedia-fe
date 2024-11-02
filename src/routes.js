@@ -11,6 +11,7 @@ import ProfileSkeleton from '@pages/social/profile/ProfileSkeleton';
 import ChatSkeleton from '@pages/social/chat/ChatSkeleton';
 import VideoSkeleton from '@pages/social/videos/VideoSkeleton';
 import { ChakraProvider } from '@chakra-ui/react';
+import Group from '@pages/social/groups/group';
 
 const Social = lazy(() => import('@pages/social/Social'));
 const Chat = lazy(() => import('@pages/social/chat/Chat'));
@@ -23,23 +24,25 @@ const Videos = lazy(() => import('@pages/social/videos/Videos'));
 const Profile = lazy(() => import('@pages/social/profile/Profile'));
 const Streams = lazy(() => import('@pages/social/streams/Streams'));
 const PostDetail = lazy(() => import('@pages/social/streams/PostDetail'));
-
+const SavePage = lazy(() => import('@pages/social/saves/SavePage'));
 export const AppRouter = () => {
   const elements = useRoutes([
     {
       path: '/',
-      element: 
-      <ChakraProvider>
-        <AuthTabs />
-      </ChakraProvider>
+      element: (
+        <ChakraProvider>
+          <AuthTabs />
+        </ChakraProvider>
+      )
     },
     {
       path: '/forgot-password',
-      
-      element: 
-      <ChakraProvider>
-         <ForgotPassword />
-      </ChakraProvider>
+
+      element: (
+        <ChakraProvider>
+          <ForgotPassword />
+        </ChakraProvider>
+      )
     },
     {
       path: '/reset-password',
@@ -62,43 +65,59 @@ export const AppRouter = () => {
           )
         },
         {
-          path:"post/:postId",
-            element:(
-              <Suspense fallback={<StreamsSkeleton />}>
-                <PostDetail />
-              </Suspense>
-            )
+          path: 'save',
+          element: (
+            <Suspense fallback={<StreamsSkeleton />}>
+              <SavePage />
+            </Suspense>
+          )
+        },
+        {
+          path: 'post/:postId',
+          element: (
+            <Suspense fallback={<StreamsSkeleton />}>
+              <PostDetail />
+            </Suspense>
+          )
         },
         {
           path: 'chat/messages',
           element: (
-            <Suspense fallback={<ChatSkeleton />}>
-              <Chat />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<ChatSkeleton />}>
+                <Chat />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
           path: 'people',
           element: (
-            <Suspense fallback={<CardSkeleton />}>
-              <People />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<CardSkeleton />}>
+                <People />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
           path: 'followers',
           element: (
-            <Suspense fallback={<CardSkeleton />}>
-              <Followers />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<CardSkeleton />}>
+                <Followers />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
           path: 'following',
           element: (
-            <Suspense fallback={<CardSkeleton />}>
-              <Following />
-            </Suspense>
+            <ChakraProvider>
+              <Suspense fallback={<CardSkeleton />}>
+                <Following />
+              </Suspense>
+            </ChakraProvider>
           )
         },
         {
@@ -122,6 +141,14 @@ export const AppRouter = () => {
           element: (
             <Suspense fallback={<NotificationSkeleton />}>
               <Notification />
+            </Suspense>
+          )
+        },
+        {
+          path: 'groups',
+          element: (
+            <Suspense>
+              <Group />
             </Suspense>
           )
         },

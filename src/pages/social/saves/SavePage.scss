@@ -1,43 +1,34 @@
-.streams {
+.saves {
   margin-top: 30px;
   max-width: 1152px;
   margin: auto;
   height: 100vh;
 
   &-content {
-    display: grid;
-    grid-template-areas: 'post suggestions';
-    grid-template-columns: 1fr 330px;
-    grid-template-rows: 1fr;
+    display: flex; /* Sử dụng flexbox */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
     column-gap: 20px;
     margin-top: 20px;
     overflow-x: hidden;
     overflow-y: scroll;
+    padding: 0 150px;
 
-    .streams-post {
+    .saves-post {
       grid-area: post;
       overflow-y: scroll;
       overflow-x: hidden;
       height: 100vh;
       scroll-behavior: smooth;
     }
-
-    .streams-suggestions {
-      grid-area: suggestions;
-      background-color: var(--white-1);
-      max-height: 600px;
-      border-radius: 16px;
-    }
   }
 }
 
 @media (max-width: 768px) {
-  .streams-content {
+  .saves-content {
+    display: flex; /* Đảm bảo flexbox được sử dụng trong chế độ responsive */
     grid-template-areas: 'post';
     grid-template-columns: 1fr;
     margin: 0 20px;
-    .streams-suggestions {
-      display: none;
-    }
   }
 }

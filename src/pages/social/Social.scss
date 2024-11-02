@@ -3,11 +3,15 @@
 
   &-sidebar {
     flex: 2;
-    max-width: 15%;
+    max-width: 17%;
+    @media (max-width: 768px) {
+      max-width: 1%;
+    }
   }
 
   &-content {
-    flex: 6;
+    flex: 5;
     height: 100vh;
+    background-color: #f4eae0;
   }
 }

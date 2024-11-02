@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import logo from '@assets/images/logo.svg';
 import { FaCaretDown, FaCaretUp, FaRegBell, FaRegEnvelope } from 'react-icons/fa';
-
+import bell from '@assets/images/bell.svg';
+import mess from '@assets/images/mes.svg';
 import '@components/header/Header.scss';
 import Avatar from '@components/avatar/Avatar';
 import { Utils } from '@services/utils/utils.service';
@@ -152,6 +153,7 @@ const Header = () => {
     );
   }, [profile, notifications, dispatch, location, messageNotifications]);
 
+  const [searchTerm, setSearchTerm] = useState('');
   return (
     <>
       {!profile ? (
@@ -200,12 +202,24 @@ const Header = () => {
                 )}
               </div>
             </div>
+
+            <div className="search-container">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Tìm kiếm..."
+                className="search-input"
+              />
+            </div>
+
             <div className="header-menu-toggle">
               <span className="bar"></span>
               <span className="bar"></span>
               <span className="bar"></span>
             </div>
             <ul className="header-nav">
+              {/* Phần còn lại của mã không thay đổi */}
               <li
                 data-testid="notification-list-item"
                 className="header-nav-item active-item"
@@ -216,7 +230,7 @@ const Header = () => {
                 }}
               >
                 <span className="header-list-name">
-                  <FaRegBell className="header-list-icon" />
+                  <img src={bell} className="header-list-icon" />
                   {notificationCount > 0 && (
                     <span className="bg-danger-dots dots" data-testid="notification-dots">
                       {notificationCount}
@@ -250,7 +264,7 @@ const Header = () => {
                 }}
               >
                 <span className="header-list-name">
-                  <FaRegEnvelope className="header-list-icon" />
+                  <img src={mess} className="header-list-icon" />
                   {messageCount > 0 && <span className="bg-danger-dots dots" data-testid="messages-dots"></span>}
                 </span>
                 &nbsp;

@@ -23,7 +23,8 @@ import {
   FaUserCheck,
   FaUserPlus,
   FaUsers,
-  FaVideo
+  FaVideo,
+  FaSave
 } from 'react-icons/fa';
 
 export const sideBarItems = [
@@ -80,6 +81,12 @@ export const sideBarItems = [
     name: 'Profile',
     url: '/app/social/profile',
     iconName: 'FaRegUser'
+  },
+  {
+    index: 10,
+    name: 'Save',
+    url: '/app/social/save',
+    iconName: 'FaSave'
   }
 ];
 
@@ -116,7 +123,8 @@ export const fontAwesomeIcons = {
   FaVideo: <FaVideo className="icon" />,
   FaRegBell: <FaRegBell className="icon" />,
   FaBirthdayCake: <FaBirthdayCake className="icon" />,
-  FaRegUser: <FaRegUser className="icon" />
+  FaRegUser: <FaRegUser className="icon" />,
+  FaSave: <FaSave className="icon" />
 };
 
 export const privacyList = [
