@@ -1,11 +1,13 @@
 import React from 'react';
 import '@pages/social/groups/group.scss';
-import Posts from '@components/posts/Posts';
+import PostForm from '@components/posts/post-form/PostForm';
+
 const Group = () => {
   return (
     <div className="group-container">
       {/* Khung tìm kiếm bên trái */}
       <div className="group-search">
+        <h3>Your Group</h3>
         <input type="text" placeholder="Tìm kiếm nhóm..." />
 
         {/* Thẻ kết quả tìm kiếm */}
@@ -21,18 +23,21 @@ const Group = () => {
       <div className="group-content">
         <div className="group-info">
           <div className="group-header">
-            <div className="group-background"></div>
-            <h2 className="group-name">Tên Nhóm</h2>
+            <div
+              className="group-background"
+              style={{
+                backgroundImage: `url(https://images.unsplash.com/photo-1612865547334-09cb8cb455da?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80)`
+              }}
+            ></div>
+            <h2 className="group-name">groupName</h2>
+            <button className="join-group-button">Join Group </button>
           </div>
         </div>
 
         <div className="group-main">
           {/* Bài Post ở bên trái */}
           <div className="group-post">
-            <h3>Bài Post</h3>
-            <div className="post-content">
-              <p>Đây là nội dung của bài post. Bạn có thể cập nhật, chia sẻ và tương tác với bài post này.</p>
-            </div>
+            <PostForm />
           </div>
 
           {/* Khung About Group và Nội Quy Nhóm bên phải */}
