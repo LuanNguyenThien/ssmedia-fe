@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import '@pages/social/streams/Streams.scss';
+import '@pages/social/saves/SavePage.scss';
 import Suggestions from '@components/suggestions/Suggestions';
 import { getUserSuggestions } from '@redux/api/suggestion';
 import useEffectOnce from '@hooks/useEffectOnce';
@@ -94,9 +94,9 @@ const SavePage = () => {
   }, [posts]);
 
   return (
-    <div className="streams" data-testid="streams">
-      <div className="streams-content">
-        <div className="streams-post" ref={bodyRef}>
+    <div className="saves" data-testid="saves">
+      <div className="saves-content">
+        <div className="saves-post" ref={bodyRef}>
           <Posts allPosts={posts} postsLoading={loading} userFollowing={following} />
           <div ref={bottomLineRef} style={{ marginBottom: '50px', height: '50px' }}></div>
         </div>
