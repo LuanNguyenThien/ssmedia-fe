@@ -45,7 +45,6 @@ const ForgotPassword = () => {
   const [alertType, setAlertType] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
 
-
   const forgotPassword = async (event) => {
     setLoading(true);
     event.preventDefault();
@@ -64,18 +63,13 @@ const ForgotPassword = () => {
     }
   };
 
-
   const sendLinkEmail = (event) => {
     event.preventDefault();
     forgotPassword();
   };
+
   return (
     <Box position={'relative'} className="forgot-password-container">
-      <Link to={'/'} className="back-to-login">
-        <span className="login">
-          <FaArrowLeft className="arrow-left" /> Back
-        </span>
-      </Link>
       <Flex
         minH={'100vh'}
         align={'center'}
@@ -92,18 +86,14 @@ const ForgotPassword = () => {
             boxShadow={'lg'}
             p={6}
             my={12}>
-
             <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
               Quên mật khẩu?
             </Heading>
-
             <Text
               fontSize={{ base: 'sm', sm: 'md' }}
               color={useColorModeValue('gray.800', 'gray.400')}>
               Gửi liên kết để đặt lại mật khẩu qua email
             </Text>
-
-
             <Stack spacing={6}>
               <FormControl id="email" isRequired>
                 <FormLabel>Email</FormLabel>
@@ -115,7 +105,6 @@ const ForgotPassword = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </FormControl>
-
               <Button
                 type="submit"
                 fontFamily={'heading'}
@@ -130,12 +119,14 @@ const ForgotPassword = () => {
               >
                 {loading ? 'Đang gửi liên kết...' : 'Gửi mã'}
               </Button>
-
+              <Link to={'/'} className="back-to-login">
+                <span className="login">
+                  <FaArrowLeft className="arrow-left" /> Back
+                </span>
+              </Link>
             </Stack>
           </Stack>
-
         </form>
-
       </Flex>
       <Blur position={'absolute'} top={-10} left={-10} style={{ filter: 'blur(80px)' }} />
     </Box>
