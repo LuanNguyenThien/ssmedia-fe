@@ -106,10 +106,8 @@ const SavePage = () => {
           <div ref={bottomLineRef} style={{ marginBottom: '50px', height: '50px' }}></div>
         </div>
         {!loading && postSaves.length === 0 && (
-          <div className="timeline-wrapper-container-main">
-            <div className="empty-page" data-testid="empty-page">
-              No post available
-            </div>
+          <div className="empty-page" data-testid="empty-page">
+            No post available
           </div>
         )}
       </div>
