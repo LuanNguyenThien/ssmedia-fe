@@ -151,67 +151,134 @@ const BackgroundHeader = ({
             {selectedBackground ? <img src={`${selectedBackground}`} alt="" /> : <img src={`${url}`} alt="" />}
           </div>
           <div className="profile-banner-data">
-            <div
-              data-testid="profile-pic"
-              className="profile-pic"
-              style={{
-                width: `${user?.profilePicture ? '180px' : ''}`
-              }}
-            >
-              <Avatar
-                name={user?.username}
-                bgColor={user?.avatarColor}
-                textColor="#ffffff"
-                size={180}
-                avatarSrc={selectedProfileImage || user?.profilePicture}
-              />
+            <div className="profile-banner-data-sm">
+              <div
+                data-testid="profile-pic"
+                className="profile-pic"
+                style={{
+                  width: `${user?.profilePicture ? '180px' : ''}`
+                }}
+              >
+                <Avatar
+                  name={user?.username}
+                  bgColor={user?.avatarColor}
+                  textColor="#ffffff"
+                  size={180}
+                  avatarSrc={selectedProfileImage || user?.profilePicture}
+                />
+                {hideSettings && (
+                  <div className="profile-pic-select" data-testid="profile-pic-select">
+                    <Input
+                      ref={profileImageRef}
+                      name="profile"
+                      type="file"
+                      className="inputFile"
+                      onClick={() => {
+                        if (profileImageRef.current) {
+                          profileImageRef.current.value = null;
+                        }
+                      }}
+                      handleChange={(event) => {
+                        setSelectedProfileImage(URL.createObjectURL(event.target.files[0]));
+                        selectedFileImage(event.target.files[0], 'profile');
+                      }}
+                    />
+                    <label onClick={() => profileFileInputClicked()}>
+                      <FaCamera className="camera" />
+                    </label>
+                  </div>
+                )}
+              </div>
+              <div className="profile-name">{user?.username}</div>
               {hideSettings && (
-                <div className="profile-pic-select" data-testid="profile-pic-select">
+                <div className="profile-select-image">
                   <Input
-                    ref={profileImageRef}
-                    name="profile"
+                    ref={backgroundFileRef}
+                    name="background"
                     type="file"
                     className="inputFile"
                     onClick={() => {
-                      if (profileImageRef.current) {
-                        profileImageRef.current.value = null;
+                      if (backgroundFileRef.current) {
+                        backgroundFileRef.current.value = null;
                       }
                     }}
                     handleChange={(event) => {
-                      setSelectedProfileImage(URL.createObjectURL(event.target.files[0]));
-                      selectedFileImage(event.target.files[0], 'profile');
+                      setSelectedBackground(URL.createObjectURL(event.target.files[0]));
+                      selectedFileImage(event.target.files[0], 'background');
                     }}
                   />
-                  <label onClick={() => profileFileInputClicked()}>
+                  <label data-testid="add-cover-photo" onClick={() => onAddProfileClick()}>
                     <FaCamera className="camera" />
                   </label>
+                  {isActive && <BackgroundSelectDropdown />}
                 </div>
               )}
             </div>
-            <div className="profile-name">{user?.username}</div>
-            {hideSettings && (
-              <div className="profile-select-image">
-                <Input
-                  ref={backgroundFileRef}
-                  name="background"
-                  type="file"
-                  className="inputFile"
-                  onClick={() => {
-                    if (backgroundFileRef.current) {
-                      backgroundFileRef.current.value = null;
-                    }
-                  }}
-                  handleChange={(event) => {
-                    setSelectedBackground(URL.createObjectURL(event.target.files[0]));
-                    selectedFileImage(event.target.files[0], 'background');
-                  }}
+            <div className="profile-banner-data-md">
+              <div
+                data-testid="profile-pic"
+                className="profile-pic"
+                style={{
+                  width: `${user?.profilePicture ? '180px' : ''}`
+                }}
+              >
+                <Avatar
+                  name={user?.username}
+                  bgColor={user?.avatarColor}
+                  textColor="#ffffff"
+                  size={180}
+                  avatarSrc={selectedProfileImage || user?.profilePicture}
                 />
-                <label data-testid="add-cover-photo" onClick={() => onAddProfileClick()}>
-                  <FaCamera className="camera" /> <span>Add Cover Photo</span>
-                </label>
-                {isActive && <BackgroundSelectDropdown />}
+                {hideSettings && (
+                  <>
+                    <div className="profile-pic-select" data-testid="profile-pic-select">
+                      <Input
+                        ref={profileImageRef}
+                        name="profile"
+                        type="file"
+                        className="inputFile"
+                        onClick={() => {
+                          if (profileImageRef.current) {
+                            profileImageRef.current.value = null;
+                          }
+                        }}
+                        handleChange={(event) => {
+                          setSelectedProfileImage(URL.createObjectURL(event.target.files[0]));
+                          selectedFileImage(event.target.files[0], 'profile');
+                        }}
+                      />
+                    </div>
+                    <label onClick={() => profileFileInputClicked()}>
+                      <FaCamera className="camera" />
+                    </label>
+                  </>
+                )}
               </div>
-            )}
+              <div className="profile-name">{user?.username}</div>
+              {hideSettings && (
+                <div className="profile-select-image">
+                  <Input
+                    ref={backgroundFileRef}
+                    name="background"
+                    type="file"
+                    className="inputFile"
+                    onClick={() => {
+                      if (backgroundFileRef.current) {
+                        backgroundFileRef.current.value = null;
+                      }
+                    }}
+                    handleChange={(event) => {
+                      setSelectedBackground(URL.createObjectURL(event.target.files[0]));
+                      selectedFileImage(event.target.files[0], 'background');
+                    }}
+                  />
+                  <label data-testid="add-cover-photo" onClick={() => onAddProfileClick()}>
+                    <FaCamera className="camera" /> <span>Add Cover Photo</span>
+                  </label>
+                  {isActive && <BackgroundSelectDropdown />}
+                </div>
+              )}
+            </div>
           </div>
           <div className="profile-banner-items">
             <ul className="banner-nav">

@@ -22,9 +22,12 @@
       cursor: pointer;
       margin: auto;
       img {
-        width: 40px;
-        height: 30px;
-
+        width: auto;
+        height: auto;
+        @media screen and (max-width: 768px) {
+          width: 60px;
+          height: 20px;
+        }
       }
     }
   }
