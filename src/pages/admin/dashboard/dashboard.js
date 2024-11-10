@@ -7,6 +7,7 @@ import Billing from './Billing';
 import Profile from './Profile';
 import Header from './header'; // Import Header component
 import Charts from './Chart'; // Import Chart component
+
 const AdminLayout = () => {
   const [activeComponent, setActiveComponent] = useState('Dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Manage sidebar toggle
