@@ -3,15 +3,14 @@
 
   &-container {
     display: grid;
-    grid-template-areas: "side main";
+    grid-template-areas: 'side main';
     grid-template-columns: 20vw 1fr;
     grid-template-rows: 1fr;
     column-gap: 16px;
 
     &-side {
       grid-area: side;
-      height: 100vh;
-
+      height: auto;
       &-count {
         background-color: var(--white-1);
         margin-bottom: 20px;
@@ -101,7 +100,7 @@
 
           &-body {
             display: grid;
-            grid-template-areas: "icon content";
+            grid-template-areas: 'icon content';
             grid-template-columns: max-content 1fr;
             grid-template-rows: 1fr;
             margin-bottom: 15px;
@@ -112,7 +111,7 @@
                 padding-left: 0;
               }
 
-              div[contenteditable="true"] {
+              div[contenteditable='true'] {
                 border: 1px solid var(--white-13);
                 padding: 0 4px;
 
@@ -169,7 +168,7 @@
                 font-weight: bold;
               }
 
-              div[contenteditable="true"] {
+              div[contenteditable='true'] {
                 border: 1px solid var(--white-13);
                 padding: 0 4px;
                 overflow-x: scroll;
@@ -204,7 +203,6 @@
       grid-area: main;
       overflow: hidden;
       margin-bottom: 80px;
-      margin-left: 20px;
     }
   }
 }
@@ -213,8 +211,8 @@
   .timeline-wrapper-container {
     display: grid;
     grid-template-areas:
-      "side"
-      "main";
+      'side'
+      'main';
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
     row-gap: 20px;

@@ -4,23 +4,25 @@ import useEffectOnce from '@hooks/useEffectOnce';
 import '@pages/social/chat/Chat.scss';
 import { getConversationList } from '@redux/api/chat';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 // import { Box, Text, Flex } from '@chakra-ui/react';
 
 const Chat = () => {
   const { selectedChatUser, chatList } = useSelector((state) => state.chat);
+  const [params] = useSearchParams();
   const dispatch = useDispatch();
-
+  console.log('params', params.get('username'));
+  console.log('params', params.get('id'));
   useEffectOnce(() => {
     dispatch(getConversationList());
   });
-
   return (
     <div className="private-chat-wrapper">
       <div className="private-chat-wrapper-content">
-        <div className="private-chat-wrapper-content-side">
+        <div className={`private-chat-wrapper-content-side${params.get('username') ? '-sm' : ''}`}>
           <ChatList />
         </div>
-        <div className="private-chat-wrapper-content-conversation">
+        <div className={`private-chat-wrapper-content-conversation${params.get('username') ? '-sm' : ''}`}>
           {(selectedChatUser || chatList.length > 0) && <ChatWindow />}
           {!selectedChatUser && !chatList.length && (
             <div className="no-chat" data-testid="no-chat">
