@@ -5,10 +5,9 @@
   height: 100vh;
 
   &-content {
-    display: flex; /* Sử dụng flexbox */
-    justify-content: center; /* Căn giữa theo chiều ngang */
-    align-items: center; /* Căn giữa theo chiều dọc */
-    column-gap: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-top: 20px;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -22,11 +21,25 @@
       scroll-behavior: smooth;
     }
   }
+  .empty-page {
+    position: absolute;
+    top: 150px;
+    left: 100;
+    width: 100vh;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #555;
+    background-color: #f9f9f9;
+    z-index: 1;
+  }
 }
 
 @media (max-width: 768px) {
   .saves-content {
-    display: flex; /* Đảm bảo flexbox được sử dụng trong chế độ responsive */
+    display: flex;
     grid-template-areas: 'post';
     grid-template-columns: 1fr;
     margin: 0 20px;

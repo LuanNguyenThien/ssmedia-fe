@@ -34,6 +34,7 @@ const Group = () => {
 
               <button className="join-group-button">Join Group</button>
             </div>
+            <h4>11K follow</h4>
           </div>
         </div>
 

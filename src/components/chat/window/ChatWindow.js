@@ -3,13 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import '@components/chat/window/ChatWindow.scss';
 import MessageInput from '@components/chat/window/message-input/MessageInput';
 import { useCallback, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Utils } from '@services/utils/utils.service';
 import { userService } from '@services/api/user/user.service';
 import { ChatUtils } from '@services/utils/chat-utils.service';
 import { chatService } from '@services/api/chat/chat.service';
 import { some } from 'lodash';
 import MessageDisplay from '@components/chat/window/message-display/MessageDisplay';
+//icons
+import { IoIosArrowBack } from 'react-icons/io';
 
 const ChatWindow = () => {
   const { profile } = useSelector((state) => state.user);
@@ -21,6 +23,7 @@ const ChatWindow = () => {
   const [searchParams] = useSearchParams();
   const [rendered, setRendered] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const getChatMessages = useCallback(
     async (receiverId) => {
@@ -105,7 +108,7 @@ const ChatWindow = () => {
 
   useEffect(() => {
     const username = searchParams.get('username');
-  
+
     if (rendered) {
       console.log(chatMessages);
       ChatUtils.socketIOMessageReceived(chatMessages, username, setConversationId, setChatMessages);
@@ -119,7 +122,7 @@ const ChatWindow = () => {
     fetchInitialOnlineUsers();
     ChatUtils.usersOnline(setOnlineUsers);
     ChatUtils.usersOnChatPage();
-  
+
     // Cleanup function to remove event listeners
     return () => {
       ChatUtils.removeSocketListeners();
@@ -130,52 +133,72 @@ const ChatWindow = () => {
   useEffect(() => {
     ChatUtils.socketIOMessageReaction(chatMessages, searchParams.get('username'), setConversationId, setChatMessages);
   }, [chatMessages, searchParams]);
-
+  console.log('chatMessages', searchParams.get('id'), searchParams.get('username'));
   return (
-    <div className="chat-window-container" data-testid="chatWindowContainer">
+    <div className="chat-window-container" data-testid="chat  WindowContainer">
       {isLoading ? (
         <div className="message-loading" data-testid="message-loading"></div>
       ) : (
-        <div data-testid="chatWindow" className='chatWindow'>
-          <div className="chat-title" data-testid="chat-title">
-            {receiver && (
-              <div className="chat-title-avatar">
-                <Avatar
-                  name={receiver?.username}
-                  bgColor={receiver.avatarColor}
-                  textColor="#ffffff"
-                  size={40}
-                  avatarSrc={receiver?.profilePicture}
-                />
+        <>
+          {searchParams.get('id') && searchParams.get('username') ? (
+            <div data-testid="chatWindow" className="chatWindow">
+              <div className="chat-title" data-testid="chat-title">
+                {
+                  <div
+                    className="chat-title-back"
+                    onClick={() => {  
+                      searchParams.delete('username');
+                      searchParams.delete('id');
+                      navigate(searchParams.toString());
+                    }}
+                  >
+                    <IoIosArrowBack />
+                  </div>
+                }
+                {receiver && (
+                  <div className="chat-title-avatar">
+                    <Avatar
+                      name={receiver?.username}
+                      bgColor={receiver.avatarColor}
+                      textColor="#ffffff"
+                      size={40}
+                      avatarSrc={receiver?.profilePicture}
+                    />
+                  </div>
+                )}
+                <div className="chat-title-items">
+                  <div
+                    className={`chat-name ${
+                      Utils.checkIfUserIsOnline(receiver?.username, onlineUsers) ? '' : 'user-not-online'
+                    }`}
+                  >
+                    {receiver?.username}
+                  </div>
+                  {Utils.checkIfUserIsOnline(receiver?.username, onlineUsers) && (
+                    <span className="chat-active">Online</span>
+                  )}
+                </div>
               </div>
-            )}
-            <div className="chat-title-items">
-              <div
-                className={`chat-name ${
-                  Utils.checkIfUserIsOnline(receiver?.username, onlineUsers) ? '' : 'user-not-online'
-                }`}
-              >
-                {receiver?.username}
+              <div className="chat-window">
+                <div className="chat-window-message">
+                  <MessageDisplay
+                    chatMessages={chatMessages}
+                    profile={profile}
+                    updateMessageReaction={updateMessageReaction}
+                    deleteChatMessage={deleteChatMessage}
+                  />
+                </div>
+                <div className="chat-window-input">
+                  <MessageInput setChatMessage={sendChatMessage} />
+                </div>
               </div>
-              {Utils.checkIfUserIsOnline(receiver?.username, onlineUsers) && (
-                <span className="chat-active">Online</span>
-              )}
             </div>
-          </div>
-          <div className="chat-window">
-            <div className="chat-window-message">
-              <MessageDisplay
-                chatMessages={chatMessages}
-                profile={profile}
-                updateMessageReaction={updateMessageReaction}
-                deleteChatMessage={deleteChatMessage}
-              />
+          ) : (
+            <div className="no-chat" data-testid="no-chat">
+              Select or Search for users to chat with
             </div>
-            <div className="chat-window-input">
-              <MessageInput setChatMessage={sendChatMessage} />
-            </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </div>
   );

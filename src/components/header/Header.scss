@@ -9,7 +9,7 @@
 .header-nav-wrapper {
   width: 100vw;
   top: 0;
-  background-color: #facd9b;
+  background-color: black; //#facd9b;
   position: sticky;
   z-index: 20;
   height: 70px;
@@ -155,8 +155,9 @@
         }
 
         .profile-name {
-          color: black;
+          color: white;
           // color: var(--white);
+          // background-color: var(--primary);
           font-size: 15px;
           margin-left: 5px;
           text-transform: capitalize;

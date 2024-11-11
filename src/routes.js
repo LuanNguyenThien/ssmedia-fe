@@ -25,6 +25,7 @@ const Profile = lazy(() => import('@pages/social/profile/Profile'));
 const Streams = lazy(() => import('@pages/social/streams/Streams'));
 const PostDetail = lazy(() => import('@pages/social/streams/PostDetail'));
 const SavePage = lazy(() => import('@pages/social/saves/SavePage'));
+const DashBoard = lazy(() => import('@pages/admin/dashboard/dashboard'));
 export const AppRouter = () => {
   const elements = useRoutes([
     {
@@ -161,6 +162,14 @@ export const AppRouter = () => {
           )
         }
       ]
+    },
+    {
+      path: '/admin',
+      element: (
+        <ChakraProvider>
+          <DashBoard />
+        </ChakraProvider>
+      )
     },
     {
       path: '*',

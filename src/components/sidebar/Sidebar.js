@@ -3,7 +3,7 @@ import { sideBarItems, fontAwesomeIcons } from '@services/utils/static.data';
 import { useLocation, createSearchParams, useNavigate } from 'react-router-dom';
 import '@components/sidebar/Sidebar.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPosts } from '@redux/api/posts';
+import { getPosts, getFavPosts } from '@redux/api/posts';
 import { Utils } from '@services/utils/utils.service';
 import { ChatUtils } from '@services/utils/chat-utils.service';
 import { chatService } from '@services/api/chat/chat.service';
@@ -32,14 +32,14 @@ const Sidebar = () => {
     if (name === 'Profile') {
       url = `${url}/${profile?.username}?${createSearchParams({ id: profile?._id, uId: profile?.uId })}`;
     }
-
+    if (name === 'Save') {
+      // url = '/app/social/save';
+      // dispatch(getFavPosts());
+    }
     if (name === 'Streams') {
       dispatch(getPosts());
     }
-    if (name === 'Save') {
-      url = '/app/social/save';
-      dispatch(getPosts());
-    }
+
     if (name === 'Chat') {
       setChatPageName('Chat');
     } else {

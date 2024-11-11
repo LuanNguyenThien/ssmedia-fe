@@ -129,14 +129,27 @@ const People = () => {
                   objectFit="cover"
                   alt="#"
                 />
-                <Flex justify={'center'} mt={-12}>
-                  <Avatar
-                    size={'xl'}
-                    src={data?.profilePicture}
-                    css={{
-                      border: '2px solid white'
-                    }}
-                  />
+                <Flex justify={'center'} mt={-12} position="relative">
+                  <Box position="relative">
+                    <Avatar
+                      size={'xl'}
+                      src={data?.profilePicture}
+                      css={{
+                        border: '2px solid white'
+                      }}
+                    />
+                    {Utils.checkIfUserIsOnline(data?.username, onlineUsers) && (
+                      <Box
+                        position="absolute"
+                        bottom="-6px" // Adjust this to move the icon below the Avatar
+                        left="50%"
+                        transform="translateX(-50%)"
+                        zIndex="10" // Ensure the icon is above other elements
+                      >
+                        <FaCircle color="green" size={12} />
+                      </Box>
+                    )}
+                  </Box>
                 </Flex>
 
                 <Box p={6}>

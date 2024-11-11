@@ -8,7 +8,7 @@ import PostForm from '@components/posts/post-form/PostForm';
 import Posts from '@components/posts/Posts';
 import { Utils } from '@services/utils/utils.service';
 import { postService } from '@services/api/post/post.service';
-import { getPosts } from '@redux/api/posts';
+import { getPosts, getFavPosts } from '@redux/api/posts';
 import { orderBy, uniqBy } from 'lodash';
 import useInfiniteScroll from '@hooks/useInfiniteScroll';
 import { PostUtils } from '@services/utils/post-utils.service';
@@ -18,7 +18,7 @@ import { followerService } from '@services/api/followers/follower.service';
 
 const SavePage = () => {
   const { allPosts } = useSelector((state) => state);
-  const [posts, setPosts] = useState([]);
+  const [postSaves, setPosts] = useState([]);
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,22 +37,26 @@ const SavePage = () => {
     if (currentPage <= Math.round(totalPostsCount / PAGE_SIZE)) {
       pageNum += 1;
       setCurrentPage(pageNum);
-      getAllPosts();
+      getAllFavPosts();
     }
   }
 
-  const getAllPosts = async () => {
+  const getAllFavPosts = async () => {
     try {
-      const response = await postService.getAllPosts(currentPage);
-      if (response.data.posts.length > 0) {
-        appPosts = [...posts, ...response.data.posts];
+      const response = await postService.getAllFavPosts(currentPage);
+      console.log(response);
+      if (response.data.favposts.length >= 0) {
+        console.log('1');
+        appPosts = [...postSaves, ...response.data.favposts];
         const allPosts = uniqBy(appPosts, '_id');
         const orderedPosts = orderBy(allPosts, ['createdAt'], ['desc']);
         setPosts(orderedPosts);
       }
+      // console.log(postSaves.length);
       setLoading(false);
     } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
+      Utils.dispatchNotification(error, 'error', dispatch);
+      // console.log(error);
     }
   };
 
@@ -78,28 +82,34 @@ const SavePage = () => {
     getUserFollowing();
     getReactionsByUsername();
     deleteSelectedPostId();
-    dispatch(getPosts());
-    dispatch(getUserSuggestions());
+    getAllFavPosts();
+    // dispatch(getFavPosts());
+    // dispatch(getUserSuggestions());
   });
 
-  useEffect(() => {
-    setLoading(allPosts?.isLoading);
-    const orderedPosts = orderBy(allPosts?.posts, ['createdAt'], ['desc']);
-    setPosts(orderedPosts);
-    setTotalPostsCount(allPosts?.totalPostsCount);
-  }, [allPosts]);
+  // useEffect(() => {
+  //   setLoading(allPosts?.isLoading);
+  //   const orderedPosts = orderBy(allPosts?.posts, ['createdAt'], ['desc']);
+  //   setPosts(orderedPosts);
+  //   setTotalPostsCount(allPosts?.totalPostsCount);
+  // }, [allPosts]);
 
   useEffect(() => {
-    PostUtils.socketIOPost(posts, setPosts);
-  }, [posts]);
+    PostUtils.socketIOPost(postSaves, setPosts);
+  }, [postSaves]);
 
   return (
     <div className="saves" data-testid="saves">
       <div className="saves-content">
         <div className="saves-post" ref={bodyRef}>
-          <Posts allPosts={posts} postsLoading={loading} userFollowing={following} />
+          <Posts allPosts={postSaves} postsLoading={loading} userFollowing={following} />
           <div ref={bottomLineRef} style={{ marginBottom: '50px', height: '50px' }}></div>
         </div>
+        {!loading && postSaves.length === 0 && (
+          <div className="empty-page" data-testid="empty-page">
+            No post available
+          </div>
+        )}
       </div>
     </div>
   );
