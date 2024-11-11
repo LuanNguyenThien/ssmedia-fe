@@ -110,9 +110,13 @@ const ChatWindow = () => {
       console.log(chatMessages);
       ChatUtils.socketIOMessageReceived(chatMessages, username, setConversationId, setChatMessages);
     }
-  
+    
     if (!rendered) setRendered(true);
-  
+
+    const fetchInitialOnlineUsers = () => {
+      ChatUtils.fetchOnlineUsers(setOnlineUsers);
+    };
+    fetchInitialOnlineUsers();
     ChatUtils.usersOnline(setOnlineUsers);
     ChatUtils.usersOnChatPage();
   

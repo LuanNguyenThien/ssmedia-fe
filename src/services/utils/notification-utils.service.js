@@ -116,7 +116,7 @@ export class NotificationUtils {
     await notificationService.markNotificationAsRead(messageId);
   }
 
-  static socketIOMessageNotification(
+  static async socketIOMessageNotification(
     profile,
     messageNotifications,
     setMessageNotifications,
@@ -124,7 +124,8 @@ export class NotificationUtils {
     dispatch,
     location
   ) {
-    socketService?.socket?.on('chat list', (data) => {
+    await socketService?.socket?.off('chat list')
+    await socketService?.socket?.on('chat list', (data) => {
       messageNotifications = cloneDeep(messageNotifications);
       if (data?.receiverUsername === profile?.username) {
         const notificationData = {

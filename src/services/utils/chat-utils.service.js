@@ -6,7 +6,16 @@ import { createSearchParams } from 'react-router-dom';
 export class ChatUtils {
   static privateChatMessages = [];
   static chatUsers = [];
+  static onlineUsers = [];
 
+  static fetchOnlineUsers(setOnlineUsers) {
+    setOnlineUsers(ChatUtils.onlineUsers);
+  }
+  static usersOnlines(){
+    socketService?.socket?.on('user online', (data) => {
+      ChatUtils.onlineUsers = [...data];
+    });
+  }
   static usersOnline(setOnlineUsers) {
     socketService?.socket?.on('user online', (data) => {
       setOnlineUsers(data);

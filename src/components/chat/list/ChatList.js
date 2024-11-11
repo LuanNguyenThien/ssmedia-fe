@@ -154,7 +154,7 @@ const ChatList = () => {
       ChatUtils.socketIOChatList(profile, chatMessageList, setChatMessageList);
     }
     if (!rendered) setRendered(true);
-  }, [chatMessageList, profile, rendered]);
+  }, [chatMessageList, profile, rendered, location]);
 
   return (
     <div data-testid="chatList">
