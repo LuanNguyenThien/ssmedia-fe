@@ -100,6 +100,10 @@ const People = () => {
 
   useEffect(() => {
     FollowersUtils.socketIOFollowAndUnfollow(users, following, setFollowing, setUsers);
+    const fetchInitialOnlineUsers = () => {
+      ChatUtils.fetchOnlineUsers(setOnlineUsers);
+    };
+    fetchInitialOnlineUsers();
     ChatUtils.usersOnline(setOnlineUsers);
   }, [following, users]);
 
