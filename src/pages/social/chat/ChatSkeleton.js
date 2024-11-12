@@ -1,5 +1,6 @@
 import ChatListSkeleton from '@components/chat/list/ChatListSkeleton';
 import Spinner from '@components/spinner/Spinner';
+import '@pages/social/chat/Chat.scss';
 
 const ChatSkeleton = () => {
   return (

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Flex, Text, IconButton, InputGroup, Input, Avatar } from '@chakra-ui/react';
-import { FaBars, FaBell } from 'react-icons/fa';
+import { Box, Flex, IconButton, InputGroup, Input, Avatar } from '@chakra-ui/react';
+import { FaBars, FaBell, FaCog } from 'react-icons/fa';
 
 const Header = ({ onSidebarToggle }) => {
   return (
@@ -15,10 +15,8 @@ const Header = ({ onSidebarToggle }) => {
           color="white"
         />
 
-        {/* Title */}
-
         {/* Right Section: Search, Avatar, Notifications */}
-        <Flex align="center" gap={4}>
+        <Flex align="center" gap={3}>
           {/* Search Box */}
           <InputGroup>
             <Input placeholder="Search..." bg="white" color="gray.700" w="200px" />
@@ -34,8 +32,19 @@ const Header = ({ onSidebarToggle }) => {
             variant="ghost"
             color="white"
             size="lg"
-            borderRadius="50%"
-            _hover={{ bg: 'teal.600' }} // Bo tròn khi hover
+            // borderRadius="50%"
+            _hover={{ bg: 'teal.600' }} // Rounded when hovered
+          />
+
+          {/* Settings */}
+          <IconButton
+            icon={<FaCog />}
+            aria-label="Settings"
+            variant="ghost"
+            color="white"
+            size="lg"
+            // borderRadius="50%"
+            _hover={{ bg: 'teal.600' }} // Rounded when hovered
           />
         </Flex>
       </Flex>
