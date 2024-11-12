@@ -1,5 +1,5 @@
 import Skeleton from 'react-loading-skeleton';
-
+import '@pages/social/photos/Photos.scss';
 const PhotoSkeleton = () => {
   return (
     <>

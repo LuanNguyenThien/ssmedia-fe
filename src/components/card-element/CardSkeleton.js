@@ -1,4 +1,5 @@
 import Skeleton from 'react-loading-skeleton';
+import '@pages/social/followers/Followers.scss';
 
 const CardSkeleton = () => {
   return (

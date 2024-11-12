@@ -157,7 +157,7 @@ export const AppRouter = () => {
           path: 'profile/:username',
           element: (
             <Suspense fallback={<ProfileSkeleton />}>
-              <Profile />
+              <ProfileSkeleton />
             </Suspense>
           )
         }
