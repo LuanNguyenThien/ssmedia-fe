@@ -8,10 +8,12 @@ import { useSelector } from 'react-redux';
 
 const App = () => {
   const { notifications } = useSelector((state) => state);
+  const { profile } = useSelector((state) => state.user);
 
   useEffect(() => {
-    socketService.setupSocketConnection();
-  }, []);
+    if(profile)
+      socketService.setupSocketConnection();
+  }, [profile]);
 
   return (
     <>

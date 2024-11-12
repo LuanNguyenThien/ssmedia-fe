@@ -19,12 +19,19 @@ class SocketService {
 
     this.socket.on('disconnect', (reason) => {
       console.log(`Reason: ${reason}`);
-      this.socket.connect();
+      // this.socket.connect();
     });
 
     this.socket.on('connect_error', (error) => {
       console.log(`Error: ${error}`);
       this.socket.connect();
+    });
+  }
+
+  removeAllListeners() {
+    const events = this.socket._callbacks ? Object.keys(this.socket._callbacks) : [];
+    events.forEach(event => {
+      this.socket.off(event.replace('$', ''));
     });
   }
 }

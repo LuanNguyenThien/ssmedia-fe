@@ -119,6 +119,8 @@ const Header = () => {
       setLoggedIn(false);
       Utils.clearStore({ dispatch, deleteStorageUsername, deleteSessionPageReload, setLoggedIn });
       await userService.logoutUser();
+      socketService?.socket.disconnect();
+      socketService?.removeAllListeners();
       navigate('/');
     } catch (error) {
       Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
@@ -126,6 +128,7 @@ const Header = () => {
   };
 
   useEffectOnce(() => {
+    ChatUtils.usersOnlines();
     Utils.mapSettingsDropdownItems(setSettings);
     getUserNotifications();
   });
@@ -141,6 +144,7 @@ const Header = () => {
   }, [chatList, profile]);
 
   useEffect(() => {
+    NotificationUtils.socketIOAnalyzeNotifications(profile, dispatch);
     NotificationUtils.socketIONotification(profile, notifications, setNotifications, 'header', setNotificationCount);
     NotificationUtils.socketIOMessageNotification(
       profile,
