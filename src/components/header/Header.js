@@ -229,12 +229,12 @@ const Header = () => {
                 }}
               >
                 <span className="header-list-name">
-                  <img src={bell} className="header-list-icon" />
                   {notificationCount > 0 && (
                     <span className="bg-danger-dots dots" data-testid="notification-dots">
                       {notificationCount}
                     </span>
                   )}
+                  <img src={bell} className="header-list-icon" />
                 </span>
                 {isNotificationActive && (
                   <ul className="dropdown-ul" ref={notificationRef}>

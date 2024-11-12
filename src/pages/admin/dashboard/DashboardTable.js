@@ -20,7 +20,7 @@ import {
   Button,
   HStack
 } from '@chakra-ui/react';
-import { EditIcon } from '@chakra-ui/icons';
+import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -163,7 +163,9 @@ const DashboardTable = () => {
               <Th>Function</Th>
               <Th>Status</Th>
               <Th>Employed</Th>
-              <Th>Edit</Th>
+              <Th colSpan={2} textAlign="center">
+                Actions
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -190,8 +192,11 @@ const DashboardTable = () => {
                   <Badge colorScheme={user.status === 'Online' ? 'green' : 'red'}>{user.status}</Badge>
                 </Td>
                 <Td>{user.employed}</Td>
-                <Td>
-                  <IconButton aria-label="Edit" icon={<EditIcon />} size="sm" variant="outline" />
+                <Td colSpan={2}>
+                  <HStack spacing={2} justify="center">
+                    <IconButton aria-label="Edit" icon={<EditIcon />} size="sm" variant="outline" />
+                    <IconButton aria-label="Delete" icon={<DeleteIcon />} size="sm" variant="outline" />
+                  </HStack>
                 </Td>
               </Tr>
             ))}
