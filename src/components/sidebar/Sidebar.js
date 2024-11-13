@@ -21,7 +21,9 @@ const Sidebar = () => {
   const sidebarRef = useRef(null); // Tham chiếu đến sidebar
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen); // Đảo ngược trạng thái mở/đóng của sidebar
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(!isSidebarOpen); // Đảo ngược trạng thái khi màn hình nhỏ hơn 768px
+    }
   };
 
   const checkUrl = (name) => {
@@ -108,7 +110,6 @@ const Sidebar = () => {
   }, [chatList, chatPageName, createChatUrlParams, markMessagesAsRad, navigate]);
 
   useEffect(() => {
-    // Đóng sidebar khi màn hình lớn hơn 768px
     const handleResize = () => setIsSidebarOpen(window.innerWidth >= 1000);
     window.addEventListener('resize', handleResize);
     handleResize();
@@ -118,8 +119,8 @@ const Sidebar = () => {
 
   // Hàm xử lý sự kiện click bên ngoài sidebar
   const handleClickOutside = (event) => {
-    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-      setIsSidebarOpen(false); // Ẩn sidebar nếu click bên ngoài
+    if (sidebarRef.current && !sidebarRef.current.contains(event.target) && !event.target.closest('.toggle-button')) {
+      setIsSidebarOpen(false);
     }
   };
 
@@ -133,7 +134,6 @@ const Sidebar = () => {
 
   return (
     <div>
-      {/* Button toggle xuất hiện khi màn hình nhỏ hơn 768px */}
       <button className="toggle-button" onClick={toggleSidebar}>
         ☰
       </button>
