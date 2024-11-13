@@ -109,7 +109,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     // Đóng sidebar khi màn hình lớn hơn 768px
-    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 768);
+    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 1000);
     window.addEventListener('resize', handleResize);
     handleResize();
 

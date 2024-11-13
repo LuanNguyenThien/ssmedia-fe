@@ -18,12 +18,11 @@ import {
   StatNumber,
   SimpleGrid,
   Button,
-  HStack
+  HStack,
+  Icon,
+  useBreakpointValue
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+import { EditIcon, DeleteIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 
 const DashboardTable = () => {
   // Dữ liệu giả lập cho bảng
@@ -36,6 +35,15 @@ const DashboardTable = () => {
       status: 'Online',
       employed: '14/06/21',
       avatarUrl: 'https://example.com/avatar1.jpg'
+    },
+    {
+      name: 'Alexa Liras',
+      email: 'laurent@simmmple.com',
+      function: 'Developer',
+      role: 'Programmer',
+      status: 'Offline',
+      employed: '12/05/21',
+      avatarUrl: 'https://example.com/avatar2.jpg'
     },
     {
       name: 'Alexa Liras',
@@ -85,23 +93,11 @@ const DashboardTable = () => {
     // Thêm các người dùng khác tương tự
   ];
 
-  // Dữ liệu biểu đồ
-  const chartData = {
-    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
-    datasets: [
-      {
-        label: 'Số lượng người dùng mới',
-        data: [50, 30, 60, 40, 80, 75],
-        backgroundColor: 'rgba(75, 192, 192, 0.6)'
-      }
-    ]
-  };
-
   // State cho phân trang
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
-  // Tính toán các chỉ số của trang
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
@@ -138,30 +134,14 @@ const DashboardTable = () => {
         </Stat>
       </SimpleGrid>
 
-      {/* Biểu đồ */}
-      {/* <Box mb={8} p={4} bg="white" shadow="md" borderRadius="md" width="100%" maxWidth="600px" height="300px">
-        <Heading size="md" mb={4}>
-          User Growth Over Months
-        </Heading>
-        <Bar
-          data={chartData}
-          options={{
-            responsive: true,
-            plugins: { legend: { position: 'top' } }
-          }}
-          width={500} // Thêm width và height cho biểu đồ
-          height={250} // Thêm width và height cho biểu đồ
-        />
-      </Box> */}
-
       {/* Bảng người dùng */}
       <Box mb={8} p={4} bg="white" shadow="md" borderRadius="md" minHeight="436px">
-        <Table variant="simple" bg="white" shadow="md" borderRadius="md">
+        <Table variant="simple" size={isMobile ? 'sm' : 'md'}>
           <Thead position="sticky" top="0" zIndex="1" bg="white">
             <Tr>
               <Th>Author</Th>
               <Th>Function</Th>
-              <Th>Status</Th>
+              {!isMobile && <Th>Status</Th>}
               <Th>Employed</Th>
               <Th colSpan={2} textAlign="center">
                 Actions
@@ -176,9 +156,11 @@ const DashboardTable = () => {
                     <Avatar size="sm" src={user.avatarUrl} mr={3} />
                     <Box>
                       <Text fontWeight="bold">{user.name}</Text>
-                      <Text fontSize="sm" color="gray.500">
-                        {user.email}
-                      </Text>
+                      {!isMobile && (
+                        <Text fontSize="sm" color="gray.500">
+                          {user.email}
+                        </Text>
+                      )}
                     </Box>
                   </Flex>
                 </Td>
@@ -188,9 +170,11 @@ const DashboardTable = () => {
                     {user.role}
                   </Text>
                 </Td>
-                <Td>
-                  <Badge colorScheme={user.status === 'Online' ? 'green' : 'red'}>{user.status}</Badge>
-                </Td>
+                {!isMobile && (
+                  <Td>
+                    <Badge colorScheme={user.status === 'Online' ? 'green' : 'red'}>{user.status}</Badge>
+                  </Td>
+                )}
                 <Td>{user.employed}</Td>
                 <Td colSpan={2}>
                   <HStack spacing={2} justify="center">
@@ -206,14 +190,29 @@ const DashboardTable = () => {
 
       {/* Pagination */}
       <Box display="flex" justifyContent="center" mb={8}>
-        <HStack spacing={4}>
-          <Button onClick={() => handlePageChange(currentPage - 1)} isDisabled={currentPage === 1}>
-            Previous
-          </Button>
-          <Text>{`Page ${currentPage} of ${totalPages}`}</Text>
-          <Button onClick={() => handlePageChange(currentPage + 1)} isDisabled={currentPage === totalPages}>
-            Next
-          </Button>
+        <HStack spacing={2}>
+          <IconButton
+            icon={<ChevronLeftIcon />}
+            onClick={() => handlePageChange(currentPage - 1)}
+            isDisabled={currentPage === 1}
+            aria-label="Previous"
+          />
+          {Array.from({ length: totalPages }, (_, index) => (
+            <Button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              colorScheme={currentPage === index + 1 ? 'teal' : 'gray'}
+              variant={currentPage === index + 1 ? 'solid' : 'outline'}
+            >
+              {index + 1}
+            </Button>
+          ))}
+          <IconButton
+            icon={<ChevronRightIcon />}
+            onClick={() => handlePageChange(currentPage + 1)}
+            isDisabled={currentPage === totalPages}
+            aria-label="Next"
+          />
         </HStack>
       </Box>
     </Box>
