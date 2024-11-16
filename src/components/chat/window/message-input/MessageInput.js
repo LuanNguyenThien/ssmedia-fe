@@ -5,6 +5,8 @@ import { FaPaperPlane } from 'react-icons/fa';
 import gif from '@assets/images/gif.png';
 import photo from '@assets/images/photo.png';
 import feeling from '@assets/images/feeling.png';
+
+import {icons} from '@assets/assets';
 import loadable from '@loadable/component';
 import '@components/chat/window/message-input/MessageInput.scss';
 import { useEffect, useRef, useState } from 'react';
@@ -127,7 +129,7 @@ const MessageInput = ({ setChatMessage }) => {
                 }}
                 handleChange={(event) => addToPreview(event.target.files[0])}
               />
-              <img src={photo} alt="" />
+              <img src={icons.picture} alt="" />
             </div>
             <div
               className="chat-list-item"
@@ -137,7 +139,7 @@ const MessageInput = ({ setChatMessage }) => {
                 setShowImagePreview(false);
               }}
             >
-              <img src={gif} alt="" />
+              <img src={icons.gif} alt="" />
             </div>
             <div
               className="chat-list-item"
@@ -147,7 +149,7 @@ const MessageInput = ({ setChatMessage }) => {
                 setShowImagePreview(false);
               }}
             >
-              <img src={feeling} alt="" />
+              <img src={icons.feeling} alt="" />
             </div>
           </div>
           <Input

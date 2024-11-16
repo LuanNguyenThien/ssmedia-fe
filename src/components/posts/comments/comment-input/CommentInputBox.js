@@ -1,8 +1,8 @@
 import Input from '@components/input/Input';
 import Button from '@components/button/Button';
 import { FaPaperPlane } from 'react-icons/fa';
-import photo from '@assets/images/photo.png';
-import feeling from '@assets/images/feeling.png';
+import {icons} from '@assets/assets';
+
 import PropTypes from 'prop-types';
 import '@components/posts/comments/comment-input/CommentInputBox.scss';
 import { useDispatch, useSelector } from 'react-redux';
@@ -137,7 +137,7 @@ const CommentInputBox = ({ post, parentId = null, onCommentAdded }) => {
                   }}
                   handleChange={(event) => addToPreview(event.target.files[0])}
                 />
-                <img src={photo} alt="" />
+                <img src={icons.picture} alt="" />
               </li>
               <li
                 className="chat-list-item"
@@ -146,7 +146,7 @@ const CommentInputBox = ({ post, parentId = null, onCommentAdded }) => {
                   setShowImagePreview(false);
                 }}
               >
-                <img src={feeling} alt="" />
+                <img src={icons.feeling} alt="" />
               </li>
             </ul>
             <Input
