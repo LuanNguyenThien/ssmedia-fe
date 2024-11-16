@@ -4,6 +4,7 @@ import { FaCaretDown, FaCaretUp, FaRegBell, FaRegEnvelope } from 'react-icons/fa
 import bell from '@assets/images/bell.svg';
 import mess from '@assets/images/mes.svg';
 import '@components/header/Header.scss';
+import Logo from '@components/logo/logo';
 import Avatar from '@components/avatar/Avatar';
 import { Utils } from '@services/utils/utils.service';
 import useDetectOutsideClick from '@hooks/useDetectOutsideClick';
@@ -195,14 +196,16 @@ const Header = () => {
           )}
           <div className="header-navbar">
             <div className="header-image" data-testid="header-image" onClick={() => navigate('/app/social/streams')}>
-              <img src={logo} className="img-fluid" alt="" />
+              <div className="logo">
+                <Logo />
+              </div>
               <div className="app-name">
-                Chatty
-                {environment && (
+                GrowthHub
+                {/* {environment && (
                   <span className="environment" style={{ backgroundColor: `${backgrounColor}` }}>
                     {environment}
                   </span>
-                )}
+                )} */}
               </div>
             </div>
 
