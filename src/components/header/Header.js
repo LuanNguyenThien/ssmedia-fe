@@ -222,13 +222,14 @@ const Header = () => {
               <span className="bar"></span>
             </div>
             <ul className="header-nav">
-              
+              {/* Phần còn lại của mã không thay đổi */}
               <li
                 data-testid="notification-list-item"
                 className="header-nav-item active-item"
                 onClick={() => {
+                  if (isNotificationActive == true) setIsNotificationActive(false);
+                  else setIsNotificationActive(true);
                   setIsMessageActive(false);
-                  setIsNotificationActive(true);
                   setIsSettingsActive(false);
                 }}
               >
@@ -261,7 +262,8 @@ const Header = () => {
                 data-testid="message-list-item"
                 className="header-nav-item active-item"
                 onClick={() => {
-                  setIsMessageActive(true);
+                  if (isMessageActive == true) setIsMessageActive(false);
+                  else setIsMessageActive(true);
                   setIsNotificationActive(false);
                   setIsSettingsActive(false);
                 }}

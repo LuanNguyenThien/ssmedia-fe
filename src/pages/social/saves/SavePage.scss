@@ -44,4 +44,26 @@
     grid-template-columns: 1fr;
     margin: 0 20px;
   }
+  @media (max-width: 390px) {
+    .saves {
+      flex-direction: column;
+      padding: 0 10px; /* Giảm khoảng cách bên ngoài */
+    }
+
+    .saves-content {
+      padding: 0 10px; /* Thu hẹp không gian nội dung */
+    }
+
+    .saves-content .saves-post {
+      height: calc(100vh - 60px); /* Điều chỉnh chiều cao nội dung */
+    }
+
+    .empty-page {
+      top: 80px;
+      left: 0;
+      width: 100%;
+      font-size: 1rem; /* Giảm thêm kích thước font cho iPhone */
+      padding: 10px;
+    }
+  }
 }
