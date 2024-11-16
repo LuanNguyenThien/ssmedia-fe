@@ -222,7 +222,7 @@ const Header = () => {
               <span className="bar"></span>
             </div>
             <ul className="header-nav">
-              {/* Phần còn lại của mã không thay đổi */}
+              
               <li
                 data-testid="notification-list-item"
                 className="header-nav-item active-item"

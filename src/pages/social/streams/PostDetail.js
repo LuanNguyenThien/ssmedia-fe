@@ -5,7 +5,7 @@ import { postService } from '@services/api/post/post.service';
 import { Utils } from '@services/utils/utils.service';
 import PostForm from '@components/posts/post-form/PostForm';
 import Posts from '@components/posts/Posts';
-import '@pages/social/streams/Streams.scss';
+import '@pages/social/saves/SavePage.scss';
 
 const PostDetail = () => {
   const { postId } = useParams();
@@ -37,9 +37,9 @@ const PostDetail = () => {
   }, [postId, dispatch]);
 
   return (
-    <div className="streams" data-testid="post-detail">
-      <div className="streams-content">
-        <div className="streams-post">
+    <div className="saves" data-testid="post-detail">
+      <div className="saves-content">
+        <div className="saves-post">
           <Posts allPosts={post ? [post] : []} postsLoading={loading} userFollowing={profile?.following || []} />
           <div ref={bottomLineRef} style={{ marginBottom: '50px', height: '50px' }}></div>
         </div>
