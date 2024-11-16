@@ -3,7 +3,6 @@
   align-self: center;
   justify-self: center;
   position: absolute;
-  width: 500px;
   overflow: hidden;
   box-sizing: border-box;
   z-index: 1;
@@ -11,6 +10,13 @@
   border-radius: 8px;
   background-color: var(--white-1);
   flex-direction: column;
+
+  //mobile
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
 
   &-loading {
     grid-area: modal;
@@ -45,7 +51,7 @@
 
   &-header {
     display: grid;
-    grid-template-areas: ". h2 button";
+    grid-template-areas: '. h2 button';
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr;
     height: 40px;
@@ -75,7 +81,7 @@
   }
 
   &-button {
-    padding: 0 15px;
+    padding: 15px 15px;
 
     .post-button {
       height: 35px;
@@ -242,8 +248,8 @@ hr {
   overflow-y: scroll;
   display: grid;
   grid-template-areas:
-    "input"
-    "image";
+    'input'
+    'image';
 
   .post-input {
     grid-area: input;
@@ -294,7 +300,6 @@ hr {
 
 .modal-box-bg-colors {
   padding: 5px 15px;
-  height: 45px;
 
   ul {
     list-style: none;
@@ -320,28 +325,35 @@ hr {
 }
 
 .modal-box-selection {
-  padding: 10px 15px;
-
   .post-form-list {
-    padding: 0;
-    margin: 0;
     align-items: center;
     display: flex;
     list-style: none;
+    width: 100%;
+    padding: 15px 15px;
 
     .post-form-list-item {
       display: flex;
-      color: var(--primary-1);
       background: var(--white-7);
       border-radius: 5px;
       padding: 0.5rem;
       margin-right: 1rem;
       cursor: pointer;
+      align-items: center;
 
       img {
         padding-right: 5px;
-        width: 30px;
-        height: 20px;
+        width: 20px;  
+      }
+      span {
+        @media screen and (max-width: 768px) {
+          display: none;
+        }
+      }
+      @media screen and (max-width: 768px) {
+        img {
+          width: 40px;
+        }
       }
     }
 
@@ -358,7 +370,6 @@ hr {
   align-self: center;
   justify-self: center;
   position: absolute;
-  width: 500px;
   overflow: hidden;
   box-sizing: border-box;
   z-index: 1;
@@ -370,7 +381,7 @@ hr {
 
   &-header {
     display: grid;
-    grid-template-areas: "button h2 .";
+    grid-template-areas: 'button h2 .';
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr;
     height: 40px;
