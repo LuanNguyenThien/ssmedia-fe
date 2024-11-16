@@ -8,9 +8,6 @@
     max-width: 100%; // Chiếm toàn bộ cột được giao
     padding: 30px;
 
-    @media (max-width: 800px) {
-      display: none; // Ẩn sidebar trên mobile
-    }
   }
 
   &-content {

@@ -28,6 +28,10 @@
 
   &.open {
     display: block;
+    width: 250px;
+    height: 100vh;
+    background: black;
+    z-index: 1000;
   }
 
   .side-menu {
@@ -124,10 +128,11 @@
 }
 
 // Ẩn sidebar khi màn hình nhỏ hơn 768px và hiển thị nút toggle
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 768px) {
   .app-side-menu {
     display: none;
     position: fixed;
+    top:70px;
     left: 0;
     width: 250px;
     z-index: 1000;
