@@ -10,12 +10,13 @@
   box-shadow: rgb(145 158 171 / 20%) 0 0 2px 0, rgb(145 158 171 / 12%) 0 12px 24px -4px;
 
   .social-card {
-    background: var(--white-1);
+    background: #48bb78; /* Nền xanh */
     border-radius: 5px;
     border: none;
+    transition: background-color 0.3s ease;
 
     .social-bg-primary {
-      background-color: var(--primary-1);
+      background-color: #48bb78;
       padding: 15px;
       height: 57px;
       border-radius: 5px;
@@ -34,7 +35,7 @@
           color: var(--gray-3);
           background-color: var(--white-7);
           padding: 3px 8px;
-          border-radius: 5px;
+          border-radius: 50px;
         }
       }
     }
@@ -44,63 +45,71 @@
       background: var(--white-1);
 
       &-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        gap: 10px;
+        padding: 10px;
         overflow-y: scroll;
 
         .social-sub-card {
-          padding: 5px 15px;
-          margin-top: 3px;
-          border-bottom: 1px solid var(--white-4);
-          display: grid;
-          grid-template-areas: "avatar body icon";
-          grid-template-columns: max-content 1fr max-content;
-          grid-template-rows: 1fr;
+          padding: 10px 15px;
+          margin: 0;
+          border-radius: 5px;
+          display: flex;
+          flex-direction: row;
           width: 100%;
-          overflow-x: hidden;
-          overflow-y: scroll;
           cursor: pointer;
+          box-shadow: none;
+          background-color: #f9f9f9;
+          box-sizing: border-box;
 
           .content-avatar {
-            grid-area: avatar;
-            display: flex;
             width: 45px;
             height: 45px;
             text-align: center;
-            border: 5px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
             .userIcon {
               width: 30px;
               height: 30px;
-              align-self: center;
-              color: var(--primary-1);
+              color: #48bb78;
             }
           }
 
           .content-body {
-            grid-area: body;
-            width: 95%;
+            width: 100%;
+            padding: 0 10px;
             overflow-x: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            white-space: nowrap; /* Không cho nội dung xuống dòng */
+            text-overflow: ellipsis; /* Hiển thị dấu '...' khi nội dung tràn */
 
             .title {
               font-size: 14px;
               line-height: 21px;
-              height: 21px;
-              display: contents;
               color: var(--black-4);
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
 
             .subtext {
               font-size: 12px;
               color: var(--gray-9);
+              overflow: hidden; /* Ẩn phần nội dung tràn */
+              text-overflow: ellipsis; /* Thêm dấu ba chấm */
+              white-space: nowrap; /* Không cho nội dung xuống dòng */
             }
           }
 
           .content-icons {
-            grid-area: icon;
             display: flex;
             flex-direction: column;
-            align-self: center;
+            justify-content: center;
+            align-items: center;
 
             .trash {
               font-size: 14px;
@@ -108,15 +117,14 @@
             }
 
             .circle {
-              margin: auto;
-              margin-top: 6px;
               font-size: 10px;
               color: var(--primary-1);
+              margin-top: 6px;
             }
           }
 
           &:hover {
-            background-color: var(--white-14);
+            background-color: #e0f7e9; /* Màu nền khi hover */
           }
         }
       }
@@ -127,7 +135,7 @@
         cursor: auto;
 
         .signOut {
-          background-color: var(--primary-1);
+          background-color: #48bb78;
           color: var(--white-1);
           border-radius: 5px;
           font-size: 14px;

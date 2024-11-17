@@ -1,10 +1,8 @@
 import Avatar from '@components/avatar/Avatar';
 import Input from '@components/input/Input';
 import { useDispatch, useSelector } from 'react-redux';
-import photo from '@assets/images/photo.png';
-import gif from '@assets/images/gif.png';
-import feeling from '@assets/images/feeling.png';
-import video from '@assets/images/video.png';
+import {icons} from '@assets/assets';
+
 import '@components/posts/post-form/PostForm.scss';
 import {
   openModal,
@@ -96,13 +94,13 @@ const PostForm = () => {
                   }}
                   handleChange={handleFileChange}
                 />
-                <img src={photo} alt="" /> Photo
+                <img src={icons.picture} alt="" />  <span>Photo</span>
               </li>
               <li className="post-form-list-item" onClick={() => openGifModal()}>
-                <img src={gif} alt="" /> Gif
+                <img src={icons.gif} alt="" /> <span>Gif</span>
               </li>
               <li className="post-form-list-item" onClick={() => openFeelingsComponent()}>
-                <img src={feeling} alt="" /> Feeling
+                <img src={icons.feeling} alt="" /> <span>Feeling</span>
               </li>
               <li className="post-form-list-item image-select" onClick={() => openVideoModal()}>
                 <Input
@@ -117,7 +115,7 @@ const PostForm = () => {
                   }}
                   handleChange={handleVideoFileChange}
                 />
-                <img src={video} alt="" /> Video
+                <img src={icons.video} alt="" /> <span>Video</span>
               </li>
             </ul>
           </div>

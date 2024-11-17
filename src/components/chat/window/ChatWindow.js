@@ -10,7 +10,7 @@ import { ChatUtils } from '@services/utils/chat-utils.service';
 import { chatService } from '@services/api/chat/chat.service';
 import { some } from 'lodash';
 import MessageDisplay from '@components/chat/window/message-display/MessageDisplay';
-//icons
+// icons
 import { IoIosArrowBack } from 'react-icons/io';
 
 const ChatWindow = () => {

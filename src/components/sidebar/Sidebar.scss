@@ -23,8 +23,8 @@
 .app-side-menu {
   background-color: white;
   box-shadow: 1px 5px 5px var(--gray-16);
-  height: 100vh;
   transition: all 0.3s ease;
+  border-radius: 10px;
 
   &.open {
     display: block;
@@ -32,6 +32,7 @@
 
   .side-menu {
     padding: 2rem 1.5rem;
+    
 
     .list-unstyled {
       margin: 0;
@@ -127,6 +128,7 @@
   .app-side-menu {
     display: none;
     position: fixed;
+    top:70px;
     left: 0;
     width: 250px;
     z-index: 1000;
