@@ -5,6 +5,7 @@ import {icons} from '@assets/assets';
 
 import PropTypes from 'prop-types';
 import '@components/posts/comments/comment-input/CommentInputBox.scss';
+import '@components/chat/window/message-input/MessageInput.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import React, { useEffect, useRef, useState } from 'react';
 import { Utils } from '@services/utils/utils.service';
