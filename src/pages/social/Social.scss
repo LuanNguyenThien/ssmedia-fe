@@ -1,21 +1,21 @@
 .dashboard {
   display: grid;
-  grid-template-columns: 1fr 3fr; // Sidebar 1 cột, Content 3 cột
-  grid-gap: 10px; // Khoảng cách giữa các phần
+  grid-template-columns: 1fr 5fr; // Sidebar 1 cột, Content 5 cột
+  grid-gap: 20px; // Khoảng cách giữa các phần
   background-color: #d9d9d9;
   &-sidebar {
     grid-column: 1; // Nằm ở cột đầu tiên
     max-width: 100%; // Chiếm toàn bộ cột được giao
-    padding: 30px;
-
+    padding: 0px;
+    height: 100vh;
   }
 
   &-content {
     grid-column: 2; // Nằm ở cột thứ hai
     height: 100vh;
-    padding-right: 30px;
-    padding-top: 30px;
-    padding-bottom: 30px;
+    padding-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 
     @media (max-width: 800px) {
       padding: 10px;
