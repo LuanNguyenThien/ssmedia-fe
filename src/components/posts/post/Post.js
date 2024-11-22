@@ -28,6 +28,8 @@ const Post = ({ post, showIcons }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [backgroundImageColor, setBackgroundImageColor] = useState('');
   const selectedPostId = useLocalStorage('selectedPostId', 'get');
+  const selectedPostCommentId = useLocalStorage('selectedPostCommentId', 'get');
+  const selectedPostReactId = useLocalStorage('selectedPostReactId', 'get');
   const dispatch = useDispatch();
 
   const getFeeling = (name) => {
@@ -80,8 +82,8 @@ const Post = ({ post, showIcons }) => {
 
   return (
     <>
-      {reactionsModalIsOpen && <ReactionsModal />}
-      {commentsModalIsOpen && <CommentsModal />}
+      {reactionsModalIsOpen && selectedPostReactId === post?._id && <ReactionsModal />}
+      {commentsModalIsOpen && selectedPostCommentId === post?._id && <CommentsModal />}
       {showImageModal && (
         <ImageModal image={`${imageUrl}`} onCancel={() => setShowImageModal(!showImageModal)} showArrow={false} />
       )}
