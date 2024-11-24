@@ -25,14 +25,17 @@
   box-shadow: 1px 5px 5px var(--gray-16);
   transition: all 0.3s ease;
   border-radius: 10px;
+  display: flex;
+  height: inherit;
 
   &.open {
     display: block;
   }
 
   .side-menu {
-    padding: 2rem 1.5rem;
-    
+    padding: 1.5rem;
+    height: 95%;
+    overflow-y: auto;
 
     .list-unstyled {
       margin: 0;

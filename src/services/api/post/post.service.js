@@ -107,6 +107,12 @@ class PostService {
     const response = await axios.post('/favpost', body);
     return response;
   }
+
+  async searchPosts(query) {
+    const encodedQuery = encodeURIComponent(query);
+    const response = await axios.get(`/search/${encodedQuery}`);
+    return response;
+  }
 }
 
 export const postService = new PostService();

@@ -133,7 +133,7 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <div>
+    <div style={{height: "100%"}}>
       <button className="toggle-button" onClick={toggleSidebar}>
         ☰
       </button>

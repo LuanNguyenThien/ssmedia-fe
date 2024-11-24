@@ -6,7 +6,7 @@
   &-content {
     display: grid;
     grid-template-areas: 'post suggestions';
-    grid-template-columns: 1fr 330px;
+    grid-template-columns: 1.5fr 280px;
     grid-template-rows: 1fr;
     column-gap: 20px;
     overflow-x: hidden;
@@ -18,6 +18,18 @@
       overflow-x: hidden;
       height: 100vh;
       scroll-behavior: smooth;
+
+      .no-chat {
+        color: var(--black-3);
+        font-weight: 700;
+        font-size: 18px;
+        padding: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        height: 100%;
+        align-items: center;
+      }
     }
 
     .streams-suggestions {
@@ -29,7 +41,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .streams-content {
     grid-template-areas: 'post';
     grid-template-columns: 1fr;

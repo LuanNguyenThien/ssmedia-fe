@@ -158,6 +158,13 @@ const Header = () => {
   }, [profile, notifications, dispatch, location, messageNotifications]);
 
   const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearchKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      navigate('/app/social/search', { state: { query: searchTerm } });
+    }
+  };
+
   return (
     <>
       {!profile ? (
@@ -214,6 +221,7 @@ const Header = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={handleSearchKeyPress}
                 placeholder="Tìm kiếm..."
                 className="search-input"
               />
@@ -230,7 +238,7 @@ const Header = () => {
                 data-testid="notification-list-item"
                 className="header-nav-item active-item"
                 onClick={() => {
-                  if (isNotificationActive == true) setIsNotificationActive(false);
+                  if (isNotificationActive === true) setIsNotificationActive(false);
                   else setIsNotificationActive(true);
                   setIsMessageActive(false);
                   setIsSettingsActive(false);
@@ -265,7 +273,7 @@ const Header = () => {
                 data-testid="message-list-item"
                 className="header-nav-item active-item"
                 onClick={() => {
-                  if (isMessageActive == true) setIsMessageActive(false);
+                  if (isMessageActive === true) setIsMessageActive(false);
                   else setIsMessageActive(true);
                   setIsNotificationActive(false);
                   setIsSettingsActive(false);

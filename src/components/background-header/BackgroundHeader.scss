@@ -182,7 +182,7 @@
       display: grid;
       grid-template-areas: 'image name . add-cover-photo';
       grid-template-columns: 180px 50px 1fr 1fr;
-      grid-template-rows: 1fr;
+      grid-template-rows: 0px;
       right: 0;
       z-index: 2;
       border-bottom-left-radius: 30px;
@@ -249,7 +249,7 @@
         grid-area: add-cover-photo;
         position: relative;
         width: 100%;
-        top: -60px;
+        top: -240px;
         line-height: 1;
         cursor: pointer;
         float: right;

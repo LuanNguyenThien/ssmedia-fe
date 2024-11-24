@@ -25,6 +25,7 @@ const Profile = lazy(() => import('@pages/social/profile/Profile'));
 const Streams = lazy(() => import('@pages/social/streams/Streams'));
 const PostDetail = lazy(() => import('@pages/social/streams/PostDetail'));
 const SavePage = lazy(() => import('@pages/social/saves/SavePage'));
+const SearchPage = lazy(() => import('@pages/social/search/SearchPage'));
 const DashBoard = lazy(() => import('@pages/admin/dashboard/dashboard'));
 export const AppRouter = () => {
   const elements = useRoutes([
@@ -62,6 +63,14 @@ export const AppRouter = () => {
           element: (
             <Suspense fallback={<StreamsSkeleton />}>
               <Streams />
+            </Suspense>
+          )
+        },
+        {
+          path: 'search',
+          element: (
+            <Suspense fallback={<StreamsSkeleton />}>
+              <SearchPage />
             </Suspense>
           )
         },

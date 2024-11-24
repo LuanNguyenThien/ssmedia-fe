@@ -20,7 +20,6 @@ const PostDetail = () => {
     const fetchPost = async () => {
       try {
         const response = await postService.getPost(postId);
-        console.log(response);
         if (response.data && response.data.post) {
           setPost(response.data.post);
         } else {
@@ -39,9 +38,8 @@ const PostDetail = () => {
   return (
     <div className="saves" data-testid="post-detail">
       <div className="saves-content">
-        <div className="saves-post">
+        <div className="saves-post" style={{ height: '80vh' }}>
           <Posts allPosts={post ? [post] : []} postsLoading={loading} userFollowing={profile?.following || []} />
-          <div ref={bottomLineRef} style={{ marginBottom: '50px', height: '50px' }}></div>
         </div>
       </div>
     </div>
