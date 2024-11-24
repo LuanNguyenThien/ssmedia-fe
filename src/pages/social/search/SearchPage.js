@@ -34,9 +34,11 @@ const SearchPage = () => {
   return (
     <div className="search-page" ref={bodyRef}>
       {/* Render search results */}
-      {searchResults.map((post) => (
-        <Post key={post.id} post={post} showIcons={false} className="search-page__post" />
-      ))}
+      {searchResults
+        .filter((post) => post.privacy !== 'Private')
+        .map((post) => (
+          <Post key={post.id} post={post} showIcons={false} className="search-page__post" />
+        ))}
       <div ref={bottomLineRef} className="search-page__bottom-line"></div>
     </div>
   );
