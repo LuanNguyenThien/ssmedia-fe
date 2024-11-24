@@ -273,8 +273,7 @@ const Header = () => {
                 data-testid="message-list-item"
                 className="header-nav-item active-item"
                 onClick={() => {
-                  if (isMessageActive === true) setIsMessageActive(false);
-                  else setIsMessageActive(true);
+                  setIsMessageActive((prevState) => !prevState);
                   setIsNotificationActive(false);
                   setIsSettingsActive(false);
                 }}
