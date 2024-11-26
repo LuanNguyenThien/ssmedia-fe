@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { postService } from '@services/api/post/post.service';
 import useInfiniteScroll from '@hooks/useInfiniteScroll';
-
+import Post from '@components/posts/post/Post';
+import '@pages/social/search/SearchPage.scss';
 const SearchPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,12 +32,14 @@ const SearchPage = () => {
   }
 
   return (
-    <div ref={bodyRef}>
+    <div className="search-page" ref={bodyRef}>
       {/* Render search results */}
-      {searchResults.map((post) => (
-        <div key={post._id}>{post.post}</div>
-      ))}
-      <div ref={bottomLineRef}></div>
+      {searchResults
+        .filter((post) => post.privacy !== 'Private')
+        .map((post) => (
+          <Post key={post.id} post={post} showIcons={false} className="search-page__post" />
+        ))}
+      <div ref={bottomLineRef} className="search-page__bottom-line"></div>
     </div>
   );
 };
