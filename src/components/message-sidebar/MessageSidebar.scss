@@ -1,3 +1,4 @@
+@import '../../variables';
 .message-dropdown {
   width: 320px;
   background: #ffffff;
@@ -18,20 +19,20 @@
 
     &-body {
       .message-bg-primary {
-        background-color: #48bb78;
+        background-color: $component-color;
         padding: 16px;
         border-radius: 8px 8px 0 0;
 
         .text-white {
           font-size: 18px;
           font-weight: bold;
-          color: #ffffff;
+          color: darken($component-color, 90%);
 
           .message-count {
             float: right;
             font-size: 12px;
             font-weight: 700;
-            color: #4caf50;
+            color: darken($component-color, 90%);
             background-color: #ffffff;
             padding: 4px 10px;
             border-radius: 12px;

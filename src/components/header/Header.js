@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import logo from '@assets/images/logo.svg';
-import { FaCaretDown, FaCaretUp, FaRegBell, FaRegEnvelope } from 'react-icons/fa';
+import { FaCaretDown, FaCaretUp } from 'react-icons/fa';
 import bell from '@assets/images/bell.svg';
 import mess from '@assets/images/mes.svg';
 import '@components/header/Header.scss';
@@ -30,7 +29,7 @@ import { getConversationList } from '@redux/api/chat';
 const Header = () => {
   const { profile } = useSelector((state) => state.user);
   const { chatList } = useSelector((state) => state.chat);
-  const [environment, setEnvironment] = useState('');
+  // const [environment, setEnvironment] = useState('');
   const [settings, setSettings] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [notificationCount, setNotificationCount] = useState(0);
@@ -57,9 +56,9 @@ const Header = () => {
   const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'set');
   const [deleteSessionPageReload] = useSessionStorage('pageReload', 'delete');
 
-  const backgrounColor = `${
-    environment === 'DEV' || environment === 'LOCAL' ? '#50b5ff' : environment === 'STG' ? '#e9710f' : ''
-  }`;
+  // const backgrounColor = `${
+  //   environment === 'DEV' || environment === 'LOCAL' ? '#50b5ff' : environment === 'STG' ? '#e9710f' : ''
+  // }`;
 
   const getUserNotifications = async () => {
     try {
@@ -135,8 +134,8 @@ const Header = () => {
   });
 
   useEffect(() => {
-    const env = Utils.appEnvironment();
-    setEnvironment(env);
+    // const env = Utils.appEnvironment();
+    // // setEnvironment(env);
     const count = sumBy(chatList, (notification) => {
       return !notification.isRead && notification.receiverUsername === profile?.username ? 1 : 0;
     });
@@ -216,7 +215,7 @@ const Header = () => {
               </div>
             </div>
 
-            <div className="search-container">
+            {/* <div className="search-container">
               <input
                 type="text"
                 value={searchTerm}
@@ -225,6 +224,19 @@ const Header = () => {
                 placeholder="Tìm kiếm..."
                 className="search-input"
               />
+            </div> */}
+            <div className="search-container">
+              <div className="search">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyPress={handleSearchKeyPress}
+                  name="text"
+                  placeholder="Search for..."
+                  className="input"
+                />
+              </div>
             </div>
 
             <div className="header-menu-toggle">
@@ -257,7 +269,7 @@ const Header = () => {
                     <li className="dropdown-li">
                       <Dropdown
                         height={300}
-                        style={{ right: '250px', top: '20px' }}
+                        style={{ right: '260px', top: '30px' }}
                         data={notifications}
                         notificationCount={notificationCount}
                         title="Notifications"
