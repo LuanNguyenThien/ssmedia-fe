@@ -115,7 +115,7 @@ export class PostUtils {
     const isPrivate = post?.privacy === 'Private' && post?.userId === profile?._id;
     const isPublic = post?.privacy === 'Public';
     const isFollower =
-      post?.privacy === 'Followers' && Utils.checkIfUserIsFollowed(following, post?.userId, profile?._id);
+      post?.privacy === 'Followers' && Utils.checkIfUserIsFollowed(following, post?.userId, profile?._id) || post?.userId === profile?._id;
     return isPrivate || isPublic || isFollower;
   }
 
@@ -130,11 +130,13 @@ export class PostUtils {
     element.focus();
   }
 
-  static socketIOPost(posts, setPosts) {
+  static socketIOPost(posts, setPosts, profile) {
     posts = cloneDeep(posts);
     socketService?.socket?.on('add post', (post) => {
-      posts = [post, ...posts];
-      setPosts(posts);
+      if (profile._id === post.userId) {
+        posts = [post, ...posts];
+        setPosts(posts);
+      }
     });
 
     socketService?.socket?.on('update post', (post) => {

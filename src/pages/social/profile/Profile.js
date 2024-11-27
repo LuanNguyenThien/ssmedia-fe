@@ -16,6 +16,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { filter } from 'lodash';
 import ImageModal from '@components/image-modal/ImageModal';
 import Dialog from '@components/dialog/Dialog';
+import { FollowersUtils } from '@services/utils/followers-utils.service';
 
 const Profile = () => {
   const { profile } = useSelector((state) => state.user);
@@ -36,6 +37,8 @@ const Profile = () => {
   const dispatch = useDispatch();
   const { username } = useParams();
   const [searchParams] = useSearchParams();
+  const [blockedUsers, setBlockedUsers] = useState([]);
+  const token = useSelector((state) => state.user.token);
 
   const changeTabContent = (data) => {
     setDisplayContent(data);
@@ -144,6 +147,10 @@ const Profile = () => {
     }
     if (!rendered) setRendered(true);
   }, [rendered, getUserProfileByUsername, getUserImages]);
+
+  useEffect(() => {
+    FollowersUtils.socketIOBlockAndUnblock(profile, token, setBlockedUsers, dispatch);
+  }, [dispatch, profile, token]);
 
   return (
     <>

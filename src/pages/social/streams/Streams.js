@@ -33,6 +33,7 @@ const Streams = () => {
   useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
   const PAGE_SIZE = 10;
   const [loadingMore, setLoadingMore] = useState(false);
+  const { profile } = useSelector((state) => state.user);
 
   function fetchPostData() {
     if (loadingMore || currentPage > Math.ceil(totalPostsCount / PAGE_SIZE)) return;
@@ -91,7 +92,7 @@ const Streams = () => {
   }, [allPosts]);
 
   useEffect(() => {
-    PostUtils.socketIOPost(posts, setPosts);
+    PostUtils.socketIOPost(posts, setPosts, profile);
   }, [posts]);
 
   return (
@@ -101,7 +102,7 @@ const Streams = () => {
           <PostForm />
           <Posts allPosts={posts} postsLoading={loading} userFollowing={following} />
           <div>
-            {currentPage > Math.ceil(totalPostsCount / PAGE_SIZE) && !loadingMore && 
+            {currentPage > Math.ceil(totalPostsCount / PAGE_SIZE) &&
               <div className="no-chat" data-testid="no-chat">
                 You have read all posts.
               </div>
