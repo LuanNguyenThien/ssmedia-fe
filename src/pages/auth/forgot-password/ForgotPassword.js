@@ -48,7 +48,6 @@ const ForgotPassword = () => {
 
   const forgotPassword = async (event) => {
     setLoading(true);
-    event.preventDefault();
     try {
       const response = await authService.forgotPassword(email);
       setLoading(false);

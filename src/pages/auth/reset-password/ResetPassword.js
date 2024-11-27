@@ -77,7 +77,7 @@ const ResetPassword = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </FormControl>
-            <FormControl id="password" isRequired>
+            <FormControl id="confirm-password" isRequired>
               <FormLabel>Confirm Password</FormLabel>
               <Input
                 type="password"
@@ -89,6 +89,7 @@ const ResetPassword = () => {
             </FormControl>
             <Stack spacing={6}>
               <Button
+                type="submit"
                 bg={'blue.400'}
                 color={'white'}
                 _hover={{
