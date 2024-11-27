@@ -21,7 +21,6 @@
     align-self: center;
     justify-self: center;
     position: absolute;
-    width: 100%;
     overflow: hidden;
     box-sizing: border-box;
     z-index: 1;
@@ -30,6 +29,12 @@
     pointer-events: all;
     background-color: var(--white-1);
     flex-direction: column;
+    width: 50%;
+    height: 80%;
+    border-radius: 10px; 
+    @media screen and (max-width: 768px) {
+      width: 90%;
+    }
 
     &-body {
       height: 600px;

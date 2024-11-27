@@ -10,7 +10,7 @@ import Posts from '@components/posts/Posts';
 import { Utils } from '@services/utils/utils.service';
 import { postService } from '@services/api/post/post.service';
 import { getPosts } from '@redux/api/posts';
-import { orderBy, uniqBy } from 'lodash';
+import { uniqBy } from 'lodash';
 import useInfiniteScroll from '@hooks/useInfiniteScroll';
 import { PostUtils } from '@services/utils/post-utils.service';
 import useLocalStorage from '@hooks/useLocalStorage';
@@ -26,7 +26,7 @@ const Streams = () => {
   const [totalPostsCount, setTotalPostsCount] = useState(0);
   const bodyRef = useRef(null);
   const bottomLineRef = useRef();
-  let appPosts = useRef([]);
+  const appPosts = useRef([]);
   const dispatch = useDispatch();
   const storedUsername = useLocalStorage('username', 'get');
   const [deleteSelectedPostId] = useLocalStorage('selectedPostId', 'delete');
@@ -98,7 +98,7 @@ const Streams = () => {
   return (
     <div className="streams" data-testid="streams">
       <div className="streams-content">
-        <div className="streams-post" ref={bodyRef} style={{ height: '95vh' }}>
+        <div className="streams-post" ref={bodyRef}>
           <PostForm />
           <Posts allPosts={posts} postsLoading={loading} userFollowing={following} />
           <div>

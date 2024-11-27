@@ -1,3 +1,4 @@
+@import '../../variables';
 .social-dropdown {
   width: 300px;
   margin: auto;
@@ -10,29 +11,27 @@
   box-shadow: rgb(145 158 171 / 20%) 0 0 2px 0, rgb(145 158 171 / 12%) 0 12px 24px -4px;
 
   .social-card {
-    background: #48bb78; /* Nền xanh */
+    /* Nền xanh */
     border-radius: 5px;
     border: none;
     transition: background-color 0.3s ease;
 
     .social-bg-primary {
-      background-color: #48bb78;
+      background: $component-color;
       padding: 15px;
       height: 57px;
       border-radius: 5px;
-
+      color: darken($component-color, 90%);
       h5 {
         font-size: 16px;
         padding: 5px 0;
-        color: var(--white-1);
-
         .social-count {
           float: right;
           font-size: 12px;
           font-weight: 700;
           line-height: 16px;
           white-space: nowrap;
-          color: var(--gray-3);
+          color: darken($component-color, 90%);
           background-color: var(--white-7);
           padding: 3px 8px;
           border-radius: 50px;

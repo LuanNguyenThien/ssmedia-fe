@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   Box,
   Table,
@@ -13,6 +13,7 @@ import {
   IconButton,
   Flex,
   Heading,
+  VStack,
   Stat,
   StatLabel,
   StatNumber,
@@ -22,160 +23,138 @@ import {
   Icon,
   useBreakpointValue
 } from '@chakra-ui/react';
+import { FaUsers } from 'react-icons/fa';
 import { EditIcon, DeleteIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-
+import { userService } from '@services/api/user/user.service';
+import { useDispatch, useSelector } from 'react-redux';
+import useEffectOnce from '@hooks/useEffectOnce';
 const DashboardTable = () => {
-  // Dữ liệu giả lập cho bảng
-  const users = [
-    {
-      name: 'Esthera Jackson',
-      email: 'alexa@simmmple.com',
-      function: 'Organization',
-      role: 'Manager',
-      status: 'Online',
-      employed: '14/06/21',
-      avatarUrl: 'https://example.com/avatar1.jpg'
-    },
-    {
-      name: 'Alexa Liras',
-      email: 'laurent@simmmple.com',
-      function: 'Developer',
-      role: 'Programmer',
-      status: 'Offline',
-      employed: '12/05/21',
-      avatarUrl: 'https://example.com/avatar2.jpg'
-    },
-    {
-      name: 'Alexa Liras',
-      email: 'laurent@simmmple.com',
-      function: 'Developer',
-      role: 'Programmer',
-      status: 'Offline',
-      employed: '12/05/21',
-      avatarUrl: 'https://example.com/avatar2.jpg'
-    },
-    {
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      function: 'Marketing',
-      role: 'Lead',
-      status: 'Offline',
-      employed: '01/02/20',
-      avatarUrl: 'https://example.com/avatar3.jpg'
-    },
-    {
-      name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      function: 'HR',
-      role: 'Manager',
-      status: 'Online',
-      employed: '03/03/21',
-      avatarUrl: 'https://example.com/avatar4.jpg'
-    },
-    {
-      name: 'George Adams',
-      email: 'george.adams@example.com',
-      function: 'Support',
-      role: 'Specialist',
-      status: 'Offline',
-      employed: '15/04/22',
-      avatarUrl: 'https://example.com/avatar5.jpg'
-    },
-    {
-      name: 'Sarah Connor',
-      email: 'sarah.connor@example.com',
-      function: 'Engineer',
-      role: 'Software Engineer',
-      status: 'Online',
-      employed: '23/08/19',
-      avatarUrl: 'https://example.com/avatar6.jpg'
-    }
-    // Thêm các người dùng khác tương tự
-  ];
-
-  // State cho phân trang
+  // // State cho phân trang
   const [currentPage, setCurrentPage] = useState(1);
+  const [users, setUsers] = useState([]);
+  const [total, setTotals] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const getAllUsers = useCallback(async () => {
+    try {
+      const response = await userService.getAllUsersAdminRole(currentPage);
+      console.log(response);
+      if (response.data.users.length > 0) {
+        setTotals(response.data.totalUsers);
+        // setUsers((data) => {
+        //   const result = [...data, ...response.data.users];
+        //   const allUsers = uniqBy(result, '_id');
+        //   return allUsers;
+        // });
+        setUsers(response.data.users);
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  }, [currentPage]);
+  useEffectOnce(() => {
+    getAllUsers();
+  });
+
   const [itemsPerPage] = useState(5);
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
+  // const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+  useEffect(() => {
+    getAllUsers();
+  }, [getAllUsers]);
 
-  const totalPages = Math.ceil(users.length / itemsPerPage);
-
+  const totalPages = Math.ceil(total / itemsPerPage);
   return (
     <Box maxHeight="calc(100vh - 80px)" overflowY="auto">
       <Heading size="lg" mb={6}>
         Dashboard Overview
       </Heading>
-
       {/* Thống kê ngắn */}
       <SimpleGrid columns={[1, 2, 4]} spacing={4} mb={8}>
-        <Stat>
-          <StatLabel>Total Users</StatLabel>
-          <StatNumber>1,250</StatNumber>
-        </Stat>
-        <Stat>
-          <StatLabel>Online Users</StatLabel>
-          <StatNumber>350</StatNumber>
-        </Stat>
-        <Stat>
-          <StatLabel>New Users</StatLabel>
-          <StatNumber>120</StatNumber>
-        </Stat>
-        <Stat>
-          <StatLabel>Sales</StatLabel>
-          <StatNumber>$5,600</StatNumber>
-        </Stat>
-      </SimpleGrid>
+        {/* Total Users */}
+        <Box
+          bgGradient="linear(to-r, teal.400, blue.500)"
+          color="white"
+          p={5}
+          borderRadius="lg"
+          shadow="md"
+          textAlign="center"
+        >
+          <VStack spacing={3}>
+            <Icon as={FaUsers} w={12} h={12} />
+            <Text fontSize="xl" fontWeight="bold">
+              Total Users
+            </Text>
+            <Text fontSize="4xl" fontWeight="extrabold">
+              {total}
+            </Text>
+          </VStack>
+        </Box>
 
+        {/* Các thống kê khác */}
+        <Box p={5} bg="white" shadow="md" borderRadius="lg" textAlign="center">
+          <Text fontSize="md" color="gray.500">
+            Online Users
+          </Text>
+          <Text fontSize="2xl" fontWeight="bold">
+            350
+          </Text>
+        </Box>
+        <Box p={5} bg="white" shadow="md" borderRadius="lg" textAlign="center">
+          <Text fontSize="md" color="gray.500">
+            New Users
+          </Text>
+          <Text fontSize="2xl" fontWeight="bold">
+            120
+          </Text>
+        </Box>
+        <Box p={5} bg="white" shadow="md" borderRadius="lg" textAlign="center">
+          <Text fontSize="md" color="gray.500">
+            Sales
+          </Text>
+          <Text fontSize="2xl" fontWeight="bold">
+            $5,600
+          </Text>
+        </Box>
+      </SimpleGrid>
       {/* Bảng người dùng */}
       <Box mb={8} p={4} bg="white" shadow="md" borderRadius="md" minHeight="436px">
         <Table variant="simple" size={isMobile ? 'sm' : 'md'}>
           <Thead position="sticky" top="0" zIndex="1" bg="white">
             <Tr>
-              <Th>Author</Th>
-              <Th>Function</Th>
-              {!isMobile && <Th>Status</Th>}
-              <Th>Employed</Th>
+              <Th>UserName</Th>
+              <Th>Post</Th>
+              <Th>Following</Th>
+              <Th>follower</Th>
               <Th colSpan={2} textAlign="center">
                 Actions
               </Th>
             </Tr>
           </Thead>
           <Tbody>
-            {currentUsers.map((user, index) => (
+            {users.map((user, index) => (
               <Tr key={index}>
                 <Td>
                   <Flex align="center">
-                    <Avatar size="sm" src={user.avatarUrl} mr={3} />
+                    <Avatar size="sm" src={user.profilePicture} mr={3} />
                     <Box>
                       <Text fontWeight="bold">{user.name}</Text>
-                      {!isMobile && (
-                        <Text fontSize="sm" color="gray.500">
-                          {user.email}
-                        </Text>
-                      )}
                     </Box>
                   </Flex>
                 </Td>
                 <Td>
-                  <Text>{user.function}</Text>
-                  <Text fontSize="sm" color="gray.500">
-                    {user.role}
-                  </Text>
+                  <Text>{user.postsCount}</Text>
+                  <Text fontSize="sm" color="gray.500"></Text>
                 </Td>
-                {!isMobile && (
-                  <Td>
-                    <Badge colorScheme={user.status === 'Online' ? 'green' : 'red'}>{user.status}</Badge>
-                  </Td>
-                )}
-                <Td>{user.employed}</Td>
+                <Td>{user.followingCount}</Td>
+                <Td>{user.followersCount}</Td>
                 <Td colSpan={2}>
                   <HStack spacing={2} justify="center">
                     <IconButton aria-label="Edit" icon={<EditIcon />} size="sm" variant="outline" />
@@ -187,7 +166,6 @@ const DashboardTable = () => {
           </Tbody>
         </Table>
       </Box>
-
       {/* Pagination */}
       <Box display="flex" justifyContent="center" mb={8}>
         <HStack spacing={2}>
