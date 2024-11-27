@@ -98,7 +98,7 @@ const Streams = () => {
   return (
     <div className="streams" data-testid="streams">
       <div className="streams-content">
-        <div className="streams-post" ref={bodyRef}>
+        <div className="streams-post" ref={bodyRef} style={{ height: '98vh' }}>
           <PostForm />
           <Posts allPosts={posts} postsLoading={loading} userFollowing={following} />
           <div>
