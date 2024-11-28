@@ -131,6 +131,12 @@
       }
     }
 
+    @media (max-width: 768px) {
+      .editable {
+        height: 240px;
+      }
+    }
+
     .flex-row {
       display: flex;
       align-items: center;
@@ -297,6 +303,12 @@ hr {
   .post-input:empty::before {
     content: attr(data-placeholder);
     color: var(--gray-1);
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-box-image-form {
+    height: 240px;
   }
 }
 
