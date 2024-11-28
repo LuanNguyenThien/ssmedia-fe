@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { FaRegCommentAlt, FaRegHeart } from 'react-icons/fa';
+import { FaRegCommentAlt, FaBookmark } from 'react-icons/fa';
 import '@components/posts/comment-area/CommentArea.scss';
 import Reactions from '@components/posts/reactions/Reactions';
 import { useCallback, useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ import { addReactions } from '@redux/reducers/post/user-post-reaction.reducer';
 import { socketService } from '@services/socket/socket.service';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { clearPost, updatePostItem } from '@redux/reducers/post/post.reducer';
+import useEffectOnce from '@hooks/useEffectOnce';
 
 const CommentArea = ({ post }) => {
   const { profile } = useSelector((state) => state.user);
@@ -19,6 +20,7 @@ const CommentArea = ({ post }) => {
   const [userSelectedReaction, setUserSelectedReaction] = useState('like');
   const selectedPostId = useLocalStorage('selectedPostId', 'get');
   const [setSelectedPostId] = useLocalStorage('selectedPostId', 'set');
+  const [isFavorite, setIsFavorite] = useState(false);
   const dispatch = useDispatch();
 
   const selectedUserReaction = useCallback(
@@ -29,6 +31,21 @@ const CommentArea = ({ post }) => {
     },
     [post]
   );
+
+  useEffectOnce(() => {
+    const checkFavoriteStatus = async () => {
+      try {
+        if(post.savedBy === undefined)
+          setIsFavorite(false);
+        else
+          setIsFavorite(post.savedBy.includes(profile?._id));
+      } catch (error) {
+        Utils.dispatchNotification(error?.response?.data?.message, 'error', dispatch);
+      }
+    };
+
+    checkFavoriteStatus();
+  });
 
   const toggleCommentInput = () => {
     if (!selectedPostId) {
@@ -55,6 +72,11 @@ const CommentArea = ({ post }) => {
         userId: profile?._id,
         postId: post?._id
       };
+      if(isFavorite){
+        setIsFavorite(false);
+      } else{
+        setIsFavorite(true);
+      }
       await postService.addfavPost(favPostData);
     } catch (error) {
       Utils.dispatchNotification(error?.response?.data?.message, 'error', dispatch);
@@ -184,7 +206,7 @@ const CommentArea = ({ post }) => {
       </div>
       <div className="favorite-block" onClick={addFavoritePost}>
         <span className="favorite-text">
-          <FaRegHeart className="favorite-icon" /> <span>Add to Favorites</span>
+        <FaBookmark className={`favorite-icon ${isFavorite ? 'favorite-active' : ''}`} />
         </span>
       </div>
     </div>

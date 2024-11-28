@@ -13,12 +13,8 @@
   &-content {
     grid-column: 2; // Nằm ở cột thứ hai
     height: 100vh;
-    padding-right: 20px;
-    padding-top: 20px;
-    padding-bottom: 20px;
 
     @media (max-width: 800px) {
-      padding: 10px;
       grid-column: 1; // Chiếm toàn bộ chiều ngang khi ở mobile
       grid-row: 1; // Đặt ở hàng đầu tiên
     }

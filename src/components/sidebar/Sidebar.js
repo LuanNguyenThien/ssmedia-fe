@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { sideBarItems, fontAwesomeIcons } from '@services/utils/static.data';
+import { sideBarItems } from '@services/utils/static.data';
 import { useLocation, createSearchParams, useNavigate } from 'react-router-dom';
 import '@components/sidebar/Sidebar.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPosts, getFavPosts } from '@redux/api/posts';
+import { getPosts } from '@redux/api/posts';
 import { Utils } from '@services/utils/utils.service';
 import { ChatUtils } from '@services/utils/chat-utils.service';
 import { chatService } from '@services/api/chat/chat.service';
@@ -133,7 +133,7 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <div style={{height: "100%"}}>
+    <div style={{ height: '100%' }}>
       <button className="toggle-button" onClick={toggleSidebar}>
         ☰
       </button>
@@ -143,7 +143,7 @@ const Sidebar = () => {
             {sidebar.map((data) => (
               <li key={data.index} onClick={() => navigateToPage(data.name, data.url)}>
                 <div data-testid="sidebar-list" className={`sidebar-link ${checkUrl(data.name) ? 'active' : ''}`}>
-                  <div className="menu-icon">{fontAwesomeIcons[data.iconName]}</div>
+                  <img className="menu-icon" src={data.iconName} />
                   <div className="menu-link">
                     <span>{data.name}</span>
                   </div>

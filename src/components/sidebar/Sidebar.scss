@@ -1,3 +1,5 @@
+@import '../../variables';
+
 @mixin sidebar-styles {
   background-color: var(--white-1);
   border: 1px solid var(--white-2);
@@ -11,20 +13,18 @@
   position: fixed;
   top: 1rem;
   left: 1rem;
-  z-index: 1100;
+  z-index: 40;
   background-color: #000000;
   color: white;
   border: none;
-  border-radius: 5px;
   padding: 0.5rem 1rem;
   cursor: pointer;
 }
 
 .app-side-menu {
-  background-color: white;
+  background-color: $component-color;
   box-shadow: 1px 5px 5px var(--gray-16);
   transition: all 0.3s ease;
-  border-radius: 10px;
   display: flex;
   height: inherit;
 
@@ -64,9 +64,7 @@
             background-color: #e8f0fa; // Màu nền khi hover
 
             .menu-icon {
-              .icon {
-                color: var(--primary-1); // Màu icon khi hover
-              }
+              width: 30px;
             }
 
             .menu-link {
@@ -82,9 +80,7 @@
           background-color: #e8f0fa;
 
           .menu-icon {
-            .icon {
-              color: var(--primary-1);
-            }
+            width: 30px;
           }
 
           .menu-link {
@@ -95,13 +91,7 @@
         }
 
         .menu-icon {
-          margin-top: 5px;
-
-          .icon {
-            color: var(--gray-13);
-            font-weight: 500;
-            width: 20px;
-          }
+          width: 30px;
         }
 
         .menu-link {
@@ -131,7 +121,7 @@
   .app-side-menu {
     display: none;
     position: fixed;
-    top:70px;
+    top: 70px;
     left: 0;
     width: 250px;
     z-index: 1000;

@@ -10,7 +10,7 @@ import Posts from '@components/posts/Posts';
 import { Utils } from '@services/utils/utils.service';
 import { postService } from '@services/api/post/post.service';
 import { getPosts } from '@redux/api/posts';
-import { orderBy, uniqBy } from 'lodash';
+import { uniqBy } from 'lodash';
 import useInfiniteScroll from '@hooks/useInfiniteScroll';
 import { PostUtils } from '@services/utils/post-utils.service';
 import useLocalStorage from '@hooks/useLocalStorage';
@@ -26,13 +26,14 @@ const Streams = () => {
   const [totalPostsCount, setTotalPostsCount] = useState(0);
   const bodyRef = useRef(null);
   const bottomLineRef = useRef();
-  let appPosts = useRef([]);
+  const appPosts = useRef([]);
   const dispatch = useDispatch();
   const storedUsername = useLocalStorage('username', 'get');
   const [deleteSelectedPostId] = useLocalStorage('selectedPostId', 'delete');
   useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
   const PAGE_SIZE = 10;
   const [loadingMore, setLoadingMore] = useState(false);
+  const { profile } = useSelector((state) => state.user);
 
   function fetchPostData() {
     if (loadingMore || currentPage > Math.ceil(totalPostsCount / PAGE_SIZE)) return;
@@ -91,17 +92,17 @@ const Streams = () => {
   }, [allPosts]);
 
   useEffect(() => {
-    PostUtils.socketIOPost(posts, setPosts);
+    PostUtils.socketIOPost(posts, setPosts, profile);
   }, [posts]);
 
   return (
     <div className="streams" data-testid="streams">
       <div className="streams-content">
-        <div className="streams-post" ref={bodyRef} style={{ height: '95vh' }}>
+        <div className="streams-post" ref={bodyRef} style={{ height: '98vh' }}>
           <PostForm />
           <Posts allPosts={posts} postsLoading={loading} userFollowing={following} />
           <div>
-            {currentPage > Math.ceil(totalPostsCount / PAGE_SIZE) && !loadingMore && 
+            {currentPage > Math.ceil(totalPostsCount / PAGE_SIZE) &&
               <div className="no-chat" data-testid="no-chat">
                 You have read all posts.
               </div>
