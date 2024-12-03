@@ -3,12 +3,13 @@ $logo-width: 100%; /* Chiều rộng của logo */
 
 .logo {
   width: $logo-width;
-  height: auto;
+  height: 100%;
   max-height: $logo-max-height;
 
-  svg {
+
+  img {
     width: 100%; /* Chiếm toàn bộ chiều rộng container */
-    height: auto; /* Giữ tỷ lệ khung hình */
+    height: 40px; /* Giữ tỷ lệ khung hình */
     max-height: $logo-max-height; /* Giới hạn chiều cao tối đa */
     object-fit: contain; /* Đảm bảo không bị kéo giãn */
   }

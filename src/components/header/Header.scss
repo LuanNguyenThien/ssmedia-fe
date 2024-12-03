@@ -13,7 +13,7 @@
   background-color: $primary-color; //#facd9b;
   position: sticky;
   z-index: 20;
-  height: 70px;
+  height: 50px;
   box-shadow: 0 0 20px 0 rgb(44 101 144 / 10%);
   padding: 0 10px;
 
@@ -21,7 +21,7 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
-    height: 75px;
+    height: 100%;
     color: var(--gray-12);
     align-items: center;
     padding: 0 15px;
@@ -86,11 +86,11 @@
 
       img {
         max-width: 100%;
-        height: 45px;
+        height: 100%;
       }
       .app-name {
         margin-left: 10px;
-        font-size: 28px;
+        font-size: 25px;
         color: #ecfdf5;
         align-self: center;
 
@@ -129,7 +129,10 @@
     }
 
     .header-nav {
+      height: 100%;
       display: flex;
+      flex-direction: row;
+      justify-items: center;
       align-items: center;
       padding: 0;
 
@@ -137,10 +140,34 @@
         list-style: none;
         cursor: pointer;
         display: flex;
+        .header-nav-item-profile {
+          position: relative;
+          justify-items: center;
+          &-arrow {
+            color: white;
+            position: absolute;
+            right: 0px;
+            bottom: 0px;
+            background-color: gray;
+            border-radius: 10px;
+            padding: 1px;
+          }
+          &-arrow-down {
+            color: white;
+            position: absolute;
+            right: 0px;
+            bottom: 0px;
+            background-color: gray;
+            border-radius: 10px;
+            padding: 1px;
+            transform: rotate(-90deg);
+            transition: all 0.3s ease;
+          }
+        }
 
         .header-list-icon {
-          width: 40px;
-          height: 40px;
+          width: 35px;
+          height: 35px;
           text-align: left;
           transition: transform 0.3s ease;
           margin-right: 5px;
@@ -151,21 +178,22 @@
           color: black;
         }
         .header-list-icon:hover {
-          transform: scale(1.2); /* Phóng to icon lên 1.2 lần khi hover */
+          transform: scale(1.1); /* Phóng to icon lên 1.2 lần khi hover */
         }
 
         .header-list-name {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           .bg-danger-dots {
             background-color: var(--error);
             right: 15px;
           }
-
           .bg-primary-dots {
             background-color: var(--primary-1);
             right: 12px;
             animation: shadow-pulse 1s infinite;
           }
-
           .dots {
             height: 7px;
             width: 7px;
@@ -188,12 +216,11 @@
           color: white;
           // color: var(--white);
           // background-color: var(--primary);
-          font-size: 15px;
           margin-left: 5px;
           text-transform: capitalize;
-          align-items: center;
           display: flex;
           flex-direction: row;
+          align-items: center;
           font-weight: 700;
 
           .caret {

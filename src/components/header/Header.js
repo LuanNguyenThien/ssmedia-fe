@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { FaCaretDown, FaCaretUp } from 'react-icons/fa';
+import { IoIosArrowBack } from 'react-icons/io';
+
 import bell from '@assets/images/bell.svg';
 import mess from '@assets/images/mes.svg';
 import '@components/header/Header.scss';
@@ -25,12 +26,13 @@ import { sumBy } from 'lodash';
 import { ChatUtils } from '@services/utils/chat-utils.service';
 import { chatService } from '@services/api/chat/chat.service';
 import { getConversationList } from '@redux/api/chat';
+import DropdownSetting from '@components/header/components/DropdownSetting';
 
 const Header = () => {
   const { profile } = useSelector((state) => state.user);
   const { chatList } = useSelector((state) => state.chat);
   // const [environment, setEnvironment] = useState('');
-  const [settings, setSettings] = useState([]);
+  // const [settings, setSettings] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [notificationCount, setNotificationCount] = useState(0);
   const [notificationDialogContent, setNotificationDialogContent] = useState({
@@ -73,7 +75,6 @@ const Header = () => {
       Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
     }
   };
-
   const onMarkAsRead = async (notification) => {
     try {
       NotificationUtils.markMessageAsRead(notification?._id, notification, setNotificationDialogContent);
@@ -129,7 +130,7 @@ const Header = () => {
 
   useEffectOnce(() => {
     ChatUtils.usersOnlines();
-    Utils.mapSettingsDropdownItems(setSettings);
+    // Utils.mapSettingsDropdownItems(setSettings);
     getUserNotifications();
   });
 
@@ -180,6 +181,7 @@ const Header = () => {
               />
             </div>
           )}
+
           {notificationDialogContent?.senderName && (
             <NotificationPreview
               title="Your post"
@@ -215,16 +217,7 @@ const Header = () => {
               </div>
             </div>
 
-            {/* <div className="search-container">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={handleSearchKeyPress}
-                placeholder="Tìm kiếm..."
-                className="search-input"
-              />
-            </div> */}
+            {/* SEARCH */}
             <div className="search-container">
               <div className="search">
                 <input
@@ -239,13 +232,8 @@ const Header = () => {
               </div>
             </div>
 
-            <div className="header-menu-toggle">
-              <span className="bar"></span>
-              <span className="bar"></span>
-              <span className="bar"></span>
-            </div>
             <ul className="header-nav">
-              {/* Phần còn lại của mã không thay đổi */}
+              {/* NOTIFICATION */}
               <li
                 data-testid="notification-list-item"
                 className="header-nav-item active-item"
@@ -281,6 +269,7 @@ const Header = () => {
                 )}
                 &nbsp;
               </li>
+              {/* MESSAGE */}
               <li
                 data-testid="message-list-item"
                 className="header-nav-item active-item"
@@ -296,6 +285,8 @@ const Header = () => {
                 </span>
                 &nbsp;
               </li>
+
+              {/* PROFILE */}
               <li
                 data-testid="settings-list-item"
                 className="header-nav-item"
@@ -305,27 +296,27 @@ const Header = () => {
                   setIsNotificationActive(false);
                 }}
               >
-                <span className="header-list-name profile-image">
-                  <Avatar
-                    name={profile?.username}
-                    bgColor={profile?.avatarColor}
-                    textColor="#ffffff"
-                    size={40}
-                    avatarSrc={profile?.profilePicture}
-                  />
-                </span>
-                <span className="header-list-name profile-name">
-                  {profile?.username}
-                  {!isSettingsActive ? (
-                    <FaCaretDown className="header-list-icon caret" />
-                  ) : (
-                    <FaCaretUp className="header-list-icon caret" />
-                  )}
-                </span>
+                <div className="header-nav-item-profile">
+                  <span className="header-list-name">
+                    {' '}
+                    <Avatar
+                      name={profile?.username}
+                      bgColor={profile?.avatarColor}
+                      textColor="#ffffff"
+                      size={35}
+                      avatarSrc={profile?.profilePicture}
+                    />
+                    <IoIosArrowBack
+                      className={`${
+                        isSettingsActive ? 'header-nav-item-profile-arrow-down' : 'header-nav-item-profile-arrow'
+                      } `}
+                    />
+                  </span>
+                </div>
                 {isSettingsActive && (
                   <ul className="dropdown-ul" ref={settingsRef}>
-                    <li className="dropdown-li">
-                      <Dropdown
+                    <li className="dropdown-li ">
+                      {/* <Dropdown
                         height={300}
                         style={{ right: '150px', top: '40px' }}
                         data={settings}
@@ -333,13 +324,17 @@ const Header = () => {
                         title="Settings"
                         onLogout={onLogout}
                         onNavigate={() => ProfileUtils.navigateToProfile(profile, navigate)}
+                      /> */}
+                      <DropdownSetting
+                        isSettingsActive={isSettingsActive}
+                        avatarSrc={profile?.profilePicture}
+                        name={profile?.username}
+                        onLogout={onLogout}
+                        onNavigate={() => ProfileUtils.navigateToProfile(profile, navigate)}
                       />
                     </li>
                   </ul>
                 )}
-                <ul className="dropdown-ul">
-                  <li className="dropdown-li"></li>
-                </ul>
               </li>
             </ul>
           </div>

@@ -1,6 +1,6 @@
 .dashboard {
   display: grid;
-  grid-template-columns: 1fr 5fr; // Sidebar 1 cột, Content 5 cột
+  grid-template-columns: 1fr 4fr; // Sidebar 1 cột, Content 5 cột
   grid-gap: 20px; // Khoảng cách giữa các phần
   background-color: #d9d9d9;
   &-sidebar {
