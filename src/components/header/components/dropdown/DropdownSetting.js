@@ -1,4 +1,4 @@
-import '@components/header/components/DropdownSetting.scss';
+import '@components/header/components/dropdown/DropdownSetting.scss';
 import PropTypes from 'prop-types';
 import { icons } from '@assets/assets';
 

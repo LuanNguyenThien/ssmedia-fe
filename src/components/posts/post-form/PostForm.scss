@@ -1,9 +1,12 @@
+@import '../../../variables';
+
 .post-form {
-  background: var(--white-1);
+  background: $component-color;
   height: 240px;
   border-radius: 16px;
   padding: 0 8px;
-
+  box-shadow: 0 0 2px 0 var(--gray-16), 0 2px 14px -4px var(--gray-12);
+  border: 0.5px solid var(--gray-16);
   &-header {
     height: 60px;
     border-bottom: 1px solid var(--white-4);

@@ -5,8 +5,8 @@ $logo-width: 100%; /* Chiều rộng của logo */
   width: $logo-width;
   height: 100%;
   max-height: $logo-max-height;
-
-
+  display: flex;
+  align-items: center;
   img {
     width: 100%; /* Chiếm toàn bộ chiều rộng container */
     height: 40px; /* Giữ tỷ lệ khung hình */

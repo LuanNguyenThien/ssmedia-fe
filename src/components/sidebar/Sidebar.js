@@ -9,23 +9,23 @@ import { ChatUtils } from '@services/utils/chat-utils.service';
 import { chatService } from '@services/api/chat/chat.service';
 import { socketService } from '@services/socket/socket.service';
 
+// actions
+import { setIsOpenSidebar } from '@redux/reducers/navbar/navState.reducer';
+
 const Sidebar = () => {
   const { profile } = useSelector((state) => state.user);
   const { chatList } = useSelector((state) => state.chat);
+  const { isOpenSidebar } = useSelector((state) => state.sidebarState);
   const [sidebar, setSideBar] = useState([]);
   const [chatPageName, setChatPageName] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State để quản lý trạng thái của sidebar
+
+  const isOpenRef = useRef(isOpenSidebar);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // State để quản lý trạng thái của sidebar
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const sidebarRef = useRef(null); // Tham chiếu đến sidebar
-
-  const toggleSidebar = () => {
-    if (window.innerWidth < 768) {
-      setIsSidebarOpen(!isSidebarOpen); // Đảo ngược trạng thái khi màn hình nhỏ hơn 768px
-    }
-  };
-
   const checkUrl = (name) => {
     return location.pathname.includes(name.toLowerCase());
   };
@@ -94,6 +94,25 @@ const Sidebar = () => {
       Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
     }
   };
+  // Hàm xử lý sự kiện click bên ngoài sidebar
+  const handleClickOutside = useCallback(
+    (event) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target) &&
+        !event.target.closest('#sidebar-toggler')
+      ) {
+        if (isOpenRef.current) {
+          dispatch(setIsOpenSidebar());
+        }
+      }
+    },
+    [dispatch]
+  );
+
+  useEffect(() => {
+    isOpenRef.current = isOpenSidebar;
+  }, [isOpenSidebar]);
 
   useEffect(() => {
     setSideBar(sideBarItems);
@@ -108,22 +127,6 @@ const Sidebar = () => {
       }
     }
   }, [chatList, chatPageName, createChatUrlParams, markMessagesAsRad, navigate]);
-
-  useEffect(() => {
-    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 1000);
-    window.addEventListener('resize', handleResize);
-    handleResize();
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Hàm xử lý sự kiện click bên ngoài sidebar
-  const handleClickOutside = (event) => {
-    if (sidebarRef.current && !sidebarRef.current.contains(event.target) && !event.target.closest('.toggle-button')) {
-      setIsSidebarOpen(false);
-    }
-  };
-
   useEffect(() => {
     // Thêm sự kiện click để ẩn sidebar khi click bên ngoài
     document.addEventListener('mousedown', handleClickOutside);
@@ -134,10 +137,10 @@ const Sidebar = () => {
 
   return (
     <div style={{ height: '100%' }}>
-      <button className="toggle-button" onClick={toggleSidebar}>
-        ☰
-      </button>
-      <div ref={sidebarRef} className={`app-side-menu ${isSidebarOpen ? 'open' : ''}`}>
+      <div
+        ref={sidebarRef}
+        className={`app-side-menu animate__animated  ${isOpenSidebar ? 'open animate__fadeInLeft' : ''}`}
+      >
         <div className="side-menu">
           <ul className="list-unstyled">
             {sidebar.map((data) => (

@@ -36,6 +36,7 @@
     padding: 1.5rem;
     height: 95%;
     overflow-y: auto;
+    overflow-x: hidden;
 
     .list-unstyled {
       margin: 0;
@@ -116,12 +117,21 @@
   display: block;
 }
 
+@keyframes slideOut {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
 // Ẩn sidebar khi màn hình nhỏ hơn 768px và hiển thị nút toggle
 @media screen and (max-width: 768px) {
   .app-side-menu {
     display: none;
     position: fixed;
-    top: 70px;
+    top: 0px;
     left: 0;
     width: 250px;
     z-index: 1000;
@@ -131,7 +141,6 @@
   .app-side-menu.open {
     display: block;
   }
-
   .toggle-button {
     display: block;
   }

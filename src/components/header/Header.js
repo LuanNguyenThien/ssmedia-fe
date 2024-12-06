@@ -3,6 +3,7 @@ import { IoIosArrowBack } from 'react-icons/io';
 
 import bell from '@assets/images/bell.svg';
 import mess from '@assets/images/mes.svg';
+import { icons } from '@assets/assets';
 import '@components/header/Header.scss';
 import Logo from '@components/logo/logo';
 import Avatar from '@components/avatar/Avatar';
@@ -26,11 +27,16 @@ import { sumBy } from 'lodash';
 import { ChatUtils } from '@services/utils/chat-utils.service';
 import { chatService } from '@services/api/chat/chat.service';
 import { getConversationList } from '@redux/api/chat';
-import DropdownSetting from '@components/header/components/DropdownSetting';
 
+import { setIsOpenSidebar, setIsOpenSearchBar } from '@redux/reducers/navbar/navState.reducer';
+
+// components
+import DropdownSetting from '@components/header/components/dropdown/DropdownSetting';
+import SearchButtonMb from '@components/header/components/searchButton/SearchButtonMb';
 const Header = () => {
   const { profile } = useSelector((state) => state.user);
   const { chatList } = useSelector((state) => state.chat);
+
   // const [environment, setEnvironment] = useState('');
   // const [settings, setSettings] = useState([]);
   const [notifications, setNotifications] = useState([]);
@@ -203,18 +209,15 @@ const Header = () => {
             />
           )}
           <div className="header-navbar">
-            <div className="header-image" data-testid="header-image" onClick={() => navigate('/app/social/streams')}>
-              <div className="logo">
-                <Logo />
-              </div>
-              <div className="app-name">
-                GrowthHub
-                {/* {environment && (
-                  <span className="environment" style={{ backgroundColor: `${backgrounColor}` }}>
-                    {environment}
-                  </span>
-                )} */}
-              </div>
+            <div
+              className="header-image"
+              data-testid="header-image"
+              onClick={() => {
+                navigate('/app/social/streams');
+                window.location.reload();
+              }}
+            >
+              <Logo />
             </div>
 
             {/* SEARCH */}
@@ -233,6 +236,29 @@ const Header = () => {
             </div>
 
             <ul className="header-nav">
+              {/* SEARCH MOBILE */}
+              <li data-testid="settings-list-item" className="header-nav-item header-nav-item-search-mb">
+                <span onClick={() => dispatch(setIsOpenSearchBar())} className="header-list-name">
+                  <img src={icons.search} className="header-list-icon" />
+                </span>
+                <SearchButtonMb />
+              </li>{' '}
+              {/* MESSAGE */}
+              <li
+                data-testid="message-list-item"
+                className="header-nav-item active-item"
+                onClick={() => {
+                  setIsMessageActive((prevState) => !prevState);
+                  setIsNotificationActive(false);
+                  setIsSettingsActive(false);
+                }}
+              >
+                <span className="header-list-name">
+                  <img src={mess} className="header-list-icon" />
+                  {messageCount > 0 && <span className="bg-danger-dots dots" data-testid="messages-dots"></span>}
+                </span>
+                &nbsp;
+              </li>
               {/* NOTIFICATION */}
               <li
                 data-testid="notification-list-item"
@@ -269,23 +295,20 @@ const Header = () => {
                 )}
                 &nbsp;
               </li>
-              {/* MESSAGE */}
+              {/* NAV_SIDEBAR_OPEN */}
               <li
-                data-testid="message-list-item"
-                className="header-nav-item active-item"
-                onClick={() => {
-                  setIsMessageActive((prevState) => !prevState);
-                  setIsNotificationActive(false);
-                  setIsSettingsActive(false);
+                id="sidebar-toggler"
+                data-testid="header-nav-list-item"
+                className="header-nav-item header-nav-item-sidebar"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  dispatch(setIsOpenSidebar());
                 }}
               >
                 <span className="header-list-name">
-                  <img src={mess} className="header-list-icon" />
-                  {messageCount > 0 && <span className="bg-danger-dots dots" data-testid="messages-dots"></span>}
+                  <img src={icons.sidebarSelector} className="header-list-icon" />
                 </span>
-                &nbsp;
               </li>
-
               {/* PROFILE */}
               <li
                 data-testid="settings-list-item"

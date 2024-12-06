@@ -2,7 +2,7 @@ import video from './images/video.svg';
 import picture from './images/photos.svg';
 import gif from './images/gif.svg';
 import feeling from './images/feeling.svg';
-import logo from './icons/logo.svg';
+import logo from './icons/logo.png';
 import homeSidebar from "./pages/home.png"
 import bellSidebar from "./pages/bell.png"
 import chatSidebar from "./pages/chat.png"
@@ -14,6 +14,8 @@ import videoSidebar from "./pages/video.png"
 import saveSidebar from "./pages/save.png"
 
 import logout from "./icons/exit.svg"
+import sidebarSelector from "./icons/sidebar.png"
+import search from "./icons/search.svg"
 
 export const icons = {
     video,
@@ -21,7 +23,9 @@ export const icons = {
     gif,
     feeling,
     logout,
-    logo
+    logo,
+    sidebarSelector,
+    search
 }
 
 export const sidebar = {

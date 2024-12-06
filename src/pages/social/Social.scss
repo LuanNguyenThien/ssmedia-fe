@@ -1,8 +1,11 @@
+@import "../../variables";
 .dashboard {
   display: grid;
   grid-template-columns: 1fr 4fr; // Sidebar 1 cột, Content 5 cột
   grid-gap: 20px; // Khoảng cách giữa các phần
-  background-color: #d9d9d9;
+  background-color: $background-color;
+  max-width: 100vw;
+  overflow-x: hidden;
   &-sidebar {
     grid-column: 1; // Nằm ở cột đầu tiên
     max-width: 100%; // Chiếm toàn bộ cột được giao
