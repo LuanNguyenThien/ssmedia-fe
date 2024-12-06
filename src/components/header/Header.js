@@ -229,7 +229,7 @@ const Header = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyPress={handleSearchKeyPress}
                   name="text"
-                  placeholder="Search for..."
+                  placeholder="Discover what you need.."
                   className="input"
                 />
               </div>
