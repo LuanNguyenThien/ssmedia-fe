@@ -229,7 +229,7 @@ const Header = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyPress={handleSearchKeyPress}
                   name="text"
-                  placeholder="Discover what you need.."
+                  placeholder="Discover what you need..."
                   className="input"
                 />
               </div>
@@ -283,7 +283,7 @@ const Header = () => {
                     <li className="dropdown-li">
                       <Dropdown
                         height={300}
-                        style={{ right: '260px', top: '30px' }}
+                        style={{ right: '315px', top: '30px' }}
                         data={notifications}
                         notificationCount={notificationCount}
                         title="Notifications"
