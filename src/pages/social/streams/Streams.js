@@ -26,7 +26,7 @@ const Streams = () => {
   const [totalPostsCount, setTotalPostsCount] = useState(0);
   const bodyRef = useRef(null);
   const bottomLineRef = useRef();
-  const appPosts = useRef([]);
+  let appPosts = useRef([]);
   const dispatch = useDispatch();
   const storedUsername = useLocalStorage('username', 'get');
   const [deleteSelectedPostId] = useLocalStorage('selectedPostId', 'delete');
@@ -36,8 +36,8 @@ const Streams = () => {
   const { profile } = useSelector((state) => state.user);
 
   function fetchPostData() {
-    if (loadingMore || currentPage > Math.ceil(totalPostsCount / PAGE_SIZE)) return;
-
+    if (currentPage > Math.ceil(totalPostsCount / PAGE_SIZE)) return;
+    console.log(currentPage, Math.ceil(totalPostsCount / PAGE_SIZE));
     setLoadingMore(true);
     getAllPosts().finally(() => setLoadingMore(false));
   }
@@ -45,12 +45,13 @@ const Streams = () => {
   const getAllPosts = async () => {
     try {
       const response = await postService.getAllPosts(currentPage);
-      if (response.data.posts.length > 0) {
+      if (response.data.posts.length >= 0) {
         appPosts.current = [...posts, ...response.data.posts];
         const allPosts = uniqBy(appPosts.current, '_id');
         // const orderedPosts = orderBy(allPosts, ['createdAt'], ['desc']);
+        setTotalPostsCount(response.data.totalPosts);
         setPosts(allPosts);
-        setCurrentPage((prevPage) => prevPage + 1); // Increment page only when data is valid
+        setCurrentPage((prevPage) => prevPage + 1);
       }
       setLoading(false);
     } catch (error) {
@@ -89,7 +90,14 @@ const Streams = () => {
     // const orderedPosts = orderBy(allPosts?.posts, ['createdAt'], ['desc']);
     setPosts(allPosts?.posts);
     setTotalPostsCount(allPosts?.totalPostsCount);
+    // console.log('allPosts:', allPosts);
   }, [allPosts]);
+
+  // useEffect(() => {
+  //   console.log('currentPage:', currentPage);
+  //   console.log('totalPostsCount:', totalPostsCount);
+  //   console.log('loadingMore:', loadingMore);
+  // }, [currentPage, totalPostsCount, loadingMore]);
 
   useEffect(() => {
     PostUtils.socketIOPost(posts, setPosts, profile);
