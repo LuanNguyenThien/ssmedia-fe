@@ -230,8 +230,9 @@ const Header = () => {
                   onKeyPress={handleSearchKeyPress}
                   name="text"
                   placeholder="Discover what you need..."
-                  className="input"
-                ></input>
+                  className="input"       
+                />
+                {/* <img src={icons.search} alt="" /> */}
               </div>
             </div>
 

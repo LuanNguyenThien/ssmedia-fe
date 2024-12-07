@@ -1,7 +1,8 @@
-import video from './images/video.svg';
-import picture from './images/photos.svg';
-import gif from './images/gif.svg';
-import feeling from './images/feeling.svg';
+import video from './images/video.png';
+import picture from './images/photo.png';
+import gif from './images/gif.png';
+import feeling from './images/feeling.png';
+
 import logo from './icons/logo.png';
 import homeSidebar from "./pages/home.png"
 import bellSidebar from "./pages/bell.png"

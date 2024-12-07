@@ -3,12 +3,12 @@
 .post-button {
   display: flex;
   justify-content: center;
-  gap: 5px;
   align-items: center;
   width: auto;
   padding: 5px 15px;
   border-radius: 10px;
   background-color: $button-background;
+  gap:10px;
   @media screen and (max-width: 500px) {
     background-color: transparent;
     padding: 5px 10px;
