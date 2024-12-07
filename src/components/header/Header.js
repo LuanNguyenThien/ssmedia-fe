@@ -231,7 +231,7 @@ const Header = () => {
                   name="text"
                   placeholder="Discover what you need..."
                   className="input"
-                />
+                ></input>
               </div>
             </div>
 

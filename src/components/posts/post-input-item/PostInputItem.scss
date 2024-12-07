@@ -1,0 +1,42 @@
+@import '../../../variables';
+
+.post-input {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  align-items: center;
+  width: auto;
+  padding: 5px 15px;
+  border-radius: 10px;
+  background-color: $button-background;
+
+  @media screen and (max-width: 500px) {
+    background-color: transparent;
+    padding: 5px 10px;
+  }
+  &-icon {
+    display: flex;
+    align-items: center;
+    max-width: 50px;
+
+    img {
+      width: auto;
+      max-height: 32px;
+      height: 100%;
+      @media screen and (max-width: 500px) {
+        max-height: 24px;
+      }
+    }
+  }
+  &-text {
+    color: $button-text;
+    @media screen and (max-width: 500px) {
+      display: none;
+    }
+  }
+}
+
+.post-input:hover {
+  background-color: rgba($color: $button-background, $alpha: 0.5);
+  cursor: pointer;
+}
