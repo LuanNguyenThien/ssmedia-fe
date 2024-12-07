@@ -5,8 +5,14 @@ class PostService {
     const response = await axios.get(`/post/${id}`);
     return response;
   }
+  
   async getAllPosts(page) {
     const response = await axios.get(`/post/all/${page}`);
+    return response;
+  }
+
+  async getAllFavPosts(page) {
+    const response = await axios.get(`/favpost/${page}`);
     return response;
   }
 
@@ -94,6 +100,17 @@ class PostService {
 
   async deletePost(postId) {
     const response = await axios.delete(`/post/${postId}`);
+    return response;
+  }
+
+  async addfavPost(body) {
+    const response = await axios.post('/favpost', body);
+    return response;
+  }
+
+  async searchPosts(query) {
+    const encodedQuery = encodeURIComponent(query);
+    const response = await axios.get(`/search/${encodedQuery}`);
     return response;
   }
 }

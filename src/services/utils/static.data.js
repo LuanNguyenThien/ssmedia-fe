@@ -26,67 +26,68 @@ import {
   FaVideo,
   FaSave
 } from 'react-icons/fa';
+import {sidebar} from '@assets/assets';
 
 export const sideBarItems = [
   {
     index: 1,
     name: 'Streams',
     url: '/app/social/streams',
-    iconName: 'FaNewspaper'
+    iconName: sidebar.homeSidebar
   },
   {
     index: 2,
     name: 'Chat',
     url: '/app/social/chat/messages',
-    iconName: 'FaComments'
+    iconName: sidebar.chatSidebar
   },
   {
     index: 3,
     name: 'People',
     url: '/app/social/people',
-    iconName: 'FaUsers'
+    iconName: sidebar.groupSidebar
   },
   {
     index: 4,
     name: 'Following',
     url: '/app/social/following',
-    iconName: 'FaUserPlus'
+    iconName: sidebar.homeSidebar
   },
   {
     index: 5,
     name: 'Followers',
     url: '/app/social/followers',
-    iconName: 'FaHeart'
+    iconName: sidebar.heartSidebar
   },
   {
     index: 6,
     name: 'Photos',
     url: '/app/social/photos',
-    iconName: 'FaImages'
+    iconName:sidebar.pictureSidebar
   },
   {
     index: 7,
     name: 'Videos',
     url: '/app/social/videos',
-    iconName: 'FaVideo'
+    iconName: sidebar.videoSidebar
   },
   {
     index: 8,
     name: 'Notifications',
     url: '/app/social/notifications',
-    iconName: 'FaRegBell'
+    iconName: sidebar.bellSidebar
   },
   {
     index: 9,
     name: 'Profile',
     url: '/app/social/profile',
-    iconName: 'FaRegUser'
+    iconName: sidebar.userSidebar
   },
   {
     index: 10,
     name: 'Save',
     url: '/app/social/save',
-    iconName: 'FaSave'
+    iconName: sidebar.saveSidebar
   }
 ];
 

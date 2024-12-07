@@ -1,40 +1,25 @@
 .chat-window-container {
   display: flex;
   height: 100%;
-  width: 100%; 
-  flex-direction: column; 
-  justify-content: space-between; 
+  width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  @media (max-width: 1200px) {
-    width: 80vw; 
-  }
-
-  @media (max-width: 992px) {
-    width: 100vw; // Chiều rộng sẽ chiếm toàn bộ chiều rộng màn hình
-  }
-
-  @media (max-width: 768px) {
-    width: 60vw; // Đảm bảo kích thước phù hợp với các màn hình nhỏ hơn
-  }
-
   .chatWindow {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     height: 100%;
-    max-height: 100%;
-    min-height: 100%;
     width: 100%;
     background-color: transparent;
-    gap: 10px;
+    justify-content: space-between;
 
     .chat-title {
       display: flex;
       width: 100%;
-      height: 10%;
-      min-height: 10%;
+      height: 55px;
+      min-height: 55px;
       flex-direction: row;
-      justify-content: start;
+      justify-content: flex-start;
       align-items: center;
       padding: 0 20px;
       border-bottom: 1px solid var(--white-4);
@@ -47,12 +32,26 @@
         width: 40px;
         border-radius: 100%;
       }
-
+      &-back {
+        @media screen and (max-width: 768px) {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          padding-inline: 10px;
+          border-radius: 100%;
+          cursor: pointer;
+          font-size: 30px;
+        }
+        @media screen and (min-width: 768px) {
+          display: none;        
+        }
+      }
       &-items {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: start;
+        align-items: flex-start;
         padding-left: 10px;
 
         .chat-name {
@@ -82,11 +81,10 @@
       display: flex;
       flex-direction: column;
       width: 100%;
-      min-height: 85%;
+      height: calc(100% - 70px);
       position: relative;
       background-repeat: no-repeat;
       border-radius: 15px;
-
 
       &-message {
         display: grid;
@@ -98,7 +96,7 @@
         display: flex;
         flex-direction: row;
         gap: 10px;
-        padding: 10px 20px; 
+        padding: 10px 20px;
         width: 100%;
         height: 10%;
       }

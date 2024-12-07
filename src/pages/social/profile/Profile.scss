@@ -1,5 +1,5 @@
 .profile-wrapper {
-  height: 100vh;
+  height: calc(100% - 60px);
   max-width: 1152px;
   margin: auto;
   overflow: scroll;
@@ -7,13 +7,20 @@
   &-container {
     display: grid;
     grid-template-areas:
-      "header"
-      "content";
+      'header'
+      'content';
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
 
     .profile-header {
       grid-area: header;
+      @media screen and (max-width: 768px) {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        max-width: 100vw;
+      }
     }
 
     .profile-content {
@@ -30,6 +37,16 @@
         border-radius: 16px;
         box-shadow: rgb(145 158 171 / 20%) 0 0 2px 0, rgb(145 158 171 / 12%) 0 12px 24px -4px;
       }
+    }
+  }
+  @media only screen and (max-width: 768px) {
+    .profile-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+      max-width: 100vh;
     }
   }
 }

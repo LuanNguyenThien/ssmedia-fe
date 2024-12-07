@@ -1,3 +1,5 @@
+@import '../../variables';
+
 @mixin sidebar-styles {
   background-color: var(--white-1);
   border: 1px solid var(--white-2);
@@ -11,27 +13,30 @@
   position: fixed;
   top: 1rem;
   left: 1rem;
-  z-index: 1100;
+  z-index: 40;
   background-color: #000000;
   color: white;
   border: none;
-  border-radius: 5px;
   padding: 0.5rem 1rem;
   cursor: pointer;
 }
 
 .app-side-menu {
-  background-color: white;
+  background-color: $component-color;
   box-shadow: 1px 5px 5px var(--gray-16);
-  height: 100vh;
   transition: all 0.3s ease;
+  display: flex;
+  height: inherit;
 
   &.open {
     display: block;
   }
 
   .side-menu {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem;
+    height: 95%;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     .list-unstyled {
       margin: 0;
@@ -60,9 +65,7 @@
             background-color: #e8f0fa; // Màu nền khi hover
 
             .menu-icon {
-              .icon {
-                color: var(--primary-1); // Màu icon khi hover
-              }
+              width: 30px;
             }
 
             .menu-link {
@@ -78,9 +81,7 @@
           background-color: #e8f0fa;
 
           .menu-icon {
-            .icon {
-              color: var(--primary-1);
-            }
+            width: 30px;
           }
 
           .menu-link {
@@ -91,13 +92,7 @@
         }
 
         .menu-icon {
-          margin-top: 5px;
-
-          .icon {
-            color: var(--gray-13);
-            font-weight: 500;
-            width: 20px;
-          }
+          width: 30px;
         }
 
         .menu-link {
@@ -122,11 +117,21 @@
   display: block;
 }
 
+@keyframes slideOut {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
 // Ẩn sidebar khi màn hình nhỏ hơn 768px và hiển thị nút toggle
 @media screen and (max-width: 768px) {
   .app-side-menu {
     display: none;
     position: fixed;
+    top: 0px;
     left: 0;
     width: 250px;
     z-index: 1000;
@@ -136,7 +141,6 @@
   .app-side-menu.open {
     display: block;
   }
-
   .toggle-button {
     display: block;
   }

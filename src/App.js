@@ -5,13 +5,14 @@ import '@root/App.scss';
 import { socketService } from '@services/socket/socket.service';
 import Toast from '@components/toast/Toast';
 import { useSelector } from 'react-redux';
+import useEffectOnce from '@hooks/useEffectOnce';
 
 const App = () => {
   const { notifications } = useSelector((state) => state);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     socketService.setupSocketConnection();
-  }, []);
+  });
 
   return (
     <>

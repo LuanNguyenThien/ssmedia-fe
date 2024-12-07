@@ -1,6 +1,8 @@
 // import Avatar from '@components/avatar/Avatar';
-import CardElementButtons from '@components/card-element/CardElementButtons';
-import CardElementStats from '@components/card-element/CardElementStats';
+// import { ProfileUtils } from '@services/utils/profile-utils.service';
+// import { useEffect, useState } from 'react';
+// import CardElementButtons from '@components/card-element/CardElementButtons';
+// import CardElementStats from '@components/card-element/CardElementStats';
 import useEffectOnce from '@hooks/useEffectOnce';
 import useInfiniteScroll from '@hooks/useInfiniteScroll';
 import '@pages/social/people/People.scss';
@@ -9,7 +11,6 @@ import { userService } from '@services/api/user/user.service';
 import { socketService } from '@services/socket/socket.service';
 import { ChatUtils } from '@services/utils/chat-utils.service';
 import { FollowersUtils } from '@services/utils/followers-utils.service';
-// import { ProfileUtils } from '@services/utils/profile-utils.service';
 import { Utils } from '@services/utils/utils.service';
 import { uniqBy } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -18,7 +19,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Heading, Avatar, Box, Center, Image, Flex, Text, Stack, Button, useColorModeValue } from '@chakra-ui/react';
 import { ProfileUtils } from '@services/utils/profile-utils.service';
-// import { useEffect, useState } from 'react';
 
 const People = () => {
   const { profile } = useSelector((state) => state.user);
@@ -96,10 +96,15 @@ const People = () => {
   useEffectOnce(() => {
     getAllUsers();
     getUserFollowing();
+    setCurrentPage((prevPage) => prevPage + 1);
   });
 
   useEffect(() => {
     FollowersUtils.socketIOFollowAndUnfollow(users, following, setFollowing, setUsers);
+    const fetchInitialOnlineUsers = () => {
+      ChatUtils.fetchOnlineUsers(setOnlineUsers);
+    };
+    fetchInitialOnlineUsers();
     ChatUtils.usersOnline(setOnlineUsers);
   }, [following, users]);
 
@@ -129,14 +134,27 @@ const People = () => {
                   objectFit="cover"
                   alt="#"
                 />
-                <Flex justify={'center'} mt={-12}>
-                  <Avatar
-                    size={'xl'}
-                    src={data?.profilePicture}
-                    css={{
-                      border: '2px solid white'
-                    }}
-                  />
+                <Flex justify={'center'} mt={-12} position="relative">
+                  <Box position="relative">
+                    <Avatar
+                      size={'xl'}
+                      src={data?.profilePicture}
+                      css={{
+                        border: '2px solid white'
+                      }}
+                    />
+                    {Utils.checkIfUserIsOnline(data?.username, onlineUsers) && (
+                      <Box
+                        position="absolute"
+                        bottom="-6px" // Adjust this to move the icon below the Avatar
+                        left="50%"
+                        transform="translateX(-50%)"
+                        zIndex="10" // Ensure the icon is above other elements
+                      >
+                        <FaCircle color="green" size={12} />
+                      </Box>
+                    )}
+                  </Box>
                 </Flex>
 
                 <Box p={6}>

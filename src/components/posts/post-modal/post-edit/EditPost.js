@@ -22,7 +22,7 @@ const EditPost = () => {
   const [loading, setLoading] = useState(false);
   const [hasVideo, setHasVideo] = useState(false);
   const [postImage, setPostImage] = useState('');
-  const [allowedNumberOfCharacters] = useState('100/100');
+  const [allowedNumberOfCharacters] = useState('1000/1000');
   const [textAreaBackground, setTextAreaBackground] = useState('#ffffff');
   const [postData, setPostData] = useState({
     post: '',
@@ -47,7 +47,7 @@ const EditPost = () => {
   const imageInputRef = useRef(null);
   const dispatch = useDispatch();
 
-  const maxNumberOfCharacters = 100;
+  const maxNumberOfCharacters = 1000;
 
   const selectBackground = (bgColor) => {
     PostUtils.selectBackground(bgColor, postData, setTextAreaBackground, setPostData);
@@ -243,12 +243,7 @@ const EditPost = () => {
       <PostWrapper>
         <div></div>
         {!gifModalIsOpen && (
-          <div
-            className="modal-box"
-            style={{
-              height: selectedPostImage || hasVideo || post?.gifUrl || post?.imgId ? '700px' : 'auto'
-            }}
-          >
+          <div className="modal-box">
             {loading && (
               <div className="modal-box-loading" data-testid="modal-box-loading">
                 <span>Updating post...</span>

@@ -1,10 +1,8 @@
 import Avatar from '@components/avatar/Avatar';
-import Input from '@components/input/Input';
+// import Input from '@components/input/Input';
 import { useDispatch, useSelector } from 'react-redux';
-import photo from '@assets/images/photo.png';
-import gif from '@assets/images/gif.png';
-import feeling from '@assets/images/feeling.png';
-import video from '@assets/images/video.png';
+import { icons } from '@assets/assets';
+
 import '@components/posts/post-form/PostForm.scss';
 import {
   openModal,
@@ -17,6 +15,8 @@ import AddPost from '@components/posts/post-modal/post-add/AddPost';
 import { useRef, useState } from 'react';
 import { ImageUtils } from '@services/utils/image-utils.service';
 import EditPost from '@components/posts/post-modal/post-edit/EditPost';
+import PostButtonItem from '../post-button-item/PostButtonItem';
+import PostInputItem from '../post-input-item/PostInputItem';
 
 const PostForm = () => {
   const { profile } = useSelector((state) => state.user);
@@ -28,6 +28,19 @@ const PostForm = () => {
   const fileInputRef = useRef();
   const videoInputRef = useRef();
   const dispatch = useDispatch();
+
+  const openFileVideoInput = () => {
+    openVideoModal();
+    if (videoInputRef.current) {
+      videoInputRef.current.value = null;
+    }
+  };
+  const openFilePictureInput = () => {
+    openImageModal();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
+  };
 
   const openPostModal = () => {
     dispatch(openModal({ type: 'add' }));
@@ -83,42 +96,24 @@ const PostForm = () => {
             </div>
             <hr />
             <ul className="post-form-list" data-testid="list-item">
-              <li className="post-form-list-item image-select" onClick={() => openImageModal()}>
-                <Input
-                  name="image"
-                  ref={fileInputRef}
-                  type="file"
-                  className="file-input"
-                  onClick={() => {
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = null;
-                    }
-                  }}
-                  handleChange={handleFileChange}
-                />
-                <img src={photo} alt="" /> Photo
-              </li>
-              <li className="post-form-list-item" onClick={() => openGifModal()}>
-                <img src={gif} alt="" /> Gif
-              </li>
-              <li className="post-form-list-item" onClick={() => openFeelingsComponent()}>
-                <img src={feeling} alt="" /> Feeling
-              </li>
-              <li className="post-form-list-item image-select" onClick={() => openVideoModal()}>
-                <Input
-                  name="video"
-                  ref={videoInputRef}
-                  type="file"
-                  className="file-input"
-                  onClick={() => {
-                    if (videoInputRef.current) {
-                      videoInputRef.current.value = null;
-                    }
-                  }}
-                  handleChange={handleVideoFileChange}
-                />
-                <img src={video} alt="" /> Video
-              </li>
+              <PostInputItem
+                text={'Photo'}
+                icon={icons.picture}
+                onClick={openFilePictureInput}
+                type={'file'}
+                handleChange={handleFileChange}
+                ref={fileInputRef}
+              />{' '}
+              <PostInputItem
+                text={'Video'}
+                icon={icons.video}
+                onClick={openFileVideoInput}
+                type={'file'}
+                handleChange={handleVideoFileChange}
+                ref={videoInputRef}
+              />
+              <PostButtonItem text={'Gif'} icon={icons.gif} onClick={openGifModal} />
+              <PostButtonItem text={'Feeling'} icon={icons.feeling} onClick={openFeelingsComponent} />
             </ul>
           </div>
         </div>

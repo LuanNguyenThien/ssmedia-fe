@@ -8,12 +8,12 @@
   grid-template-columns: 1;
   grid-auto-rows: 1fr;
   grid-template-areas: "modal";
+  
 }
-
 .modal-bg {
   width: 100vw;
   height: 100vh;
   z-index: 0;
-  background: var(--white-11);
-  opacity: 0.6;
+  background-color: black;
+  opacity: 0.3;
 }

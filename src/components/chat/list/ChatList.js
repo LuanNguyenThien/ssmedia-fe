@@ -17,7 +17,7 @@ import { chatService } from '@services/api/chat/chat.service';
 import { timeAgo } from '@services/utils/timeago.utils';
 import ChatListBody from '@components/chat/list/ChatListBody';
 
-const ChatList = () => {
+const   ChatList = () => {
   const { profile } = useSelector((state) => state.user);
   const { chatList } = useSelector((state) => state.chat);
   const [search, setSearch] = useState('');
@@ -154,7 +154,7 @@ const ChatList = () => {
       ChatUtils.socketIOChatList(profile, chatMessageList, setChatMessageList);
     }
     if (!rendered) setRendered(true);
-  }, [chatMessageList, profile, rendered]);
+  }, [chatMessageList, profile, rendered, location]);
 
   return (
     <div data-testid="chatList">

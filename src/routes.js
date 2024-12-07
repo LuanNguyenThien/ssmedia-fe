@@ -11,6 +11,7 @@ import ProfileSkeleton from '@pages/social/profile/ProfileSkeleton';
 import ChatSkeleton from '@pages/social/chat/ChatSkeleton';
 import VideoSkeleton from '@pages/social/videos/VideoSkeleton';
 import { ChakraProvider } from '@chakra-ui/react';
+import Group from '@pages/social/groups/group';
 
 const Social = lazy(() => import('@pages/social/Social'));
 const Chat = lazy(() => import('@pages/social/chat/Chat'));
@@ -23,7 +24,9 @@ const Videos = lazy(() => import('@pages/social/videos/Videos'));
 const Profile = lazy(() => import('@pages/social/profile/Profile'));
 const Streams = lazy(() => import('@pages/social/streams/Streams'));
 const PostDetail = lazy(() => import('@pages/social/streams/PostDetail'));
-const SavePage = lazy(() => import('@pages/social/streams/SavePage'));
+const SavePage = lazy(() => import('@pages/social/saves/SavePage'));
+const SearchPage = lazy(() => import('@pages/social/search/SearchPage'));
+const DashBoard = lazy(() => import('@pages/admin/dashboard/dashboard'));
 export const AppRouter = () => {
   const elements = useRoutes([
     {
@@ -60,6 +63,14 @@ export const AppRouter = () => {
           element: (
             <Suspense fallback={<StreamsSkeleton />}>
               <Streams />
+            </Suspense>
+          )
+        },
+        {
+          path: 'search',
+          element: (
+            <Suspense fallback={<StreamsSkeleton />}>
+              <SearchPage />
             </Suspense>
           )
         },
@@ -144,6 +155,14 @@ export const AppRouter = () => {
           )
         },
         {
+          path: 'groups',
+          element: (
+            <Suspense>
+              <Group />
+            </Suspense>
+          )
+        },
+        {
           path: 'profile/:username',
           element: (
             <Suspense fallback={<ProfileSkeleton />}>
@@ -152,6 +171,14 @@ export const AppRouter = () => {
           )
         }
       ]
+    },
+    {
+      path: '/admin',
+      element: (
+        <ChakraProvider>
+          <DashBoard />
+        </ChakraProvider>
+      )
     },
     {
       path: '*',

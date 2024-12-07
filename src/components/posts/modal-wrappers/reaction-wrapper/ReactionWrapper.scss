@@ -7,14 +7,13 @@
   display: grid;
   grid-template-columns: 1;
   grid-auto-rows: 1fr;
-  grid-template-areas: "modal";
-
+  grid-template-areas: 'modal';
   .modal-bg {
     width: 100vw;
     height: 100vh;
     z-index: 0;
-    background: var(--white-11);
-    opacity: 0.1;
+    background-color: black;
+    opacity: 0.3;
   }
 
   &-container {
@@ -22,7 +21,6 @@
     align-self: center;
     justify-self: center;
     position: absolute;
-    width: 500px;
     overflow: hidden;
     box-sizing: border-box;
     z-index: 1;
@@ -31,6 +29,12 @@
     pointer-events: all;
     background-color: var(--white-1);
     flex-direction: column;
+    width: 50%;
+    height: 80%;
+    border-radius: 10px; 
+    @media screen and (max-width: 768px) {
+      width: 90%;
+    }
 
     &-body {
       height: 600px;
@@ -40,7 +44,7 @@
 
     &-header {
       display: grid;
-      grid-template-areas: ". button";
+      grid-template-areas: '. button';
       grid-template-columns: 1fr 36px;
       grid-template-rows: 1fr;
       height: 40px;

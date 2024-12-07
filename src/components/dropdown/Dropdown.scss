@@ -1,106 +1,128 @@
+@import '../../variables';
 .social-dropdown {
-  width: 300px;
+  width: 400px;
   margin: auto;
-  background: var(--white-1);
   border-radius: 5px;
   transition: all 0.3s;
   position: relative;
   z-index: 2;
   margin-top: 10px;
-  box-shadow: rgb(145 158 171 / 20%) 0 0 2px 0, rgb(145 158 171 / 12%) 0 12px 24px -4px;
+
+  @media screen and (max-width: 768px) {
+    position: fixed;
+    top: 5;
+    left: 0;
+    right: 0;
+    height: auto;
+    width: 100%;
+    margin-top: 20px;
+    z-index: 10000;
+  }
 
   .social-card {
-    background: var(--white-1);
-    border-radius: 5px;
-    border: none;
+    /* Nền xanh */
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 1px 0 var(--black-1);
+    @media screen and (max-width: 768px) {
+      box-shadow: none;
+      transition: background-color 0.3s ease;
+      padding: 5px;
+    }
 
     .social-bg-primary {
-      background-color: var(--primary-1);
+      background: $component-color;
       padding: 15px;
       height: 57px;
-      border-radius: 5px;
-
+      color: black;
       h5 {
         font-size: 16px;
         padding: 5px 0;
-        color: var(--white-1);
-
         .social-count {
           float: right;
           font-size: 12px;
           font-weight: 700;
           line-height: 16px;
           white-space: nowrap;
-          color: var(--gray-3);
+          color: darken($component-color, 90%);
           background-color: var(--white-7);
           padding: 3px 8px;
-          border-radius: 5px;
+          border-radius: 50px;
         }
       }
     }
 
     &-body-info {
-      border: 1px solid var(--white-7);
-      background: var(--white-1);
-
+      background-color: var(--white-1);
+      border-radius: 0 0 10px 10px;
+      border-bottom: 1px solid var(--black-1);
+      border-width: 1px;
+      border-color: black;
       &-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        gap: 10px;
+        padding: 10px;
         overflow-y: scroll;
 
         .social-sub-card {
-          padding: 5px 15px;
-          margin-top: 3px;
-          border-bottom: 1px solid var(--white-4);
-          display: grid;
-          grid-template-areas: "avatar body icon";
-          grid-template-columns: max-content 1fr max-content;
-          grid-template-rows: 1fr;
+          padding: 10px 15px;
+          margin: 0;
+          border-radius: 5px;
+          display: flex;
+          flex-direction: row;
           width: 100%;
-          overflow-x: hidden;
-          overflow-y: scroll;
           cursor: pointer;
+          box-shadow: none;
+          background-color: #f9f9f9;
+          box-sizing: border-box;
 
           .content-avatar {
-            grid-area: avatar;
-            display: flex;
             width: 45px;
             height: 45px;
             text-align: center;
-            border: 5px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
             .userIcon {
               width: 30px;
               height: 30px;
-              align-self: center;
-              color: var(--primary-1);
+              color: #48bb78;
             }
           }
 
           .content-body {
-            grid-area: body;
-            width: 95%;
+            width: 100%;
+            padding: 0 10px;
             overflow-x: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            white-space: nowrap; /* Không cho nội dung xuống dòng */
+            text-overflow: ellipsis; /* Hiển thị dấu '...' khi nội dung tràn */
 
             .title {
               font-size: 14px;
               line-height: 21px;
-              height: 21px;
-              display: contents;
               color: var(--black-4);
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
 
             .subtext {
               font-size: 12px;
               color: var(--gray-9);
+              overflow: hidden; /* Ẩn phần nội dung tràn */
+              text-overflow: ellipsis; /* Thêm dấu ba chấm */
+              white-space: nowrap; /* Không cho nội dung xuống dòng */
             }
           }
 
           .content-icons {
-            grid-area: icon;
             display: flex;
             flex-direction: column;
-            align-self: center;
+            justify-content: center;
+            align-items: center;
 
             .trash {
               font-size: 14px;
@@ -108,15 +130,14 @@
             }
 
             .circle {
-              margin: auto;
-              margin-top: 6px;
               font-size: 10px;
               color: var(--primary-1);
+              margin-top: 6px;
             }
           }
 
           &:hover {
-            background-color: var(--white-14);
+            background-color: #e0f7e9; /* Màu nền khi hover */
           }
         }
       }
@@ -127,7 +148,7 @@
         cursor: auto;
 
         .signOut {
-          background-color: var(--primary-1);
+          background-color: #48bb78;
           color: var(--white-1);
           border-radius: 5px;
           font-size: 14px;

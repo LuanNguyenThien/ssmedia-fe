@@ -22,7 +22,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const [loading, setLoading] = useState(false);
   const [hasVideo, setHasVideo] = useState(false);
   const [postImage, setPostImage] = useState('');
-  const [allowedNumberOfCharacters] = useState('100/100');
+  const [allowedNumberOfCharacters] = useState('1000/1000');
   const [textAreaBackground, setTextAreaBackground] = useState('#ffffff');
   const [postData, setPostData] = useState({
     post: '',
@@ -43,7 +43,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const imageInputRef = useRef(null);
   const dispatch = useDispatch();
 
-  const maxNumberOfCharacters = 100;
+  const maxNumberOfCharacters = 1000;
 
   const selectBackground = (bgColor) => {
     PostUtils.selectBackground(bgColor, postData, setTextAreaBackground, setPostData);
@@ -170,12 +170,6 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
         {!gifModalIsOpen && (
           <div
             className="modal-box"
-            style={{
-              height:
-                selectedPostImage || hasVideo || gifUrl || image || postData?.gifUrl || postData?.image
-                  ? '700px'
-                  : 'auto'
-            }}
           >
             {loading && (
               <div className="modal-box-loading" data-testid="modal-box-loading">

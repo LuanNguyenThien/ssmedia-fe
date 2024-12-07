@@ -1,17 +1,22 @@
 .modal-box {
+  z-index: 1;
+  height:auto;
   grid-area: modal;
   align-self: center;
   justify-self: center;
   position: absolute;
-  width: 500px;
-  overflow: hidden;
   box-sizing: border-box;
-  z-index: 1;
-  min-height: 620px;
   border-radius: 8px;
   background-color: var(--white-1);
   flex-direction: column;
 
+  @media screen and (max-width: 768px) {
+    width: 90%;
+    height: fit-content;
+    padding-bottom: 100px ;
+    border-radius: 10;
+    z-index: 50;
+  }
   &-loading {
     grid-area: modal;
     align-self: center;
@@ -45,8 +50,8 @@
 
   &-header {
     display: grid;
-    grid-template-areas: ". h2 button";
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: '. h2 button';
+    grid-template-columns: 1fr 2fr 1fr;
     grid-template-rows: 1fr;
     height: 40px;
     padding: 16px;
@@ -57,6 +62,8 @@
       color: var(--gray-11);
       font-weight: 700;
       font-size: 1.25rem;
+      width: 100%;
+      text-align: center;
     }
 
     &-cancel {
@@ -75,7 +82,7 @@
   }
 
   &-button {
-    padding: 0 15px;
+    padding: 15px 15px;
 
     .post-button {
       height: 35px;
@@ -116,10 +123,17 @@
       padding: 0 20px;
       overflow-x: hidden;
       word-break: break-all;
+      max-width: 500px;
 
       &:empty::before {
         content: attr(data-placeholder);
         color: var(--gray-1);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .editable {
+        height: 140px;
       }
     }
 
@@ -238,12 +252,12 @@ hr {
 }
 
 .modal-box-image-form {
-  height: 400px;
+  height: 300px;
   overflow-y: scroll;
   display: grid;
   grid-template-areas:
-    "input"
-    "image";
+    'input'
+    'image';
 
   .post-input {
     grid-area: input;
@@ -292,9 +306,14 @@ hr {
   }
 }
 
+@media (max-width: 768px) {
+  .modal-box-image-form {
+    height: 240px;
+  }
+}
+
 .modal-box-bg-colors {
   padding: 5px 15px;
-  height: 45px;
 
   ul {
     list-style: none;
@@ -320,18 +339,15 @@ hr {
 }
 
 .modal-box-selection {
-  padding: 10px 15px;
-
   .post-form-list {
-    padding: 0;
-    margin: 0;
     align-items: center;
     display: flex;
     list-style: none;
+    width: 100%;
+    padding: 15px 15px;
 
     .post-form-list-item {
       display: flex;
-      color: var(--primary-1);
       background: var(--white-7);
       border-radius: 5px;
       padding: 0.5rem;
@@ -339,9 +355,13 @@ hr {
       cursor: pointer;
 
       img {
-        width: 30px;
-        height: 20px;
+        width: 40px;
         padding-right: 5px;
+      }
+      span {
+        @media screen and (max-width: 768px) {
+          display: none;
+        }
       }
     }
 
@@ -358,7 +378,6 @@ hr {
   align-self: center;
   justify-self: center;
   position: absolute;
-  width: 500px;
   overflow: hidden;
   box-sizing: border-box;
   z-index: 1;
@@ -367,11 +386,13 @@ hr {
   pointer-events: all;
   background-color: var(--white-1);
   flex-direction: column;
+  width: 100%;
+  max-width: 500px;
 
   &-header {
     display: grid;
-    grid-template-areas: "button h2 .";
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: 'button h2 .';
+    grid-template-columns: 1fr 2fr 1fr;
     grid-template-rows: 1fr;
     height: 40px;
     padding: 16px;

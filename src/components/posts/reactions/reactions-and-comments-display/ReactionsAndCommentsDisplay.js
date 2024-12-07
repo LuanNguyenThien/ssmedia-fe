@@ -8,6 +8,7 @@ import { postService } from '@services/api/post/post.service';
 import { reactionsMap } from '@services/utils/static.data';
 import { updatePostItem } from '@redux/reducers/post/post.reducer';
 import { toggleCommentsModal, toggleReactionsModal } from '@redux/reducers/modal/modal.reducer';
+import useLocalStorage from '@hooks/useLocalStorage';
 
 const ReactionsAndCommentsDisplay = ({ post }) => {
   const { reactionsModalIsOpen, commentsModalIsOpen } = useSelector((state) => state.modal);
@@ -15,6 +16,8 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
   const [reactions, setReactions] = useState([]);
   const [postCommentNames, setPostCommentNames] = useState([]);
   const dispatch = useDispatch();
+  const [setSelectedPostCommentId] = useLocalStorage('selectedPostCommentId', 'set');
+  const [setSelectedPostReactId] = useLocalStorage('selectedPostReactId', 'set');
 
   const getPostReactions = async () => {
     try {
@@ -42,11 +45,13 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
   };
 
   const openReactionsComponent = () => {
+    setSelectedPostReactId(post._id);
     dispatch(updatePostItem(post));
     dispatch(toggleReactionsModal(!reactionsModalIsOpen));
   };
 
   const openCommentsComponent = () => {
+    setSelectedPostCommentId(post._id);
     dispatch(updatePostItem(post));
     dispatch(toggleCommentsModal(!commentsModalIsOpen));
   };

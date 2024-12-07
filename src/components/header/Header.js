@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import logo from '@assets/images/logo.svg';
-import { FaCaretDown, FaCaretUp, FaRegBell, FaRegEnvelope } from 'react-icons/fa';
+import { IoIosArrowBack } from 'react-icons/io';
+
 import bell from '@assets/images/bell.svg';
 import mess from '@assets/images/mes.svg';
+import { icons } from '@assets/assets';
 import '@components/header/Header.scss';
+import Logo from '@components/logo/logo';
 import Avatar from '@components/avatar/Avatar';
 import { Utils } from '@services/utils/utils.service';
 import useDetectOutsideClick from '@hooks/useDetectOutsideClick';
@@ -19,6 +21,7 @@ import { userService } from '@services/api/user/user.service';
 import HeaderSkeleton from '@components/header/HeaderSkeleton';
 import { notificationService } from '@services/api/notifications/notification.service';
 import { NotificationUtils } from '@services/utils/notification-utils.service';
+import { FollowersUtils } from '@services/utils/followers-utils.service';
 import NotificationPreview from '@components/dialog/NotificationPreview';
 import { socketService } from '@services/socket/socket.service';
 import { sumBy } from 'lodash';
@@ -26,11 +29,19 @@ import { ChatUtils } from '@services/utils/chat-utils.service';
 import { chatService } from '@services/api/chat/chat.service';
 import { getConversationList } from '@redux/api/chat';
 
+import { setIsOpenSidebar, setIsOpenSearchBar } from '@redux/reducers/navbar/navState.reducer';
+
+// components
+import DropdownSetting from '@components/header/components/dropdown/DropdownSetting';
+import SearchButtonMb from '@components/header/components/searchButton/SearchButtonMb';
 const Header = () => {
   const { profile } = useSelector((state) => state.user);
+  const [blockedUsers, setBlockedUsers] = useState([]);
+  const token = useSelector((state) => state.user.token);
   const { chatList } = useSelector((state) => state.chat);
-  const [environment, setEnvironment] = useState('');
-  const [settings, setSettings] = useState([]);
+
+  // const [environment, setEnvironment] = useState('');
+  // const [settings, setSettings] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [notificationCount, setNotificationCount] = useState(0);
   const [notificationDialogContent, setNotificationDialogContent] = useState({
@@ -56,9 +67,9 @@ const Header = () => {
   const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'set');
   const [deleteSessionPageReload] = useSessionStorage('pageReload', 'delete');
 
-  const backgrounColor = `${
-    environment === 'DEV' || environment === 'LOCAL' ? '#50b5ff' : environment === 'STG' ? '#e9710f' : ''
-  }`;
+  // const backgrounColor = `${
+  //   environment === 'DEV' || environment === 'LOCAL' ? '#50b5ff' : environment === 'STG' ? '#e9710f' : ''
+  // }`;
 
   const getUserNotifications = async () => {
     try {
@@ -73,7 +84,6 @@ const Header = () => {
       Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
     }
   };
-
   const onMarkAsRead = async (notification) => {
     try {
       NotificationUtils.markMessageAsRead(notification?._id, notification, setNotificationDialogContent);
@@ -119,6 +129,9 @@ const Header = () => {
       setLoggedIn(false);
       Utils.clearStore({ dispatch, deleteStorageUsername, deleteSessionPageReload, setLoggedIn });
       await userService.logoutUser();
+      socketService?.socket.disconnect();
+      socketService?.removeAllListeners();
+      socketService.setupSocketConnection();
       navigate('/');
     } catch (error) {
       Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
@@ -126,13 +139,14 @@ const Header = () => {
   };
 
   useEffectOnce(() => {
-    Utils.mapSettingsDropdownItems(setSettings);
+    ChatUtils.usersOnlines();
+    // Utils.mapSettingsDropdownItems(setSettings);
     getUserNotifications();
   });
 
   useEffect(() => {
-    const env = Utils.appEnvironment();
-    setEnvironment(env);
+    // const env = Utils.appEnvironment();
+    // // setEnvironment(env);
     const count = sumBy(chatList, (notification) => {
       return !notification.isRead && notification.receiverUsername === profile?.username ? 1 : 0;
     });
@@ -141,6 +155,7 @@ const Header = () => {
   }, [chatList, profile]);
 
   useEffect(() => {
+    NotificationUtils.socketIOAnalyzeNotifications(profile, dispatch);
     NotificationUtils.socketIONotification(profile, notifications, setNotifications, 'header', setNotificationCount);
     NotificationUtils.socketIOMessageNotification(
       profile,
@@ -152,7 +167,18 @@ const Header = () => {
     );
   }, [profile, notifications, dispatch, location, messageNotifications]);
 
+  useEffect(() => {
+    FollowersUtils.socketIOBlockAndUnblock(profile, token, setBlockedUsers, dispatch);
+  }, [dispatch, profile, token]);
+
   const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearchKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      navigate('/app/social/search', { state: { query: searchTerm } });
+    }
+  };
+
   return (
     <>
       {!profile ? (
@@ -169,6 +195,7 @@ const Header = () => {
               />
             </div>
           )}
+
           {notificationDialogContent?.senderName && (
             <NotificationPreview
               title="Your post"
@@ -190,58 +217,82 @@ const Header = () => {
             />
           )}
           <div className="header-navbar">
-            <div className="header-image" data-testid="header-image" onClick={() => navigate('/app/social/streams')}>
-              <img src={logo} className="img-fluid" alt="" />
-              <div className="app-name">
-                Chatty
-                {environment && (
-                  <span className="environment" style={{ backgroundColor: `${backgrounColor}` }}>
-                    {environment}
-                  </span>
-                )}
+            <div
+              className="header-image"
+              data-testid="header-image"
+              onClick={() => {
+                navigate('/app/social/streams');
+                window.location.reload();
+              }}
+            >
+              <Logo />
+            </div>
+
+            {/* SEARCH */}
+            <div className="search-container">
+              <div className="search">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyPress={handleSearchKeyPress}
+                  name="text"
+                  placeholder="Discover what you need..."
+                  className="input"       
+                />
+                {/* <img src={icons.search} alt="" /> */}
               </div>
             </div>
 
-            <div className="search-container">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Tìm kiếm..."
-                className="search-input"
-              />
-            </div>
-
-            <div className="header-menu-toggle">
-              <span className="bar"></span>
-              <span className="bar"></span>
-              <span className="bar"></span>
-            </div>
             <ul className="header-nav">
-              {/* Phần còn lại của mã không thay đổi */}
+              {/* SEARCH MOBILE */}
+              <li data-testid="settings-list-item" className="header-nav-item header-nav-item-search-mb">
+                <span onClick={() => dispatch(setIsOpenSearchBar())} className="header-list-name">
+                  <img src={icons.search} className="header-list-icon" />
+                </span>
+                <SearchButtonMb />
+              </li>{' '}
+              {/* MESSAGE */}
               <li
-                data-testid="notification-list-item"
+                data-testid="message-list-item"
                 className="header-nav-item active-item"
                 onClick={() => {
-                  setIsMessageActive(false);
-                  setIsNotificationActive(true);
+                  setIsMessageActive((prevState) => !prevState);
+                  setIsNotificationActive(false);
                   setIsSettingsActive(false);
                 }}
               >
                 <span className="header-list-name">
-                  <img src={bell} className="header-list-icon" />
+                  <img src={mess} className="header-list-icon" />
+                  {messageCount > 0 && <span className="bg-danger-dots dots" data-testid="messages-dots"></span>}
+                </span>
+                &nbsp;
+              </li>
+              {/* NOTIFICATION */}
+              <li
+                data-testid="notification-list-item"
+                className="header-nav-item active-item"
+                onClick={() => {
+                  if (isNotificationActive === true) setIsNotificationActive(false);
+                  else setIsNotificationActive(true);
+                  setIsMessageActive(false);
+                  setIsSettingsActive(false);
+                }}
+              >
+                <span className="header-list-name">
                   {notificationCount > 0 && (
                     <span className="bg-danger-dots dots" data-testid="notification-dots">
                       {notificationCount}
                     </span>
                   )}
+                  <img src={bell} className="header-list-icon" />
                 </span>
                 {isNotificationActive && (
                   <ul className="dropdown-ul" ref={notificationRef}>
                     <li className="dropdown-li">
                       <Dropdown
                         height={300}
-                        style={{ right: '250px', top: '20px' }}
+                        style={{ right: '315px', top: '30px' }}
                         data={notifications}
                         notificationCount={notificationCount}
                         title="Notifications"
@@ -253,21 +304,21 @@ const Header = () => {
                 )}
                 &nbsp;
               </li>
+              {/* NAV_SIDEBAR_OPEN */}
               <li
-                data-testid="message-list-item"
-                className="header-nav-item active-item"
-                onClick={() => {
-                  setIsMessageActive(true);
-                  setIsNotificationActive(false);
-                  setIsSettingsActive(false);
+                id="sidebar-toggler"
+                data-testid="header-nav-list-item"
+                className="header-nav-item header-nav-item-sidebar"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  dispatch(setIsOpenSidebar());
                 }}
               >
                 <span className="header-list-name">
-                  <img src={mess} className="header-list-icon" />
-                  {messageCount > 0 && <span className="bg-danger-dots dots" data-testid="messages-dots"></span>}
+                  <img src={icons.sidebarSelector} className="header-list-icon" />
                 </span>
-                &nbsp;
               </li>
+              {/* PROFILE */}
               <li
                 data-testid="settings-list-item"
                 className="header-nav-item"
@@ -277,27 +328,27 @@ const Header = () => {
                   setIsNotificationActive(false);
                 }}
               >
-                <span className="header-list-name profile-image">
-                  <Avatar
-                    name={profile?.username}
-                    bgColor={profile?.avatarColor}
-                    textColor="#ffffff"
-                    size={40}
-                    avatarSrc={profile?.profilePicture}
-                  />
-                </span>
-                <span className="header-list-name profile-name">
-                  {profile?.username}
-                  {!isSettingsActive ? (
-                    <FaCaretDown className="header-list-icon caret" />
-                  ) : (
-                    <FaCaretUp className="header-list-icon caret" />
-                  )}
-                </span>
+                <div className="header-nav-item-profile">
+                  <span className="header-list-name">
+                    {' '}
+                    <Avatar
+                      name={profile?.username}
+                      bgColor={profile?.avatarColor}
+                      textColor="#ffffff"
+                      size={35}
+                      avatarSrc={profile?.profilePicture}
+                    />
+                    <IoIosArrowBack
+                      className={`${
+                        isSettingsActive ? 'header-nav-item-profile-arrow-down' : 'header-nav-item-profile-arrow'
+                      } `}
+                    />
+                  </span>
+                </div>
                 {isSettingsActive && (
                   <ul className="dropdown-ul" ref={settingsRef}>
-                    <li className="dropdown-li">
-                      <Dropdown
+                    <li className="dropdown-li ">
+                      {/* <Dropdown
                         height={300}
                         style={{ right: '150px', top: '40px' }}
                         data={settings}
@@ -305,13 +356,17 @@ const Header = () => {
                         title="Settings"
                         onLogout={onLogout}
                         onNavigate={() => ProfileUtils.navigateToProfile(profile, navigate)}
+                      /> */}
+                      <DropdownSetting
+                        isSettingsActive={isSettingsActive}
+                        avatarSrc={profile?.profilePicture}
+                        name={profile?.username}
+                        onLogout={onLogout}
+                        onNavigate={() => ProfileUtils.navigateToProfile(profile, navigate)}
                       />
                     </li>
                   </ul>
                 )}
-                <ul className="dropdown-ul">
-                  <li className="dropdown-li"></li>
-                </ul>
               </li>
             </ul>
           </div>

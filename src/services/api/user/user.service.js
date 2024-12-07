@@ -21,6 +21,11 @@ class UserService {
     return response;
   }
 
+  async getAllUsersAdminRole(page) {
+    const response = await axios.get(`/admin/users/all/${page}`);
+    return response;
+  }
+
   async searchUsers(query) {
     const response = await axios.get(`/user/profile/search/${query}`);
     return response;

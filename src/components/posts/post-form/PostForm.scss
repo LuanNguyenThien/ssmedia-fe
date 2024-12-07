@@ -1,9 +1,12 @@
+@import '../../../variables';
+
 .post-form {
-  background: var(--white-1);
+  background: $component-color;
   height: 240px;
   border-radius: 16px;
   padding: 0 8px;
-
+  box-shadow: 0 0 2px 0 var(--gray-16), 0 2px 14px -4px var(--gray-12);
+  border: 0.5px solid var(--gray-16);
   &-header {
     height: 60px;
     border-bottom: 1px solid var(--white-4);
@@ -26,7 +29,7 @@
       border: 0;
       border-top: 1px solid var(--white-4);
       margin-top: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     .post-form-input-body {
@@ -54,25 +57,29 @@
     }
 
     .post-form-list {
-      padding: 0;
-      margin: 0;
       align-items: center;
       display: flex;
       list-style: none;
-
+      width: 100%;
+      padding: 15px 15px;
+      gap:10px;
       &-item {
         display: flex;
         color: var(--primary-1);
-        background: var(--white-7);
+
         border-radius: 5px;
         padding: 0.5rem;
         margin-right: 1rem;
         cursor: pointer;
-
+        align-items: center;
         img {
           width: 30px;
-          height: 20px;
           padding-right: 5px;
+        }
+        span {
+          @media screen and (max-width: 768px) {
+            display: none;
+          }
         }
       }
 

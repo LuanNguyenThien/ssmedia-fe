@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Spinner from '@components/spinner/Spinner';
 import '@pages/social/streams/Streams.scss';
 import Suggestions from '@components/suggestions/Suggestions';
 import { getUserSuggestions } from '@redux/api/suggestion';
@@ -9,7 +10,7 @@ import Posts from '@components/posts/Posts';
 import { Utils } from '@services/utils/utils.service';
 import { postService } from '@services/api/post/post.service';
 import { getPosts } from '@redux/api/posts';
-import { orderBy, uniqBy } from 'lodash';
+import { uniqBy } from 'lodash';
 import useInfiniteScroll from '@hooks/useInfiniteScroll';
 import { PostUtils } from '@services/utils/post-utils.service';
 import useLocalStorage from '@hooks/useLocalStorage';
@@ -21,7 +22,7 @@ const Streams = () => {
   const [posts, setPosts] = useState([]);
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(2);
   const [totalPostsCount, setTotalPostsCount] = useState(0);
   const bodyRef = useRef(null);
   const bottomLineRef = useRef();
@@ -31,28 +32,30 @@ const Streams = () => {
   const [deleteSelectedPostId] = useLocalStorage('selectedPostId', 'delete');
   useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
   const PAGE_SIZE = 10;
+  const [loadingMore, setLoadingMore] = useState(false);
+  const { profile } = useSelector((state) => state.user);
 
   function fetchPostData() {
-    let pageNum = currentPage;
-    if (currentPage <= Math.round(totalPostsCount / PAGE_SIZE)) {
-      pageNum += 1;
-      setCurrentPage(pageNum);
-      getAllPosts();
-    }
+    if (currentPage > Math.ceil(totalPostsCount / PAGE_SIZE)) return;
+    console.log(currentPage, Math.ceil(totalPostsCount / PAGE_SIZE));
+    setLoadingMore(true);
+    getAllPosts().finally(() => setLoadingMore(false));
   }
 
   const getAllPosts = async () => {
     try {
       const response = await postService.getAllPosts(currentPage);
-      if (response.data.posts.length > 0) {
-        appPosts = [...posts, ...response.data.posts];
-        const allPosts = uniqBy(appPosts, '_id');
-        const orderedPosts = orderBy(allPosts, ['createdAt'], ['desc']);
-        setPosts(orderedPosts);
+      if (response.data.posts.length >= 0) {
+        appPosts.current = [...posts, ...response.data.posts];
+        const allPosts = uniqBy(appPosts.current, '_id');
+        // const orderedPosts = orderBy(allPosts, ['createdAt'], ['desc']);
+        setTotalPostsCount(response.data.totalPosts);
+        setPosts(allPosts);
+        setCurrentPage((prevPage) => prevPage + 1);
       }
       setLoading(false);
     } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
+      Utils.dispatchNotification(error.response?.data?.message || 'Failed to load posts.', 'error', dispatch);
     }
   };
 
@@ -84,22 +87,38 @@ const Streams = () => {
 
   useEffect(() => {
     setLoading(allPosts?.isLoading);
-    const orderedPosts = orderBy(allPosts?.posts, ['createdAt'], ['desc']);
-    setPosts(orderedPosts);
+    // const orderedPosts = orderBy(allPosts?.posts, ['createdAt'], ['desc']);
+    setPosts(allPosts?.posts);
     setTotalPostsCount(allPosts?.totalPostsCount);
+    // console.log('allPosts:', allPosts);
   }, [allPosts]);
 
+  // useEffect(() => {
+  //   console.log('currentPage:', currentPage);
+  //   console.log('totalPostsCount:', totalPostsCount);
+  //   console.log('loadingMore:', loadingMore);
+  // }, [currentPage, totalPostsCount, loadingMore]);
+
   useEffect(() => {
-    PostUtils.socketIOPost(posts, setPosts);
-  }, [posts]);
+    PostUtils.socketIOPost(posts, setPosts, profile);
+  }, [posts, profile]);
 
   return (
     <div className="streams" data-testid="streams">
       <div className="streams-content">
-        <div className="streams-post" ref={bodyRef}>
+        <div className="streams-post" ref={bodyRef} style={{ height: '98vh' }}>
           <PostForm />
           <Posts allPosts={posts} postsLoading={loading} userFollowing={following} />
-          <div ref={bottomLineRef} style={{ marginBottom: '50px', height: '50px' }}></div>
+          <div>
+            {currentPage > Math.ceil(totalPostsCount / PAGE_SIZE) &&
+              <div className="no-chat" data-testid="no-chat">
+                You have read all posts.
+              </div>
+            }
+          </div>
+          <div ref={bottomLineRef} style={{ marginBottom: '30px', height: '30px' }}>
+            {loadingMore && <Spinner />} 
+          </div>
         </div>
         <div className="streams-suggestions">
           <Suggestions />

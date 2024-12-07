@@ -14,7 +14,7 @@
     max-width: 80px;
     border: none;
     background: none;
-    padding: 7px;
+    padding: 0px;
     outline: none;
     cursor: pointer;
   
@@ -54,6 +54,11 @@
         padding: 0 5px;
         cursor: pointer;
         margin: auto;
+        img {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+        }
       }
     }
 
