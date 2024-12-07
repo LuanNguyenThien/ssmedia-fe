@@ -7,7 +7,6 @@ import { timeAgo } from '@services/utils/timeago.utils';
 export class NotificationUtils {
   static socketIOAnalyzeNotifications(profile, dispatch) {
     socketService?.socket?.on('post analysis', (message, {userId}) => {
-      console.log('post analysis', message, userId);
       if (profile?._id === userId) {
         Utils.dispatchNotification(message, 'error', dispatch);
       }
