@@ -12,7 +12,10 @@
     overflow-x: hidden;
     overflow-y: scroll;
     grid-column-gap: 20px;
-    padding: 0 10px;
+
+    @media screen and (max-width: 1200px) {
+      padding: 10px;
+    }
 
     .streams-post {
       grid-area: post;

@@ -28,7 +28,8 @@
     },
     "rules": {
       "prettier/prettier": "off",
-      "react/react-in-jsx-scope": "off"
+      "react/react-in-jsx-scope": "off",
+      "no-unused-vars": ["error", { "vars": "all", "args": "none", "ignoreRestSiblings": true }]
     }
     // "rules": {
     //   "prettier/prettier": ["error", {}, { "usePrettierrc": true }],

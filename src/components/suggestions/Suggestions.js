@@ -8,7 +8,7 @@ import { Utils } from '@services/utils/utils.service';
 import { FollowersUtils } from '@services/utils/followers-utils.service';
 import { filter } from 'lodash';
 import { addToSuggestions } from '@redux/reducers/suggestions/suggestions.reducer';
-
+import { ProfileUtils } from '@services/utils/profile-utils.service';
 const Suggestions = () => {
   const { suggestions } = useSelector((state) => state);
   const [users, setUsers] = useState([]);
@@ -39,7 +39,12 @@ const Suggestions = () => {
       <div className="suggestions-container">
         <div className="suggestions">
           {users?.map((user) => (
-            <div data-testid="suggestions-item" className="suggestions-item" key={user?._id}>
+            <div
+              onClick={() => ProfileUtils.navigateToProfile(user, navigate)}
+              data-testid="suggestions-item"
+              className="suggestions-item"
+              key={user?._id}
+            >
               <Avatar
                 name={user?.username}
                 bgColor={user?.avatarColor}
