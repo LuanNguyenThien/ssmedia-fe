@@ -8,6 +8,7 @@
   border-radius: 18px;
   background-color: var(--white-1);
   flex-direction: column;
+  max-width: 500px;
   //mobile
   @media screen and (max-width: 768px) {
     width: 100%;
