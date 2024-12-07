@@ -21,6 +21,7 @@ import { userService } from '@services/api/user/user.service';
 import HeaderSkeleton from '@components/header/HeaderSkeleton';
 import { notificationService } from '@services/api/notifications/notification.service';
 import { NotificationUtils } from '@services/utils/notification-utils.service';
+import { FollowersUtils } from '@services/utils/followers-utils.service';
 import NotificationPreview from '@components/dialog/NotificationPreview';
 import { socketService } from '@services/socket/socket.service';
 import { sumBy } from 'lodash';
@@ -35,6 +36,8 @@ import DropdownSetting from '@components/header/components/dropdown/DropdownSett
 import SearchButtonMb from '@components/header/components/searchButton/SearchButtonMb';
 const Header = () => {
   const { profile } = useSelector((state) => state.user);
+  const [blockedUsers, setBlockedUsers] = useState([]);
+  const token = useSelector((state) => state.user.token);
   const { chatList } = useSelector((state) => state.chat);
 
   // const [environment, setEnvironment] = useState('');
@@ -128,6 +131,7 @@ const Header = () => {
       await userService.logoutUser();
       socketService?.socket.disconnect();
       socketService?.removeAllListeners();
+      socketService.setupSocketConnection();
       navigate('/');
     } catch (error) {
       Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
@@ -162,6 +166,10 @@ const Header = () => {
       location
     );
   }, [profile, notifications, dispatch, location, messageNotifications]);
+
+  useEffect(() => {
+    FollowersUtils.socketIOBlockAndUnblock(profile, token, setBlockedUsers, dispatch);
+  }, [dispatch, profile, token]);
 
   const [searchTerm, setSearchTerm] = useState('');
 

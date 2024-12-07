@@ -93,7 +93,7 @@ const Streams = () => {
 
   useEffect(() => {
     PostUtils.socketIOPost(posts, setPosts, profile);
-  }, [posts]);
+  }, [posts, profile]);
 
   return (
     <div className="streams" data-testid="streams">
