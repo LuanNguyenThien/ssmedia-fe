@@ -52,15 +52,23 @@
   .favorite-block {
     grid-area: favorite-icon;
     margin-left: 10px; /* Khoảng cách giữa comment-block và favorite-block */
-    padding-top: 2px;
     cursor: pointer;
   
     .favorite-text {
       display: flex;
       align-items: center;
+      height: 100%;
   
       .favorite-icon {
         margin-right: 5px;
+        display: flex;
+        height: 100%;
+        transition: color 0.1s ease, fill 0.1s ease;
+      }
+
+      .favorite-icon.favorite-active {
+        color: red; /* Màu xanh lá khi lưu thành công */
+        fill: green;
       }
   
       span {
