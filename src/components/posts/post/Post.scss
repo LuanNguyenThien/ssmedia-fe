@@ -1,14 +1,16 @@
+@import '../../../variables';
+
 .post-body {
   padding: 15px;
   margin-top: 15px;
   margin-bottom: 25px;
-  background-color: var(--white-1);
+  background-color: $component-color;
   height: auto;
   border-radius: 16px;
-  box-shadow: rgb(145 158 171 / 20%) 0 0 2px 0, rgb(145 158 171 / 12%) 0 12px 24px -4px;
-
+  box-shadow: 0 0 2px 0 var(--gray-16), 0 2px 14px -4px var(--gray-12);
+  border: 0.5px solid var(--gray-16);
   .user-post-data-wrap {
-    background-color: var(--white-1);
+    background-color: $component-color;
     flex-wrap: wrap;
     display: flex;
     width: 100%;
@@ -38,7 +40,7 @@
 
       .inline-title-display {
         display: grid;
-        grid-template-areas: "name . . icons";
+        grid-template-areas: 'name . . icons';
         grid-template-columns: auto 1fr 1fr 100px;
         grid-template-rows: 1fr;
 
@@ -103,7 +105,7 @@
           color: inherit; /* Giữ nguyên màu sắc cũ */
           text-decoration: none; /* Loại bỏ gạch chân */
         }
-        
+
         .time-link:hover {
           cursor: pointer; /* Thay đổi con trỏ chuột thành biểu tượng bàn tay */
         }

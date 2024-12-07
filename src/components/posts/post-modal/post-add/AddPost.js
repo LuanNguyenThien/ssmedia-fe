@@ -170,12 +170,6 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
         {!gifModalIsOpen && (
           <div
             className="modal-box"
-            style={{
-              height:
-                selectedPostImage || hasVideo || gifUrl || image || postData?.gifUrl || postData?.image
-                  ? '700px'
-                  : 'auto'
-            }}
           >
             {loading && (
               <div className="modal-box-loading" data-testid="modal-box-loading">

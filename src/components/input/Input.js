@@ -26,6 +26,7 @@ const Input = forwardRef((props, ref) => (
     />
   </div>
 ));
+Input.displayName = 'Input';
 
 Input.propTypes = {
   name: PropTypes.string.isRequired,

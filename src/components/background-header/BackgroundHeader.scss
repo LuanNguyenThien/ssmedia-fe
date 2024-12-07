@@ -70,7 +70,7 @@
         position: absolute;
         height: 180px;
         top: -100px;
-        z-index: 40;
+        z-index: 10;
         border-color: white;
 
         img {
@@ -104,7 +104,7 @@
       .profile-name {
         position: absolute;
         color: var(--black-1);
-        z-index: 50;
+        z-index: 10;
         font-size: 28px;
         font-weight: bold;
         bottom: 15px;
@@ -116,7 +116,7 @@
         right: 0;
         width: 10%;
         cursor: pointer;
-        z-index: 50;
+        z-index: 10;
 
         .form-row {
           margin-bottom: 0;
