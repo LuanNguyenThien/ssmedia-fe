@@ -1,8 +1,9 @@
 import '@pages/social/followers/Followers.scss';
+import '@pages/social/following/Following.scss';
 
 // import Avatar from '@components/avatar/Avatar';
-import CardElementButtons from '@components/card-element/CardElementButtons';
-import CardElementStats from '@components/card-element/CardElementStats';
+// import CardElementButtons from '@components/card-element/CardElementButtons';
+// import CardElementStats from '@components/card-element/CardElementStats';
 import { ProfileUtils } from '@services/utils/profile-utils.service';
 import { Utils } from '@services/utils/utils.service';
 import { useCallback, useEffect, useState } from 'react';

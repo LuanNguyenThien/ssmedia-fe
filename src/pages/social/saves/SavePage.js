@@ -90,9 +90,9 @@ const SavePage = () => {
   //   setTotalPostsCount(allPosts?.totalPostsCount);
   // }, [allPosts]);
 
-  useEffect(() => {
-    PostUtils.socketIOPost(postSaves, setPosts);
-  }, [postSaves]);
+  // useEffect(() => {
+  //   PostUtils.socketIOPost(postSaves, setPosts);
+  // }, [postSaves]);
 
   return (
     <div className="saves" data-testid="saves">

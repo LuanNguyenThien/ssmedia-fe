@@ -4,7 +4,7 @@ import '@pages/social/followers/Followers.scss';
 const CardSkeleton = () => {
   return (
     <div className="card-element" data-testid="card-skeleton">
-      {[1, 2, 3].map((user, index) => (
+      {[1, 2, 3, 4, 5].map((user, index) => (
         <div className="card-element-item" key={index}>
           <div className="card-element-header">
             <div className="card-element-header-bg"></div>
