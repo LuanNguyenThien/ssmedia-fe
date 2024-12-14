@@ -35,10 +35,8 @@ const CommentArea = ({ post }) => {
   useEffectOnce(() => {
     const checkFavoriteStatus = async () => {
       try {
-        if(post.savedBy === undefined)
-          setIsFavorite(false);
-        else
-          setIsFavorite(post.savedBy.includes(profile?._id));
+        if (post.savedBy === undefined) setIsFavorite(false);
+        else setIsFavorite(post.savedBy.includes(profile?._id));
       } catch (error) {
         Utils.dispatchNotification(error?.response?.data?.message, 'error', dispatch);
       }
@@ -67,17 +65,18 @@ const CommentArea = ({ post }) => {
   };
 
   const addFavoritePost = async () => {
-    try{
+    try {
       const favPostData = {
         userId: profile?._id,
         postId: post?._id
       };
-      if(isFavorite){
+      if (isFavorite) {
         setIsFavorite(false);
-      } else{
+      } else {
         setIsFavorite(true);
       }
-      await postService.addfavPost(favPostData);
+      const response = await postService.addfavPost(favPostData);
+      Utils.dispatchNotification(response.data.message, 'success', dispatch);
     } catch (error) {
       Utils.dispatchNotification(error?.response?.data?.message, 'error', dispatch);
     }
@@ -206,7 +205,7 @@ const CommentArea = ({ post }) => {
       </div>
       <div className="favorite-block" onClick={addFavoritePost}>
         <span className="favorite-text">
-        <FaBookmark className={`favorite-icon ${isFavorite ? 'favorite-active' : ''}`} />
+          <FaBookmark className={`favorite-icon ${isFavorite ? 'favorite-active' : ''}`} />
         </span>
       </div>
     </div>
