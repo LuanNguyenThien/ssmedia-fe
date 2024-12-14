@@ -126,7 +126,7 @@ const Following = () => {
                         transform: 'translateY(-2px)',
                         boxShadow: 'lg'
                       }}
-                      onClick={() => ProfileUtils.navigateToProfile(data, navigate)}
+                      onClick={() => ProfileUtils.navigateToProfileUser(data, navigate)}
                     >
                       Profile
                     </Button>
