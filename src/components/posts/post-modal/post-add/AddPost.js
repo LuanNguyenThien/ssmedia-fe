@@ -49,10 +49,18 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
     PostUtils.selectBackground(bgColor, postData, setTextAreaBackground, setPostData);
   };
 
+  const onPaste = (event) => {
+    const pastedText = event.clipboardData.getData('Text');
+    const currentTextLength = event.target.textContent.length;
+    const counter = maxNumberOfCharacters - currentTextLength;
+    if (pastedText.length > counter) {
+      event.preventDefault(); 
+    }
+  };
   const postInputEditable = (event, textContent) => {
     const currentTextLength = event.target.textContent.length;
     const counter = maxNumberOfCharacters - currentTextLength;
-    counterRef.current.textContent = `${counter}/100`;
+    counterRef.current.textContent = `${counter}/1000`;
     setDisable(currentTextLength <= 0 && !postImage);
     PostUtils.postInputEditable(textContent, postData, setPostData);
   };
@@ -63,7 +71,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
 
   const onKeyDown = (event) => {
     const currentTextLength = event.target.textContent.length;
-    if (currentTextLength === maxNumberOfCharacters && event.keyCode !== 8) {
+    if (currentTextLength >= maxNumberOfCharacters && event.keyCode !== 8) {
       event.preventDefault();
     }
   };
@@ -168,9 +176,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
       <PostWrapper>
         <div></div>
         {!gifModalIsOpen && (
-          <div
-            className="modal-box"
-          >
+          <div className="modal-box">
             {loading && (
               <div className="modal-box-loading" data-testid="modal-box-loading">
                 <span>Posting...</span>
@@ -209,6 +215,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
                         contentEditable={true}
                         onInput={(e) => postInputEditable(e, e.currentTarget.textContent)}
                         onKeyDown={onKeyDown}
+                        onPaste={onPaste}
                         data-placeholder="What's on your mind?..."
                       ></div>
                     </div>
