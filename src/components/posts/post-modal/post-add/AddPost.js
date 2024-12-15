@@ -54,7 +54,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
     const currentTextLength = event.target.textContent.length;
     const counter = maxNumberOfCharacters - currentTextLength;
     if (pastedText.length > counter) {
-      event.preventDefault(); 
+      event.preventDefault();
     }
   };
   const postInputEditable = (event, textContent) => {

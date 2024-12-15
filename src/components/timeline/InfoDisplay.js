@@ -65,6 +65,14 @@ const InfoDisplay = ({
                   onChange={(event) => {
                     setEditableInputs({ ...editableInputs, quote: event.target.value });
                   }}
+                  onPaste={(e) => {
+                    e.preventDefault();
+
+                    const clipboardData = e.clipboardData || window.clipboardData;
+                    const pastedText = clipboardData.getData('Text');
+
+                    document.execCommand('insertText', false, pastedText);
+                  }}
                 />
               </div>
             </div>
@@ -95,6 +103,14 @@ const InfoDisplay = ({
                   } else {
                     setEditableSocialInputs({ ...editableSocialInputs, instagram: event.target.value });
                   }
+                }}
+                onPaste={(e) => {
+                  e.preventDefault();
+
+                  const clipboardData = e.clipboardData || window.clipboardData;
+                  const pastedText = clipboardData.getData('Text');
+
+                  document.execCommand('insertText', false, pastedText);
                 }}
               />
             </div>
@@ -127,6 +143,14 @@ const InfoDisplay = ({
                     setEditableSocialInputs({ ...editableSocialInputs, twitter: event.target.value });
                   }
                 }}
+                onPaste={(e) => {
+                  e.preventDefault();
+
+                  const clipboardData = e.clipboardData || window.clipboardData;
+                  const pastedText = clipboardData.getData('Text');
+
+                  document.execCommand('insertText', false, pastedText);
+                }}
               />
             </div>
           </div>
@@ -158,6 +182,14 @@ const InfoDisplay = ({
                     setEditableSocialInputs({ ...editableSocialInputs, facebook: e.target.value });
                   }
                 }}
+                onPaste={(e) => {
+                  e.preventDefault();
+
+                  const clipboardData = e.clipboardData || window.clipboardData;
+                  const pastedText = clipboardData.getData('Text');
+
+                  document.execCommand('insertText', false, pastedText);
+                }}
               />
             </div>
           </div>
@@ -184,6 +216,14 @@ const InfoDisplay = ({
                     style={{ maxHeight: '70px', overflowY: 'auto' }}
                     onChange={(e) => {
                       setEditableSocialInputs({ ...editableSocialInputs, youtube: e.target.value });
+                    }}
+                    onPaste={(e) => {
+                      e.preventDefault();
+
+                      const clipboardData = e.clipboardData || window.clipboardData;
+                      const pastedText = clipboardData.getData('Text');
+
+                      document.execCommand('insertText', false, pastedText);
                     }}
                   />
                 )}
