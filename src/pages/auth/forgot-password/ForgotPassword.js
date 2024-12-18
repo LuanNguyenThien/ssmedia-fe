@@ -1,6 +1,7 @@
 import { FaArrowLeft } from 'react-icons/fa';
 import '@pages/auth/forgot-password/ForgotPassword.scss';
 import { authService } from '@services/api/auth/auth.service';
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import useLocalStorage from '@hooks/useLocalStorage';
 import {
@@ -16,6 +17,10 @@ import {
   Stack,
   Text,
   useColorModeValue,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react'
 const Blur = (props) => {
   return (
@@ -97,6 +102,13 @@ const ForgotPassword = () => {
               Gửi liên kết để đặt lại mật khẩu qua email
             </Text>
 
+            {showAlert && (
+              <Alert status='error'>
+                <AlertIcon />
+                <AlertTitle>{'Lỗi!'}</AlertTitle>
+                <AlertDescription>{responseMessage}</AlertDescription>
+              </Alert>
+            )}
             
             <Stack spacing={6}>
               <FormControl id="email" isRequired>
@@ -110,20 +122,36 @@ const ForgotPassword = () => {
                 />
               </FormControl>
             
-            <Button
-                  type="submit"
+              <Button
+                type="submit"
+                fontFamily={'heading'}
+                w={'full'}
+                bgGradient="linear(to-r, red.400,pink.400)"
+                color={'white'}
+                _hover={{
+                  bgGradient: 'linear(to-r, red.400,pink.400)',
+                  boxShadow: 'xl',
+                }}
+                disabled={!email}
+                >
+                {loading ? 'Đang gửi liên kết...' : 'Gửi mã'}
+              </Button>
+
+              <Link to={'/'}>
+                <Button
+                  leftIcon={<FaArrowLeft />}
                   fontFamily={'heading'}
                   w={'full'}
-                  bgGradient="linear(to-r, red.400,pink.400)"
+                  bgGradient="linear(to-r, blue.400,teal.400)"
                   color={'white'}
                   _hover={{
-                    bgGradient: 'linear(to-r, red.400,pink.400)',
+                    bgGradient: 'linear(to-r, blue.400,teal.400)',
                     boxShadow: 'xl',
                   }}
-                  disabled={!email}
-                  >
-                  {loading ? 'Đang gửi liên kết...' : 'Gửi mã'}
+                >
+                  Quay lại đăng nhập
                 </Button>
+              </Link>
 
             </Stack>
             
