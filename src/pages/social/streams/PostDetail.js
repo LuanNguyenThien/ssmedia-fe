@@ -38,7 +38,7 @@ const PostDetail = () => {
   return (
     <div className="saves" data-testid="post-detail">
       <div className="saves-content">
-        <div className="saves-post" style={{ height: '80vh' }}>
+        <div className="saves-post">
           <Posts allPosts={post ? [post] : []} postsLoading={loading} userFollowing={profile?.following || []} />
         </div>
       </div>
