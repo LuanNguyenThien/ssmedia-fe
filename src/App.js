@@ -1,6 +1,6 @@
 import { AppRouter } from '@root/routes';
 import { BrowserRouter } from 'react-router-dom';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import '@root/App.scss';
 import { socketService } from '@services/socket/socket.service';
 import Toast from '@components/toast/Toast';

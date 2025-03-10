@@ -98,7 +98,7 @@ const SavePage = () => {
     <div className="saves" data-testid="saves">
       {(loading || postSaves.length > 0) && (
         <div className="saves-content">
-          <div className="saves-post" ref={bodyRef} style={{ height: '85vh' }}>
+          <div className="saves-post" ref={bodyRef} >
             <Posts allPosts={postSaves} postsLoading={loading} userFollowing={following} />
             <div ref={bottomLineRef} style={{ marginBottom: '60px', height: '60px' }}></div>
           </div>

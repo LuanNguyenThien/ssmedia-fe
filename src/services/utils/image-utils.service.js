@@ -15,27 +15,34 @@ export class ImageUtils {
     let fileError = '';
     const isValid = ImageUtils.validateFile(file, type);
     if (!isValid) {
-      fileError = `File ${file.name} not accepted`;
+      fileError = `File "${file.name}" không đúng định dạng. Vui lòng chọn các file hợp lệ (JPEG, PNG, GIF cho ảnh, MP4, AVI, WEBM cho video).`;
     }
     if (file.size > 50000000) {
-      // 50 MB
-      fileError = 'File is too large.';
+      fileError = `File "${file.name}" quá lớn. Kích thước tối đa cho phép là 50MB.`;
     }
     return fileError;
   }
 
   static checkFile(file, type) {
-    if (!ImageUtils.validateFile(file, type)) {
-      return window.alert(`File ${file.name} not accepted`);
+    const error = ImageUtils.checkFileSize(file, type);
+    if (error) {
+      window.alert(error);
+      return false;
     }
-    if (ImageUtils.checkFileSize(file, type)) {
-      return window.alert(ImageUtils.checkFileSize(file, type));
-    }
+    return true;
   }
 
   static async addFileToRedux(event, post, setSelectedImage, dispatch, type) {
     const file = event.target.files[0];
-    ImageUtils.checkFile(file, type);
+    if (!file) return;
+
+    // Kiểm tra file có hợp lệ không
+    const isValid = ImageUtils.checkFile(file, type);
+    if (!isValid) {
+      event.target.value = ''; // Xóa giá trị file input
+      return; // Thoát nếu file không hợp lệ
+    }
+
     setSelectedImage(file);
     dispatch(
       updatePostItem({

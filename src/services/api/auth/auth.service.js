@@ -3,11 +3,17 @@ import axios from '@services/axios';
 class AuthService {
   async signUp(body) {
     const response = await axios.post('/signup', body);
+    if (response.data && response.data.token) {
+      localStorage.setItem('authToken', response.data.token);
+    }
     return response;
   }
 
   async signIn(body) {
     const response = await axios.post('/signin', body);
+    if (response.data && response.data.token) {
+      localStorage.setItem('authToken', response.data.token);
+    }
     return response;
   }
 
