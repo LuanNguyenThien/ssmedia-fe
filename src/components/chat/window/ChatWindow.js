@@ -9,6 +9,7 @@ import { userService } from '@services/api/user/user.service';
 import { ChatUtils } from '@services/utils/chat-utils.service';
 import { chatService } from '@services/api/chat/chat.service';
 import { some } from 'lodash';
+import { ObjectId } from 'bson';
 import MessageDisplay from '@components/chat/window/message-display/MessageDisplay';
 // icons
 import { IoIosArrowBack } from 'react-icons/io';
@@ -30,6 +31,13 @@ const ChatWindow = () => {
       try {
         const response = await chatService.getChatMessages(receiverId);
         ChatUtils.privateChatMessages = [...response.data.messages];
+        if (response.data.messages.length > 0) {
+          ChatUtils.conversationId = ChatUtils.privateChatMessages[0]?.conversationId;
+        } else {
+          const newConversationId = new ObjectId().toString();
+          setConversationId(newConversationId);
+          ChatUtils.conversationId = newConversationId;
+        }
         setChatMessages([...ChatUtils.privateChatMessages]);
       } catch (error) {
         Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
@@ -110,7 +118,6 @@ const ChatWindow = () => {
     const username = searchParams.get('username');
 
     if (rendered) {
-      console.log(chatMessages);
       ChatUtils.socketIOMessageReceived(chatMessages, username, setConversationId, setChatMessages);
     }
     
@@ -133,7 +140,7 @@ const ChatWindow = () => {
   useEffect(() => {
     ChatUtils.socketIOMessageReaction(chatMessages, searchParams.get('username'), setConversationId, setChatMessages);
   }, [chatMessages, searchParams]);
-  console.log('chatMessages', searchParams.get('id'), searchParams.get('username'));
+
   return (
     <div className="chat-window-container" data-testid="chat  WindowContainer">
       {isLoading ? (

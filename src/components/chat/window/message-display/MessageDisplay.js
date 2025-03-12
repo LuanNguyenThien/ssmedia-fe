@@ -118,7 +118,7 @@ const MessageDisplay = ({ chatMessages, profile, updateMessageReaction, deleteCh
                   />
                 )}
 
-                {chat.receiverUsername === profile?.username && (
+                {(chat.receiverUsername === profile?.username && chat.receiverUsername !== chat.senderUsername) && (
                   <LeftMessageDisplay
                     chat={chat}
                     profile={profile}

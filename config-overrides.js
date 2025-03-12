@@ -16,5 +16,20 @@ const options = {
   alias: aliasMap
 };
 
-module.exports = aliasWebpack(options);
+const override = aliasWebpack(options);
+module.exports = function(config) {
+  // First apply the aliases
+  const newConfig = override(config);
+  
+  // Then add fallback for crypto
+  newConfig.resolve.fallback = {
+    ...newConfig.resolve.fallback,
+    "crypto": require.resolve("crypto-browserify"),
+    "stream": require.resolve("stream-browserify"),
+    "vm": require.resolve("vm-browserify")
+  };
+  
+  return newConfig;
+};
+
 module.exports.jest = aliasJest(options);
