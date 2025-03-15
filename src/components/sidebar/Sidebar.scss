@@ -1,4 +1,4 @@
-@import '../../variables';
+@use '../../assets/colors/variables.scss' as *;
 
 @mixin sidebar-styles {
   background-color: var(--white-1);
@@ -22,12 +22,9 @@
 }
 
 .app-side-menu {
-  background-color: $component-color;
-  box-shadow: 1px 5px 5px var(--gray-16);
   transition: all 0.3s ease;
   display: flex;
   height: inherit;
-
   &.open {
     display: block;
   }

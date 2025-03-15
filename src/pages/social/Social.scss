@@ -1,4 +1,4 @@
-@import "../../variables";
+@use "../../assets//colors//variables.scss" as *;
 .dashboard {
   display: grid;
   grid-template-columns: 1fr 4fr; // Sidebar 1 cột, Content 5 cột
@@ -7,23 +7,23 @@
   max-width: 100vw;
   overflow-x: hidden;
   &-sidebar {
-    grid-column: 1; // Nằm ở cột đầu tiên
-    max-width: 100%; // Chiếm toàn bộ cột được giao
+    grid-column: 1; 
+    max-width: 100%; 
     padding: 0px;
     height: 100vh;
   }
 
   &-content {
-    grid-column: 2; // Nằm ở cột thứ hai
+    grid-column: 2; 
     height: 100vh;
 
     @media (max-width: 800px) {
-      grid-column: 1; // Chiếm toàn bộ chiều ngang khi ở mobile
-      grid-row: 1; // Đặt ở hàng đầu tiên
+      grid-column: 1; 
+      grid-row: 1; 
     }
   }
 
   @media (max-width: 800px) {
-    grid-template-columns: 1fr; // Layout 1 cột trên mobile
+    grid-template-columns: 1fr; 
   }
 }

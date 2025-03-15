@@ -1,4 +1,4 @@
-@import '../../variables';
+@use '../../assets//colors//variables.scss' as *;
 .social-dropdown {
   width: 400px;
   margin: auto;
@@ -43,7 +43,7 @@
           font-weight: 700;
           line-height: 16px;
           white-space: nowrap;
-          color: darken($component-color, 90%);
+          color: $component-color;
           background-color: var(--white-7);
           padding: 3px 8px;
           border-radius: 50px;

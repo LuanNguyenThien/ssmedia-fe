@@ -1,0 +1,115 @@
+.chat-window-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  .chatWindow {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    justify-content: space-between;
+
+    .chat-title {
+      display: flex;
+      width: 100%;
+      height: 55px;
+      min-height: 55px;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--white-4);
+      background-color: white;
+      border-radius: 15px;
+
+      &-avatar {
+        grid-row: span 2;
+        height: 40px;
+        width: 40px;
+        border-radius: 100%;
+      }
+      &-back {
+        @media screen and (max-width: 768px) {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          padding-inline: 10px;
+          border-radius: 100%;
+          cursor: pointer;
+          font-size: 30px;
+        }
+        @media screen and (min-width: 768px) {
+          display: none;        
+        }
+      }
+      &-items {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding-left: 10px;
+
+        .chat-name {
+          grid-area: name;
+          font-weight: 700;
+          font-size: 15px;
+          white-space: nowrap;
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .user-not-online {
+          padding-top: 0;
+        }
+
+        .chat-active {
+          grid-area: active;
+          padding-left: 10px;
+          font-size: 12px;
+          color: var(--primary-1);
+        }
+      }
+    }
+
+    .chat-window {
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: calc(100% - 70px);
+      position: relative;
+      background-repeat: no-repeat;
+      border-radius: 15px;
+
+      &-message {
+        display: grid;
+        height: 90%;
+        overflow-y: scroll;
+      }
+
+      &-input {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        padding: 10px 20px;
+        width: 100%;
+        height: 10%;
+      }
+
+      app-image-preview {
+        grid-area: image-preview;
+        width: 100%;
+      }
+    }
+  }
+}
+
+app-container {
+  top: 49%;
+  position: absolute;
+}

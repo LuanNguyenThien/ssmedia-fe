@@ -1,8 +1,8 @@
-@import '../../../variables';
+@use '../../../assets/colors/variables.scss' as *;
 
 .post-body {
   padding: 15px;
-  margin-top: 0px;
+  margin-top: 15px;
   margin-bottom: 25px;
   background-color: $component-color;
   height: auto;

@@ -10,6 +10,7 @@ import { socketHandlers } from '@mocks/handlers/socket';
 import { userHandlers } from '@mocks/handlers/user';
 import { setupServer } from 'msw/node';
 
+
 // Setup requests interception using the given handlers
 export const server = setupServer(
   ...authHandlers,

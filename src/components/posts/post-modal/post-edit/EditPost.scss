@@ -9,6 +9,7 @@
   border-radius: 8px;
   background-color: var(--white-1);
   flex-direction: column;
+  max-width: 500px;
 
   @media screen and (max-width: 768px) {
     width: 90%;

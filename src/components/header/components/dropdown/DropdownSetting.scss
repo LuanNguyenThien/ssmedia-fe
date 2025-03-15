@@ -1,4 +1,4 @@
-@import '../../../../variables';
+@use '../../../../assets/colors/variables.scss' as *;
 .header-dropdown {
   position: fixed;
   right: 10px;

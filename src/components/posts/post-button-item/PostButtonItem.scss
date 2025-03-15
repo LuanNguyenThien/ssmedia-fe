@@ -1,4 +1,4 @@
-@import '../../../variables';
+@use '../../../assets/colors/variables.scss' as *;
 
 .post-button {
   display: flex;
