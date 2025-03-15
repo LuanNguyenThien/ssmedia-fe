@@ -1,27 +1,23 @@
-FROM node:16-alpine
+# Use Node.js as the base image
+FROM node:18
 
+# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package.json and package-lock.json first
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with legacy peer deps flag
+RUN npm install --legacy-peer-deps
 
-# Copy source code
+# Copy the rest of the application code
 COPY . .
 
-# Set environment variables to ignore ESLint
-ENV CI=false
-ENV DISABLE_ESLINT_PLUGIN=true
-
-# Build app
+# Build the app
 RUN npm run build
 
-# Install serve to run production build
-RUN npm install -g serve
-
+# Expose the port (optional)
 EXPOSE 3000
 
-# Run production build with serve
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Start the application
+CMD ["npm", "start"]
