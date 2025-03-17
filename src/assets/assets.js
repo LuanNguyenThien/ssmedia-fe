@@ -4,6 +4,9 @@ import gif from "./images/gif.png";
 import feeling from "./images/feeling.png";
 
 import logo from "./logo.png";
+import notification from "./icons/common/notification.png";
+import message from "./icons/common/message.png";
+
 import home from "./icons/common/home.png";
 import bell from "./icons/common/bell.png";
 import chat from "./icons/common/chat.png";
@@ -30,6 +33,8 @@ import wow from "./icons/reactions/wow.png";
 
 export const assets = {
     logo,
+    notification,
+    message
 };
 
 export const feelings = {

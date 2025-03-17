@@ -1,105 +1,122 @@
-import Avatar from '@components/avatar/Avatar';
-import Button from '@components/button/Button';
-import PropTypes from 'prop-types';
-import { FaCircle, FaRegCircle, FaTrashAlt, FaUserAlt } from 'react-icons/fa';
+import Avatar from "@components/avatar/Avatar";
+import Button from "@components/button/Button";
+import PropTypes from "prop-types";
+import { FaCircle, FaRegCircle, FaTrashAlt, FaUserAlt } from "react-icons/fa";
 
-import '@components/dropdown/Dropdown.scss';
-import {Utils} from '@services/utils/utils.service';
-
+import "@components/dropdown/Dropdown.scss";
+import { Utils } from "@services/utils/utils.service";
 
 const Dropdown = ({
-  data,
-  notificationCount,
-  title,
-  style,
-  height,
-  onMarkAsRead,
-  onDeleteNotification,
-  onLogout,
-  onNavigate
+    data,
+    title,
+    onMarkAsRead,
+    onDeleteNotification,
+    onLogout,
+    onNavigate,
 }) => {
-  return (
-    <div style={{ padding: 10 }}>
-      <div className="social-dropdown" style={style} data-testid="dropdown">
-        <div className="social-card">
-          <div className="social-card-body">
-            <div className="social-bg-primary">
-              <h5>
-                {title}
-                {title === 'Notifications' && notificationCount > 0 && (
-                  <small className="social-count">{notificationCount}</small>
-                )}
-              </h5>
-            </div>
+    return (
+        <div>
+            <div
+                className="social-dropdown bg-background shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] border border-primary/20 rounded-l-xl rounded-b-xl z-[10000]"
+                data-testid="dropdown"
+            >
+                <div className="social-card">
+                    <div className="social-card-body">
+                        <div className="social-bg-primary bg-transparent border-b-2 border-gray-200">
+                            <span className="text-xl font-bold">
+                                {title}
+                            </span>
+                        </div>
+                        <div className="social-card-body-info">
+                            <div
+                                data-testid="info-container"
+                                className="social-card-body-info-container"
+                            >
+                                {data.length === 0 && (
+                                    <p className="social-sub-card">
+                                        You do not have any notification
+                                    </p>
+                                )}
+                                {data.map((item) => (
+                                    <div
+                                        className="social-sub-card hover:bg-primary/10 py-2 px-4 rounded-xl"
+                                        key={Utils.generateString(10)}
+                                    >
+                                        <div className="content-avatar">
+                                            {title === "Notifications" ? (
+                                                <Avatar
+                                                    name={item?.username}
+                                                    bgColor={item?.avatarColor}
+                                                    textColor="#ffffff"
+                                                    size={30}
+                                                    avatarSrc={
+                                                        item?.profilePicture
+                                                    }
+                                                />
+                                            ) : (
+                                                <FaUserAlt className="userIcon" />
+                                            )}
+                                        </div>
+                                        <div
+                                            className={`content-body ${item?.read ? "" : "font-bold"}`}
+                                            onClick={() => {
+                                                if (title === "Notifications") {
+                                                    onMarkAsRead(item);
+                                                } else {
+                                                    onNavigate();
+                                                }
+                                            }}
+                                        >
+                                            <h6 className="title">
+                                                {item?.topText}
+                                            </h6>
+                                            <p className="subtext">
+                                                {item?.subText}
+                                            </p>
+                                        </div>
+                                        {title === "Notifications" && (
+                                            <div className="content-icons">
+                                                <FaTrashAlt
+                                                    className="trash"
+                                                    onClick={() =>
+                                                        onDeleteNotification(
+                                                            item?._id
+                                                        )
+                                                    }
+                                                /> 
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
 
-            <div className="social-card-body-info">
-              <div
-                data-testid="info-container"
-                className="social-card-body-info-container"
-                style={{ maxHeight: `${height}px` }}
-              >
-                {data.length === 0 && <p className="social-sub-card">You do not have any notification</p>}
-                {data.map((item) => (
-                  <div className="social-sub-card" key={Utils.generateString(10)}>
-                    <div className="content-avatar">
-                      {title === 'Notifications' ? (
-                        <Avatar
-                          name={item?.username}
-                          bgColor={item?.avatarColor}
-                          textColor="#ffffff"
-                          size={40}
-                          avatarSrc={item?.profilePicture}
-                        />
-                      ) : (
-                        <FaUserAlt className="userIcon" />
-                      )}
+                            {title === "Settings" && (
+                                <div className="social-sub-button">
+                                    <Button
+                                        label="Sign out"
+                                        className="button signOut"
+                                        handleClick={onLogout}
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    <div
-                      className="content-body"
-                      onClick={() => {
-                        if (title === 'Notifications') {
-                          onMarkAsRead(item);
-                        } else {
-                          onNavigate();
-                        }
-                      }}
-                    >
-                      <h6 className="title">{item?.topText}</h6>
-                      <p className="subtext">{item?.subText}</p>
-                    </div>
-                    {title === 'Notifications' && (
-                      <div className="content-icons">
-                        <FaTrashAlt className="trash" onClick={() => onDeleteNotification(item?._id)} />
-                        {item?.read ? <FaRegCircle className="circle" /> : <FaCircle className="circle" />}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {title === 'Settings' && (
-                <div className="social-sub-button">
-                  <Button label="Sign out" className="button signOut" handleClick={onLogout} />
                 </div>
-              )}
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 Dropdown.propTypes = {
-  data: PropTypes.array,
-  notificationCount: PropTypes.number,
-  title: PropTypes.string,
-  style: PropTypes.object,
-  height: PropTypes.number,
-  onMarkAsRead: PropTypes.func,
-  onDeleteNotification: PropTypes.func,
-  onLogout: PropTypes.func,
-  onNavigate: PropTypes.func
+    data: PropTypes.array,
+    notificationCount: PropTypes.number,
+    title: PropTypes.string,
+    style: PropTypes.object,
+    height: PropTypes.number,
+    onMarkAsRead: PropTypes.func,
+    onDeleteNotification: PropTypes.func,
+    onLogout: PropTypes.func,
+    onNavigate: PropTypes.func,
 };
 
 export default Dropdown;
