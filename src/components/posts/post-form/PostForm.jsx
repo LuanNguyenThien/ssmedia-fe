@@ -11,7 +11,7 @@ import {
   toggleImageModal,
   toggleVideoModal
 } from '@redux/reducers/modal/modal.reducer';
-import AddPost from '@components/posts/post-modal/post-add/AddPost';
+import AddPost from '@components/posts/post-modal/post-add/AddPost1';
 import { useRef, useState } from 'react';
 import { ImageUtils } from '@services/utils/image-utils.service';
 import EditPost from '@components/posts/post-modal/post-edit/EditPost';
@@ -118,7 +118,7 @@ const PostForm = () => {
           </div>
         </div>
       </div>
-      {isOpen && type === 'add' && <AddPost selectedImage={selectedPostImage} selectedPostVideo={selectedPostVideo} />}
+      {isOpen && type === 'add' && <AddPost />}
       {isOpen && type === 'edit' && <EditPost />}
     </>
   );

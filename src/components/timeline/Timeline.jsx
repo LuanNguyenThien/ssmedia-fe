@@ -1,6 +1,6 @@
 import PostForm from '@components/posts/post-form/PostForm';
 import PostFormSkeleton from '@components/posts/post-form/PostFormSkeleton';
-import Post from '@components/posts/post/Post';
+import Post from '@components/posts/post/Post1';
 import PostSkeleton from '@components/posts/post/PostSkeleton';
 import CountContainer from '@components/timeline/CountContainer';
 import useEffectOnce from '@hooks/useEffectOnce';

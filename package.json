@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@blocknote/mantine": "^0.25.2",
+    "@blocknote/react": "^0.25.2",
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.10.1",
     "@emotion/react": "^11.14.0",

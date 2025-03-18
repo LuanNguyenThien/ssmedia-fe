@@ -1,5 +1,7 @@
 .timeline-wrapper {
   border-radius: 16px;
+  overflow-y: auto;
+  height: 100vh;
 
   &-container {
     display: grid;
@@ -7,6 +9,7 @@
     grid-template-columns: 20vw 1fr;
     grid-template-rows: 1fr;
     column-gap: 16px;
+   
 
     &-side {
       grid-area: side;
