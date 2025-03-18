@@ -42,7 +42,7 @@ const Social = () => {
 
         if (includes(layout_0_5_list, section)) {
             return (
-                <div className="col-span-5">
+                <div className="col-span-5 max-h-[86vh] relative">
                     <StickySidebar />
                     <Outlet />
                 </div>
@@ -63,9 +63,9 @@ const Social = () => {
     };
 
     return (
-        <div className="!bg-secondary sm:px-10">
+        <div className="!bg-secondary sm:px-12">
             {isMobile ? <HeaderMb /> : <Header />}
-            <div className="grid grid-cols-5 h-max">{getLayout()}</div>
+            <div className="grid grid-cols-5">{getLayout()}</div>
             {isMobile && <SidebarMb />}
         </div>
     );

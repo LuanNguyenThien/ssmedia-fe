@@ -6,6 +6,7 @@ export default {
             colors: {
                 primary: "#3080ED",
                 "primary-black": "#262632",
+                "primary-white": "#FFFFFF",
                 secondary: "#FFFFFF",
                 background: "#FFFFFF",
                 "background-blur":"#F5F7FB",

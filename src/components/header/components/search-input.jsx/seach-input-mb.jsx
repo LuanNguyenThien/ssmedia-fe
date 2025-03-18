@@ -1,25 +1,13 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { icons } from "assets/assets";
+import useHandleOutsideClick from "hooks/useHandleOutsideClick";
 
 const SearchInputMb = ({ searchTerm, setSearchTerm, handleSearchKeyPress }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const inputRef = useRef(null);
     const containerRef = useRef(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                containerRef.current &&
-                !containerRef.current.contains(event.target)
-            ) {
-                setIsExpanded(false);
-            }
-        };
-
-        document.addEventListener("click", handleClickOutside);
-        return () => document.removeEventListener("click", handleClickOutside);
-    }, []);
+    useHandleOutsideClick(containerRef, setIsExpanded);
 
     const toggleSearch = (event) => {
         event.stopPropagation();

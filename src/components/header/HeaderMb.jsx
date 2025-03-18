@@ -4,29 +4,17 @@ import { PiSignOutBold } from "react-icons/pi";
 
 import { RxHamburgerMenu } from "react-icons/rx";
 import SearchInputMb from "./components/search-input.jsx/seach-input-mb";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useHandleOutsideClick from "hooks/useHandleOutsideClick";
 
 const HeaderMb = () => {
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const containerRef = useRef(null);
     const navigate = useNavigate();
-
     const [searchTerm, setSearchTerm] = useState("");
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                containerRef.current &&
-                !containerRef.current.contains(event.target)
-            ) {
-                setIsOpenMenu(false);
-            }
-        };
-
-        document.addEventListener("click", handleClickOutside);
-        return () => document.removeEventListener("click", handleClickOutside);
-    }, []);
+    
+    useHandleOutsideClick(containerRef, setIsOpenMenu);
 
     const handleSearchKeyPress = () => {
         navigate("/app/social/search", { state: { query: searchTerm } });

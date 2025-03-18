@@ -7,14 +7,6 @@ import logo from "./logo.png";
 import notification from "./icons/common/notification.png";
 import message from "./icons/common/message.png";
 
-import home from "./icons/common/home.png";
-import bell from "./icons/common/bell.png";
-import chat from "./icons/common/chat.png";
-import group from "./icons/common/group.png";
-import heart from "./icons/common/heart.png";
-import user from "./icons/common/user.png";
-import save from "./icons/common/save.png";
-
 import logout from "./icons/exit.svg";
 import sidebarSelector from "./icons/sidebar.png";
 import search from "./icons/search.svg";
@@ -31,10 +23,20 @@ import love from "./icons/reactions/love.png";
 import sad from "./icons/reactions/sad.png";
 import wow from "./icons/reactions/wow.png";
 
+//sidebar
+import home from "./icons/sidebar/home.svg";
+import profile from "./icons/sidebar/profile.svg";
+import people from "./icons/sidebar/people.svg";
+import groups from "./icons/sidebar/group.svg";
+import chats from "./icons/sidebar/chat.svg";
+import saves from "./icons/sidebar/save.svg";
+import notifications from "./icons/sidebar/notification.svg";
+import add from "./icons/sidebar/add.svg";
+
 export const assets = {
     logo,
     notification,
-    message
+    message,
 };
 
 export const feelings = {
@@ -60,11 +62,12 @@ export const icons = {
     logo,
     sidebarSelector,
     search,
-    home,
-    bell,
-    chat,
-    group,
-    heart,
-    user,
-    save,
+    home,   
+    profile,
+    people,
+    groups,
+    chats,
+    saves,
+    notifications,
+    add
 };
