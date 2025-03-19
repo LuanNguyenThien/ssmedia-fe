@@ -14,10 +14,7 @@ const layout_0_5_list = ["chat", "group", "meeting"];
 
 const Social = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 390);
-    const location = useLocation();
-    const pathSegments = location.pathname.split('/');
-    const section = pathSegments[3]; 
-    console.log(section);
+    const section = useLocation().pathname.split("/")[3];
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 390);
@@ -45,11 +42,9 @@ const Social = () => {
 
         if (includes(layout_0_5_list, section)) {
             return (
-                <div className="col-span-5">
+                <div className="col-span-5 max-h-[86vh] relative">
                     <StickySidebar />
-                    <div className="col-span-5 bg-background-blur rounded-t-[30px] h-full min-h-screen">
-                        a
-                    </div>
+                    <Outlet />
                 </div>
             );
         }
@@ -61,15 +56,14 @@ const Social = () => {
                     <Sidebar />
                 </div>
                 <div className="col-span-4 grid grid-cols-4">
-                    <div className="col-span-3 bg-background-blur rounded-t-[30px]"></div>
-                    <div className="col-span-1">d</div>
+                    <Outlet />
                 </div>
             </>
         );
     };
 
     return (
-        <div className="!bg-secondary sm:px-10 h-screen">
+        <div className="!bg-secondary sm:px-12">
             {isMobile ? <HeaderMb /> : <Header />}
             <div className="grid grid-cols-5">{getLayout()}</div>
             {isMobile && <SidebarMb />}

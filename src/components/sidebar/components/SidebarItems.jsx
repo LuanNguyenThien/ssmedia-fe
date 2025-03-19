@@ -1,5 +1,3 @@
-import { sideBarItems } from "services/utils/static.data";
-import { DynamicSVG } from "./components/SidebarItems";
 import { useLocation, createSearchParams, useNavigate } from "react-router-dom";
 import "@components/sidebar/Sidebar.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,8 +6,20 @@ import { Utils } from "@services/utils/utils.service";
 import { ChatUtils } from "@services/utils/chat-utils.service";
 import { chatService } from "@services/api/chat/chat.service";
 import { socketService } from "@services/socket/socket.service";
+import { sideBarItems } from "services/utils/static.data";
 
-const StickySidebar = () => {
+export function DynamicSVG({ svgData, color = "white", className }) {
+    const decodedSVG = decodeURIComponent(svgData.split(",")[1]); // Remove `data:image/svg+xml,`
+    return (
+        <div
+            className={className}
+            style={{ fill: color }}
+            dangerouslySetInnerHTML={{ __html: decodedSVG }}
+        />
+    );
+}
+
+const SidebarItems = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -65,24 +75,45 @@ const StickySidebar = () => {
             );
         }
     };
+
     return (
-        <div className="fixed h-screen w-12 left-0 top-0  flex flex-col items-center justify-center gap-6">
-            {sideBarItems.map((item, index) => {
+        <ul className="list-unstyled flex flex-col gap-1">
+            {sideBarItems.map((data) => {
+                const isActive = checkUrl(data.name);
+
                 return (
-                    <div
-                        onClick={() => navigateToPage(item.name, item.url)}
-                        key={index}
-                        className="flex items-center justify-center  cursor-pointer hover:text-primary-black/60 transition-all duration-200 hover:scale-110"
+                    <li
+                        key={data.index}
+                        onClick={() => navigateToPage(data.name, data.url)}
+                        className={`w-full text-primary-black/50 cursor-pointer rounded-md 
+                            ${
+                                isActive
+                                    ? "text-white bg-primary/80"
+                                    : "hover:text-white hover:bg-primary/60"
+                            }`}
                     >
-                        <DynamicSVG
-                            svgData={item.iconName}
-                            className={"size-6"}
-                        />
-                    </div>
+                        <div
+                            data-testid="sidebar-list"
+                            className="sidebar-link flex items-center justify-start gap-1 p-2 truncate"
+                        >
+                            <div>
+                                <DynamicSVG
+                                    svgData={data.iconName}
+                                    className={"size-6"}
+                                />
+                            </div>
+
+                            <div className="menu-link font-medium size-max flex items-center">
+                                <di className="size-full flex items-center ">
+                                    {data.name}
+                                </di>
+                            </div>
+                        </div>
+                    </li>
                 );
             })}
-        </div>
+        </ul>
     );
 };
 
-export default StickySidebar;
+export default SidebarItems;

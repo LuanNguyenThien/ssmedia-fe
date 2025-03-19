@@ -1,63 +1,15 @@
 @use "../../assets/colors/variables.scss" as *;
 .message-dropdown {
-    width: 320px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    right: 0;
-    position: absolute;
-    top: 75px;
-    transition: all 0.4s ease;
-    z-index: 50;
-    min-height: 100vh;
-    overflow: hidden;
-    animation: toast-in-right 0.4s;
-
+    width: 400px;
     .message-card {
-        background: #ffffff;
-        border: none;
-
         &-body {
-            .message-bg-primary {
-                background-color: $component-color;
-                padding: 16px;
-                border-radius: 8px 8px 0 0;
-
-                .text-white {
-                    font-size: 18px;
-                    font-weight: bold;
-                    color: $component-color;
-
-                    .message-count {
-                        float: right;
-                        font-size: 12px;
-                        font-weight: 700;
-                        color: $component-color;
-                        background-color: #ffffff;
-                        padding: 4px 10px;
-                        border-radius: 12px;
-                    }
-                }
-            }
-
             &-info {
-                border-top: 1px solid #f0f0f0;
-                background: #ffffff;
-
                 &-container {
-                    overflow-y: auto;
                     max-height: 400px;
+                    overflow-y: scroll;
                     padding: 10px;
-
                     .message-sub-card {
-                        padding: 12px 16px;
-                        margin-bottom: 6px;
-                        border-radius: 6px;
-                        background-color: #f9f9f9;
-                        display: flex;
-                        align-items: center;
-                        gap: 12px;
-                        transition: background-color 0.3s ease;
+                        gap: 15px;
                         cursor: pointer;
 
                         .content-avatar {
@@ -65,8 +17,8 @@
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            width: 45px;
-                            height: 45px;
+                            width: 50px;
+                            height: 50px;
 
                             .userIcon {
                                 width: 30px;
@@ -79,16 +31,8 @@
                             flex-grow: 1;
                             overflow: hidden;
 
-                            .title {
-                                font-size: 15px;
-                                font-weight: 600;
-                                color: #333;
-                                margin: 0;
-                            }
-
                             .subtext {
                                 font-size: 13px;
-                                color: #666;
                                 overflow: hidden;
                                 white-space: nowrap;
                                 text-overflow: ellipsis;
@@ -112,10 +56,6 @@
                             .read {
                                 width: 14px;
                             }
-                        }
-
-                        &:hover {
-                            background-color: #e0f7e9;
                         }
                     }
                 }

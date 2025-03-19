@@ -1,7 +1,7 @@
+import '@pages/social/chat/Chat.scss';
 import ChatList from '@components/chat/list/ChatList';
 import ChatWindow from '@components/chat/window/ChatWindow';
 import useEffectOnce from '@hooks/useEffectOnce';
-import '@pages/social/chat/Chat.scss';
 import { getConversationList } from '@redux/api/chat';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
@@ -16,7 +16,7 @@ const Chat = () => {
     dispatch(getConversationList());
   });
   return (
-    <div className="private-chat-wrapper">
+    <div className="private-chat-wrapper bg-background-blur rounded-t-[10px]">
       <div className="private-chat-wrapper-content">
         <div className={`private-chat-wrapper-content-side${params.get('username') ? '-sm' : ''}`}>
           <ChatList />

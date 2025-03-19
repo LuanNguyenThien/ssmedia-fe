@@ -96,9 +96,8 @@ const Streams = () => {
   }, [posts, profile]);
 
   return (
-    <div className="streams" data-testid="streams">
-      <div className="streams-content">
-        <div className="streams-post" ref={bodyRef} style={{ height: '98vh' }}>
+      <div className="streams-content col-span-full">
+        <div className="streams-post px-10 bg-background-blur" ref={bodyRef}>
           <PostForm />
           <Posts allPosts={posts} postsLoading={loading} userFollowing={following} />
           <div>
@@ -116,7 +115,7 @@ const Streams = () => {
           <Suggestions />
         </div>
       </div>
-    </div>
+  
   );
 };
 
