@@ -3,7 +3,7 @@ import '@components/posts/Posts.scss';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { Utils } from '@services/utils/utils.service';
-import Post from '@components/posts/post/Post';
+import Post from '@components/posts/post/Post1';
 import { PostUtils } from '@services/utils/post-utils.service';
 import PostSkeleton from '@components/posts/post/PostSkeleton';
 
