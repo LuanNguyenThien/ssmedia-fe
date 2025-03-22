@@ -94,9 +94,9 @@ const Post = ({ post, showIcons }) => {
     editor.replaceBlocks(editor.document, blocks);
   };
   useEffect(() => {
-    getBackgroundImageColor(post);
-    console.log(post.post);
-    loadEditor(post.post || "");
+    // getBackgroundImageColor(post);
+    console.log("html", post);
+    loadEditor(post.htmlPost || "");
   }, [post]);
 
   return (
@@ -186,12 +186,98 @@ const Post = ({ post, showIcons }) => {
               className="user-post"
               style={{ marginTop: "1rem", borderBottom: "" }}
             >
-              <p className="post" data-testid="user-post">
-                <BlockNoteView
-                  editor={editor}
-                  editable={false} // Ngăn chặn chỉnh sửa
-                />
-              </p>
+              {post.htmlPost && (
+                <p className="post" data-testid="user-post">
+                  <BlockNoteView
+                    editor={editor}
+                    editable={false} // Ngăn chặn chỉnh sửa
+                  />
+                </p>
+              )}
+              {!post.htmlPost && (
+                <>
+                  {post?.post && post?.bgColor === "#ffffff" && (
+                    <p className="post" data-testid="user-post">
+                      {post?.post}
+                    </p>
+                  )}
+                  {post?.post && post?.bgColor !== "#ffffff" && (
+                    <div
+                      data-testid="user-post-with-bg"
+                      className="user-post-with-bg"
+                      style={{ backgroundColor: `${post?.bgColor}` }}
+                    >
+                      {post?.post}
+                    </div>
+                  )}
+
+                  {post?.imgId &&
+                    !post?.gifUrl &&
+                    post.bgColor === "#ffffff" && (
+                      <div
+                        data-testid="post-image"
+                        className="image-display-flex"
+                        style={{
+                          height: "600px",
+                          backgroundColor: `${backgroundImageColor}`,
+                        }}
+                        onClick={() => {
+                          setImageUrl(
+                            Utils.getImage(post.imgId, post.imgVersion)
+                          );
+                          setShowImageModal(!showImageModal);
+                        }}
+                      >
+                        <img
+                          className="post-image"
+                          style={{ objectFit: "contain" }}
+                          src={`${Utils.getImage(post.imgId, post.imgVersion)}`}
+                          alt=""
+                        />
+                      </div>
+                    )}
+
+                  {post?.videoId && post.bgColor === "#ffffff" && (
+                    <div
+                      data-testid="post-image"
+                      className="image-display-flex"
+                      style={{ height: "600px", backgroundColor: "#000000" }}
+                    >
+                      <video
+                        width="100%"
+                        height="600px"
+                        autoPlay
+                        controls
+                        src={`${Utils.getVideo(
+                          post.videoId,
+                          post.videoVersion
+                        )}`}
+                      />
+                    </div>
+                  )}
+
+                  {post?.gifUrl && post.bgColor === "#ffffff" && (
+                    <div
+                      className="image-display-flex"
+                      style={{
+                        height: "600px",
+                        backgroundColor: `${backgroundImageColor}`,
+                      }}
+                      onClick={() => {
+                        setImageUrl(post?.gifUrl);
+                        setShowImageModal(!showImageModal);
+                      }}
+                    >
+                      <img
+                        className="post-image"
+                        style={{ objectFit: "contain" }}
+                        src={`${post?.gifUrl}`}
+                        alt=""
+                      />
+                    </div>
+                  )}
+                </>
+              )}
 
               {(post?.reactions.length > 0 || post?.commentsCount > 0) && (
                 <hr />

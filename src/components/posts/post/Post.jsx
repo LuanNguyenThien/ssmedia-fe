@@ -179,7 +179,7 @@ const Post = ({ post, showIcons }) => {
             >
               <BlockNoteView
                 editor={editor}
-                editable={false} // Ngăn chặn chỉnh sửa
+                editable={false} 
               />
               {post?.post && post?.bgColor === "#ffffff" && (
                 <p className="post" data-testid="user-post">
