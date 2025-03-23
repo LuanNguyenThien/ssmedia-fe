@@ -7,6 +7,7 @@ export class ChatUtils {
   static privateChatMessages = [];
   static chatUsers = [];
   static onlineUsers = [];
+  static conversationId;
 
   static fetchOnlineUsers(setOnlineUsers) {
     setOnlineUsers(ChatUtils.onlineUsers);
@@ -131,10 +132,12 @@ export class ChatUtils {
     chatMessages = cloneDeep(chatMessages);
     socketService?.socket?.on('message received', (data) => {
       if (data.senderUsername.toLowerCase() === username || data.receiverUsername.toLowerCase() === username) {
-        setConversationId(data.conversationId);
-        ChatUtils.privateChatMessages.push(data);
-        chatMessages = [...ChatUtils.privateChatMessages];
-        setChatMessages(chatMessages);
+        if(data.conversationId === ChatUtils.conversationId) {
+          setConversationId(data.conversationId);
+          ChatUtils.privateChatMessages.push(data);
+          chatMessages = [...ChatUtils.privateChatMessages];
+          setChatMessages(chatMessages);
+        }
       }
     });
 

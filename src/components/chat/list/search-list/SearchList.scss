@@ -1,6 +1,6 @@
 .search-result {
   overflow-y: scroll;
-  height: 780px;
+  max-height: 500px;
 
   &-container {
     color: var(--white-1);
