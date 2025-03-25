@@ -35,7 +35,8 @@ export class ChatUtils {
       receiverId: user.receiverId,
       receiverName: user.receiverUsername,
       senderId: profile?._id,
-      senderName: profile?.username
+      senderName: profile?.username,
+      roomId: user.conversationId
     };
     socketService?.socket?.emit('join room', users);
   }
