@@ -19,7 +19,7 @@ import PropTypes from "prop-types";
 import { ImageUtils } from "@services/utils/image-utils.service";
 import { postService } from "@services/api/post/post.service";
 import Spinner from "@components/spinner/Spinner";
-export default function AddPostPost() {
+export default function AddPost() {
   const { gifModalIsOpen, feeling } = useSelector((state) => state.modal);
   const { gifUrl, image, privacy, video } = useSelector((state) => state.post);
   const { profile } = useSelector((state) => state.user);
@@ -45,7 +45,10 @@ export default function AddPostPost() {
   const inputRef = useRef(null);
   const imageInputRef = useRef(null);
   const dispatch = useDispatch();
-  const editor = useCreateBlockNote();
+  const editor = useCreateBlockNote({
+   
+    uploadFile,
+  });
   let blocks = "";
   const maxNumberOfCharacters = 1000;
 
@@ -62,7 +65,8 @@ export default function AddPostPost() {
       .join(" "); 
 
     console.log("plain", plainText);
-    PostUtils.postInputEditable(blocks, postData, setPostData);
+    PostUtils.postInputEditable(plainText, postData, setPostData);
+    PostUtils.postInputHtml(blocks, postData, setPostData);
     setDisable(blocks.trim().length === 0);
     console.log(disable);
   };
@@ -85,6 +89,8 @@ export default function AddPostPost() {
       if (Object.keys(feeling).length) {
         postData.feelings = feeling?.name;
       }
+      postData.privacy = privacy || "Public";
+      postData.profilePicture = profile?.profilePicture;
       const response = await postService.createPost(postData);
       console.log("response", response);
       if (response) {
@@ -105,6 +111,21 @@ export default function AddPostPost() {
     }
   };
 
+  async function uploadFile(file) {
+    const body = new FormData();
+    body.append("file", file);
+
+    const ret = await fetch("https://tmpfiles.org/api/v1/upload", {
+      method: "POST",
+      body: body,
+    });
+    return (await ret.json()).data.url.replace(
+      "tmpfiles.org/",
+      "tmpfiles.org/dl/"
+    );
+  }
+  
+ 
   return (
     <div className="font-sans">
       {loading && (
