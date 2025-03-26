@@ -9,7 +9,7 @@ export default function useHandleOutsideClick(ref, onClickOutSide) {
         };
         document.addEventListener("click", handleClickOutside);
         return () => document.removeEventListener("click", handleClickOutside);
-    }, []);
+    }, [ref, onClickOutSide]);
 }
 
 export const useHandleOutsideClicks = (refs, callback) => {

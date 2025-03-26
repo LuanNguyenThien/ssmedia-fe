@@ -243,6 +243,7 @@ const ChatList = () => {
                     {!search && (
                         <div className="conversation size-full flex flex-col gap-1">
                             {chatMessageList.map((data) => {
+                                console.log(data)
                                 const isActive =
                                     (searchParams.get("username") ===
                                         data?.receiverUsername?.toLowerCase() &&
@@ -270,13 +271,13 @@ const ChatList = () => {
                                         <div className="avatar">
                                             <Avatar
                                                 name={
-                                                    data.receiverUsername ===
+                                                    data?.receiverUsername ===
                                                     profile?.username
                                                         ? profile?.username
                                                         : data?.receiverUsername
                                                 }
                                                 bgColor={
-                                                    data.receiverUsername ===
+                                                    data?.receiverUsername ===
                                                     profile?.username
                                                         ? profile?.avatarColor
                                                         : data?.receiverAvatarColor
@@ -284,9 +285,9 @@ const ChatList = () => {
                                                 textColor="#ffffff"
                                                 size={40}
                                                 avatarSrc={
-                                                    data.receiverUsername !==
+                                                    data?.receiverUsername !==
                                                     profile?.username
-                                                        ? data.receiverProfilePicture
+                                                        ? data?.receiverProfilePicture
                                                         : data?.senderProfilePicture
                                                 }
                                             />
@@ -298,9 +299,9 @@ const ChatList = () => {
                                                     : ""
                                             }`}
                                         >
-                                            {data.receiverUsername !==
+                                            {data?.receiverUsername !==
                                             profile?.username
-                                                ? data.receiverUsername
+                                                ? data?.receiverUsername
                                                 : data?.senderUsername}
                                         </div>
                                         {data?.createdAt && (
@@ -310,16 +311,16 @@ const ChatList = () => {
                                                 )}
                                             </div>
                                         )}
-                                        {!data?.body && (
+                                        {/* {data?.body && (
                                             <div
-                                                className="created-date"
+                                                className="created-date bg-black"
                                                 onClick={
                                                     removeSelectedUserFromList
                                                 }
                                             >
                                                 <FaTimes />
                                             </div>
-                                        )}
+                                        )} */}
                                         {data?.body &&
                                             !data?.deleteForMe &&
                                             !data.deleteForEveryone && (
@@ -338,7 +339,7 @@ const ChatList = () => {
                                             )}
                                         {data?.deleteForMe &&
                                             !data.deleteForEveryone &&
-                                            data.senderUsername !==
+                                            data.senderUsername ===
                                                 profile?.username && (
                                                 <div className="conversation-message">
                                                     <span className="message-deleted">
@@ -348,7 +349,7 @@ const ChatList = () => {
                                             )}
                                         {data?.deleteForMe &&
                                             !data.deleteForEveryone &&
-                                            data.receiverUsername !==
+                                            data?.receiverUsername ===
                                                 profile?.username && (
                                                 <ChatListBody
                                                     data={data}

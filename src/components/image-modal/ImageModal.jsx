@@ -1,49 +1,77 @@
-import PropTypes from 'prop-types';
-import { FaArrowLeft, FaArrowRight, FaTimes } from 'react-icons/fa';
+import PropTypes from "prop-types";
+import { FaArrowLeft, FaArrowRight, FaTimes } from "react-icons/fa";
 
-import '@components/image-modal/ImageModal.scss';
+import "@components/image-modal/ImageModal.scss";
 
-const ImageModal = ({ image, onCancel, onClickLeft, onClickRight, showArrow, lastItemRight, lastItemLeft }) => {
-  return (
-    <div className="image-modal-container" data-testid="image-modal">
-      <div className="image-modal-icon" onClick={onCancel}>
-        <FaTimes />
-      </div>
-      {showArrow && (
+const ImageModal = ({
+    image,
+    onCancel,
+    onClickLeft,
+    onClickRight,
+    showArrow,
+    lastItemRight,
+    lastItemLeft,
+}) => {
+    return (
         <div
-          className={'image-modal-icon-left'}
-          onClick={onClickLeft}
-          style={{ pointerEvents: `${lastItemLeft ? 'none' : 'all'}`, color: `${lastItemLeft ? '#bdbdbd' : ''}` }}
+            className="fixed inset-0 h-screen w-screen flex items-center justify-center p-10 bg-primary-black/50 backdrop-blur-md !z-[1000]"
+            data-testid="image-modal"
         >
-          <FaArrowLeft />
+            <div className="size-full relative flex flex-col items-center justify-center rounded-lg">
+                {showArrow && (
+                    <div
+                        className={"image-modal-icon-left "}
+                        onClick={onClickLeft}
+                        style={{
+                            pointerEvents: `${lastItemLeft ? "none" : "all"}`,
+                            color: `${lastItemLeft ? "#bdbdbd" : ""}`,
+                        }}
+                    >
+                        <FaArrowLeft />
+                    </div>
+                )}
+                <div className="size-auto max-h-[70vh] max-w-[70vw] rounded-lg relative">
+                    <img
+                        className="size-full object-fit"
+                        alt=""
+                        src={`${image}`}
+                    />
+                    <div
+                        className="absolute text-2xl -top-5 -right-5 z-50 text-red-200 hover:text-red-400 cursor-pointer"
+                        onClick={onCancel}
+                    >
+                        <FaTimes />
+                    </div>
+                </div>
+                <div className="w-[200px] h-max bg-slate-300">
+                    this is options
+                </div>
+
+                {showArrow && (
+                    <div
+                        className={"image-modal-icon-right"}
+                        onClick={onClickRight}
+                        style={{
+                            pointerEvents: `${lastItemRight ? "none" : "all"}`,
+                            color: `${lastItemRight ? "#bdbdbd" : ""}`,
+                        }}
+                    >
+                        <FaArrowRight />
+                    </div>
+                )}
+            </div>
         </div>
-      )}
-      <div className="image-modal-overlay">
-        <div className="image-modal-box">
-          <img className="modal-image" alt="" src={`${image}`} />
-        </div>
-      </div>
-      {showArrow && (
-        <div
-          className={'image-modal-icon-right'}
-          onClick={onClickRight}
-          style={{ pointerEvents: `${lastItemRight ? 'none' : 'all'}`, color: `${lastItemRight ? '#bdbdbd' : ''}` }}
-        >
-          <FaArrowRight />
-        </div>
-      )}
-    </div>
-  );
+    );
 };
 
 ImageModal.propTypes = {
-  image: PropTypes.string,
-  onCancel: PropTypes.func,
-  onClickRight: PropTypes.func,
-  onClickLeft: PropTypes.func,
-  showArrow: PropTypes.bool,
-  lastItemRight: PropTypes.bool,
-  lastItemLeft: PropTypes.bool
+    image: PropTypes.string,
+    onCancel: PropTypes.func,
+    onClickRight: PropTypes.func,
+    onClickLeft: PropTypes.func,
+    showArrow: PropTypes.bool,
+    lastItemRight: PropTypes.bool,
+    lastItemLeft: PropTypes.bool,
 };
 
 export default ImageModal;

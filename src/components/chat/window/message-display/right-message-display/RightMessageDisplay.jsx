@@ -7,6 +7,8 @@ import { icons } from "assets/assets";
 import { useState } from "react";
 import { DynamicSVG } from "./../../../../sidebar/components/SidebarItems";
 import { useRef } from "react";
+import OptionSelector from "../options-selector/OptionSelector";
+import useHandleOutsideClick from "hooks/useHandleOutsideClick";
 
 const RightMessageDisplay = ({
     chat,
@@ -14,13 +16,13 @@ const RightMessageDisplay = ({
     profile,
     toggleReaction,
     showReactionIcon,
+    showReactionIconOnHover,
     index,
     activeElementIndex,
     reactionRef,
     setToggleReaction,
     handleReactionClick,
     deleteMessage,
-    showReactionIconOnHover,
     setActiveElementIndex,
     setSelectedReaction,
     setShowImageModal,
@@ -29,13 +31,22 @@ const RightMessageDisplay = ({
     lastIndex,
 }) => {
     const optionsRef = useRef(null);
+    const showOptionsRef = useRef(null);
+    const [isShowOptions, setIsShowOptions] = useState(false);
+    useHandleOutsideClick(showOptionsRef, setIsShowOptions);
+
     const [isShowBottom, setIsShowBottom] = useState(false);
     const [isHoverMessage, setIsHoverMessage] = useState(false);
     const handleClickMessage = () => {
         setIsShowBottom(!isShowBottom);
     };
+
+    const isLastMessage =
+        chat?.senderUsername === profile?.username &&
+        !chat?.deleteForEveryone &&
+        index === lastIndex;
     return (
-        <div className="message right-message" data-testid="right-message">
+        <div className="message right-message pl-[20%] sm:pl-0" data-testid="right-message">
             {/* message item */}
             <div className="message-right-content-container-wrapper relative">
                 {/* reactions */}
@@ -108,7 +119,14 @@ const RightMessageDisplay = ({
                                 />
                             </div>
                             {/* options toggle */}
-                            <div className="text-primary-black/30 size-6">
+                            <div
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsHoverMessage(false);
+                                    setIsShowOptions(!isShowOptions);
+                                }}
+                                className="text-primary-black/30 size-6 relative"
+                            >
                                 <DynamicSVG
                                     className={""}
                                     svgData={icons.options}
@@ -116,22 +134,38 @@ const RightMessageDisplay = ({
                             </div>
                         </div>
                     )}
-                    {chat?.deleteForEveryone && chat?.deleteForMe && (
+                    {isShowOptions && (
+                        <div
+                            ref={showOptionsRef}
+                            className="absolute pr-2 cursor-pointer size-max left-20 sm:left-0 top-1/2 -translate-y-1/2 -translate-x-full z-50 flex items-center justify-between gap-2"
+                        >
+                            <OptionSelector
+                                chat={chat}
+                                deleteMessage={deleteMessage}
+                            />
+                        </div>
+                    )}
+
+                     {/* thu hồi tất cả */}
+                    {(chat?.deleteForEveryone && chat?.deleteForMe) && (
                         <div className="message-bubble right-message-bubble">
                             <span className="message-deleted">
                                 message deleted
                             </span>
                         </div>
                     )}
-                    {!chat?.deleteForEveryone &&
+                    {/* thu hồi bản thân */}
+                    {(!chat?.deleteForEveryone &&
                         chat?.deleteForMe &&
-                        chat?.senderUsername === profile?.username && (
+                        chat?.senderUsername === profile?.username) && (
                             <div className="message-bubble right-message-bubble">
                                 <span className="message-deleted">
                                     message deleted
                                 </span>
                             </div>
                         )}
+
+                        {/* không thu hồi */}
                     {!chat?.deleteForEveryone && !chat?.deleteForMe && (
                         <RightMessageBubble
                             chat={chat}
@@ -140,16 +174,7 @@ const RightMessageDisplay = ({
                             setShowImageModal={setShowImageModal}
                         />
                     )}
-                    {!chat?.deleteForEveryone &&
-                        chat?.deleteForMe &&
-                        chat.senderUsername === profile?.username && (
-                            <RightMessageBubble
-                                chat={chat}
-                                showImageModal={showImageModal}
-                                setImageUrl={setImageUrl}
-                                setShowImageModal={setShowImageModal}
-                            />
-                        )}
+
                 </div>
 
                 {chat?.reaction &&
@@ -183,43 +208,49 @@ const RightMessageDisplay = ({
                         </div>
                     )}
             </div>
-            {(isShowBottom || index === lastIndex) && (
-                <div className="message-content-bottom animate__animated animate__fadeInDown animate__faster">
-                    {/* show message */}
-                    <div className="message-time w-max items-center gap-1 text-xs">
+            <div
+                className={`message-content-bottom ${
+                    chat?.reaction && chat?.reaction.length > 0 ? "mt-2" : ""
+                }`}
+            >
+                {isShowBottom && (
+                    <div className="message-reaction !bg-transparent w-max flex items-center text-xs gap-1 animate__animated animate__fadeInDown animate__faster">
                         <span
                             data-testid="chat-time"
                             className="flex items-center size-full"
                         >
                             {timeAgo.timeFormat(chat?.createdAt)}
                         </span>
-
-                        {chat?.senderUsername === profile?.username &&
-                            !chat?.deleteForEveryone &&
-                            index === lastIndex && (
-                                <>
-                                    {lastChatMessage?.isRead ? (
-                                        <div className="h-3 w-4">
-                                            <img
-                                                src={icons.check}
-                                                className="size-full object-fit"
-                                                alt=""
-                                            />
-                                        </div>
-                                    ) : (
-                                        <div className="h-3 w-4">
-                                            <img
-                                                src={icons.uncheck}
-                                                className="size-full object-fit"
-                                                alt=""
-                                            />
-                                        </div>
-                                    )}
-                                </>
-                            )}
                     </div>
-                </div>
-            )}
+                )}
+                {index === lastIndex && (
+                    <div className="message-time w-full flex items-center text-xs gap-1 animate__animated animate__fadeInDown animate__faster">
+                        {isLastMessage && (
+                            <>
+                                {lastChatMessage?.isRead ? (
+                                    <div className="h-3 w-max flex items-center justify-end gap-1">
+                                        seen
+                                        {/* <img
+                                            src={icons.check}
+                                            className="size-full object-fit"
+                                            alt=""
+                                        /> */}
+                                    </div>
+                                ) : (
+                                    <div className="h-3 w-max flex items-center justify-end gap-1">
+                                        delivered
+                                        {/* <img
+                                            src={icons.uncheck}
+                                            className="size-full object-fit"
+                                            alt=""
+                                        /> */}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

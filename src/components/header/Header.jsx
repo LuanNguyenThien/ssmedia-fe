@@ -89,8 +89,8 @@ const Header = () => {
 
     useEffect(() => {
         const count = sumBy(chatList, (notification) => {
-            return !notification.isRead &&
-                notification.receiverUsername === profile?.username
+            return !notification?.isRead &&
+                notification?.receiverUsername === profile?.username
                 ? 1
                 : 0;
         });
