@@ -75,6 +75,8 @@ const EditPost = () => {
     const counter = maxNumberOfCharacters - currentTextLength;
     counterRef.current.textContent = `${counter}/100`;
     setDisable(currentTextLength <= 0 && !postImage);
+    blocks="";
+    PostUtils.postInputHtml(blocks, postData, setPostData);
     PostUtils.postInputEditable(textContent, postData, setPostData);
   };
 
@@ -348,20 +350,147 @@ const EditPost = () => {
             </div>
             <hr />
             <ModalBoxContent />
-
-            <>
-              <div className="flex-row">
-                <div data-testid="editable" id="editable" name="post">
-                  <BlockNoteView
-                    editor={editor}
-                    onChange={() => {
-                      handleEditorDataChange();
-                    }}
-                  />
+            {post.htmlPost && (
+              <>
+                <div className="flex-row">
+                  <div data-testid="editable" id="editable" name="post">
+                    <BlockNoteView
+                      editor={editor}
+                      onChange={() => {
+                        handleEditorDataChange();
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            </>
+              </>
+            )}
 
+            {!post.htmlPost && (
+              <>
+                {!postImage && (
+                  <>
+                    <div
+                      className="modal-box-form"
+                      data-testid="modal-box-form"
+                      style={{ background: `${textAreaBackground}` }}
+                    >
+                      <div
+                        className="main"
+                        style={{
+                          margin:
+                            textAreaBackground !== "#ffffff" ? "0 auto" : "",
+                        }}
+                      >
+                        <div className="flex-row">
+                          <div
+                            data-testid="editable"
+                            id="editable"
+                            name="post"
+                            ref={(el) => {
+                              inputRef.current = el;
+                              inputRef?.current?.focus();
+                            }}
+                            className={`editable flex-item ${
+                              textAreaBackground !== "#ffffff"
+                                ? "textInputColor"
+                                : ""
+                            } ${
+                              postData.post.length === 0 &&
+                              textAreaBackground !== "#ffffff"
+                                ? "defaultInputTextColor"
+                                : ""
+                            }`}
+                            contentEditable={true}
+                            onInput={(e) =>
+                              postInputEditable(e, e.currentTarget.textContent)
+                            }
+                            onKeyDown={onKeyDown}
+                            data-placeholder="What's on your mind?..."
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {postImage && (
+                  <>
+                    <div className="modal-box-image-form">
+                      <div
+                        data-testid="post-editable"
+                        name="post"
+                        id="editable"
+                        ref={(el) => {
+                          imageInputRef.current = el;
+                          imageInputRef?.current?.focus();
+                        }}
+                        className="post-input flex-item"
+                        contentEditable={true}
+                        onInput={(e) =>
+                          postInputEditable(e, e.currentTarget.textContent)
+                        }
+                        onKeyDown={onKeyDown}
+                        data-placeholder="What's on your mind?..."
+                      ></div>
+                      <div className="image-display">
+                        <div
+                          className="image-delete-btn"
+                          data-testid="image-delete-btn"
+                          style={{ marginTop: hasVideo ? "-40px" : "0px" }}
+                          onClick={() => clearImage()}
+                        >
+                          <FaTimes />
+                        </div>
+                        {!hasVideo && (
+                          <img
+                            data-testid="post-image"
+                            className="post-image"
+                            src={`${postImage}`}
+                            alt=""
+                          />
+                        )}
+                        {hasVideo && (
+                          <div style={{ marginTop: "-40px" }}>
+                            <video width="100%" controls src={`${postImage}`} />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <div className="modal-box-bg-colors">
+                  <ul>
+                    {bgColors.map((color, index) => (
+                      <li
+                        data-testid="bg-colors"
+                        key={index}
+                        className={`${
+                          color === "#ffffff" ? "whiteColorBorder" : ""
+                        }`}
+                        style={{ backgroundColor: `${color}` }}
+                        onClick={() => {
+                          PostUtils.positionCursor("editable");
+                          selectBackground(color);
+                        }}
+                      ></li>
+                    ))}
+                  </ul>
+                </div>
+                <span
+                  className="char_count"
+                  data-testid="allowed-number"
+                  ref={counterRef}
+                >
+                  {allowedNumberOfCharacters}
+                </span>
+
+                <ModalBoxSelection
+                  setSelectedPostImage={setSelectedPostImage}
+                  setSelectedVideo={setSelectedVideo}
+                />
+              </>
+            )}
             <div className="modal-box-button" data-testid="edit-button">
               <Button
                 label="Update"
