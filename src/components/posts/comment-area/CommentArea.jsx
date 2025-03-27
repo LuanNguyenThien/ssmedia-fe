@@ -244,15 +244,7 @@ const CommentArea = ({ post }) => {
           <FaArrowUp className="w-5 h-5" />
           <span className="font-medium">Upvote</span>
           <span className="text-gray-500 mx-0.5">·</span>
-          <span
-            className='${
-            userSelectedReaction.toLowerCase() === "upvote"
-              ? "text-green-500"
-              : "text-gray-700"
-          }'
-          >
-            {post.reactions["upvote"]}
-          </span>
+          <span className='"text-gray-500"'>{post.reactions["upvote"]}</span>
         </button>
 
         {/* Downvote button */}
@@ -281,13 +273,13 @@ const CommentArea = ({ post }) => {
           onClick={addFavoritePost}
         >
           <FaBookmark
-            className={`favorite-icon text-${
-              isFavorite ? "blue-600" : "gray-500"
+            className={`favorite-icon ${
+              isFavorite ? "text-blue-600" : "text-gray-500"
             }`}
           />
           <span
-            className={`font-medium hidden sm:block text-${
-              isFavorite ? "blue-700" : "gray-700"
+            className={`font-medium hidden sm:block ${
+              isFavorite ? "text-blue-700" : "text-gray-700"
             }`}
           >
             {isFavorite ? "Saved" : "Save"}
