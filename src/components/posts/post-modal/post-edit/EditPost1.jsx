@@ -75,7 +75,7 @@ const EditPost = () => {
     const counter = maxNumberOfCharacters - currentTextLength;
     counterRef.current.textContent = `${counter}/100`;
     setDisable(currentTextLength <= 0 && !postImage);
-    blocks="";
+    blocks = "";
     PostUtils.postInputHtml(blocks, postData, setPostData);
     PostUtils.postInputEditable(textContent, postData, setPostData);
   };
@@ -352,7 +352,7 @@ const EditPost = () => {
             <ModalBoxContent />
             {post.htmlPost && (
               <>
-                <div className="flex-row">
+                <div className="flex-grow overflow-auto">
                   <div data-testid="editable" id="editable" name="post">
                     <BlockNoteView
                       editor={editor}
