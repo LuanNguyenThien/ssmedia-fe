@@ -61,7 +61,7 @@ const LeftMessageDisplay = ({
                                     handleClick={(event) => {
                                         const body = {
                                             conversationId:
-                                                chat?.conversationId,
+                                                chat?.conversationId || chat?.groupId,
                                             messageId: chat?._id,
                                             reaction: event,
                                             type: "add",
@@ -171,7 +171,7 @@ const LeftMessageDisplay = ({
                                             ) {
                                                 const body = {
                                                     conversationId:
-                                                        chat?.conversationId,
+                                                        chat?.conversationId || chat?.groupId,
                                                     messageId: chat?._id,
                                                     reaction: data?.type,
                                                     type: "remove",

@@ -6,8 +6,12 @@ class ChatService {
         return response;
     }
 
-    async getChatMessages(receiverId) {
-        const response = await axios.get(`/chat/message/user/${receiverId}`);
+    async getChatMessages(receiverId, isGroupChat) {
+        const response = await axios.get(`/chat/message/user/${receiverId}`, {
+            params: {
+                isGroupChat: isGroupChat
+            }
+        });
         return response;
     }
 
@@ -46,6 +50,11 @@ class ChatService {
         const response = await axios.delete(
             `/chat/message/mark-as-deleted/${messageId}/${senderId}/${receiverId}/${type}`
         );
+        return response;
+    }
+
+    async getGroupChatById(groupChatId){
+        const response = await axios.get(`/group-chat/${groupChatId}`);
         return response;
     }
 }

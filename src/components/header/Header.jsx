@@ -108,6 +108,7 @@ const Header = () => {
             setNotificationCount
         );
         NotificationUtils.socketIOMessageNotification(
+            chatList,
             profile,
             messageNotifications,
             setMessageNotifications,
@@ -198,10 +199,12 @@ const Header = () => {
                 notification?.receiverUsername !== profile?.username
                     ? notification?.receiverUsername
                     : notification?.senderUsername;
-            await chatService.addChatUsers({
-                userOne: profile?.username,
-                userTwo: userTwoName,
-            });
+            if(!notification.isGroupChat){        
+                await chatService.addChatUsers({
+                    userOne: profile?.username,
+                    userTwo: userTwoName,
+                });
+            }
             navigate(`/app/social/chat/messages?${createSearchParams(params)}`);
             setIsMessageActive(false);
             dispatch(getConversationList());

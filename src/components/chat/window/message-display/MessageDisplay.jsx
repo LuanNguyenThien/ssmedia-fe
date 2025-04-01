@@ -201,7 +201,8 @@ const MessageDisplay = ({
                             )}
 
                             {(chat.receiverUsername === profile?.username ||
-                                chat.senderUsername === profile?.username) && (
+                                chat.senderUsername === profile?.username ||
+                            (chat.isGroupChat)) && (
                                 <>
                                     {chat.senderUsername ===
                                     profile?.username ? (

@@ -32,11 +32,14 @@ const ChatWindow = () => {
     const [isSending, setIsSending] = useState(false);
 
     const getChatMessages = useCallback(
-        async (receiverId) => {
+        async (receiverId, isGroup) => {
             try {
-                const response = await chatService.getChatMessages(receiverId);
+                const response = await chatService.getChatMessages(receiverId, isGroup);
                 ChatUtils.privateChatMessages = [...response.data.messages];
-                if (response.data.messages.length > 0) {
+                if (isGroup === "true") {
+                    ChatUtils.conversationId = receiverId;
+                }
+                else if (response.data.messages.length > 0) {
                     ChatUtils.conversationId =
                         ChatUtils.privateChatMessages[0]?.conversationId;
                 } else {
@@ -60,17 +63,25 @@ const ChatWindow = () => {
         if (searchParams.get("id") && searchParams.get("username")) {
             setConversationId("");
             setChatMessages([]);
-            getChatMessages(searchParams.get("id"));
+            getChatMessages(searchParams.get("id"), searchParams.get("isGroup"));
         }
     }, [getChatMessages, searchParams]);
 
     const getUserProfileByUserId = useCallback(async () => {
         try {
-            const response = await userService.getUserProfileByUserId(
-                searchParams.get("id")
-            );
-            setReceiver(response.data.user);
-            ChatUtils.joinRoomEvent(response.data.user, profile);
+            if(searchParams.get("id") && searchParams.get("isGroup") === "true") {
+                const response = await chatService.getGroupChatById(
+                    searchParams.get("id")
+                );
+                setReceiver(response.data.group);
+                ChatUtils.joinRoomEvent(response.data.group, profile);
+            } else {
+                const response = await userService.getUserProfileByUserId(
+                    searchParams.get("id")
+                );
+                setReceiver(response.data.user);
+                ChatUtils.joinRoomEvent(response.data.user, profile);
+            }
         } catch (error) {
             Utils.dispatchNotification(
                 error.response.data.message,
@@ -96,7 +107,7 @@ const ChatWindow = () => {
                     user?.userTwo === profile?.username
             );
             const messageData = ChatUtils.messageData({
-                receiver,
+                receiver: searchParams.get("isGroup") === "true" ? undefined : receiver,
                 conversationId,
                 message,
                 searchParamsId: searchParams.get("id"),
@@ -104,6 +115,8 @@ const ChatWindow = () => {
                 gifUrl,
                 selectedImage,
                 isRead: checkUserOne && checkUserTwo,
+                isGroupChat: searchParams.get("isGroup") === "true",
+                groupId: searchParams.get("isGroup") === "true" ? searchParams.get("id") : undefined,
             });
             await chatService.saveChatMessage(messageData);
             setIsSending(false);
@@ -242,14 +255,14 @@ const ChatWindow = () => {
                                     <div
                                         className={`chat-name ${
                                             Utils.checkIfUserIsOnline(
-                                                receiver?.username,
+                                                receiver?.username || receiver?.name,
                                                 onlineUsers
                                             )
                                                 ? ""
                                                 : "user-not-online"
                                         }`}
                                     >
-                                        {receiver?.username}
+                                        {receiver?.username || receiver?.name}
                                     </div>
                                     {/* online dot */}
                                     {Utils.checkIfUserIsOnline(
