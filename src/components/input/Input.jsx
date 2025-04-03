@@ -3,7 +3,7 @@ import "@components/input/Input.scss";
 import { forwardRef } from "react";
 
 const Input = forwardRef((props, ref) => (
-    <div className="form-row !text-primary-black">
+    <div className={`${props.className}`}>
         {props.labelText && (
             <label htmlFor={props.name} className="form-label">
                 {props.labelText}

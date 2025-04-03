@@ -14,7 +14,7 @@ import {
 import AddPost from '@components/posts/post-modal/post-add/AddPost1';
 import { useRef, useState } from 'react';
 import { ImageUtils } from '@services/utils/image-utils.service';
-import EditPost from '@components/posts/post-modal/post-edit/EditPost';
+import EditPost from '@components/posts/post-modal/post-edit/EditPost1';
 import PostButtonItem from '../post-button-item/PostButtonItem';
 import PostInputItem from '../post-input-item/PostInputItem';
 

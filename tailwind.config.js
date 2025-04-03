@@ -9,7 +9,7 @@ export default {
                 "primary-white": "#FFFFFF",
                 secondary: "#FFFFFF",
                 background: "#FFFFFF",
-                "background-blur":"#F5F7FB",
+                "background-blur":"#F2F4F7",
                 title: "#3080ED",
                 subtitle: "black",
                 text: "black",
