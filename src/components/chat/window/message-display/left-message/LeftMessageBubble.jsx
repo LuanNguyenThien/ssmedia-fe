@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-const RightMessageBubble = ({
+const LeftMessageBubble = ({
     chat,
     showImageModal,
     setImageUrl,
@@ -9,7 +9,7 @@ const RightMessageBubble = ({
     return (
         <>
             {chat?.body !== "Sent a GIF" && chat?.body !== "Sent an Image" && (
-                <div className="message-bubble right-message-bubble">
+                <div className="message-bubble left-message-bubble">
                     {chat?.body}
                 </div>
             )}
@@ -49,12 +49,4 @@ const RightMessageBubble = ({
         </>
     );
 };
-
-RightMessageBubble.propTypes = {
-    chat: PropTypes.object,
-    showImageModal: PropTypes.bool,
-    setImageUrl: PropTypes.func,
-    setShowImageModal: PropTypes.func,
-};
-
-export default RightMessageBubble;
+export default LeftMessageBubble;

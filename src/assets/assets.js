@@ -1,21 +1,28 @@
-import video from "./images/video.png";
-import picture from "./images/photo.png";
-import gif from "./images/gif.png";
-import feeling from "./images/feeling.png";
-
 import logo from "./logo.png";
+//commons
 import notification from "./icons/common/notification.png";
 import message from "./icons/common/message.png";
+import logout from "./icons/common/exit.svg";
+import search from "./icons/common/search.svg";
+import video from "./icons/common/video.svg";
+import picture from "./icons/common/image.svg";
+import gif from "./icons/common/gif.svg";
+import feeling from "./icons/common/emoji.svg";
+import send from "./icons/common/send.svg";
+import remove from "./icons/common/delete.svg";
 
-import logout from "./icons/exit.svg";
-import sidebarSelector from "./icons/sidebar.png";
-import search from "./icons/search.svg";
+//messages
+import check from "./icons/messages/checked.png";
+import uncheck from "./icons/messages/uncheck.png";
+import options from "./icons/messages/options.svg";
 
+//feelings
 import blessed from "./icons/feelings/blessed.jpg";
 import excited from "./icons/feelings/excited.jpg";
 import happyFeelings from "./icons/feelings/happy.jpg";
 import loved from "./icons/feelings/loved.jpg";
 
+//reactions
 import angry from "./icons/reactions/angry.png";
 import happy from "./icons/reactions/happy.png";
 import like from "./icons/reactions/like.png";
@@ -78,7 +85,6 @@ export const icons = {
     feeling,
     logout,
     logo,
-    sidebarSelector,
     search,
     home,
     profile,
@@ -88,4 +94,9 @@ export const icons = {
     saves,
     notifications,
     add,
+    send,
+    check,
+    uncheck,
+    remove,
+    options
 };
