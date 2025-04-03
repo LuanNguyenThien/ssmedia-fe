@@ -1,9 +1,8 @@
 import PropTypes from "prop-types";
 import "@components/input/Input.scss";
 import { forwardRef } from "react";
-
 const Input = forwardRef((props, ref) => (
-    <div className={`${props.className}`}>
+    <div className="form-row !text-primary-black">
         {props.labelText && (
             <label htmlFor={props.name} className="form-label">
                 {props.labelText}
