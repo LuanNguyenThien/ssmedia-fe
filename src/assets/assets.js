@@ -23,6 +23,14 @@ import love from "./icons/reactions/love.png";
 import sad from "./icons/reactions/sad.png";
 import wow from "./icons/reactions/wow.png";
 
+import location from "./icons/profile-info/location.svg";
+import study from "./icons/profile-info/study.svg";
+import work from "./icons/profile-info/work.svg";
+import social_youtube from "./icons/profile-info/yt.png";
+import social_instagram from "./icons/profile-info/ins.png";
+import social_facebook from "./icons/profile-info/fb.png";
+import social_twitter from "./icons/profile-info/tw.png";
+
 //sidebar
 import home from "./icons/sidebar/home.svg";
 import profile from "./icons/sidebar/profile.svg";
@@ -53,6 +61,16 @@ export const reactions = {
     sad,
     wow,
 };
+
+export const profileInfo = {
+    location,
+    study,
+    work,
+    social_youtube,
+    social_instagram,
+    social_facebook,
+    social_twitter,
+};
 export const icons = {
     video,
     picture,
@@ -62,12 +80,12 @@ export const icons = {
     logo,
     sidebarSelector,
     search,
-    home,   
+    home,
     profile,
     people,
     groups,
     chats,
     saves,
     notifications,
-    add
+    add,
 };
