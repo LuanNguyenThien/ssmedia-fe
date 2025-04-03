@@ -10,9 +10,8 @@
   background-color: var(--white-1);
   flex-direction: column;
   max-width: 500px;
-   width: 80vw; // Hoặc 90vw để rộng hơn
-  max-width: 800px; // Hoặc tăng giá trị nếu cần
-  height: 80vh;
+   width: 80vw; 
+  height: 90vh;
 
   @media screen and (max-width: 768px) {
     width: 90%;
@@ -192,6 +191,7 @@ hr {
   display: flex;
   padding: 0 16px;
   margin: 0.5rem 0;
+  max-height: 90vh; 
 
   .user-post-image {
     .post-rounded-circle {

@@ -55,11 +55,12 @@ const MessageSidebar = ({
                                             }
                                             textColor="#ffffff"
                                             size={50}
-                                            avatarSrc={
-                                                notification.receiverUsername !==
+                                            avatarSrc={ 
+                                                notification.isGroupChat ? notification?.groupImage :
+                                                (notification.receiverUsername !==
                                                 profile?.username
                                                     ? notification.receiverProfilePicture
-                                                    : notification?.senderProfilePicture
+                                                    : notification?.senderProfilePicture)
                                             }
                                         />
                                     </div>
@@ -73,12 +74,16 @@ const MessageSidebar = ({
                                         }`}
                                     >
                                         <h6 className="">
-                                            {notification.receiverUsername !==
+                                            {notification.isGroupChat ? notification?.groupName :
+                                            (notification.receiverUsername !==
                                             profile?.username
                                                 ? notification.receiverUsername
-                                                : notification.senderUsername}
+                                                : notification.senderUsername)}
                                         </h6>
                                         <p className="subtext">
+                                            {notification.isGroupChat && notification?.senderUsername !== profile?.username 
+                                                ? `${notification?.senderUsername}: `
+                                                : ""}
                                             {notification.senderUsername ===
                                             profile?.username
                                                 ? "You: "

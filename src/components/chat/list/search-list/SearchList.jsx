@@ -66,56 +66,6 @@ const SearchList = ({
         )}
       </div>
     </div>
-    // <Box className="search-result" p={4} borderWidth={1} borderRadius="md" boxShadow="md">
-    //   <Box className="search-result-container">
-    //     {!isSearching && result.length > 0 && (
-    //       result.map((user) => (
-    //         <Box
-    //           data-testid="search-result-item"
-    //           className="search-result-container-item"
-    //           key={user._id}
-    //           display="flex"
-    //           alignItems="center"
-    //           p={2}
-    //           borderRadius="md"
-    //           bg="gray.100"
-    //           mb={2}
-    //           cursor="pointer"
-    //           onClick={() => {
-    //             setSelectedUser(user);
-    //             setComponentType('chat');
-    //             setSearch('');
-    //             setSearchResult([]);
-    //           }}
-    //           _hover={{ bg: 'gray.200' }}
-    //         >
-    //           <Avatar
-    //             name={user.username}
-    //             bgColor={user.avatarColor}
-    //             textColor="#ffffff"
-    //             size="md"
-    //             src={user.profilePicture}
-    //           />
-    //           <Text ml={3} fontWeight="bold">{user.username}</Text>
-    //         </Box>
-    //       ))
-    //     )}
-
-    //     {searchTerm && isSearching && result.length === 0 && (
-    //       <Box className="search-result-container-empty" data-testid="searching-text" display="flex" alignItems="center">
-    //         <Spinner size="sm" mr={2} />
-    //         <Text>Searching...</Text>
-    //       </Box>
-    //     )}
-
-    //     {searchTerm && !isSearching && result.length === 0 && (
-    //       <Box className="search-result-container-empty" data-testid="nothing-found" textAlign="center">
-    //         <Text fontWeight="bold">Nothing found</Text>
-    //         <Text>We couldn&apos;t find any match for <strong>{searchTerm}</strong></Text>
-    //       </Box>
-    //     )}
-    //   </Box>
-    // </Box>
   );
 };
 
