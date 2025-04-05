@@ -1,4 +1,4 @@
-import { icons } from "assets/assets";
+import { icons } from "@assets/assets";
 import { DynamicSVG } from "./components/SidebarItems";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import "@components/sidebar/Sidebar.scss";

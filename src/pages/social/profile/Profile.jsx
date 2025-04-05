@@ -1,7 +1,7 @@
 import ChangePassword from "@components/change-password/ChangePassword";
 import GalleryImage from "@components/gallery-image/GalleryImage";
 import NotificationSettings from "@components/notification-settings/NotificationSettings";
-import FollowerCard from "pages/social/followers/FollowerCard";
+import FollowerCard from "@pages/social/followers/FollowerCard";
 import "@pages/social/profile/Profile.scss";
 import { toggleDeleteDialog } from "@redux/reducers/modal/modal.reducer";
 import { imageService } from "@services/api/image/image.service";
@@ -14,9 +14,9 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { filter } from "lodash";
 import ImageModal from "@components/image-modal/ImageModal";
 import Dialog from "@components/dialog/Dialog";
-import BackgroundHeader from "components/background-header/BackgroundHeader";
-import Timeline from "components/timeline/Timeline";
-import Information from "./../../../components/informations/Information";
+import BackgroundHeader from "@components/background-header/BackgroundHeader";
+import Timeline from "@components/timeline/Timeline";
+import Information from "@/components/information/Information";
 
 const titleOptions = ["Posts", "Replied", "Followers", "Following"];
 
@@ -107,7 +107,7 @@ const Profile = () => {
         }
     }, [dispatch, searchParams]);
 
-    const saveImage = (type) => {
+    const saveImage =async (type) => {
         const reader = new FileReader();
         reader.addEventListener(
             "load",
@@ -126,7 +126,7 @@ const Profile = () => {
         ) {
             reader.readAsDataURL(selectedProfileImage);
         } else {
-            addImage(selectedBackgroundImage, type);
+            await addImage(selectedBackgroundImage, type);
         }
     };
 
@@ -240,8 +240,8 @@ const Profile = () => {
                     }
                 />
             )}
-            <div className="profile-wrapper h-full max-h-[86vh] grid grid-cols-3 rounded-t-[30px] overflow-hidden bg-background-blur">
-                <div className="profile-header w-full h-[18vh] col-span-3 relative">
+            <div className="profile-wrapper h-[86vh] max-h-[86vh] grid grid-cols-3 rounded-t-[30px] overflow-hidden bg-background-blur">
+                <div className="profile-header w-full h-[14vh] col-span-3 relative">
                     <BackgroundHeader
                         user={user}
                         loading={loading}
@@ -264,8 +264,8 @@ const Profile = () => {
                 </div>
 
                 {/* main post section */}
-                <div className="profile-content pt-4 px-4 flex-1 col-span-3 grid grid-cols-3 ">
-                    <div className="col-span-1 mr-4 h-full rounded-[10px] max-h-full overflow-y-scroll flex flex-col gap-2">
+                <div className="profile-content flex-1 h-[72vh] pt-4 px-4 col-span-3 grid grid-cols-3 ">
+                    <div className="col-span-1 size-full max-h-full pr-4 rounded-[10px] flex flex-col gap-2 overflow-y-scroll">
                         <Information userProfileData={userProfileData} />
                     </div>
                     <div className="col-span-2 h-full flex flex-col justify-start bg-primary-white rounded-t-[10px] ">
@@ -285,7 +285,7 @@ const Profile = () => {
                                 </div>
                             ))}
                         </div>
-                        <div className="size-full min-h-[600px] max-h-[600px] flex flex-col overflow-y-scroll bg-primary-white p-4">
+                        <div className="size-full min-h-[500px] max-h-[500px] flex flex-col overflow-y-scroll bg-primary-white p-4">
                             {displayContent && renderContent()}
                         </div>
 

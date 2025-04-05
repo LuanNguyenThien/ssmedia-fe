@@ -1,4 +1,4 @@
-import { sideBarItems } from "services/utils/static.data";
+import { sideBarItems } from "@services/utils/static.data";
 import { DynamicSVG } from "./components/SidebarItems";
 import { useLocation, createSearchParams, useNavigate } from "react-router-dom";
 import "@components/sidebar/Sidebar.scss";

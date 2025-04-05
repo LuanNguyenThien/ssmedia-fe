@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { FaTimes } from "react-icons/fa";
 import "@components/chat/image-preview/ImagePreview.scss";
 import { DynamicSVG } from "./../../sidebar/components/SidebarItems";
-import { icons } from "assets/assets";
+import { icons } from "@assets/assets";
 
 const ImagePreview = ({ image, onRemoveImage }) => {
     return (

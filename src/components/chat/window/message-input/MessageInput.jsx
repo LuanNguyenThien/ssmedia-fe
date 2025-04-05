@@ -4,11 +4,11 @@ import loadable from "@loadable/component";
 import "@components/chat/window/message-input/MessageInput.scss";
 import { useEffect, useRef, useState } from "react";
 import { ImageUtils } from "@services/utils/image-utils.service";
-import Input from "components/input/Input";
-import { DynamicSVG } from "components/sidebar/components/SidebarItems";
-import GiphyContainer from "components/chat/giphy-container/GiphyContainer";
-import useHandleOutsideClick from "hooks/useHandleOutsideClick";
-import ImagePreview from "components/chat/image-preview/ImagePreview";
+import Input from "@components/input/Input";
+import { DynamicSVG } from "@components/sidebar/components/SidebarItems";
+import GiphyContainer from "@components/chat/giphy-container/GiphyContainer";
+import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
+import ImagePreview from "@components/chat/image-preview/ImagePreview";
 
 const EmojiPickerComponent = loadable(() => import("./EmojiPicker"), {
     fallback: (

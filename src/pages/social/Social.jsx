@@ -3,10 +3,10 @@ import "@pages/social/Social.scss";
 import { Outlet, useLocation } from "react-router-dom";
 
 import Sidebar from "@components/sidebar/Sidebar";
-import HeaderMb from "components/header/HeaderMb";
-import SidebarMb from "components/sidebar/SidebarMb";
-import Header from "components/header/Header";
-import StickySidebar from "components/sidebar/StickySidebar";
+import HeaderMb from "@components/header/HeaderMb";
+import SidebarMb from "@components/sidebar/SidebarMb";
+import Header from "@components/header/Header";
+import StickySidebar from "@components/sidebar/StickySidebar";
 import { includes } from "lodash";
 
 const layout_1_4_list = ["profile", "save"];

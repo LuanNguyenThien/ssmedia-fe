@@ -1,5 +1,5 @@
-import BasicInfoSkeleton from "components/informations/basic-info/BasicInfoSkeleton";
-import InfoDisplay from "components/informations/display/InfoDisplay";
+import BasicInfoSkeleton from "@/components/information/basic-info/BasicInfoSkeleton";
+import InfoDisplay from "@/components/information/display/InfoDisplay";
 import PropTypes from "prop-types";
 
 const SocialLinks = ({

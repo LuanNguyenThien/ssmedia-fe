@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import "@components/chat/giphy-container/GiphyContainer.scss";
-import { GiphyUtils } from "services/utils/giphy-utils.service";
+import { GiphyUtils } from "@services/utils/giphy-utils.service";
 
 const GiphyContainer = ({ handleGiphyClick }) => {
     const [gifs, setGifs] = useState([]);

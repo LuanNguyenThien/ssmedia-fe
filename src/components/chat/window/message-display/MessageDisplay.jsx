@@ -6,9 +6,9 @@ import useDetectOutsideClick from "@hooks/useDetectOutsideClick";
 import RightMessageDisplay from "./right-message-display/RightMessageDisplay";
 import LeftMessageDisplay from "./left-message/LeftMessageDisplay";
 import { useSearchParams } from "react-router-dom";
-import ImageModal from "components/image-modal/ImageModal";
-import LoadingMessage from "components/state/loading-message/LoadingMessage";
-import Dialog from "components/dialog/Dialog";
+import ImageModal from "@components/image-modal/ImageModal";
+import LoadingMessage from "@components/state/loading-message/LoadingMessage";
+import Dialog from "@components/dialog/Dialog";
 
 const MessageDisplay = ({
     chatMessages,

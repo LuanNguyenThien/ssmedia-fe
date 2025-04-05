@@ -3,8 +3,8 @@ import useEffectOnce from "@hooks/useEffectOnce";
 import { getConversationList } from "@redux/api/chat";
 import { useDispatch, useSelector } from "react-redux";
 // import { useSearchParams } from 'react-router-dom';
-import ChatList from "components/chat/list/ChatList";
-import ChatWindow from "components/chat/window/ChatWindow";
+import ChatList from "@components/chat/list/ChatList";
+import ChatWindow from "@components/chat/window/ChatWindow";
 
 const ChatDesktop = () => {
     const { selectedChatUser, chatList } = useSelector((state) => state.chat);

@@ -1,7 +1,7 @@
 // import { Box, Text, Icon } from '@chakra-ui/react';
 import PropTypes from "prop-types";
 import { FaCircle } from "react-icons/fa";
-import { icons } from "assets/assets";
+import { icons } from "@assets/assets";
 
 const ChatListBody = ({ data, profile }) => {
     return (

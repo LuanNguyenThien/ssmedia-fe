@@ -4,8 +4,8 @@ import { Utils } from "@services/utils/utils.service";
 import { FaRegEdit } from "react-icons/fa";
 import { InfoField } from "./display/InfoField";
 import { useDispatch } from "react-redux";
-import { DynamicSVG } from "components/sidebar/components/SidebarItems";
-import { profileInfo } from "assets/assets";
+import { DynamicSVG } from "@components/sidebar/components/SidebarItems";
+import { profileInfo } from "@assets/assets";
 
 const InformationEdit = ({
     setIsEditing,

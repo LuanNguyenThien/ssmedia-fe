@@ -5,14 +5,19 @@ import { useEffect, useRef, useState } from "react";
 import { FaCamera } from "react-icons/fa";
 import "@components/background-header/BackgroundHeader.scss";
 import BackgroundHeaderSkeleton from "@components/background-header/BackgroundHeaderSkeleton";
-import Avatar from "components/avatar/Avatar";
-import Input from "components/input/Input";
+import Avatar from "@components/avatar/Avatar";
+import Input from "@components/input/Input";
 
 import { FaRegEdit } from "react-icons/fa";
-import Spinner from "components/spinner/Spinner";
+import Spinner from "@components/spinner/Spinner";
 import { LuSquareDashedMousePointer } from "react-icons/lu";
-import { MdOutlineDriveFolderUpload } from "react-icons/md";
-import useDetectOutsideClick from "hooks/useDetectOutsideClick";
+import {
+    MdOutlineDriveFolderUpload,
+    MdOutlineDeleteSweep,
+} from "react-icons/md";
+
+import useDetectOutsideClick from "@hooks/useDetectOutsideClick";
+import useEffectOnce from "@hooks/useEffectOnce";
 
 const BackgroundHeader = ({
     user,
@@ -30,12 +35,14 @@ const BackgroundHeader = ({
     removeBackgroundImage,
     galleryImages,
 }) => {
+    console.log("galleryImages", galleryImages);
+    console.log("galleryImages", user);
     const [selectedBackground, setSelectedBackground] = useState("");
     const [selectedProfileImage, setSelectedProfileImage] = useState("");
     const [showSpinner, setShowSpinner] = useState(false);
 
     const editToggleRef = useRef(null);
-    const [isActive, setIsActive] =  useDetectOutsideClick(editToggleRef, false)
+    const [isActive, setIsActive] = useDetectOutsideClick(editToggleRef, false);
 
     const [showImagesModal, setShowImagesModal] = useState(false);
     const backgroundFileRef = useRef();
@@ -60,9 +67,10 @@ const BackgroundHeader = ({
     const onAddProfileClick = () => setIsActive(!isActive);
 
     const BackgroundSelectDropdown = () => {
+        const isHasBackground = user?.bgImageId;
         return (
             <div
-                className="absolute flex flex-col right-5 bottom-0 bg-primary-white py-2 px-4 gap-2 rounded-t-xl rounded-bl-xl z-[1000] text-primary-black text-sm"
+                className="absolute flex flex-col w-max right-5 bottom-0 bg-primary-white py-2 px-4 gap-2 rounded-t-xl rounded-bl-xl z-[1000] text-primary-black text-sm"
                 data-testid="menu"
             >
                 {galleryImages.length > 0 && (
@@ -80,7 +88,7 @@ const BackgroundHeader = ({
                     </div>
                 )}
                 <div
-                    className=" hover:text-primary-black/70 cursor-pointer flex items-center gap-2"
+                    className="hover:text-primary-black/70 cursor-pointer flex items-center gap-2"
                     onClick={() => {
                         backgroundFileInputClicked();
                         setIsActive(false);
@@ -92,9 +100,31 @@ const BackgroundHeader = ({
                     </span>
                     Upload
                 </div>
+                {isHasBackground && (
+                    <div
+                        className=" hover:text-primary-black/70 cursor-pointer flex items-center gap-2"
+                        onClick={() => {
+                            removeBackgroundImage(user?.bgImageId);
+                            setShowSpinner(false);
+
+                            window.location.reload();
+                        }}
+                    >
+                        <span className="text-xl ">
+                            <MdOutlineDeleteSweep />
+                        </span>
+                        Remove this background
+                    </div>
+                )}
             </div>
         );
     };
+
+    useEffectOnce(() => {
+        if (selectedBackground) {
+            setSelectedBackground("");
+        }
+    }, []);
 
     useEffect(() => {
         if (!hasImage) {
@@ -119,7 +149,7 @@ const BackgroundHeader = ({
                 <BackgroundHeaderSkeleton tabItems={tabItems} />
             ) : (
                 <div
-                    className="profile-banner h-[18vh] w-full max-h-[18vh]"
+                    className="profile-banner h-[14vh] w-full max-h-[14vh]"
                     data-testid="profile-banner"
                 >
                     {/*edit popup images section  */}
@@ -195,13 +225,11 @@ const BackgroundHeader = ({
                         {selectedBackground ? (
                             <img
                                 src={`${selectedBackground}`}
-                                alt="background"
                                 className="object-cover w-full h-full"
                             />
                         ) : (
                             <img
-                                src={`${url}`}
-                                alt="background"
+                                src={url}
                                 className="object-cover w-full h-full"
                             />
                         )}
