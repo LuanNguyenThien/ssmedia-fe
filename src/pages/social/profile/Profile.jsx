@@ -16,7 +16,7 @@ import ImageModal from "@components/image-modal/ImageModal";
 import Dialog from "@components/dialog/Dialog";
 import BackgroundHeader from "@components/background-header/BackgroundHeader";
 import Timeline from "@components/timeline/Timeline";
-import Information from "@components/informations/Information";
+import Information from "@/components/information/Information";
 
 const titleOptions = ["Posts", "Replied", "Followers", "Following"];
 

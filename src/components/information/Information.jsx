@@ -1,4 +1,4 @@
-import SocialLinks from "@components/informations/social-links/SocialLinks";
+import SocialLinks from "@/components/information/social-links/SocialLinks";
 import useEffectOnce from "@hooks/useEffectOnce";
 import { useEffect } from "react";
 import { useCallback } from "react";

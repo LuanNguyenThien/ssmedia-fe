@@ -1,4 +1,4 @@
-import BasicInfoSkeleton from "@components/informations/basic-info/BasicInfoSkeleton";
+import BasicInfoSkeleton from "@/components/information/basic-info/BasicInfoSkeleton";
 import { FaRegEdit } from "react-icons/fa";
 import { profileInfo } from "@assets/assets";
 import { InfoItem } from "./InfoItem";
