@@ -1,13 +1,13 @@
-import Logo from "./components/logo/Logo";
+
 import { IoIosSettings } from "react-icons/io";
 import { PiSignOutBold } from "react-icons/pi";
-
 import { RxHamburgerMenu } from "react-icons/rx";
-import SearchInputMb from "./components/search-input.jsx/seach-input-mb";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useHandleOutsideClick from "hooks/useHandleOutsideClick";
 
+import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
+import Logo from "./components/logo/Logo";
+import SearchInputMb from "./components/search-input.jsx/seach-input-mb";
 const HeaderMb = () => {
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const containerRef = useRef(null);

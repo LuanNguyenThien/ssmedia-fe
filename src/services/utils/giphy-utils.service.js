@@ -1,4 +1,4 @@
-import { giphyService } from "services/api/giphy/giphy.service";
+import { giphyService } from "@services/api/giphy/giphy.service";
 
 export class GiphyUtils {
     static async getTrendingGifs(setGifs, setLoading) {

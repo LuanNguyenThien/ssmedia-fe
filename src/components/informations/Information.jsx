@@ -1,12 +1,12 @@
-import SocialLinks from "components/informations/social-links/SocialLinks";
-import useEffectOnce from "hooks/useEffectOnce";
+import SocialLinks from "@components/informations/social-links/SocialLinks";
+import useEffectOnce from "@hooks/useEffectOnce";
 import { useEffect } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { followerService } from "services/api/followers/follower.service";
-import { Utils } from "services/utils/utils.service";
+import { followerService } from "@services/api/followers/follower.service";
+import { Utils } from "@services/utils/utils.service";
 import BasicInfo from "./basic-info/BasicInfo";
 import CountContainer from "./count-container/CountContainer";
 import InformationEdit from "./InformationEdit";
@@ -68,7 +68,7 @@ const Information = ({ userProfileData }) => {
         getUserByUsername();
     }, [getUserByUsername]);
     return (
-        <div className="size-full max-h-full flex flex-col gap-4 overflow-y-scroll ">
+        <>
             {isEditing && (
                 <InformationEdit
                     editableInputs={editableInputs}
@@ -78,7 +78,7 @@ const Information = ({ userProfileData }) => {
                     setEditableSocialInputs={setEditableSocialInputs}
                 />
             )}
-            <div className="w-full h-max bg-primary-white rounded-[10px] pt-[60px] pb-[20px] ">
+            <div className="w-full h-max bg-primary-white rounded-[10px] pt-[10vh] pb-[20px] ">
                 <CountContainer
                     profile={profile}
                     followersCount={user?.followersCount}
@@ -106,7 +106,7 @@ const Information = ({ userProfileData }) => {
                     setIsEditing={setIsEditing}
                 />
             </div>
-        </div>
+        </>
     );
 };
 

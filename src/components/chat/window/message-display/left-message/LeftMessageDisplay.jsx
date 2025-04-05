@@ -5,8 +5,8 @@ import { timeAgo } from "@services/utils/timeago.utils";
 import PropTypes from "prop-types";
 import { useState, useRef } from "react";
 import { DynamicSVG } from "./../../../../sidebar/components/SidebarItems";
-import { icons } from "assets/assets";
-import useHandleOutsideClick from "hooks/useHandleOutsideClick";
+import { icons } from "@assets/assets";
+import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
 import LeftMessageBubble from "./LeftMessageBubble";
 
 const LeftMessageDisplay = ({

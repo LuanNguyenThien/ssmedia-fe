@@ -1,4 +1,4 @@
-import { DynamicSVG } from "components/sidebar/components/SidebarItems";
+import { DynamicSVG } from "@components/sidebar/components/SidebarItems";
 
 export const InfoItem = ({ icon, value, title }) => {
     const infoStyle = "text-gray-600 font-normal mr-2 flex items-center gap-2";

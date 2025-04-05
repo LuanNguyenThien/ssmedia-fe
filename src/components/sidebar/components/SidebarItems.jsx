@@ -6,7 +6,7 @@ import { Utils } from "@services/utils/utils.service";
 import { ChatUtils } from "@services/utils/chat-utils.service";
 import { chatService } from "@services/api/chat/chat.service";
 import { socketService } from "@services/socket/socket.service";
-import { sideBarItems } from "services/utils/static.data";
+import { sideBarItems } from "@services/utils/static.data";
 
 export function DynamicSVG({ svgData, color = "white", className }) {
     const decodedSVG = decodeURIComponent(svgData.split(",")[1]); // Remove `data:image/svg+xml,`

@@ -29,8 +29,8 @@ import DropdownSetting from "@components/header/components/dropdown/DropdownSett
 import SearchButtonMb from "@components/header/components/searchButton/SearchButtonMb";
 import Logo from "./components/logo/Logo";
 import SearchInputDesktop from "./components/search-input.jsx/seach-input-desktop";
-import Dropdown from "components/dropdown/Dropdown";
-import MessageSidebar from "components/message-sidebar/MessageSidebar";
+import Dropdown from "@components/dropdown/Dropdown";
+import MessageSidebar from "@components/message-sidebar/MessageSidebar";
 const Header = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();

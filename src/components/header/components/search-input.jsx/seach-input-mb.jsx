@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { icons } from "assets/assets";
-import useHandleOutsideClick from "hooks/useHandleOutsideClick";
+import { icons } from "@assets/assets";
+import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
 
 const SearchInputMb = ({ searchTerm, setSearchTerm, handleSearchKeyPress }) => {
     const [isExpanded, setIsExpanded] = useState(false);

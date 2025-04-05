@@ -3,12 +3,12 @@ import { timeAgo } from "@services/utils/timeago.utils";
 import PropTypes from "prop-types";
 import RightMessageBubble from "@components/chat/window/message-display/right-message-display/RightMessageBubble";
 import { reactionsMap } from "@services/utils/static.data";
-import { icons } from "assets/assets";
+import { icons } from "@assets/assets";
 import { useState } from "react";
 import { DynamicSVG } from "./../../../../sidebar/components/SidebarItems";
 import { useRef } from "react";
 import OptionSelector from "../options-selector/OptionSelector";
-import useHandleOutsideClick from "hooks/useHandleOutsideClick";
+import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
 
 const RightMessageDisplay = ({
     chat,

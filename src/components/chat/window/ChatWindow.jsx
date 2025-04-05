@@ -13,7 +13,7 @@ import ObjectId from "bson-objectid";
 import { IoIosArrowBack } from "react-icons/io";
 import MessageDisplay from "./message-display/MessageDisplay";
 import MessageInput from "./message-input/MessageInput";
-import LoadingSpinner from "components/state/loading";
+import LoadingSpinner from "@components/state/loading";
 
 const ChatWindow = () => {
     const { profile } = useSelector((state) => state.user);
