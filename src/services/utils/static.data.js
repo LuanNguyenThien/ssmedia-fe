@@ -11,7 +11,6 @@ import {
 import { feelings, reactions, icons } from "@/assets/assets";
 import React from "react";
 
-
 export const bgColors = [
     "#f44336",
     "#e91e63",
@@ -70,18 +69,12 @@ export const sideBarItems = [
     },
     {
         index: 5,
-        name: "Notifications",
-        url: "/app/social/notifications",
-        iconName: icons.notifications,
-    },
-    {
-        index: 6,
         name: "Profile",
         url: "/app/social/profile",
         iconName: icons.profile,
     },
     {
-        index: 7,
+        index: 6,
         name: "Save",
         url: "/app/social/save",
         iconName: icons.saves,

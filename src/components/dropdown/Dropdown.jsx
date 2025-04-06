@@ -21,12 +21,14 @@ const Dropdown = ({
                 data-testid="dropdown"
             >
                 <div className="social-card">
-                    <div className="social-card-body">
-                        <div className="social-bg-primary bg-transparent border-b-2 border-gray-200">
-                            <span className="text-xl font-bold">
-                                {title}
-                            </span>
+                    <div className="social-card-body ">
+                        <div className="social-bg-primary w-full text-center bg-transparent px-4 pt-4 text-xl font-bold">
+                            {title}
                         </div>
+                        <div className="w-full flex justify-center items-center py-1">
+                            <div className="w-1/2 h-[0.5px] bg-background-blur"></div>
+                        </div>
+
                         <div className="social-card-body-info">
                             <div
                                 data-testid="info-container"
@@ -39,7 +41,7 @@ const Dropdown = ({
                                 )}
                                 {data.map((item) => (
                                     <div
-                                        className="social-sub-card hover:bg-primary/10 py-2 px-4 rounded-xl"
+                                        className="social-sub-card bg-background-blur/50 hover:bg-primary/10 py-2 px-4 rounded-xl"
                                         key={Utils.generateString(10)}
                                     >
                                         <div className="content-avatar">
@@ -58,7 +60,9 @@ const Dropdown = ({
                                             )}
                                         </div>
                                         <div
-                                            className={`content-body ${item?.read ? "" : "font-bold"}`}
+                                            className={`content-body ${
+                                                item?.read ? "" : "font-bold"
+                                            }`}
                                             onClick={() => {
                                                 if (title === "Notifications") {
                                                     onMarkAsRead(item);
@@ -78,12 +82,13 @@ const Dropdown = ({
                                             <div className="content-icons">
                                                 <FaTrashAlt
                                                     className="trash"
-                                                    onClick={() =>
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
                                                         onDeleteNotification(
                                                             item?._id
-                                                        )
-                                                    }
-                                                /> 
+                                                        );
+                                                    }}
+                                                />
                                             </div>
                                         )}
                                     </div>
