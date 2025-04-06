@@ -1,4 +1,4 @@
-import { icons } from "assets/assets";
+import { icons } from "@assets/assets";
 import { DynamicSVG } from "./components/SidebarItems";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import "@components/sidebar/Sidebar.scss";
@@ -58,7 +58,7 @@ const SidebarMb = () => {
     };
 
     return (
-        <div className="fixed bottom-0 h-14 w-full grid grid-cols-5 bg-background shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]  z-50">
+        <div className="fixed bottom-0 h-[8vh] w-full grid grid-cols-5 bg-background shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]  z-50">
             <div className="flex justify-center items-center col-span-2  gap-8 px-4 ">
                 <div
                     onClick={() =>
@@ -76,7 +76,7 @@ const SidebarMb = () => {
                 </div>
             </div>
             <div className="flex justify-center items-start col-span-1  relative">
-                <div className="absolute bottom-3 bg-white rounded-t-full p-1">
+                <div className="absolute bottom-0 bg-white rounded-t-full p-1">
                     <DynamicSVG
                         svgData={icons.add}
                         className={"size-16 text-primary/50"}

@@ -3,10 +3,10 @@ import "@pages/social/Social.scss";
 import { Outlet, useLocation } from "react-router-dom";
 
 import Sidebar from "@components/sidebar/Sidebar";
-import HeaderMb from "components/header/HeaderMb";
-import SidebarMb from "components/sidebar/SidebarMb";
-import Header from "components/header/Header";
-import StickySidebar from "components/sidebar/StickySidebar";
+import HeaderMb from "@components/header/HeaderMb";
+import SidebarMb from "@components/sidebar/SidebarMb";
+import Header from "@components/header/Header";
+import StickySidebar from "@components/sidebar/StickySidebar";
 import { includes } from "lodash";
 
 const layout_1_4_list = ["profile", "save"];
@@ -42,7 +42,7 @@ const Social = () => {
 
         if (includes(layout_0_5_list, section)) {
             return (
-                <div className="col-span-5 max-h-[86vh] relative">
+                <div className="col-span-5 max-h-[86vh] min-h-[86vh] relative">
                     <StickySidebar />
                     <Outlet />
                 </div>

@@ -1,4 +1,4 @@
-import { icons } from "assets/assets";
+import { icons } from "@assets/assets";
 
 const SearchInputDesktop = ({ onClick, searchTerm, setSearchTerm }) => {
     return (
