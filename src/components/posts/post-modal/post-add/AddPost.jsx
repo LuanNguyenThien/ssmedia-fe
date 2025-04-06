@@ -50,7 +50,6 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const maxNumberOfCharacters = 1000;
 const handleEditorDataChange = async () => {
   blocks = await editor.blocksToHTMLLossy(editor.document);
-  console.log(blocks);
   PostUtils.postInputEditable(blocks, postData, setPostData);
  
 
@@ -72,8 +71,6 @@ const handleEditorDataChange = async () => {
     const counter = maxNumberOfCharacters - currentTextLength;
     counterRef.current.textContent = `${counter}/1000`;
      setDisable(currentTextLength <= 0 && !postImage);
-    // console.log(blocks);
-    // PostUtils.postInputEditable(blocks, postData, setPostData);
   };
 
   const closePostModal = () => {

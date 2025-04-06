@@ -18,11 +18,15 @@ import BackgroundHeader from "@components/background-header/BackgroundHeader";
 import Timeline from "@components/timeline/Timeline";
 import Information from "@/components/information/Information";
 
-const titleOptions = ["Posts", "Replied", "Followers", "Following"];
-
 const Profile = () => {
     //init
     const dispatch = useDispatch();
+    const [titleOptions, setTitleOptions] = useState([
+        "Posts",
+        "Replied",
+        "Followers",
+        "Following",
+    ]);
 
     const [searchParams] = useSearchParams();
     const { profile } = useSelector((state) => state.user);
@@ -47,6 +51,21 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [showImageModal, setShowImageModal] = useState(false);
 
+    const isCurrentUser = useCallback(() => {
+        if (profile) {
+            return username === profile?.username;
+        }
+        setTitleOptions(["Posts", "Followers"]);
+
+        return false;
+    }, [username, profile]);
+
+    useEffect(() => {
+        if (!isCurrentUser()) {
+            setTitleOptions(["Posts", "Followers"]);
+        }
+    }, [isCurrentUser]);
+
     const changeTabContent = (data) => {
         setDisplayContent(data);
     };
@@ -69,6 +88,7 @@ const Profile = () => {
 
     const getUserProfileByUsername = useCallback(async () => {
         try {
+            setLoading(true);
             const response = await userService.getUserProfileByUsername(
                 username,
                 searchParams.get("id"),
@@ -107,7 +127,7 @@ const Profile = () => {
         }
     }, [dispatch, searchParams]);
 
-    const saveImage =async (type) => {
+    const saveImage = async (type) => {
         const reader = new FileReader();
         reader.addEventListener(
             "load",
@@ -240,10 +260,11 @@ const Profile = () => {
                     }
                 />
             )}
-            <div className="profile-wrapper h-[86vh] max-h-[86vh] grid grid-cols-3 rounded-t-[30px] overflow-hidden bg-background-blur">
-                <div className="profile-header w-full h-[14vh] col-span-3 relative">
+            <div className="profile-wrapper col-span-10 h-[86vh] max-h-[86vh] grid grid-cols-3 rounded-t-[30px] overflow-y-scroll lg:overflow-hidden bg-background-blur">
+                <div className="profile-header w-full lg:h-[14vh] col-span-3 relative">
                     <BackgroundHeader
                         user={user}
+                        isCurrentUser={isCurrentUser()}
                         loading={loading}
                         hasImage={hasImage}
                         hasError={hasError}
@@ -260,12 +281,14 @@ const Profile = () => {
                         tab={displayContent}
                         hideSettings={username === profile?.username}
                         galleryImages={galleryImages}
+                        selectedImage={setImageUrl}
+                        showImageModal={setShowImageModal}
                     />
                 </div>
 
                 {/* main post section */}
-                <div className="profile-content flex-1 h-[72vh] pt-4 px-4 col-span-3 grid grid-cols-3 ">
-                    <div className="col-span-1 size-full max-h-full pr-4 rounded-[10px] flex flex-col gap-2 overflow-y-scroll">
+                <div className="profile-content flex-1 h-[72vh] pt-4 sm:px-4 col-span-3 flex flex-col lg:grid grid-cols-3  ">
+                    <div className="col-span-1 w-full h-max lg:h-full lg:pr-4 rounded-[10px] flex flex-col gap-2 lg:overflow-y-scroll">
                         <Information userProfileData={userProfileData} />
                     </div>
                     <div className="col-span-2 h-full flex flex-col justify-start bg-primary-white rounded-t-[10px] ">
@@ -273,7 +296,7 @@ const Profile = () => {
                             {titleOptions.map((item, index) => (
                                 <div
                                     key={index}
-                                    className={`flex-1 py-2 text-center border-b-2 border-gray-300 font-bold cursor-pointer hover:text-primary-black ${
+                                    className={`flex-1 text-sm py-2 text-center border-b-2 border-gray-300 font-bold cursor-pointer hover:text-primary-black ${
                                         displayContent === item &&
                                         "text-primary-black border-primary"
                                     }`}

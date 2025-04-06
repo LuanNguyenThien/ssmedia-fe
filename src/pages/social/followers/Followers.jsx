@@ -131,7 +131,7 @@ const Followers = () => {
                         transform: 'translateY(-2px)',
                         boxShadow: 'lg'
                       }}
-                      onClick={() => ProfileUtils.navigateToProfileUser(data, navigate)}
+                      onClick={() => ProfileUtils.navigateToProfile(data, navigate)}
                     >
                       Profile
                     </Button>

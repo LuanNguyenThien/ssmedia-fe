@@ -37,7 +37,6 @@ const DashboardTable = () => {
   const getAllUsers = useCallback(async () => {
     try {
       const response = await userService.getAllUsersAdminRole(currentPage);
-      console.log(response);
       if (response.data.users.length > 0) {
         setTotals(response.data.totalUsers);
         // setUsers((data) => {

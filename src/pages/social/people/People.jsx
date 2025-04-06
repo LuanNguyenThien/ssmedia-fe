@@ -1,8 +1,3 @@
-// import Avatar from '@components/avatar/Avatar';
-// import { ProfileUtils } from '@services/utils/profile-utils.service';
-// import { useEffect, useState } from 'react';
-// import CardElementButtons from '@components/card-element/CardElementButtons';
-// import CardElementStats from '@components/card-element/CardElementStats';
 import useEffectOnce from "@hooks/useEffectOnce";
 import useInfiniteScroll from "@hooks/useInfiniteScroll";
 import "@pages/social/people/People.scss";
@@ -250,7 +245,7 @@ const People = () => {
                                                 boxShadow: "lg",
                                             }}
                                             onClick={() =>
-                                                ProfileUtils.navigateToProfileUser(
+                                                ProfileUtils.navigateToProfile(
                                                     data,
                                                     navigate
                                                 )

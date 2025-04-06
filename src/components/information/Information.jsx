@@ -78,9 +78,9 @@ const Information = ({ userProfileData }) => {
                     setEditableSocialInputs={setEditableSocialInputs}
                 />
             )}
-            <div className="w-full h-max bg-primary-white rounded-[10px] pt-[10vh] pb-[20px] ">
+            <div className="w-full h-max bg-primary-white rounded-[10px] pt-[9vh] sm:pt-[5vh] lg:pt-[8vh] pb-[20px] ">
                 <CountContainer
-                    profile={profile}
+                    user={user}
                     followersCount={user?.followersCount}
                     followingCount={user?.followingCount}
                     loading={loading}
@@ -96,7 +96,7 @@ const Information = ({ userProfileData }) => {
                     setIsEditing={setIsEditing}
                 />
             </div>
-            <div className="bg-primary-white rounded-[10px]">
+            <div className="bg-primary-white rounded-[10px] mb-5">
                 <SocialLinks
                     setEditableSocialInputs={setEditableSocialInputs}
                     editableSocialInputs={editableSocialInputs}

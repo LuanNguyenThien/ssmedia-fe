@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { userService } from "@services/api/user/user.service";
 import { Utils } from "@services/utils/utils.service";
 import { FaRegEdit } from "react-icons/fa";
@@ -32,6 +32,10 @@ const InformationEdit = ({
         facebookMsg: "Facebook profile not added.",
         youtubeMsg: "YouTube channel not linked.",
     };
+    const limitQuoteCharacters = 100;
+    const characterRemaining = useCallback(() => {
+        return limitQuoteCharacters - editableInputs.quote.length;
+    }, [editableInputs.quote.length]);
 
     const renderBasicInfo = () => (
         <>
@@ -160,7 +164,7 @@ const InformationEdit = ({
 
     const saveButton = ({ setIsEdit, updateInfo }) => {
         return (
-            <div className="flex gap-2 items-center">
+            <div className="w-max flex gap-2 items-center justify-end">
                 <button
                     className="bg-background-blur text-primary-black/50 px-2 py-1 rounded-md hover:text-primary-black/70"
                     onClick={() => {
@@ -220,7 +224,7 @@ const InformationEdit = ({
 
     return (
         <div className="fixed inset-0 w-screen h-screen backdrop-blur-sm flex justify-center items-center z-50">
-            <div className="h-auto max-h-[80%] overflow-y-scroll w-1/3 bg-primary-white gap-4 flex flex-col justify-start items-start px-10 pb-6 rounded-[10px]">
+            <div className="h-auto max-h-[80%] overflow-y-scroll lg:w-1/3 shadow-md bg-primary-white gap-4 flex flex-col justify-start items-start px-10 pb-10 rounded-[10px]">
                 <div className="w-full flex items-center justify-between pt-6">
                     <span className="text-2xl font-bold text-primary-black">
                         Edit Information
@@ -233,34 +237,43 @@ const InformationEdit = ({
                     </button>
                 </div>
 
-                <div className="w-full flex flex-col justify-start items-start gap-2">
+                <div className="w-full flex flex-col justify-start items-start gap-3">
                     <div className="w-full flex justify-between items-center">
                         <span className="font-bold text-lg text-primary-black ">
                             Bio
                         </span>
 
-                        {isEdit.status ? (
-                            saveButton({
-                                setIsEdit: () =>
-                                    setIsEdit({
-                                        ...isEdit,
-                                        status: !isEdit.status,
-                                    }),
-                                updateInfo: updateBasicInfo,
-                            })
-                        ) : (
-                            <FaRegEdit
-                                className="text-primary-black cursor-pointer hover:text-primary-black/50"
-                                onClick={() =>
-                                    setIsEdit({
-                                        ...isEdit,
-                                        status: !isEdit.status,
-                                    })
-                                }
-                            />
-                        )}
+                        <div className="flex items-center justify-between gap-4">
+                            {isEdit.status ? (
+                                <div className="flex flex-col justify-end items-center">
+                                    {saveButton({
+                                        setIsEdit: () =>
+                                            setIsEdit({
+                                                ...isEdit,
+                                                status: !isEdit.status,
+                                            }),
+                                        updateInfo: updateBasicInfo,
+                                    })}
+                                    <span className="text-sm text-primary-black">
+                                        {characterRemaining()} character
+                                        remaining
+                                    </span>
+                                </div>
+                            ) : (
+                                <FaRegEdit
+                                    className="text-primary-black cursor-pointer hover:text-primary-black/50"
+                                    onClick={() =>
+                                        setIsEdit({
+                                            ...isEdit,
+                                            status: !isEdit.status,
+                                        })
+                                    }
+                                />
+                            )}
+                        </div>
                     </div>
                     <textarea
+                        maxLength={limitQuoteCharacters}
                         disabled={!isEdit.status}
                         onChange={(e) =>
                             setEditableInputs({
@@ -269,7 +282,7 @@ const InformationEdit = ({
                             })
                         }
                         value={editableInputs.quote}
-                        className={`w-full text-slate-600 border border-slate-300 appearance-none rounded-lg px-3.5 py-2.5 outline-none focus:bg-primary-white focus:border-primary focus:ring-2 focus:ring-indigo-100
+                        className={`w-full h-[100px] text-slate-600 border border-slate-300 appearance-none rounded-lg px-3.5 py-2.5 outline-none focus:bg-primary-white focus:border-primary focus:ring-2 focus:ring-indigo-100
                             ${
                                 !isEdit.status
                                     ? "cursor-not-allowed bg-background-blur"
@@ -280,7 +293,7 @@ const InformationEdit = ({
                         placeholder="Describe yourself..."
                     ></textarea>
                 </div>
-                <div className="w-full flex flex-col justify-start items-start gap-2">
+                <div className="w-full flex flex-col justify-start items-start gap-3">
                     <div className="w-full flex justify-between items-center">
                         <span className="font-bold text-lg text-primary-black ">
                             Information
@@ -308,9 +321,9 @@ const InformationEdit = ({
                     </div>
                     {renderBasicInfo()}
                 </div>
-                <div className="w-full flex flex-col justify-start items-start gap-2">
+                <div className="w-full flex flex-col justify-start items-start gap-3">
                     <div className="w-full flex justify-between items-center">
-                        <span className="font-bold text-lg text-primary-black ">
+                        <span className="w-max truncate font-bold text-lg text-primary-black ">
                             Social Links
                         </span>
 

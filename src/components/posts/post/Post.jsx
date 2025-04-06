@@ -79,14 +79,11 @@ const Post = ({ post, showIcons }) => {
     setBackgroundImageColor(bgColor);
   };
   const loadEditor = async (text) => {
-    console.log("day la text", text);
     const blocks = await editor.tryParseHTMLToBlocks(text);
-    console.log("day là bocls" , blocks);
     editor.replaceBlocks(editor.document, blocks);
   };
   useEffect(() => {
     getBackgroundImageColor(post);
-    console.log(post.post);
     loadEditor(post.post || "");
   }, [post]);
 

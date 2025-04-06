@@ -15,16 +15,14 @@ import {
     MdOutlineDriveFolderUpload,
     MdOutlineDeleteSweep,
 } from "react-icons/md";
-
 import useDetectOutsideClick from "@hooks/useDetectOutsideClick";
 import useEffectOnce from "@hooks/useEffectOnce";
 
 const BackgroundHeader = ({
     user,
+    isCurrentUser,
     loading,
     url,
-    onClick,
-    tab,
     hasImage,
     tabItems,
     hasError,
@@ -34,9 +32,9 @@ const BackgroundHeader = ({
     cancelFileSelection,
     removeBackgroundImage,
     galleryImages,
+    selectedImage,
+    showImageModal,
 }) => {
-    console.log("galleryImages", galleryImages);
-    console.log("galleryImages", user);
     const [selectedBackground, setSelectedBackground] = useState("");
     const [selectedProfileImage, setSelectedProfileImage] = useState("");
     const [showSpinner, setShowSpinner] = useState(false);
@@ -70,7 +68,7 @@ const BackgroundHeader = ({
         const isHasBackground = user?.bgImageId;
         return (
             <div
-                className="absolute flex flex-col w-max right-5 bottom-0 bg-primary-white py-2 px-4 gap-2 rounded-t-xl rounded-bl-xl z-[1000] text-primary-black text-sm"
+                className="absolute flex flex-col w-max right-5 bottom-0 bg-primary-white py-2 px-4 gap-2 rounded-t-xl rounded-bl-xl text-primary-black text-sm"
                 data-testid="menu"
             >
                 {galleryImages.length > 0 && (
@@ -107,7 +105,9 @@ const BackgroundHeader = ({
                             removeBackgroundImage(user?.bgImageId);
                             setShowSpinner(false);
 
-                            window.location.reload();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
                         }}
                     >
                         <span className="text-xl ">
@@ -134,7 +134,6 @@ const BackgroundHeader = ({
 
     return (
         <>
-            {/*  */}
             {showImagesModal && (
                 <ImageGridModal
                     images={galleryImages}
@@ -149,7 +148,7 @@ const BackgroundHeader = ({
                 <BackgroundHeaderSkeleton tabItems={tabItems} />
             ) : (
                 <div
-                    className="profile-banner h-[14vh] w-full max-h-[14vh]"
+                    className="profile-banner w-full h-[40vh] sm:h-[14vh] sm:max-h-[14vh]"
                     data-testid="profile-banner"
                 >
                     {/*edit popup images section  */}
@@ -164,11 +163,11 @@ const BackgroundHeader = ({
                                         <Spinner bgColor="white" />
                                     )}
                                 </div>
-                                <div className="save-changes-buttons absolute bottom-3 right-3 z-50">
+                                <div className="save-changes-buttons absolute top-3 sm:bottom-3 right-3 z-50">
                                     <div className="flex justify-between items-center px-4 gap-2">
                                         <Button
                                             label="Cancel"
-                                            className="bg-primary-black/40 text-primary-white hover:bg-primary-black/60 transition-all rounded-xl py-2 px-4 text-sm"
+                                            className="bg-primary-black/90 text-primary-white hover:bg-primary-black/60 transition-all rounded-xl py-2 px-4 text-sm"
                                             disabled={false}
                                             handleClick={() => {
                                                 setShowSpinner(false);
@@ -178,7 +177,7 @@ const BackgroundHeader = ({
                                         />
                                         <Button
                                             label="Save Changes"
-                                            className="bg-primary/40 text-primary-white hover:bg-primary/60 transition-all rounded-xl py-2 px-4 text-sm"
+                                            className="bg-primary/90 text-primary-white hover:bg-primary/60 transition-all rounded-xl py-2 px-4 text-sm"
                                             disabled={false}
                                             handleClick={() => {
                                                 setShowSpinner(true);
@@ -193,35 +192,16 @@ const BackgroundHeader = ({
                             </div>
                         </div>
                     )}
-
                     {/* background */}
                     <div
                         data-testid="profile-banner-image"
-                        className="profile-banner-image size-full  overflow-hidden"
+                        className="profile-banner-image size-full "
                         style={{
                             background: `${
                                 !selectedBackground ? user?.avatarColor : ""
                             }`,
                         }}
                     >
-                        {/* {url && hideSettings && (
-                            <div
-                                className="delete-btn"
-                                data-testid="delete-btn"
-                            >
-                                <Button
-                                    label="Remove"
-                                    className="remove"
-                                    disabled={false}
-                                    handleClick={() => {
-                                        removeBackgroundImage(user?.bgImageId);
-                                    }}
-                                />
-                            </div>
-                        )}
-                        {!selectedBackground && !url && (
-                            <h3>Add a background image</h3>
-                        )} */}
                         {selectedBackground ? (
                             <img
                                 src={`${selectedBackground}`}
@@ -229,16 +209,20 @@ const BackgroundHeader = ({
                             />
                         ) : (
                             <img
+                                onClick={() => {
+                                    selectedImage(url);
+                                    showImageModal(true);
+                                }}
                                 src={url}
                                 className="object-cover w-full h-full"
                             />
                         )}
 
-                        {!hasImage && (
+                        {!hasImage && isCurrentUser && (
                             <div
                                 ref={editToggleRef}
                                 onClick={onAddProfileClick}
-                                className="absolute bottom-3 right-3 text-2xl text-background-blur hover:text-background-blur/80 transition-all duration-200"
+                                className="absolute z-[50] bottom-3 right-3 text-2xl text-background-blur hover:text-background-blur/80 transition-all duration-200"
                             >
                                 <FaRegEdit />
                                 {isActive && <BackgroundSelectDropdown />}
@@ -246,7 +230,7 @@ const BackgroundHeader = ({
                         )}
                     </div>
 
-                    <div className="profile-banner-data w-1/3 flex flex-col top-1/2">
+                    <div className="profile-banner-data w-full lg:w-1/3 flex flex-col bottom-0 translate-y-1/2 sm:top-1/2">
                         <div
                             data-testid="profile-pic"
                             className="profile-pic size-full flex justify-center items-center"
@@ -266,17 +250,22 @@ const BackgroundHeader = ({
                                         selectedProfileImage ||
                                         user?.profilePicture
                                     }
+                                    onClick={() => {
+                                        selectedImage(user?.profilePicture);
+                                        showImageModal(true);
+                                    }}
                                 />
                                 {hideSettings && isHoverAvatar && (
-                                    <div className="z-50 size-max absolute bg-primary-white p-2 rounded-full">
+                                    <div className="size-max absolute bg-primary-white p-2 rounded-full">
                                         <div
                                             className="profile-pic-select"
                                             data-testid="profile-pic-select"
                                         >
-                                            <Input
+                                            <input
                                                 ref={profileImageRef}
                                                 name="profile"
                                                 type="file"
+                                                accept="image/*" // optional, limits to images
                                                 className="hidden"
                                                 onClick={() => {
                                                     if (
@@ -286,17 +275,20 @@ const BackgroundHeader = ({
                                                             null;
                                                     }
                                                 }}
-                                                handleChange={(event) => {
-                                                    setSelectedProfileImage(
-                                                        URL.createObjectURL(
-                                                            event.target
-                                                                .files[0]
-                                                        )
-                                                    );
-                                                    selectedFileImage(
-                                                        event.target.files[0],
-                                                        "profile"
-                                                    );
+                                                onChange={(event) => {
+                                                    const file =
+                                                        event.target.files?.[0];
+                                                    if (file) {
+                                                        setSelectedProfileImage(
+                                                            URL.createObjectURL(
+                                                                file
+                                                            )
+                                                        );
+                                                        selectedFileImage(
+                                                            file,
+                                                            "profile"
+                                                        );
+                                                    }
                                                 }}
                                             />
                                         </div>
@@ -311,10 +303,6 @@ const BackgroundHeader = ({
                                 )}
                             </div>
                         </div>
-                        {/* <div className="profile-name flex justify-center w-full bg-pink-50 !text-black font-semibold text-2xl">
-                            {user?.username}
-                        </div> */}
-
                         {hideSettings && (
                             <div className="profile-select-image">
                                 <Input
@@ -340,37 +328,9 @@ const BackgroundHeader = ({
                                         );
                                     }}
                                 />
-                                {/* <label
-                                    data-testid="add-cover-photo"
-                                    onClick={() => onAddProfileClick()}
-                                >
-                                    <FaCamera className="camera" />{" "}
-                                    <span>Add Cover Photo</span>
-                                </label> */}
                             </div>
                         )}
                     </div>
-
-                    {/* tabs */}
-                    {/* <div className="profile-banner-items">
-            <ul className="banner-nav">
-              {tabItems.map((data) => (
-                <div data-testid="tab-elements" key={data.key}>
-                  {data.show && (
-                    <li className="banner-nav-item" key={data.key}>
-                      <div
-                        className={`banner-nav-item-name ${tab === data.key.toLowerCase() ? 'active' : ''}`}
-                        onClick={() => onClick(data.key.toLowerCase())}
-                      >
-                        {data.icon}
-                        <p className="title">{data.key}</p>
-                      </div>
-                    </li>
-                  )}
-                </div>
-              ))}
-            </ul>
-          </div> */}
                 </div>
             )}
         </>

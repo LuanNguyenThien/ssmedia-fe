@@ -193,7 +193,6 @@ const ChatList = () => {
 
     useEffect(() => {
         setChatMessageList(chatList);
-        console.log(chatMessageList);
     }, [chatList]);
 
     useEffect(() => {

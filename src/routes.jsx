@@ -22,7 +22,6 @@ const People = lazy(() => import('@pages/social/people/People'));
 const Photos = lazy(() => import('@pages/social/photos/Photos'));
 const Videos = lazy(() => import('@pages/social/videos/Videos'));
 const Profile = lazy(() => import('@pages/social/profile/Profile'));
-const ProfileUser = lazy(() => import('@pages/social/profile/ProfileUser'));
 const Streams = lazy(() => import('@pages/social/streams/Streams'));
 const PostDetail = lazy(() => import('@pages/social/streams/PostDetail'));
 const SavePage = lazy(() => import('@pages/social/saves/SavePage'));
@@ -168,14 +167,6 @@ export const AppRouter = () => {
           element: (
             <Suspense fallback={<ProfileSkeleton />}>
               <Profile />
-            </Suspense>
-          )
-        },
-        {
-          path: 'profileUser/:username',
-          element: (
-            <Suspense fallback={<ProfileSkeleton />}>
-              <ProfileUser />
             </Suspense>
           )
         }

@@ -6,7 +6,7 @@ import ActivitySection from "./components/ActivitySection";
 const Sidebar = () => {
     return (
         <div
-            className={`app-side-menu h-[86vh] max-h-[86vh] pb-2 bg-transparent lg:pr-10 `}
+            className={`app-side-menu h-[86vh] max-h-[86vh] pb-2 bg-transparent pr-5 `}
         >
             <div className="side-menu flex flex-col gap-4 h-full overflow-y-scroll ">
                 {/* profile section */}
