@@ -208,12 +208,8 @@ const handleEditorDataChange = async () => {
             </div>
             <hr />
             <ModalBoxContent />
-            <BlockNoteView
-              editor={editor}
-              onChange={() => {
-                handleEditorDataChange();
-              }}
-            />
+            
+            
             {!postImage && (
               <>
                 <div
