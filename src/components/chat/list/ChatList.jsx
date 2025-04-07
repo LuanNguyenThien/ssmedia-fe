@@ -159,7 +159,7 @@ const ChatList = () => {
             if (sender) {
                 await chatService.removeChatUsers(sender);
             }
-            if(!user.isGroupChat){
+            if (!user.isGroupChat) {
                 await chatService.addChatUsers({
                     userOne: profile?.username,
                     userTwo: userTwoName,
@@ -183,8 +183,16 @@ const ChatList = () => {
     }, [debouncedValue, searchUsers]);
 
     useEffect(() => {
-        if (selectedUser && componentType === "searchList" && selectedUser._id === searchParams.get("id")) {
-            const exists = chatMessageList.some(chat => chat.receiverId === selectedUser._id || chat.senderId === selectedUser._id);
+        if (
+            selectedUser &&
+            componentType === "searchList" &&
+            selectedUser._id === searchParams.get("id")
+        ) {
+            const exists = chatMessageList.some(
+                (chat) =>
+                    chat.receiverId === selectedUser._id ||
+                    chat.senderId === selectedUser._id
+            );
             if (!exists) {
                 addSelectedUserToList(selectedUser);
             }
@@ -273,11 +281,13 @@ const ChatList = () => {
                                     >
                                         <div className="avatar">
                                             <Avatar
-                                                name={data?.isGroupChat ? data?.groupName :
-                                                    (data?.receiverUsername ===
-                                                    profile?.username
+                                                name={
+                                                    data?.isGroupChat
+                                                        ? data?.groupName
+                                                        : data?.receiverUsername ===
+                                                          profile?.username
                                                         ? profile?.username
-                                                        : data?.receiverUsername)
+                                                        : data?.receiverUsername
                                                 }
                                                 bgColor={
                                                     data?.receiverUsername ===
@@ -288,11 +298,12 @@ const ChatList = () => {
                                                 textColor="#ffffff"
                                                 size={40}
                                                 avatarSrc={
-                                                    data?.isGroupChat ? data?.groupImage :
-                                                    (data?.receiverUsername !==
-                                                    profile?.username
+                                                    data?.isGroupChat
+                                                        ? data?.groupImage
+                                                        : data?.receiverUsername !==
+                                                          profile?.username
                                                         ? data?.receiverProfilePicture
-                                                        : data?.senderProfilePicture)
+                                                        : data?.senderProfilePicture
                                                 }
                                             />
                                         </div>
@@ -303,10 +314,12 @@ const ChatList = () => {
                                                     : ""
                                             }`}
                                         >
-                                            {data?.isGroupChat ? data?.groupName : (
-                                                data?.receiverUsername !== profile?.username ? 
-                                                data?.receiverUsername : data?.senderUsername
-                                            )}
+                                            {data?.isGroupChat
+                                                ? data?.groupName
+                                                : data?.receiverUsername !==
+                                                  profile?.username
+                                                ? data?.receiverUsername
+                                                : data?.senderUsername}
                                         </div>
                                         {data?.createdAt && (
                                             <div className="created-date">
@@ -315,7 +328,7 @@ const ChatList = () => {
                                                 )}
                                             </div>
                                         )}
-                                        {(!data?.body && !data?.groupName) && (
+                                        {!data?.body && !data?.groupName && (
                                             <div
                                                 className="created-date bg-black"
                                                 onClick={

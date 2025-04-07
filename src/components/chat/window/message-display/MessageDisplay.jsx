@@ -175,116 +175,127 @@ const MessageDisplay = ({
                         </div>
                     </div>
                 )}
-
-                {displayedMessages.map((chat, index) => {
-                    return (
-                        <div
-                            key={chat._id}
-                            className="message-chat"
-                            data-testid="message-chat"
-                        >
-                            {(index === 0 ||
-                                timeAgo.dayMonthYear(chat.createdAt) !==
-                                    timeAgo.dayMonthYear(
-                                        displayedMessages[index - 1].createdAt
-                                    )) && (
-                                <div className="message-date-group">
-                                    <div
-                                        className="message-chat-date !text-primary-black/70 font-semibold pt-6"
-                                        data-testid="message-chat-date"
-                                    >
-                                        {timeAgo.chatMessageTransform(
-                                            chat.createdAt
-                                        )}
+                {displayedMessages.length === 0 && (
+                    <div className="">
+                        Hey! Let’s talk and get to know each other better 😄
+                    </div>
+                )}
+                {displayedMessages.length >= 1 &&
+                    displayedMessages.map((chat, index) => {
+                        return (
+                            <div
+                                key={chat._id}
+                                className="message-chat"
+                                data-testid="message-chat"
+                            >
+                                {(index === 0 ||
+                                    timeAgo.dayMonthYear(chat.createdAt) !==
+                                        timeAgo.dayMonthYear(
+                                            displayedMessages[index - 1]
+                                                .createdAt
+                                        )) && (
+                                    <div className="message-date-group">
+                                        <div
+                                            className="message-chat-date !text-primary-black/70 font-semibold pt-6"
+                                            data-testid="message-chat-date"
+                                        >
+                                            {timeAgo.chatMessageTransform(
+                                                chat.createdAt
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {(chat.receiverUsername === profile?.username ||
-                                chat.senderUsername === profile?.username ||
-                            (chat.isGroupChat)) && (
-                                <>
-                                    {chat.senderUsername ===
-                                    profile?.username ? (
-                                        <RightMessageDisplay
-                                            chat={chat}
-                                            lastChatMessage={
-                                                displayedMessages[
+                                {(chat.receiverUsername === profile?.username ||
+                                    chat.senderUsername === profile?.username ||
+                                    chat.isGroupChat) && (
+                                    <>
+                                        {chat.senderUsername ===
+                                        profile?.username ? (
+                                            <RightMessageDisplay
+                                                chat={chat}
+                                                lastChatMessage={
+                                                    displayedMessages[
+                                                        displayedMessages.length -
+                                                            1
+                                                    ]
+                                                }
+                                                profile={profile}
+                                                toggleReaction={toggleReaction}
+                                                showReactionIcon={
+                                                    showReactionIcon
+                                                }
+                                                index={index}
+                                                lastIndex={
                                                     displayedMessages.length - 1
-                                                ]
-                                            }
-                                            profile={profile}
-                                            toggleReaction={toggleReaction}
-                                            showReactionIcon={showReactionIcon}
-                                            index={index}
-                                            lastIndex={
-                                                displayedMessages.length - 1
-                                            }
-                                            activeElementIndex={
-                                                activeElementIndex
-                                            }
-                                            reactionRef={reactionRef}
-                                            setToggleReaction={
-                                                setToggleReaction
-                                            }
-                                            handleReactionClick={
-                                                handleReactionClick
-                                            }
-                                            deleteMessage={deleteMessage}
-                                            showReactionIconOnHover={
-                                                showReactionIconOnHover
-                                            }
-                                            setActiveElementIndex={
-                                                setActiveElementIndex
-                                            }
-                                            setShowImageModal={
-                                                setShowImageModal
-                                            }
-                                            setImageUrl={setImageUrl}
-                                            showImageModal={showImageModal}
-                                            setSelectedReaction={
-                                                setSelectedReaction
-                                            }
-                                        />
-                                    ) : (
-                                        <LeftMessageDisplay
-                                            chat={chat}
-                                            profile={profile}
-                                            toggleReaction={toggleReaction}
-                                            showReactionIcon={showReactionIcon}
-                                            index={index}
-                                            activeElementIndex={
-                                                activeElementIndex
-                                            }
-                                            reactionRef={reactionRef}
-                                            setToggleReaction={
-                                                setToggleReaction
-                                            }
-                                            handleReactionClick={
-                                                handleReactionClick
-                                            }
-                                            deleteMessage={deleteMessage}
-                                            showReactionIconOnHover={
-                                                showReactionIconOnHover
-                                            }
-                                            setActiveElementIndex={
-                                                setActiveElementIndex
-                                            }
-                                            setShowImageModal={
-                                                setShowImageModal
-                                            }
-                                            setImageUrl={setImageUrl}
-                                            showImageModal={showImageModal}
-                                            setSelectedReaction={
-                                                setSelectedReaction
-                                            }
-                                        />
-                                    )}
-                                </>
-                            )}
-                        </div>
-                    );
-                })}
+                                                }
+                                                activeElementIndex={
+                                                    activeElementIndex
+                                                }
+                                                reactionRef={reactionRef}
+                                                setToggleReaction={
+                                                    setToggleReaction
+                                                }
+                                                handleReactionClick={
+                                                    handleReactionClick
+                                                }
+                                                deleteMessage={deleteMessage}
+                                                showReactionIconOnHover={
+                                                    showReactionIconOnHover
+                                                }
+                                                setActiveElementIndex={
+                                                    setActiveElementIndex
+                                                }
+                                                setShowImageModal={
+                                                    setShowImageModal
+                                                }
+                                                setImageUrl={setImageUrl}
+                                                showImageModal={showImageModal}
+                                                setSelectedReaction={
+                                                    setSelectedReaction
+                                                }
+                                            />
+                                        ) : (
+                                            <LeftMessageDisplay
+                                                chat={chat}
+                                                profile={profile}
+                                                toggleReaction={toggleReaction}
+                                                showReactionIcon={
+                                                    showReactionIcon
+                                                }
+                                                index={index}
+                                                activeElementIndex={
+                                                    activeElementIndex
+                                                }
+                                                reactionRef={reactionRef}
+                                                setToggleReaction={
+                                                    setToggleReaction
+                                                }
+                                                handleReactionClick={
+                                                    handleReactionClick
+                                                }
+                                                deleteMessage={deleteMessage}
+                                                showReactionIconOnHover={
+                                                    showReactionIconOnHover
+                                                }
+                                                setActiveElementIndex={
+                                                    setActiveElementIndex
+                                                }
+                                                setShowImageModal={
+                                                    setShowImageModal
+                                                }
+                                                setImageUrl={setImageUrl}
+                                                showImageModal={showImageModal}
+                                                setSelectedReaction={
+                                                    setSelectedReaction
+                                                }
+                                            />
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        );
+                    })}
             </div>
         </>
     );
