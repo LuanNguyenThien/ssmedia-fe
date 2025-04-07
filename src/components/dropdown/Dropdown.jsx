@@ -44,13 +44,13 @@ const Dropdown = ({
                                         className="social-sub-card bg-background-blur/50 hover:bg-primary/10 py-2 px-4 rounded-xl"
                                         key={Utils.generateString(10)}
                                     >
-                                        <div className="content-avatar">
+                                        <div className="content-avatar h-full w-auto object-cover">
                                             {title === "Notifications" ? (
                                                 <Avatar
                                                     name={item?.username}
                                                     bgColor={item?.avatarColor}
                                                     textColor="#ffffff"
-                                                    size={30}
+                                                    size={45}
                                                     avatarSrc={
                                                         item?.profilePicture
                                                     }
@@ -60,7 +60,7 @@ const Dropdown = ({
                                             )}
                                         </div>
                                         <div
-                                            className={`content-body ${
+                                            className={`content-body flex-1 px-2 ${
                                                 item?.read ? "" : "font-bold"
                                             }`}
                                             onClick={() => {
@@ -71,9 +71,9 @@ const Dropdown = ({
                                                 }
                                             }}
                                         >
-                                            <h6 className="title">
+                                            <span className="title">
                                                 {item?.topText}
-                                            </h6>
+                                            </span>
                                             <p className="subtext">
                                                 {item?.subText}
                                             </p>
@@ -81,7 +81,7 @@ const Dropdown = ({
                                         {title === "Notifications" && (
                                             <div className="content-icons">
                                                 <FaTrashAlt
-                                                    className="trash"
+                                                    className="trash text-primary-black/30 hover:text-red-500 cursor-pointer"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         onDeleteNotification(

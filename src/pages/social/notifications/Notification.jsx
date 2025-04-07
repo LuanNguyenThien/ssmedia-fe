@@ -140,7 +140,7 @@ const Notification = () => {
                             onClick={() => {
                                 setIsChosenFilter("All");
                             }}
-                            className={`text-xs text-primary-white bg-primary/80 px-3 py-1 rounded-xl ${
+                            className={`text-xs text-primary-white px-3 py-1 rounded-xl ${
                                 isChosenFilter === "All"
                                     ? "bg-primary/80"
                                     : "bg-primary/30"
@@ -152,7 +152,7 @@ const Notification = () => {
                             onClick={() => {
                                 setIsChosenFilter("Unread");
                             }}
-                            className={`text-xs text-primary-white bg-primary/80 px-3 py-1 rounded-xl ${
+                            className={`text-xs text-primary-white px-3 py-1 rounded-xl ${
                                 isChosenFilter === "Unread"
                                     ? "bg-primary/80"
                                     : "bg-primary/30"
