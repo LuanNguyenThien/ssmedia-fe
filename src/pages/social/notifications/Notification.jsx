@@ -10,6 +10,7 @@ import { NotificationUtils } from "@services/utils/notification-utils.service";
 import NotificationPreview from "@components/dialog/NotificationPreview";
 import { timeAgo } from "@services/utils/timeago.utils";
 import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
+import FilterNotifications from "./components/FilterNotifications";
 const Notification = () => {
     const dispatch = useDispatch();
     const { profile } = useSelector((state) => state.user);
@@ -22,7 +23,9 @@ const Notification = () => {
         comment: "",
         reaction: "",
         senderName: "",
+        entityId: "",
     });
+
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [chosenNotification, setChosenNotification] = useState(null);
     const [isChosenFilter, setIsChosenFilter] = useState("All");
@@ -115,6 +118,7 @@ const Notification = () => {
                     comment={notificationDialogContent?.comment}
                     reaction={notificationDialogContent?.reaction}
                     senderName={notificationDialogContent?.senderName}
+                    entityId={notificationDialogContent?.entityId}
                     secondButtonText="Close"
                     secondBtnHandler={() => {
                         setNotificationDialogContent({
@@ -123,6 +127,7 @@ const Notification = () => {
                             comment: "",
                             reaction: "",
                             senderName: "",
+                            entityId: "",
                         });
                     }}
                 />
@@ -133,44 +138,17 @@ const Notification = () => {
                 </div>
                 <div className="flex items-center justify-between py-4">
                     <span className="text-2xl font-bold">Notifications</span>
-
-                    {/* filters */}
-                    <div className="flex items-center justify-center gap-1">
-                        <span
-                            onClick={() => {
-                                setIsChosenFilter("All");
-                            }}
-                            className={`text-xs text-primary-white px-3 py-1 rounded-xl ${
-                                isChosenFilter === "All"
-                                    ? "bg-primary/80"
-                                    : "bg-primary/30"
-                            }`}
-                        >
-                            All
-                        </span>
-                        <span
-                            onClick={() => {
-                                setIsChosenFilter("Unread");
-                            }}
-                            className={`text-xs text-primary-white px-3 py-1 rounded-xl ${
-                                isChosenFilter === "Unread"
-                                    ? "bg-primary/80"
-                                    : "bg-primary/30"
-                            }`}
-                        >
-                            Unread
-                        </span>
-                    </div>
+                    <FilterNotifications
+                        isChosenFilter={isChosenFilter}
+                        setIsChosenFilter={setIsChosenFilter}
+                    />
                 </div>
 
                 {displayNotification.length > 0 && (
                     <div className="notifications-box flex-1 max-h-[80vh] overflow-y-scroll flex flex-col justify-start items-start gap-2">
                         {displayNotification.map((notification) => (
                             <div
-                                // className={`notification-box ${
-                                //     notification?.read ? "read" : ""
-                                // }`}
-                                className={`flex w-full items-center justify-start gap-3 bg-background-blur/50 rounded-[20px] px-4 py-2
+                                className={`flex w-full items-center justify-start gap-3 bg-background-blur/50 hover:bg-primary/10 rounded-[20px] px-4 py-2
                                     ${
                                         notification?.read
                                             ? "font-light"
@@ -225,26 +203,33 @@ const Notification = () => {
                                         >
                                             <FaRegTrashAlt className="trash text-primary-black/50 hover:text-red-500" />
                                         </div>
-
-                                        {showConfirmModal && (
-                                            <ConfirmModal
-                                                handleConfirm={(event) => {
-                                                    deleteNotification(
-                                                        event,
-                                                        chosenNotification?._id
-                                                    );
-                                                    setShowConfirmModal(false);
-                                                }}
-                                                handleCancel={(event) => {
-                                                    event.stopPropagation();
-                                                    setShowConfirmModal(false);
-                                                }}
-                                            />
-                                        )}
                                     </div>
                                 </div>
                             </div>
                         ))}
+                        {showConfirmModal && (
+                            <ConfirmModal
+                                title="Delete notification"
+                                subTitle="Are you sure you want to delete this notification?"
+                                labelButtonCancel="Cancel"
+                                labelButtonConfirm="Delete"
+                                icon="delete"
+                                classNameButtonConfirm={
+                                    "bg-red-500 hover:bg-red-300"
+                                }
+                                handleConfirm={(event) => {
+                                    deleteNotification(
+                                        event,
+                                        chosenNotification?._id
+                                    );
+                                    setShowConfirmModal(false);
+                                }}
+                                handleCancel={(event) => {
+                                    event.stopPropagation();
+                                    setShowConfirmModal(false);
+                                }}
+                            />
+                        )}
                     </div>
                 )}
 

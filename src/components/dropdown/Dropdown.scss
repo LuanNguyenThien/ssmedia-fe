@@ -72,19 +72,8 @@
                     }
 
                     .content-icons {
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-
                         .trash {
                             font-size: 14px;
-                        }
-
-                        .circle {
-                            font-size: 10px;
-                            color: var(--primary-1);
-                            margin-top: 6px;
                         }
                     }
                 }
