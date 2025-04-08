@@ -17,6 +17,9 @@ import Dialog from "@components/dialog/Dialog";
 import BackgroundHeader from "@components/background-header/BackgroundHeader";
 import Timeline from "@components/timeline/Timeline";
 import Information from "@/components/information/Information";
+import FollowingCard from "../following/FollowingCard";
+import useEffectOnce from "@/hooks/useEffectOnce";
+import { followerService } from "@services/api/followers/follower.service";
 
 const Profile = () => {
     //init
@@ -43,6 +46,7 @@ const Profile = () => {
     const [imageUrl, setImageUrl] = useState("");
     const [displayContent, setDisplayContent] = useState("Posts");
     const [userProfileData, setUserProfileData] = useState(null);
+    const [following, setFollowing] = useState([]);
 
     //
     const [rendered, setRendered] = useState(false);
@@ -65,6 +69,11 @@ const Profile = () => {
             setTitleOptions(["Posts", "Followers"]);
         }
     }, [isCurrentUser]);
+
+    const handleSetRendered = (value) => {
+        console.log("setRendered", value);
+        setRendered(value);
+    };
 
     const changeTabContent = (data) => {
         setDisplayContent(data);
@@ -110,6 +119,11 @@ const Profile = () => {
                 dispatch
             );
         }
+
+        //check if the user is current user, then show the correct tabs
+        isCurrentUser()
+            ? setTitleOptions(["Posts", "Replied", "Followers", "Following"])
+            : setTitleOptions(["Posts", "Followers"]);
     }, [dispatch, searchParams, username]);
 
     const getUserImages = useCallback(async () => {
@@ -214,6 +228,21 @@ const Profile = () => {
         Utils.dispatchNotification(response.data.message, "success", dispatch);
     };
 
+    const getUserFollowing = async () => {
+        try {
+            setLoading(true);
+            const response = await followerService.getUserFollowing();
+            setLoading(false);
+            setFollowing(response.data.following);
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
+        }
+    };
+
     const renderContent = () => {
         switch (displayContent) {
             case "Posts":
@@ -223,16 +252,19 @@ const Profile = () => {
             case "Followers":
                 return <FollowerCard userData={user} />;
             case "Following":
-                return <FollowerCard userData={user} />;
+                return <FollowingCard followings={following} />;
             default:
                 return null;
         }
     };
-
+    useEffectOnce(() => {
+        getUserFollowing();
+    });
     useEffect(() => {
         if (rendered) {
             getUserProfileByUsername();
             getUserImages();
+            getUserFollowing();
         }
         if (!rendered) setRendered(true);
     }, [rendered, getUserProfileByUsername, getUserImages]);
@@ -260,11 +292,11 @@ const Profile = () => {
                     }
                 />
             )}
-            <div className="profile-wrapper col-span-10 h-[86vh] max-h-[86vh] grid grid-cols-3 rounded-t-[30px] overflow-y-scroll lg:overflow-hidden bg-background-blur">
+            <div className="profile-wrapper col-span-10 h-[88vh] max-h-[88vh] grid grid-cols-3 rounded-t-[30px] overflow-y-scroll lg:overflow-hidden bg-background-blur">
                 <div className="profile-header w-full lg:h-[14vh] col-span-3 relative">
                     <BackgroundHeader
                         user={user}
-                        isCurrentUser={isCurrentUser()}
+                        isCurrentUser={isCurrentUser}
                         loading={loading}
                         hasImage={hasImage}
                         hasError={hasError}
@@ -289,7 +321,14 @@ const Profile = () => {
                 {/* main post section */}
                 <div className="profile-content flex-1 h-[72vh] pt-4 sm:px-4 col-span-3 flex flex-col lg:grid grid-cols-3  ">
                     <div className="col-span-1 w-full h-max lg:h-full lg:pr-4 rounded-[10px] flex flex-col gap-2 lg:overflow-y-scroll">
-                        <Information userProfileData={userProfileData} />
+                        <Information
+                            following={following}
+                            isCurrentUser={isCurrentUser}
+                            userProfileData={userProfileData}
+                            setRendered={() => {
+                                setRendered(!rendered);
+                            }}
+                        />
                     </div>
                     <div className="col-span-2 h-full flex flex-col justify-start bg-primary-white rounded-t-[10px] ">
                         <div className="w-full h-max flex items-center justify-between">

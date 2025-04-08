@@ -175,11 +175,7 @@ const MessageDisplay = ({
                         </div>
                     </div>
                 )}
-                {displayedMessages.length === 0 && (
-                    <div className="">
-                        Hey! Let’s talk and get to know each other better 😄
-                    </div>
-                )}
+
                 {displayedMessages.length >= 1 &&
                     displayedMessages.map((chat, index) => {
                         return (

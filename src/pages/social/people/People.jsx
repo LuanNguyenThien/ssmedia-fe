@@ -25,6 +25,8 @@ import {
     useColorModeValue,
 } from "@chakra-ui/react";
 import { ProfileUtils } from "@services/utils/profile-utils.service";
+import CardElementStats from "@/components/card-element/CardElementStats";
+import CardElementButtons from "@/components/card-element/CardElementButtons";
 
 const People = () => {
     const { profile } = useSelector((state) => state.user);
@@ -287,38 +289,55 @@ const People = () => {
                             </Box>
                         </Center>
 
-                        // <div className="card-element-item" key={data?._id} data-testid="card-element-item">
-                        //   {Utils.checkIfUserIsOnline(data?.username, onlineUsers) && (
-                        //     <div className="card-element-item-indicator">
-                        //       <FaCircle className="online-indicator" />
+                        // <div
+                        //     className="card-element-item"
+                        //     key={data?._id}
+                        //     data-testid="card-element-item"
+                        // >
+                        //     {Utils.checkIfUserIsOnline(
+                        //         data?.username,
+                        //         onlineUsers
+                        //     ) && (
+                        //         <div className="card-element-item-indicator">
+                        //             <FaCircle className="online-indicator" />
+                        //         </div>
+                        //     )}
+                        //     <div className="card-element-header">
+                        //         <div className="card-element-header-bg"></div>
+                        //         <Avatar
+                        //             name={data?.username}
+                        //             bgColor={data?.avatarColor}
+                        //             textColor="#ffffff"
+                        //             size={120}
+                        //             avatarSrc={data?.profilePicture}
+                        //         />
+                        //         <div className="card-element-header-text">
+                        //             <span className="card-element-header-name">
+                        //                 {data?.username}
+                        //             </span>
+                        //         </div>
                         //     </div>
-                        //   )}
-                        //   <div className="card-element-header">
-                        //     <div className="card-element-header-bg"></div>
-                        //     <Avatar
-                        //       name={data?.username}
-                        //       bgColor={data?.avatarColor}
-                        //       textColor="#ffffff"
-                        //       size={120}
-                        //       avatarSrc={data?.profilePicture}
+                        //     <CardElementStats
+                        //         postsCount={data?.postsCount}
+                        //         followersCount={data?.followersCount}
+                        //         followingCount={data?.followingCount}
                         //     />
-                        //     <div className="card-element-header-text">
-                        //       <span className="card-element-header-name">{data?.username}</span>
-                        //     </div>
-                        //   </div>
-                        //   <CardElementStats
-                        //     postsCount={data?.postsCount}
-                        //     followersCount={data?.followersCount}
-                        //     followingCount={data?.followingCount}
-                        //   />
-                        //   <CardElementButtons
-                        //     isChecked={Utils.checkIfUserIsFollowed(following, data?._id)}
-                        //     btnTextOne="Follow"
-                        //     btnTextTwo="Unfollow"
-                        //     onClickBtnOne={() => followUser(data)}
-                        //     onClickBtnTwo={() => unFollowUser(data)}
-                        //     onNavigateToProfile={() => ProfileUtils.navigateToProfile(data, navigate)}
-                        //   />
+                        //     <CardElementButtons
+                        //         isChecked={Utils.checkIfUserIsFollowed(
+                        //             following,
+                        //             data?._id
+                        //         )}
+                        //         btnTextOne="Follow"
+                        //         btnTextTwo="Unfollow"
+                        //         onClickBtnOne={() => followUser(data)}
+                        //         onClickBtnTwo={() => unFollowUser(data)}
+                        //         onNavigateToProfile={() =>
+                        //             ProfileUtils.navigateToProfile(
+                        //                 data,
+                        //                 navigate
+                        //             )
+                        //         }
+                        //     />
                         // </div>
                     ))}
                 </div>

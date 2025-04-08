@@ -195,7 +195,7 @@ const BackgroundHeader = ({
                     {/* background */}
                     <div
                         data-testid="profile-banner-image"
-                        className="profile-banner-image size-full "
+                        className="profile-banner-image overflow-y-scroll size-full "
                         style={{
                             background: `${
                                 !selectedBackground ? user?.avatarColor : ""
@@ -205,7 +205,7 @@ const BackgroundHeader = ({
                         {selectedBackground ? (
                             <img
                                 src={`${selectedBackground}`}
-                                className="object-cover w-full h-full"
+                                className="object-cover w-full h-auto"
                             />
                         ) : (
                             <img
@@ -214,7 +214,7 @@ const BackgroundHeader = ({
                                     showImageModal(true);
                                 }}
                                 src={url}
-                                className="object-cover w-full h-full"
+                                className="object-cover w-full h-auto"
                             />
                         )}
 

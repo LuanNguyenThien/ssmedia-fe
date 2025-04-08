@@ -47,11 +47,10 @@ const MessageInput = ({ setChatMessage }) => {
     const [file, setFile] = useState();
     const [base64File, setBase64File] = useState("");
 
-    const handleClick = (event) => {
+    const handleClick = () => {
         if (message.trim() === "" && base64File === "") {
             return;
         }
-        event.preventDefault();
         message = message || "Sent an Image";
         setChatMessage(message.replace(/ +(?= )/g, ""), "", base64File);
         setMessage("");
@@ -154,7 +153,7 @@ const MessageInput = ({ setChatMessage }) => {
                 >
                     <div
                         className={`size-full flex rounded-[30px] items-center justify-between py-4 gap-4 ${
-                            hasFocus
+                            hasFocus || message.length > 0 || showImagePreview
                                 ? "bg-background-blur border-4 border-primary-white transition-all duration-300 px-4"
                                 : ""
                         }`}
@@ -243,8 +242,13 @@ const MessageInput = ({ setChatMessage }) => {
                         </div>
 
                         <div
-                            onClick={handleClick}
-                            className="w-8 h-8 px-6 py-2 bg-primary flex items-center justify-center rounded-xl text-primary-white hover:bg-primary/70"
+                            onClick={(e) => {
+                                console.log("clicked");
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleClick();
+                            }}
+                            className="w-8 h-8 z-50 px-6 py-2 bg-primary flex items-center justify-center rounded-xl text-primary-white hover:bg-primary/70"
                         >
                             <DynamicSVG
                                 svgData={icons.send}

@@ -42,7 +42,7 @@ const Social = () => {
 
         if (includes(layout_0_5_list, section)) {
             return (
-                <div className="col-span-10 max-h-[86vh] min-h-[86vh] relative">
+                <div className="col-span-10 max-h-[88vh] min-h-[88vh] relative">
                     <StickySidebar />
                     <Outlet />
                 </div>

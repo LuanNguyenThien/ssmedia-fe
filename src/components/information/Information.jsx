@@ -1,20 +1,16 @@
 import SocialLinks from "@/components/information/social-links/SocialLinks";
-import useEffectOnce from "@hooks/useEffectOnce";
 import { useEffect } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { followerService } from "@services/api/followers/follower.service";
-import { Utils } from "@services/utils/utils.service";
 import BasicInfo from "./basic-info/BasicInfo";
 import CountContainer from "./count-container/CountContainer";
 import InformationEdit from "./InformationEdit";
 
-const Information = ({ userProfileData }) => {
+const Information = ({ userProfileData, isCurrentUser, following, setRendered }) => {
     const { username } = useParams();
     const { profile } = useSelector((state) => state.user);
-    const dispatch = useDispatch();
 
     const [editableInputs, setEditableInputs] = useState({
         quote: "",
@@ -29,25 +25,11 @@ const Information = ({ userProfileData }) => {
         youtube: "",
     });
 
-    const [following, setFollowing] = useState([]);
     const [user, setUser] = useState();
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
-    const getUserFollowing = async () => {
-        try {
-            setLoading(true);
-            const response = await followerService.getUserFollowing();
-            setLoading(false);
-            setFollowing(response.data.following);
-        } catch (error) {
-            Utils.dispatchNotification(
-                error.response.data.message,
-                "error",
-                dispatch
-            );
-        }
-    };
+   
     const getUserByUsername = useCallback(() => {
         if (userProfileData) {
             setUser(userProfileData.user);
@@ -61,9 +43,7 @@ const Information = ({ userProfileData }) => {
         }
     }, [userProfileData]);
 
-    useEffectOnce(() => {
-        getUserFollowing();
-    });
+ 
     useEffect(() => {
         getUserByUsername();
     }, [getUserByUsername]);
@@ -81,9 +61,13 @@ const Information = ({ userProfileData }) => {
             <div className="w-full h-max bg-primary-white rounded-[10px] pt-[9vh] sm:pt-[5vh] lg:pt-[8vh] pb-[20px] ">
                 <CountContainer
                     user={user}
+                    profile={profile}
+                    followings={following}
                     followersCount={user?.followersCount}
                     followingCount={user?.followingCount}
                     loading={loading}
+                    isCurrentUser={isCurrentUser()}
+                    setRendered={setRendered}
                 />
             </div>
             <div className="bg-primary-white rounded-[10px]">
