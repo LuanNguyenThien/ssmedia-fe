@@ -105,6 +105,9 @@ export class Utils {
     }
 
     static checkIfUserIsBlocked(blocked, userId) {
+        console.log("blocked", blocked, userId);
+        console.log("results",some(blocked, (id) => id === userId));
+
         return some(blocked, (id) => id === userId);
     }
 

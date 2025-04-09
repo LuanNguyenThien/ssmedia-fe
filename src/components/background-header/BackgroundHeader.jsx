@@ -218,7 +218,7 @@ const BackgroundHeader = ({
                             />
                         )}
 
-                        {!hasImage && isCurrentUser && (
+                        {!hasImage && isCurrentUser() && (
                             <div
                                 ref={editToggleRef}
                                 onClick={onAddProfileClick}

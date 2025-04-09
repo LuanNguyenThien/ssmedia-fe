@@ -1,97 +1,146 @@
 import SocialLinks from "@/components/information/social-links/SocialLinks";
-import { useEffect } from "react";
-import { useCallback } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState, useCallback, memo } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import BasicInfo from "./basic-info/BasicInfo";
 import CountContainer from "./count-container/CountContainer";
 import InformationEdit from "./InformationEdit";
 
-const Information = ({ userProfileData, isCurrentUser, following, setRendered }) => {
-    const { username } = useParams();
-    const { profile } = useSelector((state) => state.user);
+// Memoized sub-components to prevent unnecessary re-renders
+const MemoizedCountContainer = memo(CountContainer);
+const MemoizedBasicInfo = memo(BasicInfo);
+const MemoizedSocialLinks = memo(SocialLinks);
+const MemoizedInformationEdit = memo(InformationEdit);
 
-    const [editableInputs, setEditableInputs] = useState({
+const Information = ({
+    userProfileData,
+    isCurrentUser,
+    following,
+    setRendered,
+}) => {
+    const { username } = useParams();
+    const profile = useSelector((state) => state.user.profile);
+
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+
+    // Using useRef to avoid re-renders when these values change
+    const editableInputsRef = useRef({
         quote: "",
         work: "",
         school: "",
         location: "",
     });
-    const [editableSocialInputs, setEditableSocialInputs] = useState({
+
+    const editableSocialInputsRef = useRef({
         instagram: "",
         twitter: "",
         facebook: "",
         youtube: "",
     });
 
-    const [user, setUser] = useState();
-    const [loading, setLoading] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
+    // Memoized state setters to avoid creating new functions on every render
+    const setEditableInputs = useCallback((newInputs) => {
+        if (typeof newInputs === "function") {
+            editableInputsRef.current = newInputs(editableInputsRef.current);
+        } else {
+            editableInputsRef.current = newInputs;
+        }
+    }, []);
 
-   
+    const setEditableSocialInputs = useCallback((newInputs) => {
+        if (typeof newInputs === "function") {
+            editableSocialInputsRef.current = newInputs(
+                editableSocialInputsRef.current
+            );
+        } else {
+            editableSocialInputsRef.current = newInputs;
+        }
+    }, []);
+
+    // Memoized function that only changes when userProfileData changes
     const getUserByUsername = useCallback(() => {
-        if (userProfileData) {
+        if (userProfileData?.user) {
             setUser(userProfileData.user);
-            setEditableInputs({
-                quote: userProfileData.user.quote,
-                work: userProfileData.user.work,
-                school: userProfileData.user.school,
-                location: userProfileData.user.location,
-            });
-            setEditableSocialInputs(userProfileData.user?.social);
+
+            // Update refs without causing re-renders
+            editableInputsRef.current = {
+                quote: userProfileData.user.quote || "",
+                work: userProfileData.user.work || "",
+                school: userProfileData.user.school || "",
+                location: userProfileData.user.location || "",
+            };
+
+            editableSocialInputsRef.current = userProfileData.user?.social || {
+                instagram: "",
+                twitter: "",
+                facebook: "",
+                youtube: "",
+            };
         }
     }, [userProfileData]);
 
- 
+    // Only run effect when getUserByUsername changes
     useEffect(() => {
         getUserByUsername();
     }, [getUserByUsername]);
+
+    // Memoized isCurrentUser value
+    const isCurrentUserValue = useCallback(isCurrentUser, [isCurrentUser]);
+
+    // Memoized handler for editing mode
+    const handleSetIsEditing = useCallback((value) => {
+        setIsEditing(value);
+    }, []);
+
     return (
         <>
             {isEditing && (
-                <InformationEdit
-                    editableInputs={editableInputs}
-                    editableSocialInputs={editableSocialInputs}
-                    setIsEditing={setIsEditing}
+                <MemoizedInformationEdit
+                    editableInputs={editableInputsRef.current}
+                    editableSocialInputs={editableSocialInputsRef.current}
+                    setIsEditing={handleSetIsEditing}
                     setEditableInputs={setEditableInputs}
                     setEditableSocialInputs={setEditableSocialInputs}
                 />
             )}
-            <div className="w-full h-max bg-primary-white rounded-[10px] pt-[9vh] sm:pt-[5vh] lg:pt-[8vh] pb-[20px] ">
-                <CountContainer
+            <div className="w-full h-max bg-primary-white rounded-[10px] pt-[9vh] sm:pt-[5vh] lg:pt-[8vh] pb-[20px]">
+                <MemoizedCountContainer
                     user={user}
+                    setUser={setUser}
                     profile={profile}
                     followings={following}
                     followersCount={user?.followersCount}
                     followingCount={user?.followingCount}
                     loading={loading}
-                    isCurrentUser={isCurrentUser()}
+                    isCurrentUser={isCurrentUserValue()}
                     setRendered={setRendered}
                 />
             </div>
             <div className="bg-primary-white rounded-[10px]">
-                <BasicInfo
+                <MemoizedBasicInfo
                     setEditableInputs={setEditableInputs}
-                    editableInputs={editableInputs}
+                    editableInputs={editableInputsRef.current}
                     username={username}
                     profile={profile}
                     loading={loading}
-                    setIsEditing={setIsEditing}
+                    setIsEditing={handleSetIsEditing}
                 />
             </div>
             <div className="bg-primary-white rounded-[10px] mb-5">
-                <SocialLinks
+                <MemoizedSocialLinks
                     setEditableSocialInputs={setEditableSocialInputs}
-                    editableSocialInputs={editableSocialInputs}
+                    editableSocialInputs={editableSocialInputsRef.current}
                     username={username}
                     profile={profile}
                     loading={loading}
-                    setIsEditing={setIsEditing}
+                    setIsEditing={handleSetIsEditing}
                 />
             </div>
         </>
     );
 };
 
-export default Information;
+// Memoize the entire component to prevent re-renders when parent props don't change
+export default memo(Information);

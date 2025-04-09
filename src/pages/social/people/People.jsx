@@ -25,8 +25,6 @@ import {
     useColorModeValue,
 } from "@chakra-ui/react";
 import { ProfileUtils } from "@services/utils/profile-utils.service";
-import CardElementStats from "@/components/card-element/CardElementStats";
-import CardElementButtons from "@/components/card-element/CardElementButtons";
 
 const People = () => {
     const { profile } = useSelector((state) => state.user);

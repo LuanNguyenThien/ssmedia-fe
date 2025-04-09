@@ -1,29 +1,51 @@
-import ChangePassword from "@components/change-password/ChangePassword";
-import GalleryImage from "@components/gallery-image/GalleryImage";
-import NotificationSettings from "@components/notification-settings/NotificationSettings";
-import FollowerCard from "@pages/social/followers/FollowerCard";
-import "@pages/social/profile/Profile.scss";
-import { toggleDeleteDialog } from "@redux/reducers/modal/modal.reducer";
-import { imageService } from "@services/api/image/image.service";
-import { userService } from "@services/api/user/user.service";
-import { tabItems } from "@services/utils/static.data";
-import { Utils } from "@services/utils/utils.service";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router-dom";
-import { filter } from "lodash";
+
+// Components
+import FollowerCard from "@pages/social/followers/FollowerCard";
+import FollowingCard from "../following/FollowingCard";
 import ImageModal from "@components/image-modal/ImageModal";
 import Dialog from "@components/dialog/Dialog";
 import BackgroundHeader from "@components/background-header/BackgroundHeader";
 import Timeline from "@components/timeline/Timeline";
 import Information from "@/components/information/Information";
-import FollowingCard from "../following/FollowingCard";
-import useEffectOnce from "@/hooks/useEffectOnce";
+
+// Styles
+import "@pages/social/profile/Profile.scss";
+
+// Redux
+import { toggleDeleteDialog } from "@redux/reducers/modal/modal.reducer";
+
+// Services
+import { imageService } from "@services/api/image/image.service";
+import { userService } from "@services/api/user/user.service";
 import { followerService } from "@services/api/followers/follower.service";
+import { tabItems } from "@services/utils/static.data";
+import { Utils } from "@services/utils/utils.service";
+
+// Hooks
+import useEffectOnce from "@/hooks/useEffectOnce";
 
 const Profile = () => {
-    //init
     const dispatch = useDispatch();
+    const { profile } = useSelector((state) => state.user);
+    const { deleteDialogIsOpen, data } = useSelector((state) => state.modal);
+    const { username } = useParams();
+    const [searchParams] = useSearchParams();
+
+    // State management
+    const [user, setUser] = useState(null);
+    const [userProfileData, setUserProfileData] = useState(null);
+    const [following, setFollowing] = useState([]);
+    const [galleryImages, setGalleryImages] = useState([]);
+
+    const [bgUrl, setBgUrl] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
+    const [selectedBackgroundImage, setSelectedBackgroundImage] = useState("");
+    const [selectedProfileImage, setSelectedProfileImage] = useState("");
+
+    const [displayContent, setDisplayContent] = useState("Posts");
     const [titleOptions, setTitleOptions] = useState([
         "Posts",
         "Replied",
@@ -31,70 +53,17 @@ const Profile = () => {
         "Following",
     ]);
 
-    const [searchParams] = useSearchParams();
-    const { profile } = useSelector((state) => state.user);
-    const { deleteDialogIsOpen, data } = useSelector((state) => state.modal);
-    const { username } = useParams();
-
-    //state
-
-    const [user, setUser] = useState();
-    const [selectedBackgroundImage, setSelectedBackgroundImage] = useState("");
-    const [selectedProfileImage, setSelectedProfileImage] = useState("");
-    const [bgUrl, setBgUrl] = useState("");
-    const [galleryImages, setGalleryImages] = useState([]);
-    const [imageUrl, setImageUrl] = useState("");
-    const [displayContent, setDisplayContent] = useState("Posts");
-    const [userProfileData, setUserProfileData] = useState(null);
-    const [following, setFollowing] = useState([]);
-
-    //
-    const [rendered, setRendered] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [hasImage, setHasImage] = useState(false);
     const [loading, setLoading] = useState(true);
     const [showImageModal, setShowImageModal] = useState(false);
-
+    // Check if current user is viewing their own profile - memoized to prevent unnecessary recalculations
     const isCurrentUser = useCallback(() => {
-        if (profile) {
-            return username === profile?.username;
-        }
-        setTitleOptions(["Posts", "Followers"]);
-
-        return false;
+        if (!profile) return false;
+        return username === profile?.username;
     }, [username, profile]);
 
-    useEffect(() => {
-        if (!isCurrentUser()) {
-            setTitleOptions(["Posts", "Followers"]);
-        }
-    }, [isCurrentUser]);
-
-    const handleSetRendered = (value) => {
-        console.log("setRendered", value);
-        setRendered(value);
-    };
-
-    const changeTabContent = (data) => {
-        setDisplayContent(data);
-    };
-
-    const selectedFileImage = (data, type) => {
-        setHasImage(!hasImage);
-        if (type === "background") {
-            setSelectedBackgroundImage(data);
-        } else {
-            setSelectedProfileImage(data);
-        }
-    };
-
-    const cancelFileSelection = () => {
-        setHasImage(!hasImage);
-        setSelectedBackgroundImage("");
-        setSelectedProfileImage("");
-        setHasError(false);
-    };
-
+    // Get user profile data - memoized to prevent unnecessary API calls
     const getUserProfileByUsername = useCallback(async () => {
         try {
             setLoading(true);
@@ -114,18 +83,15 @@ const Profile = () => {
             setLoading(false);
         } catch (error) {
             Utils.dispatchNotification(
-                error.response.data.message,
+                error.response?.data?.message || "Error loading profile",
                 "error",
                 dispatch
             );
+            setLoading(false);
         }
-
-        //check if the user is current user, then show the correct tabs
-        isCurrentUser()
-            ? setTitleOptions(["Posts", "Replied", "Followers", "Following"])
-            : setTitleOptions(["Posts", "Followers"]);
     }, [dispatch, searchParams, username]);
 
+    // Get user images - memoized to prevent unnecessary API calls
     const getUserImages = useCallback(async () => {
         try {
             const imagesResponse = await imageService.getUserImages(
@@ -134,119 +100,169 @@ const Profile = () => {
             setGalleryImages(imagesResponse.data.images);
         } catch (error) {
             Utils.dispatchNotification(
-                error.response.data.message,
+                error.response?.data?.message || "Error loading images",
                 "error",
                 dispatch
             );
         }
     }, [dispatch, searchParams]);
 
-    const saveImage = async (type) => {
-        const reader = new FileReader();
-        reader.addEventListener(
-            "load",
-            async () => addImage(reader.result, type),
-            false
-        );
-
-        if (
-            selectedBackgroundImage &&
-            typeof selectedBackgroundImage !== "string"
-        ) {
-            reader.readAsDataURL(selectedBackgroundImage);
-        } else if (
-            selectedProfileImage &&
-            typeof selectedProfileImage !== "string"
-        ) {
-            reader.readAsDataURL(selectedProfileImage);
-        } else {
-            await addImage(selectedBackgroundImage, type);
-        }
-    };
-
-    const addImage = async (result, type) => {
-        try {
-            const url =
-                type === "background"
-                    ? "/images/background"
-                    : "/images/profile";
-            const response = await imageService.addImage(url, result);
-            if (response) {
-                Utils.dispatchNotification(
-                    response.data.message,
-                    "success",
-                    dispatch
-                );
-                setHasError(false);
-                setHasImage(false);
-            }
-        } catch (error) {
-            setHasError(true);
-            Utils.dispatchNotification(
-                error.response.data.message,
-                "error",
-                dispatch
-            );
-        }
-    };
-
-    const removeBackgroundImage = async (bgImageId) => {
-        try {
-            setBgUrl("");
-            await removeImage(`/images/background/${bgImageId}`);
-        } catch (error) {
-            setHasError(true);
-            Utils.dispatchNotification(
-                error.response.data.message,
-                "error",
-                dispatch
-            );
-        }
-    };
-
-    const removeImageFromGallery = async (imageId) => {
-        try {
-            dispatch(toggleDeleteDialog({ toggle: false, data: null }));
-            const images = filter(
-                galleryImages,
-                (image) => image._id !== imageId
-            );
-            setGalleryImages(images);
-            await removeImage(`/images/${imageId}`);
-        } catch (error) {
-            setHasError(true);
-            Utils.dispatchNotification(
-                error.response.data.message,
-                "error",
-                dispatch
-            );
-        }
-    };
-
-    const removeImage = async (url) => {
-        const response = await imageService.removeImage(url);
-        Utils.dispatchNotification(response.data.message, "success", dispatch);
-    };
-
-    const getUserFollowing = async () => {
+    // Get user following - extracted as a separate function for reuse
+    const getUserFollowing = useCallback(async () => {
         try {
             setLoading(true);
             const response = await followerService.getUserFollowing();
-            setLoading(false);
             setFollowing(response.data.following);
+            setLoading(false);
         } catch (error) {
             Utils.dispatchNotification(
-                error.response.data.message,
+                error.response?.data?.message || "Error loading following data",
                 "error",
                 dispatch
             );
+            setLoading(false);
         }
-    };
+    }, [dispatch]);
 
-    const renderContent = () => {
+    // Handle tab content change
+    const changeTabContent = useCallback((data) => {
+        setDisplayContent(data);
+    }, []);
+
+    // Handle file selection
+    const selectedFileImage = useCallback((data, type) => {
+        setHasImage(true);
+        if (type === "background") {
+            setSelectedBackgroundImage(data);
+        } else {
+            setSelectedProfileImage(data);
+        }
+    }, []);
+
+    // Cancel file selection
+    const cancelFileSelection = useCallback(() => {
+        setHasImage(false);
+        setSelectedBackgroundImage("");
+        setSelectedProfileImage("");
+        setHasError(false);
+    }, []);
+
+    // Save image - handling both background and profile images
+    const saveImage = useCallback(
+        async (type) => {
+            const selectedImage =
+                type === "background"
+                    ? selectedBackgroundImage
+                    : selectedProfileImage;
+
+            if (!selectedImage) return;
+
+            // Handle File objects vs. string URLs
+            if (typeof selectedImage !== "string") {
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    await addImage(reader.result, type);
+                };
+                reader.readAsDataURL(selectedImage);
+            } else {
+                await addImage(selectedImage, type);
+            }
+        },
+        [selectedBackgroundImage, selectedProfileImage]
+    );
+
+    // Add image API call
+    const addImage = useCallback(
+        async (result, type) => {
+            try {
+                const url =
+                    type === "background"
+                        ? "/images/background"
+                        : "/images/profile";
+                const response = await imageService.addImage(url, result);
+
+                if (response) {
+                    Utils.dispatchNotification(
+                        response.data.message,
+                        "success",
+                        dispatch
+                    );
+                    setHasError(false);
+                    setHasImage(false);
+
+                    // Refresh profile data to show the new image
+                    getUserProfileByUsername();
+                }
+            } catch (error) {
+                setHasError(true);
+                Utils.dispatchNotification(
+                    error.response?.data?.message || "Error uploading image",
+                    "error",
+                    dispatch
+                );
+            }
+        },
+        [dispatch, getUserProfileByUsername]
+    );
+
+    // Remove background image
+    const removeBackgroundImage = useCallback(
+        async (bgImageId) => {
+            try {
+                setBgUrl("");
+                await removeImage(`/images/background/${bgImageId}`);
+                getUserProfileByUsername();
+            } catch (error) {
+                setHasError(true);
+                Utils.dispatchNotification(
+                    error.response?.data?.message ||
+                        "Error removing background",
+                    "error",
+                    dispatch
+                );
+            }
+        },
+        [dispatch, getUserProfileByUsername]
+    );
+
+    // Remove image from gallery
+    const removeImageFromGallery = useCallback(
+        async (imageId) => {
+            try {
+                dispatch(toggleDeleteDialog({ toggle: false, data: null }));
+                setGalleryImages((prevImages) =>
+                    prevImages.filter((image) => image._id !== imageId)
+                );
+                await removeImage(`/images/${imageId}`);
+            } catch (error) {
+                setHasError(true);
+                Utils.dispatchNotification(
+                    error.response?.data?.message || "Error removing image",
+                    "error",
+                    dispatch
+                );
+            }
+        },
+        [dispatch]
+    );
+
+    // Generic image removal API call
+    const removeImage = useCallback(
+        async (url) => {
+            const response = await imageService.removeImage(url);
+            Utils.dispatchNotification(
+                response.data.message,
+                "success",
+                dispatch
+            );
+        },
+        [dispatch]
+    );
+
+    // Memoized content renderer based on selected tab
+    const renderContent = useCallback(() => {
         switch (displayContent) {
             case "Posts":
-                return <Timeline userProfileData={userProfileData} />;
             case "Replied":
                 return <Timeline userProfileData={userProfileData} />;
             case "Followers":
@@ -256,28 +272,44 @@ const Profile = () => {
             default:
                 return null;
         }
-    };
+    }, [displayContent, userProfileData, user, following]);
+
+    // Toggle image modal
+    const toggleImageModal = useCallback(() => {
+        setShowImageModal((prev) => !prev);
+    }, []);
+
+    // Initial data loading
     useEffectOnce(() => {
+        getUserProfileByUsername();
+        getUserImages();
         getUserFollowing();
     });
+
+    // Update title options based on current user status
     useEffect(() => {
-        if (rendered) {
-            getUserProfileByUsername();
-            getUserImages();
-            getUserFollowing();
-        }
-        if (!rendered) setRendered(true);
-    }, [rendered, getUserProfileByUsername, getUserImages]);
+        const currentUserOptions = [
+            "Posts",
+            "Replied",
+            "Followers",
+            "Following",
+        ];
+        const otherUserOptions = ["Posts", "Followers"];
+        setTitleOptions(
+            isCurrentUser() ? currentUserOptions : otherUserOptions
+        );
+    }, [isCurrentUser]);
 
     return (
         <>
             {showImageModal && (
                 <ImageModal
-                    image={`${imageUrl}`}
-                    onCancel={() => setShowImageModal(!showImageModal)}
+                    image={imageUrl}
+                    onCancel={toggleImageModal}
                     showArrow={false}
                 />
             )}
+
             {deleteDialogIsOpen && (
                 <Dialog
                     title="Are you sure you want to delete this image?"
@@ -292,6 +324,7 @@ const Profile = () => {
                     }
                 />
             )}
+
             <div className="profile-wrapper col-span-10 h-[88vh] max-h-[88vh] grid grid-cols-3 rounded-t-[30px] overflow-y-scroll lg:overflow-hidden bg-background-blur">
                 <div className="profile-header w-full lg:h-[14vh] col-span-3 relative">
                     <BackgroundHeader
@@ -314,23 +347,21 @@ const Profile = () => {
                         hideSettings={username === profile?.username}
                         galleryImages={galleryImages}
                         selectedImage={setImageUrl}
-                        showImageModal={setShowImageModal}
+                        showImageModal={toggleImageModal}
                     />
                 </div>
 
                 {/* main post section */}
-                <div className="profile-content flex-1 h-[72vh] pt-4 sm:px-4 col-span-3 flex flex-col lg:grid grid-cols-3  ">
+                <div className="profile-content flex-1 h-[72vh] pt-4 sm:px-4 col-span-3 flex flex-col lg:grid grid-cols-3">
                     <div className="col-span-1 w-full h-max lg:h-full lg:pr-4 rounded-[10px] flex flex-col gap-2 lg:overflow-y-scroll">
                         <Information
                             following={following}
                             isCurrentUser={isCurrentUser}
                             userProfileData={userProfileData}
-                            setRendered={() => {
-                                setRendered(!rendered);
-                            }}
+                            setRendered={getUserProfileByUsername}
                         />
                     </div>
-                    <div className="col-span-2 h-full flex flex-col justify-start bg-primary-white rounded-t-[10px] ">
+                    <div className="col-span-2 h-full flex flex-col justify-start bg-primary-white rounded-t-[10px]">
                         <div className="w-full h-max flex items-center justify-between">
                             {titleOptions.map((item, index) => (
                                 <div
@@ -339,77 +370,20 @@ const Profile = () => {
                                         displayContent === item &&
                                         "text-primary-black border-primary"
                                     }`}
-                                    onClick={() => {
-                                        setDisplayContent(item);
-                                    }}
+                                    onClick={() => setDisplayContent(item)}
                                 >
                                     {item}
                                 </div>
                             ))}
                         </div>
                         <div className="size-full min-h-[500px] max-h-[500px] flex flex-col overflow-y-scroll bg-primary-white p-4">
-                            {displayContent && renderContent()}
+                            {renderContent()}
                         </div>
-
-                        {/* {displayContent === "followers" && (
-                            <FollowerCard userData={user} />
-                        )}
-                        {displayContent === "gallery" && (
-                            <>
-                                {galleryImages.length > 0 && (
-                                    <>
-                                        <div className="imageGrid-container">
-                                            {galleryImages.map((image) => (
-                                                <div key={image._id}>
-                                                    <GalleryImage
-                                                        showCaption={false}
-                                                        showDelete={true}
-                                                        imgSrc={Utils.getImage(
-                                                            image?.imgId,
-                                                            image.imgVersion
-                                                        )}
-                                                        onClick={() => {
-                                                            setImageUrl(
-                                                                Utils.getImage(
-                                                                    image?.imgId,
-                                                                    image.imgVersion
-                                                                )
-                                                            );
-                                                            setShowImageModal(
-                                                                !showImageModal
-                                                            );
-                                                        }}
-                                                        onRemoveImage={(
-                                                            event
-                                                        ) => {
-                                                            event.stopPropagation();
-                                                            dispatch(
-                                                                toggleDeleteDialog(
-                                                                    {
-                                                                        toggle: !deleteDialogIsOpen,
-                                                                        data: image?._id,
-                                                                    }
-                                                                )
-                                                            );
-                                                        }}
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
-                            </>
-                        )}
-                        {displayContent === "change password" && (
-                            <ChangePassword />
-                        )}
-                        {displayContent === "notifications" && (
-                            <NotificationSettings />
-                        )} */}
                     </div>
                 </div>
             </div>
         </>
     );
 };
+
 export default Profile;
