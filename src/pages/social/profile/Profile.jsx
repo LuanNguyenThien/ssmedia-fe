@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router-dom";
 
@@ -25,7 +25,7 @@ import { tabItems } from "@services/utils/static.data";
 import { Utils } from "@services/utils/utils.service";
 
 // Hooks
-import useEffectOnce from "@/hooks/useEffectOnce";
+// Removed useEffectOnce - we'll use useEffect with dependencies instead
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -80,13 +80,13 @@ const Profile = () => {
                     response.data.user?.bgImageVersion
                 )
             );
-            setLoading(false);
         } catch (error) {
             Utils.dispatchNotification(
                 error.response?.data?.message || "Error loading profile",
                 "error",
                 dispatch
             );
+        } finally {
             setLoading(false);
         }
     }, [dispatch, searchParams, username]);
@@ -279,12 +279,13 @@ const Profile = () => {
         setShowImageModal((prev) => !prev);
     }, []);
 
-    // Initial data loading
-    useEffectOnce(() => {
+    // Replace useEffectOnce with useEffect and add dependencies
+    // This will refetch data when username or searchParams change
+    useEffect(() => {
         getUserProfileByUsername();
         getUserImages();
         getUserFollowing();
-    });
+    }, [username, searchParams, getUserProfileByUsername, getUserImages, getUserFollowing]);
 
     // Update title options based on current user status
     useEffect(() => {

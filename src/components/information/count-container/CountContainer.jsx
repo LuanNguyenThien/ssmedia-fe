@@ -5,7 +5,7 @@ import { TbMessageCircle } from "react-icons/tb";
 import InformationButton from "./InformationButton";
 import ActionSelector from "./ActionSelector";
 import useSocialActions from "./hooks/useSocialActions";
-import { memo, useMemo, useRef } from "react";
+import { memo, useMemo } from "react";
 
 const CountContainer = ({
     followingCount,
@@ -33,7 +33,7 @@ const CountContainer = ({
         profile,
         setRendered,
     });
-    
+
     const shortenedFollowers = useMemo(
         () => Utils.shortenLargeNumbers(followersCount),
         [followersCount]
