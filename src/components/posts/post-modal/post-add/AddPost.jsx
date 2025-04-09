@@ -8,7 +8,7 @@ import { bgColors } from '@services/utils/static.data';
 import ModalBoxSelection from '@components/posts/post-modal/modal-box-content/ModalBoxSelection';
 import Button from '@components/button/Button';
 import { PostUtils } from '@services/utils/post-utils.service';
-import { closeModal, toggleGifModal } from '@redux/reducers/modal/modal.reducer';
+import { closeModal, toggleGifModal, setModalType } from '@redux/reducers/modal/modal.reducer';
 import Giphy from '@components/giphy/Giphy';
 import PropTypes from 'prop-types';
 import { ImageUtils } from '@services/utils/image-utils.service';
@@ -18,6 +18,7 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
+
 const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const { gifModalIsOpen, feeling } = useSelector((state) => state.modal);
   const { gifUrl, image, privacy, video } = useSelector((state) => state.post);
@@ -41,6 +42,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const [apiResponse, setApiResponse] = useState('');
   const [selectedPostImage, setSelectedPostImage] = useState();
   const [selectedVideo, setSelectedVideo] = useState();
+  const [postType, setPostType] = useState("createpost");
   const counterRef = useRef(null);
   const inputRef = useRef(null);
   const imageInputRef = useRef(null);
@@ -73,7 +75,11 @@ const handleEditorDataChange = async () => {
     counterRef.current.textContent = `${counter}/1000`;
      setDisable(currentTextLength <= 0 && !postImage);
     // console.log(blocks);
-    // PostUtils.postInputEditable(blocks, postData, setPostData);
+    PostUtils.postInputEditable(
+      event.target.textContent,
+      postData,
+      setPostData
+    );
   };
 
   const closePostModal = () => {
@@ -181,6 +187,17 @@ const handleEditorDataChange = async () => {
       PostUtils.postInputData(imageInputRef, postData, '', setPostData);
     }
   }, [gifUrl, image, postData, video]);
+  const handlePostTypeChange = (e) => {
+    const value = e.target.value;
+    setPostType(value);
+
+    if (value === "createquestion") {
+      // closePostModal(); // đóng modal hiện tại
+      console.log();
+      dispatch(setModalType("createquestion")); // mở modal loại khác, ví dụ sẽ render AddQuestion
+      // closePostModal();
+    }
+  };
 
   return (
     <>
@@ -197,19 +214,30 @@ const handleEditorDataChange = async () => {
                 <Spinner />
               </div>
             )}
-            <div className="modal-box-header">
-              <h2>Create Post</h2>
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+              <div className="relative w-fit">
+                <select
+                  className="appearance-none text-lg font-semibold bg-white text-gray-800 rounded-full px-4 py-2 pr-10 transition duration-200 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  value={postType}
+                  onChange={handlePostTypeChange}
+                >
+                  <option value="createpost">📝 Create Post</option>
+                  <option value="createquestion">❓ Create Question</option>
+                </select>
+                <div className="pointer-events-none absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500">
+                  ▼
+                </div>
+              </div>
+
               <button
-                className="modal-box-header-cancel"
-                onClick={() => closePostModal()}
+                className="text-gray-500 hover:text-gray-700"
+                onClick={closePostModal}
               >
-                X
+                <FaTimes />
               </button>
             </div>
-            <hr />
             <ModalBoxContent />
-            
-            
+
             {!postImage && (
               <>
                 <div
@@ -300,31 +328,35 @@ const handleEditorDataChange = async () => {
                 </div>
               </>
             )}
-            <div className="modal-box-bg-colors">
-              <ul>
-                {bgColors.map((color, index) => (
-                  <li
-                    data-testid="bg-colors"
-                    key={index}
-                    className={`${
-                      color === "#ffffff" ? "whiteColorBorder" : ""
-                    }`}
-                    style={{ backgroundColor: `${color}` }}
-                    onClick={() => {
-                      PostUtils.positionCursor("editable");
-                      selectBackground(color);
-                    }}
-                  ></li>
-                ))}
-              </ul>
+            <div className="modal-box-bottom-row">
+              <div className="modal-box-bg-colors">
+                <ul>
+                  {bgColors.map((color, index) => (
+                    <li
+                      data-testid="bg-colors"
+                      key={index}
+                      className={`${
+                        color === "#ffffff" ? "whiteColorBorder" : ""
+                      }`}
+                      style={{ backgroundColor: `${color}` }}
+                      onClick={() => {
+                        PostUtils.positionCursor("editable");
+                        selectBackground(color);
+                      }}
+                    ></li>
+                  ))}
+                </ul>
+              </div>
+
+              <span
+                className="char_count"
+                data-testid="allowed-number"
+                ref={counterRef}
+              >
+                {allowedNumberOfCharacters}
+              </span>
             </div>
-            <span
-              className="char_count"
-              data-testid="allowed-number"
-              ref={counterRef}
-            >
-              {allowedNumberOfCharacters}
-            </span>
+
             <ModalBoxSelection
               setSelectedPostImage={setSelectedPostImage}
               setSelectedVideo={setSelectedVideo}

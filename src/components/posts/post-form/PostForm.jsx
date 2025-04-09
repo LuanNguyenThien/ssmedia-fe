@@ -11,18 +11,26 @@ import {
   toggleImageModal,
   toggleVideoModal
 } from '@redux/reducers/modal/modal.reducer';
-import AddPost from '@components/posts/post-modal/post-add/AddPost';
+import ModalManager from "@components/posts/post-modal/post-add/PostTab";
 import { useRef, useState } from 'react';
 import { ImageUtils } from '@services/utils/image-utils.service';
 import EditPost from '@components/posts/post-modal/post-edit/EditPost1';
 import PostButtonItem from '../post-button-item/PostButtonItem';
 import PostInputItem from '../post-input-item/PostInputItem';
+import AddPost from "@components/posts/post-modal/post-add/AddPost";
+import AddQuestion from "@components/posts/post-modal/post-add/AddQuestion";
 
 const PostForm = () => {
   const { profile } = useSelector((state) => state.user);
-  const { type, isOpen, openFileDialog, gifModalIsOpen, feelingsIsOpen, openVideoDialog } = useSelector(
-    (state) => state.modal
-  );
+  const {
+    type,
+    isOpen,
+    openFileDialog,
+    gifModalIsOpen,
+    feelingsIsOpen,
+    openVideoDialog,
+    modalType,
+  } = useSelector((state) => state.modal);
   const [selectedPostImage, setSelectedPostImage] = useState();
   const [selectedPostVideo, setSelectedPostVideo] = useState();
   const fileInputRef = useRef();
@@ -178,7 +186,9 @@ const PostForm = () => {
           </div>
         </div>
       </div> */}
-      {isOpen && type === "add" && <AddPost />}
+      {/* {isOpen && type === "add" && <ModalManager />} */}
+      {isOpen && type === "add" && modalType === "createpost" && <AddPost />}
+      {isOpen && type === "add" && modalType === "createquestion" && <AddQuestion />}
       {isOpen && type === "edit" && <EditPost />}
     </>
   );

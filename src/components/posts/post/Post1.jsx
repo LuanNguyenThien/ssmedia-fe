@@ -47,7 +47,7 @@ const Post = ({ post, showIcons }) => {
 
   const getPrivacy = (type) => {
     const privacy = find(privacyList, (data) => data.topText === type);
-    return privacy?.icon;
+    return privacy?.icon();
   };
 
   const deletePost = async () => {
@@ -88,14 +88,14 @@ const Post = ({ post, showIcons }) => {
     setBackgroundImageColor(bgColor);
   };
   const loadEditor = async (text) => {
-    console.log("day la text", text);
+    
     const blocks = await editor.tryParseHTMLToBlocks(text);
-    console.log("day là bocls", blocks);
+    
     editor.replaceBlocks(editor.document, blocks);
   };
   useEffect(() => {
     // getBackgroundImageColor(post);
-    console.log("html", post);
+    
     loadEditor(post.htmlPost || "");
   }, [post]);
 
@@ -143,18 +143,27 @@ const Post = ({ post, showIcons }) => {
                 <h5 data-testid="username">
                   {post?.username}
                   {post?.feelings && (
-                    <div
-                      className="inline-display"
-                      data-testid="inline-display"
-                    >
+                    <p className="inline-display" data-testid="box-feeling">
                       is feeling{" "}
                       <img
-                        className="feeling-icon"
+                        className="inline-block w-5 h-4 align-middle mx-1"
                         src={`${getFeeling(post?.feelings)}`}
                         alt=""
-                      />{" "}
-                      <div>{post?.feelings}</div>
-                    </div>
+                      />
+                      <span className="font-semibold">{post?.feelings}</span>
+                    </p>
+                    // <div
+                    //   className="inline-display"
+                    //   data-testid="inline-display"
+                    // >
+                    //   is feeling{" "}
+                    //   <img
+                    //     className="feeling-icon"
+                    //     src={`${getFeeling(post?.feelings)}`}
+                    //     alt=""
+                    //   />{" "}
+                    //   <div>{post?.feelings}</div>
+                    // </div>
                   )}
                 </h5>
                 {showIcons && (

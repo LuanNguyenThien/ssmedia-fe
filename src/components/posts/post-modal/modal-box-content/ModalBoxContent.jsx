@@ -3,11 +3,30 @@ import SelectDropdown from "@components/select-dropdown/SelectDropdown";
 import useDetectOutsideClick from "@hooks/useDetectOutsideClick";
 import { privacyList } from "@services/utils/static.data";
 import { useRef, useState, useCallback, useEffect } from "react";
-import { FaGlobe } from "react-icons/fa";
+import { FaGlobe, FaLock, FaUserCheck } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { find } from "lodash";
+import React from "react";
 
 const ModalBoxContent = () => {
+  // const privacyList = [
+  //   {
+  //     topText: "Public",
+  //     subText: "Anyone on Chatty",
+  //     icon: <FaGlobe className="globe-icon globe" />,
+  //   },
+  //   {
+  //     topText: "Followers",
+  //     subText: "Your followers on Chatty",
+  //     icon: <FaUserCheck className="globe-icon globe" />,
+  //   },
+  //   {
+  //     topText: "Private",
+  //     subText: "For you only",
+  //     icon: <FaLock className="globe-icon globe" />,
+  //   },
+  // ];
+  
   const { profile } = useSelector((state) => state.user);
   const { privacy } = useSelector((state) => state.post);
   const { feeling } = useSelector((state) => state.modal);
@@ -15,7 +34,8 @@ const ModalBoxContent = () => {
   const [selectedItem, setSelectedItem] = useState({
     topText: "Public",
     subText: "Anyone on Chatty",
-    icon: <FaGlobe className="globe-icon globe" />,
+    icon: () =>
+      React.createElement(FaGlobe, { className: "globe-icon globe" }),
   });
   const [tooglePrivacy, setTogglePrivacy] = useDetectOutsideClick(
     privacyRef,
@@ -24,7 +44,9 @@ const ModalBoxContent = () => {
 
   const displayPostPrivacy = useCallback(() => {
     if (privacy) {
+      console.log("privacy", privacyList);
       const postPrivacy = find(privacyList, (data) => data.topText === privacy);
+      console.log("postPrivacy", postPrivacy);
       setSelectedItem(postPrivacy);
     }
   }, [privacy]);
@@ -51,8 +73,12 @@ const ModalBoxContent = () => {
         {feeling?.name && (
           <p className="inline-display" data-testid="box-feeling">
             is feeling{" "}
-            <img className="feeling-icon" src={`${feeling?.image}`} alt="" />{" "}
-            <span>{feeling?.name}</span>
+            <img
+              className="inline-block w-5 h-4 align-middle mx-1"
+              src={`${feeling?.image}`}
+              alt=""
+            />
+            <span className="font-semibold">{feeling?.name}</span>
           </p>
         )}
         <div
@@ -60,7 +86,7 @@ const ModalBoxContent = () => {
           className="flex items-center gap-1 cursor-pointer"
           onClick={() => setTogglePrivacy(!tooglePrivacy)}
         >
-          {selectedItem.icon}{" "}
+          {selectedItem.icon()}{" "}
           <div className="selected-item-text" data-testid="box-item-text">
             {selectedItem.topText}
           </div>

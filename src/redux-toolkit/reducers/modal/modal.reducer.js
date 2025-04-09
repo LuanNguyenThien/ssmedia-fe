@@ -1,10 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  type: '',
-  isOpen: false,
-  feeling: '',
-  image: '',
+  type: "",
+  isOpen: true,
+  feeling: "",
+  image: "",
   data: null,
   feelingsIsOpen: false,
   openFileDialog: false,
@@ -12,11 +12,12 @@ const initialState = {
   gifModalIsOpen: false,
   reactionsModalIsOpen: false,
   commentsModalIsOpen: false,
-  deleteDialogIsOpen: false
+  deleteDialogIsOpen: false,
+  modalType: "createpost",
 };
 
 const modalSlice = createSlice({
-  name: 'modal',
+  name: "modal",
   initialState,
   reducers: {
     openModal: (state, action) => {
@@ -27,9 +28,9 @@ const modalSlice = createSlice({
     },
     closeModal: (state) => {
       state.isOpen = false;
-      state.type = '';
-      state.feeling = '';
-      state.image = '';
+      state.type = "";
+      state.feeling = "";
+      state.image = "";
       state.data = null;
       state.feelingsIsOpen = false;
       state.gifModalIsOpen = false;
@@ -38,6 +39,10 @@ const modalSlice = createSlice({
       state.openFileDialog = false;
       state.openVideoDialog = false;
       state.deleteDialogIsOpen = false;
+      state.modalType = "createpost"
+    },
+    setModalType: (state, action) => {
+      state.modalType = action.payload;
     },
     addPostFeeling: (state, action) => {
       const { feeling } = action.payload;
@@ -65,13 +70,14 @@ const modalSlice = createSlice({
       const { data, toggle } = action.payload;
       state.deleteDialogIsOpen = toggle;
       state.data = data;
-    }
-  }
+    },
+  },
 });
 
 export const {
   openModal,
   closeModal,
+  setModalType,
   addPostFeeling,
   toggleImageModal,
   toggleVideoModal,
@@ -79,6 +85,6 @@ export const {
   toggleGifModal,
   toggleReactionsModal,
   toggleCommentsModal,
-  toggleDeleteDialog
+  toggleDeleteDialog,
 } = modalSlice.actions;
 export default modalSlice.reducer;
