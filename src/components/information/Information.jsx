@@ -1,5 +1,5 @@
 import SocialLinks from "@/components/information/social-links/SocialLinks";
-import { useEffect, useRef, useState, useCallback, memo } from "react";
+import { useEffect, useState, useCallback, memo } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import BasicInfo from "./basic-info/BasicInfo";
@@ -25,59 +25,43 @@ const Information = ({
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
-    // Using useRef to avoid re-renders when these values change
-    const editableInputsRef = useRef({
+    // Changed from useRef to useState for the editable inputs
+    const [editableInputs, setEditableInputs] = useState({
         quote: "",
         work: "",
         school: "",
         location: "",
     });
 
-    const editableSocialInputsRef = useRef({
+    // Changed from useRef to useState for social inputs
+    const [editableSocialInputs, setEditableSocialInputs] = useState({
         instagram: "",
         twitter: "",
         facebook: "",
         youtube: "",
     });
 
-    // Memoized state setters to avoid creating new functions on every render
-    const setEditableInputs = useCallback((newInputs) => {
-        if (typeof newInputs === "function") {
-            editableInputsRef.current = newInputs(editableInputsRef.current);
-        } else {
-            editableInputsRef.current = newInputs;
-        }
-    }, []);
-
-    const setEditableSocialInputs = useCallback((newInputs) => {
-        if (typeof newInputs === "function") {
-            editableSocialInputsRef.current = newInputs(
-                editableSocialInputsRef.current
-            );
-        } else {
-            editableSocialInputsRef.current = newInputs;
-        }
-    }, []);
-
     // Memoized function that only changes when userProfileData changes
     const getUserByUsername = useCallback(() => {
         if (userProfileData?.user) {
             setUser(userProfileData.user);
 
-            // Update refs without causing re-renders
-            editableInputsRef.current = {
+            // Update state directly instead of using refs
+            setEditableInputs({
                 quote: userProfileData.user.quote || "",
                 work: userProfileData.user.work || "",
                 school: userProfileData.user.school || "",
                 location: userProfileData.user.location || "",
-            };
+            });
 
-            editableSocialInputsRef.current = userProfileData.user?.social || {
-                instagram: "",
-                twitter: "",
-                facebook: "",
-                youtube: "",
-            };
+            setEditableSocialInputs(
+                userProfileData.user?.social || {
+                    instagram: "",
+                    twitter: "",
+                    facebook: "",
+                    youtube: "",
+                }
+            );
         }
     }, [userProfileData]);
 
@@ -98,8 +82,8 @@ const Information = ({
         <>
             {isEditing && (
                 <MemoizedInformationEdit
-                    editableInputs={editableInputsRef.current}
-                    editableSocialInputs={editableSocialInputsRef.current}
+                    editableInputs={editableInputs}
+                    editableSocialInputs={editableSocialInputs}
                     setIsEditing={handleSetIsEditing}
                     setEditableInputs={setEditableInputs}
                     setEditableSocialInputs={setEditableSocialInputs}
@@ -121,7 +105,7 @@ const Information = ({
             <div className="bg-primary-white rounded-[10px]">
                 <MemoizedBasicInfo
                     setEditableInputs={setEditableInputs}
-                    editableInputs={editableInputsRef.current}
+                    editableInputs={editableInputs}
                     username={username}
                     profile={profile}
                     loading={loading}
@@ -131,7 +115,7 @@ const Information = ({
             <div className="bg-primary-white rounded-[10px] mb-5">
                 <MemoizedSocialLinks
                     setEditableSocialInputs={setEditableSocialInputs}
-                    editableSocialInputs={editableSocialInputsRef.current}
+                    editableSocialInputs={editableSocialInputs}
                     username={username}
                     profile={profile}
                     loading={loading}
