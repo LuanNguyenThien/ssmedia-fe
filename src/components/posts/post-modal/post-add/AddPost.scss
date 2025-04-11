@@ -9,6 +9,7 @@
   background-color: var(--white-1);
   flex-direction: column;
   max-width: 500px;
+
   //mobile
   @media screen and (max-width: 768px) {
     width: 100%;
@@ -50,7 +51,7 @@
 
   &-header {
     display: grid;
-    grid-template-areas: '. h2 button';
+    grid-template-areas: ". h2 button";
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr;
     height: 40px;
@@ -93,7 +94,6 @@
       cursor: pointer;
       opacity: 1;
       font-weight: 700;
-      
 
       &:hover {
         background-color: var(--primary-1);
@@ -113,16 +113,17 @@
   &-form {
     .editable {
       width: 100%;
+      max-width: 100%;
       font-size: 24px;
       border: none;
       outline: none;
       max-height: 400px;
       height: 200px;
       overflow-y: scroll;
-      padding: 0 20px;
       overflow-x: hidden;
-      word-break: break-all;
-      max-width: 500px;
+      padding: 0 20px;
+      word-break: break-word; 
+      white-space: pre-wrap;
 
       &:empty::before {
         content: attr(data-placeholder);
@@ -255,8 +256,8 @@ hr {
   overflow-y: scroll;
   display: grid;
   grid-template-areas:
-    'input'
-    'image';
+    "input"
+    "image";
 
   .post-input {
     grid-area: input;
@@ -273,6 +274,7 @@ hr {
     position: relative;
 
     .post-image {
+      object-fit: contain;
       width: 100%;
       max-width: 100%;
       height: auto;
@@ -315,7 +317,8 @@ hr {
   justify-content: space-between;
   align-items: center;
   padding: 0 16px;
-  margin-top: 10px;}
+  margin-top: 10px;
+}
 .modal-box-bg-colors {
   padding: 5px 15px;
 
@@ -399,7 +402,7 @@ hr {
 
   &-header {
     display: grid;
-    grid-template-areas: 'button h2 .';
+    grid-template-areas: "button h2 .";
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr;
     height: 40px;

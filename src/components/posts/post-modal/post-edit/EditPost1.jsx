@@ -458,31 +458,34 @@ const EditPost = () => {
                   </>
                 )}
 
-                <div className="modal-box-bg-colors">
-                  <ul>
-                    {bgColors.map((color, index) => (
-                      <li
-                        data-testid="bg-colors"
-                        key={index}
-                        className={`${
-                          color === "#ffffff" ? "whiteColorBorder" : ""
-                        }`}
-                        style={{ backgroundColor: `${color}` }}
-                        onClick={() => {
-                          PostUtils.positionCursor("editable");
-                          selectBackground(color);
-                        }}
-                      ></li>
-                    ))}
-                  </ul>
+                <div className="modal-box-bottom-row">
+                  <div className="modal-box-bg-colors">
+                    <ul>
+                      {bgColors.map((color, index) => (
+                        <li
+                          data-testid="bg-colors"
+                          key={index}
+                          className={`${
+                            color === "#ffffff" ? "whiteColorBorder" : ""
+                          }`}
+                          style={{ backgroundColor: `${color}` }}
+                          onClick={() => {
+                            PostUtils.positionCursor("editable");
+                            selectBackground(color);
+                          }}
+                        ></li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <span
+                    className="char_count"
+                    data-testid="allowed-number"
+                    ref={counterRef}
+                  >
+                    {allowedNumberOfCharacters}
+                  </span>
                 </div>
-                <span
-                  className="char_count"
-                  data-testid="allowed-number"
-                  ref={counterRef}
-                >
-                  {allowedNumberOfCharacters}
-                </span>
 
                 <ModalBoxSelection
                   setSelectedPostImage={setSelectedPostImage}
