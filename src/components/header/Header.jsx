@@ -23,6 +23,7 @@ import { sumBy, upperCase } from "lodash";
 import { ChatUtils } from "@services/utils/chat-utils.service";
 import { chatService } from "@services/api/chat/chat.service";
 import { getConversationList } from "@redux/api/chat";
+import CallNotificationManager from "@components/call/CallNotificationManager";
 
 // components
 import DropdownSetting from "@components/header/components/dropdown/DropdownSetting";
@@ -256,6 +257,7 @@ const Header = () => {
                     {/* message  */}
 
                     {/* notifications */}
+                    <CallNotificationManager />
                     {notificationDialogContent?.senderName && (
                         <NotificationPreview
                             title="Your post"
