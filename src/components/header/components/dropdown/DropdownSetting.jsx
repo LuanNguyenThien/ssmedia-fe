@@ -1,7 +1,6 @@
 import "@components/header/components/dropdown/DropdownSetting.scss";
 import PropTypes from "prop-types";
 import { icons } from "@assets/assets";
-import { IoMdSettings } from "react-icons/io";
 
 const DropdownSetting = ({ avatarSrc, name, onLogout, onNavigate }) => {
     return (

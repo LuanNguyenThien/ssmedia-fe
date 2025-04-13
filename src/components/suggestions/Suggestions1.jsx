@@ -41,7 +41,7 @@ export default function Suggestions() {
         <h2 className="text-lg font-medium text-gray-600">Suggested for you</h2>
       </div>
       <div className="px-4">
-        {users?.map((user) => (
+        {users?.slice(0, 8).map((user) => (
           <div
             className="flex items-center justify-between py-3 cursor-pointer"
             onClick={() => ProfileUtils.navigateToProfile(user, navigate)}
@@ -81,7 +81,7 @@ export default function Suggestions() {
         ))}
         {users.length > 8 && (
           <div
-            className="view-more"
+            className="view-more cursor-pointer"
             onClick={() => navigate("/app/social/people")}
           >
             View More

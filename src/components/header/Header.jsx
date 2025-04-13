@@ -26,7 +26,6 @@ import { getConversationList } from "@redux/api/chat";
 
 // components
 import DropdownSetting from "@components/header/components/dropdown/DropdownSetting";
-import SearchButtonMb from "@components/header/components/searchButton/SearchButtonMb";
 import Logo from "./components/logo/Logo";
 import SearchInputDesktop from "./components/search-input.jsx/seach-input-desktop";
 import Dropdown from "@components/dropdown/Dropdown";
@@ -61,6 +60,7 @@ const Header = () => {
         comment: "",
         reaction: "",
         senderName: "",
+        entityId: "",
     });
     const [isNotificationActive, setIsNotificationActive] =
         useDetectOutsideClick(notificationRef, false);
@@ -146,13 +146,21 @@ const Header = () => {
             );
         }
     };
-    const onMarkAsRead = async (notification) => {
+    const onMarkAsRead = async ({ notification, isMarkAsReadAll = false }) => {
         try {
-            NotificationUtils.markMessageAsRead(
-                notification?._id,
-                notification,
-                setNotificationDialogContent
-            );
+            console.log("notification", notification);
+            if (isMarkAsReadAll) {
+                NotificationUtils.markMessageAsRead(
+                    notification?._id,
+                    notification
+                );
+            } else {
+                NotificationUtils.markMessageAsRead(
+                    notification?._id,
+                    notification,
+                    setNotificationDialogContent
+                );
+            }
         } catch (error) {
             Utils.dispatchNotification(
                 error.response.data.message,
@@ -199,7 +207,7 @@ const Header = () => {
                 notification?.receiverUsername !== profile?.username
                     ? notification?.receiverUsername
                     : notification?.senderUsername;
-            if(!notification.isGroupChat){        
+            if (!notification.isGroupChat) {
                 await chatService.addChatUsers({
                     userOne: profile?.username,
                     userTwo: userTwoName,
@@ -243,6 +251,16 @@ const Header = () => {
         navigate("/app/social/search", { state: { query: searchTerm } });
     };
 
+    const handleSetNotificationDialogContentToNull = () => {
+        setNotificationDialogContent({
+            post: "",
+            imgUrl: "",
+            comment: "",
+            reaction: "",
+            senderName: "",
+        });
+    };
+
     return (
         <>
             {!profile ? (
@@ -252,28 +270,19 @@ const Header = () => {
                     className="header-nav-wrapper bg-secondary"
                     data-testid="header-wrapper"
                 >
-                    {/* popups */}
-                    {/* message  */}
-
-                    {/* notifications */}
                     {notificationDialogContent?.senderName && (
                         <NotificationPreview
                             title="Your post"
+                            entityId={notificationDialogContent?.entityId}
                             post={notificationDialogContent?.post}
                             imgUrl={notificationDialogContent?.imgUrl}
                             comment={notificationDialogContent?.comment}
                             reaction={notificationDialogContent?.reaction}
                             senderName={notificationDialogContent?.senderName}
                             secondButtonText="Close"
-                            secondBtnHandler={() => {
-                                setNotificationDialogContent({
-                                    post: "",
-                                    imgUrl: "",
-                                    comment: "",
-                                    reaction: "",
-                                    senderName: "",
-                                });
-                            }}
+                            secondBtnHandler={
+                                handleSetNotificationDialogContentToNull
+                            }
                         />
                     )}
 
@@ -282,7 +291,7 @@ const Header = () => {
                             <Logo />
                         </div>
                         {/* SEARCH */}
-                        <div className="col-span-3 flex justify-between items-center mx-10 gap-4">
+                        <div className="col-span-3 flex justify-between items-center gap-4">
                             <span className="font-extrabold text-primary-black flex items-center">
                                 {upperCase(section)}
                             </span>
@@ -319,7 +328,7 @@ const Header = () => {
                                     )}
                                     {isMessageActive && (
                                         <div
-                                            className="absolute top-8 right-0 z-50"
+                                            className="absolute top-8 right-0"
                                             ref={messageRef}
                                         >
                                             <MessageSidebar
@@ -362,7 +371,7 @@ const Header = () => {
                                     />
                                     {/* notification dropdown */}
                                     {isNotificationActive && (
-                                        <ul
+                                        <div
                                             className="absolute top-8 right-0 z-50"
                                             ref={notificationRef}
                                         >
@@ -376,8 +385,12 @@ const Header = () => {
                                                 onDeleteNotification={
                                                     onDeleteNotification
                                                 }
+                                                onNavigate={navigate}
+                                                setIsNotificationActive={
+                                                    setIsNotificationActive
+                                                }
                                             />
-                                        </ul>
+                                        </div>
                                     )}
                                 </span>
                             </li>

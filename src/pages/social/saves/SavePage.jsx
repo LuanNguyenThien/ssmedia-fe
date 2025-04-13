@@ -95,19 +95,29 @@ const SavePage = () => {
   // }, [postSaves]);
 
   return (
-    <div className="saves" data-testid="saves">
+    // <div className="saves" data-testid="saves">
+
+    // </div>
+    <div className="saves col-span-full">
       {(loading || postSaves.length > 0) && (
         <div className="saves-content">
-          <div className="saves-post" ref={bodyRef} style={{ height: '85vh' }}>
-            <Posts allPosts={postSaves} postsLoading={loading} userFollowing={following} />
-            <div ref={bottomLineRef} style={{ marginBottom: '60px', height: '60px' }}></div>
+          <div className="saves-post" ref={bodyRef} style={{ height: "85vh" }}>
+            <Posts
+              allPosts={postSaves}
+              postsLoading={loading}
+              userFollowing={following}
+            />
+            <div
+              ref={bottomLineRef}
+              style={{ marginBottom: "60px", height: "60px" }}
+            ></div>
           </div>
         </div>
       )}
       {!loading && postSaves.length === 0 && (
         <div className="empty-page" data-testid="empty-page" ref={bodyRef}>
           No post saved available
-          <div ref={bottomLineRef} ></div>
+          <div ref={bottomLineRef}></div>
         </div>
       )}
     </div>

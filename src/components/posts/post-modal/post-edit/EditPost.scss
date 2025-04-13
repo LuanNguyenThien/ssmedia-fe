@@ -1,6 +1,6 @@
 .modal-box {
   z-index: 1;
-  height:auto;
+  height: auto;
   grid-area: modal;
   align-self: center;
   justify-self: center;
@@ -10,13 +10,13 @@
   background-color: var(--white-1);
   flex-direction: column;
   max-width: 500px;
-   width: 80vw; 
+  width: 80vw;
   height: 90vh;
 
   @media screen and (max-width: 768px) {
     width: 90%;
     height: fit-content;
-    padding-bottom: 100px ;
+    padding-bottom: 10px;
     border-radius: 10;
     z-index: 50;
   }
@@ -53,7 +53,7 @@
 
   &-header {
     display: grid;
-    grid-template-areas: '. h2 button';
+    grid-template-areas: ". h2 button";
     grid-template-columns: 1fr 2fr 1fr;
     grid-template-rows: 1fr;
     height: 40px;
@@ -98,7 +98,7 @@
       cursor: pointer;
       opacity: 1;
       font-weight: 700;
-    
+
       padding-bottom: 10px;
 
       &:hover {
@@ -127,7 +127,8 @@
       overflow-y: scroll;
       padding: 0 20px;
       overflow-x: hidden;
-      word-break: break-all;
+      word-break: break-word;
+      white-space: pre-wrap;
       max-width: 500px;
 
       &:empty::before {
@@ -191,7 +192,7 @@ hr {
   display: flex;
   padding: 0 16px;
   margin: 0.5rem 0;
-  max-height: 90vh; 
+  max-height: 90vh;
 
   .user-post-image {
     .post-rounded-circle {
@@ -262,14 +263,15 @@ hr {
   overflow-y: scroll;
   display: grid;
   grid-template-areas:
-    'input'
-    'image';
+    "input"
+    "image";
 
   .post-input {
     grid-area: input;
     padding: 0 15px;
     padding-top: 5px;
     width: 100%;
+    word-break: break-word;
     font-size: 18px;
     border: none;
     outline: none;
@@ -283,6 +285,7 @@ hr {
       width: 100%;
       max-width: 100%;
       height: auto;
+      // max-height: 250px;
       padding: 0 15px;
       margin-top: 10px;
       margin-bottom: 20px;
@@ -405,7 +408,7 @@ hr {
 
   &-header {
     display: grid;
-    grid-template-areas: 'button h2 .';
+    grid-template-areas: "button h2 .";
     grid-template-columns: 1fr 2fr 1fr;
     grid-template-rows: 1fr;
     height: 40px;

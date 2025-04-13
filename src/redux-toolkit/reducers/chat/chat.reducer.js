@@ -18,7 +18,6 @@ const chatSlice = createSlice({
       state.isLoading = isLoading;
     },
     setSelectedChatUser: (state, action) => {
-      console.log('action.payload', action.payload);
       const { isLoading, user } = action.payload;
       state.selectedChatUser = user;
       state.isLoading = isLoading;

@@ -36,7 +36,7 @@ const PostDetail = () => {
   }, [postId, dispatch]);
 
   return (
-    <div className="saves" data-testid="post-detail">
+    <div className="saves col-span-full size-full flex justify-center items-center" data-testid="post-detail">
       <div className="saves-content">
         <div className="saves-post" style={{ height: '80vh' }}>
           <Posts allPosts={post ? [post] : []} postsLoading={loading} userFollowing={profile?.following || []} />

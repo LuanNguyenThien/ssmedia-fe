@@ -58,7 +58,7 @@ export const sideBarItems = [
     {
         index: 3,
         name: "Group",
-        url: "/app/social/chat/messages",
+        url: "/app/social/groups",
         iconName: icons.groups,
     },
     {
