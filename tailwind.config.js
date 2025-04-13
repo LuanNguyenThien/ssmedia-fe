@@ -27,9 +27,15 @@ export default {
                         transform: "translateY(0)",
                     },
                 },
+                "skeleton-animation": {
+                    "0%, 100%": { opacity: 1, transform: "scale(1)" },
+                    "50%": { opacity: 0.5, transform: "scale(1.01)" },
+                },
             },
             animation: {
                 fadeInTop: "fadeInTop 0.4s ease-out",
+                "skeleton-animation":
+                    "skeleton-animation 1.5s ease-in-out infinite",
             },
         },
     },

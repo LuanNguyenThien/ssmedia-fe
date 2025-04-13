@@ -8,6 +8,7 @@ const Avatar = ({
     textColor,
     size,
     round = true,
+    onClick,
 }) => {
     const textSizeRatio = 1.7;
     const fontSize = Math.floor(size / textSizeRatio);
@@ -26,6 +27,7 @@ const Avatar = ({
                         backgroundColor: `${!avatarSrc ? bgColor : ""}`,
                         display: "flex",
                     }}
+                    onClick={onClick}
                 >
                     {name && (
                         <div
@@ -46,6 +48,7 @@ const Avatar = ({
 
             {avatarSrc && (
                 <img
+                    onClick={onClick}
                     src={avatarSrc}
                     alt=""
                     className="avatar-content avatar-container"

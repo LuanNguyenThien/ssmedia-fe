@@ -124,6 +124,7 @@
         margin-bottom: 0px;
         line-height: 25px;
         font-size: 18px;
+        word-break: break-word;
 
         a {
           color: var(--primary-1);
@@ -149,7 +150,7 @@
         overflow-y: scroll;
         display: flex;
         overflow-x: hidden;
-        word-break: break-all;
+        // word-break: break-all;
 
         a {
           color: var(--white-1);

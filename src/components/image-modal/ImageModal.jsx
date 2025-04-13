@@ -14,6 +14,7 @@ const ImageModal = ({
 }) => {
     return (
         <div
+            onClick={onCancel}
             className="fixed inset-0 h-screen w-screen flex items-center justify-center p-10 bg-primary-black/50 backdrop-blur-md !z-[1000]"
             data-testid="image-modal"
         >
@@ -30,14 +31,17 @@ const ImageModal = ({
                         <FaArrowLeft />
                     </div>
                 )}
-                <div className="size-auto max-h-[70vh] max-w-[70vw] rounded-lg relative">
+                <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="size-auto max-h-[70vh] max-w-[70vw] rounded-lg relative"
+                >
                     <img
                         className="size-full object-fit"
                         alt=""
                         src={`${image}`}
                     />
                     <div
-                        className="absolute text-2xl -top-5 -right-5 z-50 text-red-200 hover:text-red-400 cursor-pointer"
+                        className="absolute text-2xl -top-10 -right-10 z-50 text-red-200 hover:text-red-400 cursor-pointer"
                         onClick={onCancel}
                     >
                         <FaTimes />

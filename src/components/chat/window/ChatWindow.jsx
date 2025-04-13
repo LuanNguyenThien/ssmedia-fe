@@ -1,7 +1,7 @@
 import Avatar from "@components/avatar/Avatar";
 import { useDispatch, useSelector } from "react-redux";
 import "@components/chat/window/ChatWindow.scss";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Utils } from "@services/utils/utils.service";
 import { userService } from "@services/api/user/user.service";
@@ -14,6 +14,8 @@ import { IoIosArrowBack } from "react-icons/io";
 import MessageDisplay from "./message-display/MessageDisplay";
 import MessageInput from "./message-input/MessageInput";
 import LoadingSpinner from "@components/state/loading";
+import FirstChatScreen from "./FirstChatScreen/FirstChatScreen";
+import LoadingMessage from "@/components/state/loading-message/LoadingMessage";
 
 const ChatWindow = () => {
     const { profile } = useSelector((state) => state.user);
@@ -25,21 +27,50 @@ const ChatWindow = () => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [searchParams] = useSearchParams();
     const [rendered, setRendered] = useState(false);
+    const [isMessagesLoading, setIsMessagesLoading] = useState(true);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    // Debug counter - consider removing in production
+    const count = useRef(0);
+    console.log("chatMessages", count.current++);
 
     //loading state
     const [isSending, setIsSending] = useState(false);
 
+    // Memoized values
+    const isGroup = useMemo(
+        () => searchParams.get("isGroup") === "true",
+        [searchParams]
+    );
+    const searchParamsId = useMemo(
+        () => searchParams.get("id"),
+        [searchParams]
+    );
+    const searchParamsUsername = useMemo(
+        () => searchParams.get("username"),
+        [searchParams]
+    );
+
+    const isReceiverOnline = useMemo(() => {
+        return Utils.checkIfUserIsOnline(
+            receiver?.username || receiver?.name,
+            onlineUsers
+        );
+    }, [receiver, onlineUsers]);
+
     const getChatMessages = useCallback(
         async (receiverId, isGroup) => {
+            setIsMessagesLoading(true);
             try {
-                const response = await chatService.getChatMessages(receiverId, isGroup);
+                const response = await chatService.getChatMessages(
+                    receiverId,
+                    isGroup
+                );
                 ChatUtils.privateChatMessages = [...response.data.messages];
                 if (isGroup === "true") {
                     ChatUtils.conversationId = receiverId;
-                }
-                else if (response.data.messages.length > 0) {
+                } else if (response.data.messages.length > 0) {
                     ChatUtils.conversationId =
                         ChatUtils.privateChatMessages[0]?.conversationId;
                 } else {
@@ -54,30 +85,32 @@ const ChatWindow = () => {
                     "error",
                     dispatch
                 );
+            } finally {
+                setIsMessagesLoading(false);
             }
         },
         [dispatch]
     );
 
     const getNewUserMessages = useCallback(() => {
-        if (searchParams.get("id") && searchParams.get("username")) {
+        if (searchParamsId && searchParamsUsername) {
             setConversationId("");
             setChatMessages([]);
-            getChatMessages(searchParams.get("id"), searchParams.get("isGroup"));
+            getChatMessages(searchParamsId, isGroup);
         }
-    }, [getChatMessages, searchParams]);
+    }, [getChatMessages, searchParamsId, searchParamsUsername, isGroup]);
 
     const getUserProfileByUserId = useCallback(async () => {
         try {
-            if(searchParams.get("id") && searchParams.get("isGroup") === "true") {
+            if (searchParamsId && isGroup) {
                 const response = await chatService.getGroupChatById(
-                    searchParams.get("id")
+                    searchParamsId
                 );
                 setReceiver(response.data.group);
                 ChatUtils.joinRoomEvent(response.data.group, profile);
-            } else {
+            } else if (searchParamsId) {
                 const response = await userService.getUserProfileByUserId(
-                    searchParams.get("id")
+                    searchParamsId
                 );
                 setReceiver(response.data.user);
                 ChatUtils.joinRoomEvent(response.data.user, profile);
@@ -89,96 +122,112 @@ const ChatWindow = () => {
                 dispatch
             );
         }
-    }, [dispatch, profile, searchParams]);
+    }, [dispatch, profile, searchParamsId, isGroup]);
 
-    const sendChatMessage = async (message, gifUrl, selectedImage) => {
-        try {
-            setIsSending(true);
-            const checkUserOne = some(
-                ChatUtils.chatUsers,
-                (user) =>
-                    user?.userOne === profile?.username &&
-                    user?.userTwo === receiver?.username
-            );
-            const checkUserTwo = some(
-                ChatUtils.chatUsers,
-                (user) =>
-                    user?.userOne === receiver?.username &&
-                    user?.userTwo === profile?.username
-            );
-            const messageData = ChatUtils.messageData({
-                receiver: searchParams.get("isGroup") === "true" ? undefined : receiver,
-                conversationId,
-                message,
-                searchParamsId: searchParams.get("id"),
-                chatMessages,
-                gifUrl,
-                selectedImage,
-                isRead: checkUserOne && checkUserTwo,
-                isGroupChat: searchParams.get("isGroup") === "true",
-                groupId: searchParams.get("isGroup") === "true" ? searchParams.get("id") : undefined,
-            });
-            await chatService.saveChatMessage(messageData);
-            setIsSending(false);
-        } catch (error) {
-            Utils.dispatchNotification(
-                error.response.data.message,
-                "error",
-                dispatch
-            );
-            setIsSending(false);
-        }
-    };
+    const sendChatMessage = useCallback(
+        async (message, gifUrl, selectedImage) => {
+            try {
+                setIsSending(true);
+                const checkUserOne = some(
+                    ChatUtils.chatUsers,
+                    (user) =>
+                        user?.userOne === profile?.username &&
+                        user?.userTwo === receiver?.username
+                );
+                const checkUserTwo = some(
+                    ChatUtils.chatUsers,
+                    (user) =>
+                        user?.userOne === receiver?.username &&
+                        user?.userTwo === profile?.username
+                );
+                const messageData = ChatUtils.messageData({
+                    receiver: isGroup ? undefined : receiver,
+                    conversationId,
+                    message,
+                    searchParamsId,
+                    chatMessages,
+                    gifUrl,
+                    selectedImage,
+                    isRead: checkUserOne && checkUserTwo,
+                    isGroupChat: isGroup,
+                    groupId: isGroup ? searchParamsId : undefined,
+                });
+                await chatService.saveChatMessage(messageData);
+            } catch (error) {
+                Utils.dispatchNotification(
+                    error.response.data.message,
+                    "error",
+                    dispatch
+                );
+            } finally {
+                setIsSending(false);
+            }
+        },
+        [
+            profile,
+            receiver,
+            conversationId,
+            searchParamsId,
+            chatMessages,
+            dispatch,
+            isGroup,
+        ]
+    );
 
-    const updateMessageReaction = async (body) => {
-        try {
-            await chatService.updateMessageReaction(body);
-        } catch (error) {
-            Utils.dispatchNotification(
-                error.response.data.message,
-                "error",
-                dispatch
-            );
-        }
-    };
+    const updateMessageReaction = useCallback(
+        async (body) => {
+            try {
+                await chatService.updateMessageReaction(body);
+            } catch (error) {
+                Utils.dispatchNotification(
+                    error.response.data.message,
+                    "error",
+                    dispatch
+                );
+            }
+        },
+        [dispatch]
+    );
 
-    const deleteChatMessage = async (senderId, receiverId, messageId, type) => {
-        try {
-            await chatService.markMessageAsDelete(
-                messageId,
-                senderId,
-                receiverId,
-                type
-            );
-        } catch (error) {
-            Utils.dispatchNotification(
-                error.response.data.message,
-                "error",
-                dispatch
-            );
-        }
-    };
+    const deleteChatMessage = useCallback(
+        async (senderId, receiverId, messageId, type) => {
+            try {
+                await chatService.markMessageAsDelete(
+                    messageId,
+                    senderId,
+                    receiverId,
+                    type
+                );
+            } catch (error) {
+                Utils.dispatchNotification(
+                    error.response.data.message,
+                    "error",
+                    dispatch
+                );
+            }
+        },
+        [dispatch]
+    );
 
+    // Load user profile and chat messages when search params change
     useEffect(() => {
         if (rendered) {
             getUserProfileByUserId();
             getNewUserMessages();
         }
         if (!rendered) setRendered(true);
-    }, [getUserProfileByUserId, getNewUserMessages, searchParams, rendered]);
+    }, [getUserProfileByUserId, getNewUserMessages, rendered]);
 
+    // Socket events for message receiving
     useEffect(() => {
-        const username = searchParams.get("username");
-
         if (rendered) {
             ChatUtils.socketIOMessageReceived(
                 chatMessages,
-                username,
+                searchParamsUsername,
                 setConversationId,
                 setChatMessages
             );
         }
-
         if (!rendered) setRendered(true);
 
         const fetchInitialOnlineUsers = () => {
@@ -192,17 +241,22 @@ const ChatWindow = () => {
         return () => {
             ChatUtils.removeSocketListeners();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams, rendered]);
+    }, [searchParamsUsername, rendered, chatMessages]);
 
+    // Socket events for message reactions
     useEffect(() => {
         ChatUtils.socketIOMessageReaction(
             chatMessages,
-            searchParams.get("username"),
+            searchParamsUsername,
             setConversationId,
             setChatMessages
         );
-    }, [chatMessages, searchParams]);
+    }, [chatMessages, searchParamsUsername]);
+
+    // Function to go back for mobile
+    const handleBackClick = useCallback(() => {
+        navigate("/app/social/chat/messages");
+    }, [navigate]);
 
     return (
         <div
@@ -216,24 +270,20 @@ const ChatWindow = () => {
                 ></div>
             ) : (
                 <>
-                    {searchParams.get("id") && searchParams.get("username") ? (
+                    {searchParamsId && searchParamsUsername ? (
                         <div
                             data-testid="chatWindow"
                             className="chatWindow max-h-full relative bg-slate-800"
                         >
                             {/* header */}
                             <div
-                                className="chat-title  h-15 min-h-15 w-full bg-background-blur  rounded-[30px] py-2 px-4"
+                                className="chat-title h-15 min-h-15 w-full bg-background-blur rounded-[30px] py-2 px-4"
                                 data-testid="chat-title"
                             >
                                 {isMobile && (
                                     <div
                                         className="text-2xl text-gray-500 cursor-pointer pr-2"
-                                        onClick={() => {
-                                            searchParams.delete("username");
-                                            searchParams.delete("id");
-                                            navigate(searchParams.toString());
-                                        }}
+                                        onClick={handleBackClick}
                                     >
                                         <IoIosArrowBack />
                                     </div>
@@ -254,10 +304,7 @@ const ChatWindow = () => {
                                     {/* name */}
                                     <div
                                         className={`chat-name ${
-                                            Utils.checkIfUserIsOnline(
-                                                receiver?.username || receiver?.name,
-                                                onlineUsers
-                                            )
+                                            isReceiverOnline
                                                 ? ""
                                                 : "user-not-online"
                                         }`}
@@ -265,10 +312,7 @@ const ChatWindow = () => {
                                         {receiver?.username || receiver?.name}
                                     </div>
                                     {/* online dot */}
-                                    {Utils.checkIfUserIsOnline(
-                                        receiver?.username,
-                                        onlineUsers
-                                    ) && (
+                                    {isReceiverOnline && (
                                         <div className="chat-active size-full flex items-center gap-1">
                                             <div className="size-2 bg-green-500 rounded-full"></div>
                                             Online
@@ -279,14 +323,24 @@ const ChatWindow = () => {
 
                             {/* chat window */}
                             <div className="flex-1 max-h-full pb-16 overflow-y-scroll">
-                                <MessageDisplay
-                                    chatMessages={chatMessages}
-                                    profile={profile}
-                                    updateMessageReaction={
-                                        updateMessageReaction
-                                    }
-                                    deleteChatMessage={deleteChatMessage}
-                                />
+                                {isMessagesLoading ? (
+                                    <div className="flex items-center justify-center size-full max-h-full">
+                                        <div className="size-auto">
+                                            <LoadingMessage />
+                                        </div>
+                                    </div>
+                                ) : chatMessages.length > 0 ? (
+                                    <MessageDisplay
+                                        chatMessages={chatMessages}
+                                        profile={profile}
+                                        updateMessageReaction={
+                                            updateMessageReaction
+                                        }
+                                        deleteChatMessage={deleteChatMessage}
+                                    />
+                                ) : (
+                                    <FirstChatScreen />
+                                )}
                             </div>
                             <div className="absolute left-0 bottom-0 h-16 w-full flex items-center justify-center z-50">
                                 <MessageInput
@@ -319,4 +373,5 @@ const ChatWindow = () => {
         </div>
     );
 };
+
 export default ChatWindow;
