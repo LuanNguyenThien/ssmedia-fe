@@ -241,8 +241,8 @@ const CommentArea = ({ post }) => {
           onClick={() => addReactionPost("upvote")}
         >
           <FaArrowUp className="w-5 h-5" />
-          <span className="font-medium">Upvote</span>
-          <span className="text-gray-500 mx-0.5">·</span>
+          <span className="font-medium hidden sm:block">Upvote</span>
+          <span className="text-gray-500 mx-0.5 hidden sm:block">·</span>
           <span className='"text-gray-500"'>{post.reactions["upvote"]}</span>
         </button>
 
