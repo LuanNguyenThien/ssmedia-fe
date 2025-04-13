@@ -4,7 +4,7 @@ export const InfoItem = ({ icon, value, title }) => {
     const infoStyle = "text-gray-600 font-normal mr-2 flex items-center gap-2";
     if (!value) return null;
     return (
-        <div className="flex justify-start items-center">
+        <div className="flex justify-start items-center w-full max-w-full truncate">
             <div className={infoStyle}>
                 <DynamicSVG svgData={icon} className={"size-4"} />
                 {title}

@@ -20,11 +20,14 @@ export class FollowersUtils {
 
     static async blockUser(user, dispatch) {
         const response = await followerService.blockUser(user?._id);
+        console.log(response.data);
         Utils.dispatchNotification(response.data.message, "success", dispatch);
     }
 
     static async unblockUser(user, dispatch) {
         const response = await followerService.unblockUser(user?._id);
+        console.log(response.data);
+
         Utils.dispatchNotification(response.data.message, "success", dispatch);
     }
 

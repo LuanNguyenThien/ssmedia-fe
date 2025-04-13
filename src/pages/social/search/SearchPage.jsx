@@ -23,7 +23,6 @@ const SearchPage = () => {
   async function fetchSearchResults() {
     setLoading(true);
     try {
-      console.log('searchQuery:', searchQuery);
       const response = await postService.searchPosts(searchQuery);
       setSearchResults(response.data.posts);
     } catch (error) {

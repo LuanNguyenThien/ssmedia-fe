@@ -15,7 +15,7 @@ export const InfoField = ({
     return (
         <div className="size-full flex items-center gap-2">
             <div className="h-full flex items-center">{icon}</div>
-            <div className="flex items-center gap-2 w-full">
+            <div className="flex items-center gap-2 w-full truncate">
                 {!isEditing ? (
                     <>
                         {label && value && <>{label} </>}
@@ -39,7 +39,7 @@ export const InfoField = ({
                 ) : (
                     <>
                         <ContentEditable
-                            className="size-full border px-4 py-2 rounded-md text-primary-black/80 focus:ring-1"
+                            className="size-full border px-4 py-2 rounded-md text-primary-black/80 *:hover:border-primary-black/80 focus:border-primary/80 focus:outline-none"
                             data-placeholder={placeholder}
                             tagName="div"
                             disabled={!isEditing}

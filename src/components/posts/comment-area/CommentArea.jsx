@@ -226,7 +226,6 @@ const CommentArea = ({ post }) => {
 
   useEffect(() => {
     selectedUserReaction(reactions);
-    console.log(post.reactions['upvote']);
   }, [selectedUserReaction, reactions]);
 
   return (
