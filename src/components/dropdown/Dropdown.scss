@@ -1,123 +1,102 @@
-@use '../../assets//colors//variables.scss' as *;
+@use "../../assets//colors//variables.scss" as *;
 .social-dropdown {
-  width: 400px;
-  position: relative;
-  z-index: 100;
-  .social-card {
-    .social-bg-primary {
-      padding: 15px;
-      height: 57px;
-      color: black;
-      h5 {
-        font-size: 16px;
-        padding: 5px 0;
-        .social-count {
-          float: right;
-          font-size: 12px;
-          font-weight: 700;
-          line-height: 16px;
-          white-space: nowrap;
-          color: $component-color;
-          background-color: var(--white-7);
-          padding: 3px 8px;
-          border-radius: 50px;
+    width: 400px;
+    position: relative;
+    z-index: 100;
+    .social-card {
+        .social-bg-primary {
+            color: black;
+            h5 {
+                font-size: 16px;
+                padding: 5px 0;
+                .social-count {
+                    float: right;
+                    font-size: 12px;
+                    font-weight: 700;
+                    line-height: 16px;
+                    white-space: nowrap;
+                    color: $component-color;
+                    background-color: var(--white-7);
+                    padding: 3px 8px;
+                    border-radius: 50px;
+                }
+            }
         }
-      }
+        &-body-info {
+            &-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-evenly;
+                gap: 5px;
+                padding: 10px;
+                overflow-y: scroll;
+                max-height: 500px;
+
+                .social-sub-card {
+                    display: flex;
+                    flex-direction: row;
+                    width: 100%;
+                    .content-avatar {              
+                        text-align: center;
+                        border-radius: 50%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        .userIcon {
+                            width: 30px;
+                            height: 30px;
+                            color: #48bb78;
+                        }
+                    }
+
+                    .content-body {
+                        overflow-x: hidden;
+                        white-space: nowrap; /* Không cho nội dung xuống dòng */
+                        .title {
+                            font-size: 14px;
+                            line-height: 21px;
+                            color: var(--black-4);
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                        }
+
+                        .subtext {
+                            font-size: 12px;
+                            color: var(--gray-9);
+                            overflow: hidden; /* Ẩn phần nội dung tràn */
+                            text-overflow: ellipsis; /* Thêm dấu ba chấm */
+                            white-space: nowrap; /* Không cho nội dung xuống dòng */
+                        }
+                    }
+
+                    .content-icons {
+                        .trash {
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+
+            .social-sub-button {
+                text-align: center;
+                margin: 10px 0;
+                cursor: auto;
+
+                .signOut {
+                    background-color: #48bb78;
+                    color: var(--white-1);
+                    border-radius: 5px;
+                    font-size: 14px;
+                    font-weight: 700;
+                    cursor: pointer;
+
+                    &:hover {
+                        opacity: 0.8;
+                    }
+                }
+            }
+        }
     }
-
-    &-body-info {
-      &-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-evenly;
-        gap: 10px;
-        padding: 10px;
-        overflow-y: scroll;
-        max-height: 500px;
-
-        .social-sub-card {
-          display: flex;
-          flex-direction: row;
-          width: 100%;
-          .content-avatar {
-            width: 45px;
-            height: 45px;
-            text-align: center;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            .userIcon {
-              width: 30px;
-              height: 30px;
-              color: #48bb78;
-            }
-          }
-
-          .content-body {
-            width: 100%;
-            padding: 0 10px;
-            overflow-x: hidden;
-            white-space: nowrap; /* Không cho nội dung xuống dòng */
-            text-overflow: ellipsis; /* Hiển thị dấu '...' khi nội dung tràn */
-
-            .title {
-              font-size: 14px;
-              line-height: 21px;
-              color: var(--black-4);
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            }
-
-            .subtext {
-              font-size: 12px;
-              color: var(--gray-9);
-              overflow: hidden; /* Ẩn phần nội dung tràn */
-              text-overflow: ellipsis; /* Thêm dấu ba chấm */
-              white-space: nowrap; /* Không cho nội dung xuống dòng */
-            }
-          }
-
-          .content-icons {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-
-            .trash {
-              font-size: 14px;
-              color: var(--red-3);
-            }
-
-            .circle {
-              font-size: 10px;
-              color: var(--primary-1);
-              margin-top: 6px;
-            }
-          }
-        }
-      }
-
-      .social-sub-button {
-        text-align: center;
-        margin: 10px 0;
-        cursor: auto;
-
-        .signOut {
-          background-color: #48bb78;
-          color: var(--white-1);
-          border-radius: 5px;
-          font-size: 14px;
-          font-weight: 700;
-          cursor: pointer;
-
-          &:hover {
-            opacity: 0.8;
-          }
-        }
-      }
-    }
-  }
 }
