@@ -8,18 +8,19 @@
     background: var(--white-1);
     border-radius: 8px;
     position: absolute;
-    top: 40px;
-    width: 300px;
+    top: -10px;
+    width: 210px;
     box-shadow: 0 1px 8px var(--white-16);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-20px);
+    transform: translateY(-40px);
     transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
   }
 
   .menu.active {
     opacity: 1;
     visibility: visible;
+    transform: translateY(0);
   }
 
   .menu ul {
@@ -31,39 +32,48 @@
   .menu li {
     border-bottom: 1px solid var(--white-16);
     display: grid;
-    grid-template-areas: "icon text";
-    grid-template-rows: 1fr;
-    grid-template-columns: 30px 1fr;
+    grid-template-columns: 40px 1fr;
     cursor: pointer;
+    padding: 8px 0;
+    
+    &:last-child {
+      border-bottom: none;
+    }
 
     &:hover {
       background-color: var(--bluish-white-1);
     }
 
     .menu-icon {
-      grid-area: icon;
       display: flex;
-      width: 10px;
-
+      align-items: center;
+      justify-content: center;
+      padding-left: 10px;
+      
       .globe-icon {
         color: var(--primary-1);
-        font-size: 20px;
-        display: flex;
-        margin: auto;
-        width: 25px;
-        height: 25px;
+        font-size: 18px;
+        width: 22px;
+        height: 22px;
       }
     }
 
     .menu-text {
-      grid-area: text;
+      padding-right: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
 
       &-header {
-        line-height: 21px;
-        height: 21px;
-        margin-bottom: 2px;
+        line-height: 20px;
+        margin-bottom: 1px;
         color: var(--black-2);
         font-weight: 700;
+      }
+      
+      .sub-header {
+        font-size: 0.85em;
+        color: var(--gray-9);
       }
     }
   }
@@ -71,7 +81,7 @@
   .menu li div {
     text-decoration: none;
     color: var(--gray-9);
-    padding: 8px 20px;
+    padding: 0;
     display: block;
   }
 }

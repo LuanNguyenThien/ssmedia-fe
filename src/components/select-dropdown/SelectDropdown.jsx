@@ -19,7 +19,7 @@ const SelectDropdown = ({ isActive, setSelectedItem, items = [] }) => {
         <ul>
           {items.map((item, index) => (
             <li data-testid="select-dropdown" key={index} onClick={() => selectItem(item)}>
-              <div className="menu-icon">{item.icon}</div>
+              <div className="menu-icon">{item.icon()}</div>
               <div className="menu-text">
                 <div className="menu-text-header">{item.topText}</div>
                 <div className="sub-header">{item.subText}</div>

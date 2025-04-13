@@ -14,6 +14,7 @@ import CommentInputBox from "@components/posts/comments/comment-input/CommentInp
 import CommentsModal from "@components/posts/comments/comments-modal/CommentsModal";
 import { useState, useEffect } from "react";
 import ImageModal from "@components/image-modal/ImageModal";
+import { useRef } from "react";
 import {
   openModal,
   toggleDeleteDialog,
@@ -37,6 +38,8 @@ const Post = ({ post, showIcons }) => {
   const selectedPostId = useLocalStorage("selectedPostId", "get");
   const selectedPostCommentId = useLocalStorage("selectedPostCommentId", "get");
   const selectedPostReactId = useLocalStorage("selectedPostReactId", "get");
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const menuRef = useRef(null);
   const dispatch = useDispatch();
   const editor = useCreateBlockNote();
   const [showOptions, setShowOptions] = useState(false);
@@ -47,7 +50,7 @@ const Post = ({ post, showIcons }) => {
 
   const getPrivacy = (type) => {
     const privacy = find(privacyList, (data) => data.topText === type);
-    return privacy?.icon;
+    return privacy?.icon();
   };
 
   const deletePost = async () => {
@@ -96,6 +99,18 @@ const Post = ({ post, showIcons }) => {
     loadEditor(post.htmlPost || "");
   }, [post]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowOptionsMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <>
       {reactionsModalIsOpen && selectedPostReactId === post?._id && (
@@ -140,27 +155,105 @@ const Post = ({ post, showIcons }) => {
                 <h5 data-testid="username">
                   {post?.username}
                   {post?.feelings && (
-                    <div
-                      className="inline-display"
-                      data-testid="inline-display"
-                    >
+                    <p className="inline-display" data-testid="box-feeling">
                       is feeling{" "}
                       <img
-                        className="feeling-icon"
+                        className="inline-block w-5 h-4 align-middle mx-1"
                         src={`${getFeeling(post?.feelings)}`}
                         alt=""
-                      />{" "}
-                      <div>{post?.feelings}</div>
-                    </div>
+                      />
+                      <span className="font-semibold">{post?.feelings}</span>
+                    </p>
+                    // <div
+                    //   className="inline-display"
+                    //   data-testid="inline-display"
+                    // >
+                    //   is feeling{" "}
+                    //   <img
+                    //     className="feeling-icon"
+                    //     src={`${getFeeling(post?.feelings)}`}
+                    //     alt=""
+                    //   />{" "}
+                    //   <div>{post?.feelings}</div>
+                    // </div>
                   )}
                 </h5>
                 {showIcons && (
-                  <div className="post-icons" data-testid="post-icons">
-                    <FaPencilAlt className="pencil" onClick={openPostModal} />
-                    <FaRegTrashAlt
-                      className="trash"
-                      onClick={openDeleteDialog}
-                    />
+                  <div
+                    className="post-icons"
+                    style={{ position: "relative" }}
+                    ref={menuRef}
+                  >
+                    <div
+                      onClick={() => setShowOptionsMenu((prev) => !prev)}
+                      style={{ cursor: "pointer", fontSize: "18px" }}
+                    >
+                      &#8942;
+                    </div>
+
+                    {showOptionsMenu && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "100%",
+                          right: 0,
+                          backgroundColor: "#fff",
+                          border: "1px solid #ccc",
+                          borderRadius: "6px",
+                          zIndex: 10,
+                          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                          width: "140px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            padding: "10px 14px",
+                            cursor: "pointer",
+                            fontSize: "15px",
+                          }}
+                          onClick={() => {
+                            openPostModal();
+                            setShowOptionsMenu(false);
+                          }}
+                        >
+                          <span
+                            role="img"
+                            aria-label="edit"
+                            style={{ fontSize: "18px" }}
+                          >
+                            ✏️
+                          </span>
+                          <span>Edit</span>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            padding: "10px 14px",
+                            cursor: "pointer",
+                            fontSize: "15px",
+                            color: "red",
+                          }}
+                          onClick={() => {
+                            openDeleteDialog();
+                            setShowOptionsMenu(false);
+                          }}
+                        >
+                          <span
+                            role="img"
+                            aria-label="delete"
+                            style={{ fontSize: "18px" }}
+                          >
+                            🗑️
+                          </span>
+                          <span>Delete</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
