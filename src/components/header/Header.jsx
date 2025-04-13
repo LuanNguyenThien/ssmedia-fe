@@ -199,7 +199,7 @@ const Header = () => {
                 notification?.receiverUsername !== profile?.username
                     ? notification?.receiverUsername
                     : notification?.senderUsername;
-            if(!notification.isGroupChat){        
+            if (!notification.isGroupChat) {
                 await chatService.addChatUsers({
                     userOne: profile?.username,
                     userTwo: userTwoName,
@@ -282,7 +282,7 @@ const Header = () => {
                             <Logo />
                         </div>
                         {/* SEARCH */}
-                        <div className="col-span-3 flex justify-between items-center mx-10 gap-4">
+                        <div className="col-span-3 flex justify-between items-center gap-4">
                             <span className="font-extrabold text-primary-black flex items-center">
                                 {upperCase(section)}
                             </span>
@@ -319,7 +319,7 @@ const Header = () => {
                                     )}
                                     {isMessageActive && (
                                         <div
-                                            className="absolute top-8 right-0 z-50"
+                                            className="absolute top-8 right-0"
                                             ref={messageRef}
                                         >
                                             <MessageSidebar
@@ -363,7 +363,7 @@ const Header = () => {
                                     {/* notification dropdown */}
                                     {isNotificationActive && (
                                         <ul
-                                            className="absolute top-8 right-0 z-50"
+                                            className="absolute top-8 right-0"
                                             ref={notificationRef}
                                         >
                                             <Dropdown

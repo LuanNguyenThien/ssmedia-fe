@@ -1,17 +1,18 @@
 import PropTypes from 'prop-types';
 import '@components/posts/modal-wrappers/reaction-wrapper/ReactionWrapper.scss';
+import { RxCross2 } from "react-icons/rx";
 
 const ReactionWrapper = ({ children, closeModal }) => {
   return (
     <>
       <div className="modal-wrapper" data-testid="modal-wrapper">
-        <div className="modal-wrapper-container">
+        <div className="modal-wrapper-container size-full sm:size-1/2 p-2 flex flex-col gap-4">
           <div className="modal-wrapper-container-header">
             {children[0]}
-            <button onClick={closeModal}>X</button>
+            <RxCross2 className="text-2xl hover:text-red-400 transition-all" onClick={closeModal}/>
           </div>
-          <hr />
-          <div className="modal-wrapper-container-body" data-testid="modal-body">
+       
+          <div className="modal-wrapper-container-body size-full" >
             {children[1]}
           </div>
         </div>
