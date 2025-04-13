@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { GoBlocked } from "react-icons/go";
+import { CgUnblock } from "react-icons/cg";
 
 import InformationButton from "./InformationButton";
 
@@ -77,7 +78,7 @@ const ActionSelector = ({
                     {isBlocked ? (
                         <InformationButton
                             title="Unblock"
-                            icon={<GoBlocked />}
+                            icon={<CgUnblock />}
                             onClick={() => onClickUnblock(user)}
                             className="!bg-primary-white hover:!text-red-500"
                         />

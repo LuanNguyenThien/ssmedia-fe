@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router-dom";
 
 // Components
-import FollowerCard from "@pages/social/followers/FollowerCard";
-import FollowingCard from "../following/FollowingCard";
 import ImageModal from "@components/image-modal/ImageModal";
 import Dialog from "@components/dialog/Dialog";
 import BackgroundHeader from "@components/background-header/BackgroundHeader";
@@ -23,9 +21,14 @@ import { userService } from "@services/api/user/user.service";
 import { followerService } from "@services/api/followers/follower.service";
 import { tabItems } from "@services/utils/static.data";
 import { Utils } from "@services/utils/utils.service";
+import Follower from "../followers/Followers";
+import Following from "../following/Following";
 
 // Hooks
 // Removed useEffectOnce - we'll use useEffect with dependencies instead
+
+const currentUserOptions = ["Posts", "Replied", "Followers", "Following"];
+const otherUserOptions = ["Posts", "Followers"];
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -267,9 +270,9 @@ const Profile = () => {
             case "Replied":
                 return <Timeline userProfileData={userProfileData} />;
             case "Followers":
-                return <FollowerCard userData={user} />;
+                return <Follower userData={user} />;
             case "Following":
-                return <FollowingCard followings={following} />;
+                return <Following followings={following} />;
             default:
                 return null;
         }
@@ -286,29 +289,23 @@ const Profile = () => {
         getUserProfileByUsername();
         getUserImages();
         getUserFollowing();
+        setDisplayContent("Posts");
     }, [
         username,
         searchParams,
         getUserProfileByUsername,
         getUserImages,
         getUserFollowing,
+        isCurrentUser,
     ]);
 
     // Update title options based on current user status
     useEffect(() => {
-        const currentUserOptions = [
-            "Posts",
-            "Replied",
-            "Followers",
-            "Following",
-        ];
-        const otherUserOptions = ["Posts", "Followers"];
         setTitleOptions(
             isCurrentUser() ? currentUserOptions : otherUserOptions
         );
     }, [isCurrentUser]);
-    console.log("userProfileData", userProfileData);
-    console.log("user", profile);
+
     return (
         <>
             {showImageModal && (

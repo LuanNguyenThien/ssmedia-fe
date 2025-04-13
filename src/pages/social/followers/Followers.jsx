@@ -1,203 +1,183 @@
-import '@pages/social/followers/Followers.scss';
-import '@pages/social/following/Following.scss';
+import Avatar from "@components/avatar/Avatar";
+import "@pages/social/followers/Followers.scss";
+import PropTypes from "prop-types";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useSearchParams } from "react-router-dom";
+import { followerService } from "@services/api/followers/follower.service";
+import { Utils } from "@services/utils/utils.service";
+import { userService } from "@services/api/user/user.service";
+import { FollowersUtils } from "@services/utils/followers-utils.service";
+import { socketService } from "@services/socket/socket.service";
+import useEffectOnce from "@hooks/useEffectOnce";
+import { useParams } from "react-router-dom";
 
-// import Avatar from '@components/avatar/Avatar';
-// import CardElementButtons from '@components/card-element/CardElementButtons';
-// import CardElementStats from '@components/card-element/CardElementStats';
-import { ProfileUtils } from '@services/utils/profile-utils.service';
-import { Utils } from '@services/utils/utils.service';
-import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { followerService } from '@services/api/followers/follower.service';
-import { socketService } from '@services/socket/socket.service';
-import { FollowersUtils } from '@services/utils/followers-utils.service';
-import { Heading, Avatar, Box, Center, Image, Flex, Text, Stack, Button, useColorModeValue } from '@chakra-ui/react';
+import useInfiniteScroll from "@/hooks/useInfiniteScroll";
+import LoadingMessage from "@/components/state/loading-message/LoadingMessage";
+import FollowCard from "@/components/card-element/follow/FollowCard";
 
-const Followers = () => {
-  const { profile, token } = useSelector((state) => state.user);
-  const [followers, setFollowers] = useState([]);
-  const [blockedUsers, setBlockedUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+const Follower = ({ userData }) => {
+    const dispatch = useDispatch();
+    const { username } = useParams();
+    const [searchParams] = useSearchParams();
 
-  const getUserFollowers = useCallback(async () => {
-    try {
-      if (profile) {
-        const response = await followerService.getUserFollowers(profile?._id);
-        setFollowers(response.data.followers);
+    const [followers, setFollowers] = useState([]);
+    const [user, setUser] = useState(userData);
+
+    //state
+    const [loading, setLoading] = useState(true);
+
+    //paging
+    const bodyRef = useRef(null);
+    const bottomRef = useRef(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalFollowersCount, setTotalFollowersCount] = useState(0);
+    const PAGE_SIZE = 6;
+
+    useInfiniteScroll(bodyRef, bottomRef, fetchData);
+
+    async function fetchData() {
+        setLoading(true);
+
+        if (
+            currentPage <= Math.round(totalFollowersCount / PAGE_SIZE) &&
+            !loading
+        ) {
+            setCurrentPage((prevPage) => prevPage + 1);
+            await getUserFollowers();
+        }
+
         setLoading(false);
-      }
-    } catch (error) {
-      setLoading(false);
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
     }
-  }, [profile, dispatch]);
 
-  const blockUser = async (user) => {
-    try {
-      socketService?.socket?.emit('block user', { blockedUser: user._id, blockedBy: profile?._id });
-      FollowersUtils.blockUser(user, dispatch);
-    } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
-    }
-  };
+    const getUserFollowers = async () => {
+        setLoading(true);
+        try {
+            const response = await followerService.getUserFollowers(
+                searchParams.get("id")
+            );
+            if (response.data.followers.length > 0) {
+                setFollowers(response.data.followers);
+            }
+            setTotalFollowersCount(response.data.totalFollowers);
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const unblockUser = async (user) => {
-    try {
-      socketService?.socket?.emit('unblock user', { blockedUser: user._id, blockedBy: profile?._id });
-      FollowersUtils.unblockUser(user, dispatch);
-    } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
-    }
-  };
+    const getUserProfileByUsername = async () => {
+        try {
+            const response = await userService.getUserProfileByUsername(
+                username,
+                searchParams.get("id"),
+                searchParams.get("uId")
+            );
+            setUser(response.data.user);
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
+        }
+    };
 
-  useEffect(() => {
-    getUserFollowers();
-    setBlockedUsers(profile?.blocked);
-  }, [getUserFollowers, profile]);
+    const blockUser = (userInfo) => {
+        try {
+            socketService?.socket?.emit("block user", {
+                blockedUser: userInfo._id,
+                blockedBy: user?._id,
+            });
+            FollowersUtils.blockUser(userInfo, dispatch);
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
+        }
+    };
 
-  useEffect(() => {
-    FollowersUtils.socketIOBlockAndUnblock(profile, token, setBlockedUsers, dispatch);
-  }, [dispatch, profile, token]);
+    const unblockUser = (userInfo) => {
+        try {
+            socketService?.socket?.emit("unblock user", {
+                blockedUser: userInfo._id,
+                blockedBy: user?._id,
+            });
+            FollowersUtils.unblockUser(userInfo, dispatch);
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
+        }
+    };
 
-  return (
-    <div className="card-container">
-      <div className="followers">Followers</div>
-      {followers.length > 0 && (
-        <div className="card-element">
-          {followers.map((data) => (
-            <Center py={6}>
-              <Box
-                maxW={'270px'}
-                w={'full'}
-                bg={useColorModeValue('white', 'gray.800')}
-                boxShadow={'2xl'}
-                rounded={'md'}
-                overflow={'hidden'}
-              >
-                <Image
-                  h={'140px'}
-                  w={'full'}
-                  src={
-                    data.bgImageId
-                      ? `https://res.cloudinary.com/di6ozapw8/image/upload/v${data.bgImageVersion}/${data.bgImageId}`
-                      : 'https://images.unsplash.com/photo-1612865547334-09cb8cb455da?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80'
-                  }
-                  objectFit="cover"
-                  alt="#"
-                />
-                <Flex justify={'center'} mt={-12}>
-                  <Avatar
-                    size={'xl'}
-                    src={data?.profilePicture}
-                    css={{
-                      border: '2px solid white'
-                    }}
-                  />
-                </Flex>
+    useEffectOnce(async () => {
+        setLoading(true);
+        await getUserProfileByUsername();
+        await getUserFollowers();
+        setCurrentPage((prevPage) => prevPage + 1);
 
-                <Box p={6}>
-                  <Stack spacing={0} align={'center'} mb={5}>
-                    <Heading fontSize={'2xl'} fontWeight={500} fontFamily={'body'}>
-                      {data?.username}
-                    </Heading>
-                    <Text color={'gray.500'}>Frontend Developer</Text>
-                  </Stack>
+        setLoading(false);
+    });
 
-                  <Stack direction={'row'} justify={'center'} spacing={6}>
-                    <Stack spacing={0} align={'center'}>
-                      <Text fontWeight={600}>{data?.followersCount}</Text>
-                      <Text fontSize={'sm'} color={'gray.500'}>
-                        Followers
-                      </Text>
-                    </Stack>
-                    <Stack spacing={0} align={'center'}>
-                      <Text fontWeight={600}>{data?.followingCount}</Text>
-                      <Text fontSize={'sm'} color={'gray.500'}>
-                        Followers
-                      </Text>
-                    </Stack>
-                  </Stack>
+    useEffect(() => {
+        FollowersUtils.socketIOBlockAndUnblockCard(user, setUser);
+    }, [user]);
 
-                  <Stack direction={'row'} spacing={4} mt={8}>
-                    <Button
-                      w={'full'}
-                      bg={'green.400'}
-                      color={'white'}
-                      rounded={'md'}
-                      _hover={{
-                        transform: 'translateY(-2px)',
-                        boxShadow: 'lg'
-                      }}
-                      onClick={() => ProfileUtils.navigateToProfile(data, navigate)}
-                    >
-                      Profile
-                    </Button>
+    return (
+            <div ref={bodyRef} className="size-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {followers.length > 0 &&
+                    followers.map((data) => {
+                        const isBlocked = Utils.checkIfUserIsBlocked(
+                            user?.blocked,
+                            data?._id
+                        );
+                        return (
+                            <FollowCard
+                                key={data._id}
+                                cardData={data}
+                                user={user}
+                                isBlocked={isBlocked}
+                                unblockUser={(e)=>{
+                                    e.stopPropagation();
+                                    unblockUser(data);
+                                }}
+                                blockUser={(e)=>{
+                                    e.stopPropagation();
+                                    blockUser(data);
+                                }}
+                            />
+                        );
+                    })}
 
-                    <Button
-                      w={'full'}
-                      bg={useColorModeValue('#151f21', 'gray.900')}
-                      color={'white'}
-                      rounded={'md'}
-                      _hover={{
-                        transform: 'translateY(-2px)',
-                        boxShadow: 'lg'
-                      }}
-                      onClick={() => {
-                        Utils.checkIfUserIsBlocked(blockedUsers, data?._id) ? unblockUser(data) : blockUser(data);
-                      }}
-                    >
-                      {Utils.checkIfUserIsBlocked(blockedUsers, data?._id) ? 'Unblock' : 'Block'}
-                    </Button>
-                  </Stack>
-                </Box>
-              </Box>
-            </Center>
-          ))}
-        </div>
-      )}
-
-      {loading && !followers.length && <div className="card-element" style={{ height: '350px' }}></div>}
-
-      {!loading && !followers.length && (
-        <div className="empty-page" data-testid="empty-page">
-          You have no followers
-        </div>
-      )}
-
-      <div style={{ marginBottom: '80px', height: '50px' }}></div>
-    </div>
-  );
+                <div
+                    ref={bottomRef}
+                    className="py-5 col-span-full size-full flex justify-center items-start "
+                >
+                    {loading && (
+                        <div className="flex justify-center items-center w-full h-full">
+                            <div className="size-10">
+                                <LoadingMessage />
+                            </div>
+                        </div>
+                    )}
+                </div>
+                {!loading && !followers.length && (
+                    <div className="col-span-full size-full flex justify-center items-start text-primary-black font-bold text-xl">
+                        There are no followers to display
+                    </div>
+                )}
+            </div>
+    );
 };
-export default Followers;
 
-//     <div className="card-element-item" key={data?._id} data-testid="card-element-item">
-//       <div className="card-element-header">
-//         <div className="card-element-header-bg"></div>
-//         <Avatar
-//           name={data?.username}
-//           bgColor={data?.avatarColor}
-//           textColor="#ffffff"
-//           size={120}
-//           avatarSrc={data?.profilePicture}
-//         />
-//         <div className="card-element-header-text">
-//           <span className="card-element-header-name">{data?.username}</span>
-//         </div>
-//       </div>
-//       <CardElementStats
-//         postsCount={data?.postsCount}
-//         followersCount={data?.followersCount}
-//         followingCount={data?.followingCount}
-//       />
-//       <CardElementButtons
-//         isChecked={Utils.checkIfUserIsBlocked(blockedUsers, data?._id)}
-//         btnTextOne="Block"
-//         btnTextTwo="Unblock"
-//         onClickBtnOne={() => blockUser(data)}
-//         onClickBtnTwo={() => unblockUser(data)}
-//         onNavigateToProfile={() => ProfileUtils.navigateToProfile(data, navigate)}
-//       />
-//     </div>
+export default Follower;

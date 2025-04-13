@@ -9,13 +9,12 @@ import Header from "@components/header/Header";
 import StickySidebar from "@components/sidebar/StickySidebar";
 import { includes } from "lodash";
 
-const layout_1_4_list = ["streams", "profile", "save"];
+const layout_1_4_list = ["streams", "profile", "save", "people"];
 const layout_0_5_list = ["chat", "group", "meeting"];
 
 const Social = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 390);
     const section = useLocation().pathname.split("/")[3];
-
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 390);
         window.addEventListener("resize", handleResize);
