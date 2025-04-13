@@ -195,6 +195,7 @@ const EditPost = () => {
       PostUtils.dispatchNotification(error.response.data.message, 'error', setApiResponse, setLoading, dispatch);
     }
   };
+  
 
   useEffect(() => {
     PostUtils.positionCursor('editable');

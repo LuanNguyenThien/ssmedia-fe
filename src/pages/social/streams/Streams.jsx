@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from '@components/spinner/Spinner';
 import '@pages/social/streams/Streams.scss';
-import Suggestions from '@components/suggestions/Suggestions';
+import Suggestions from '@components/suggestions/Suggestions1';
 import { getUserSuggestions } from '@redux/api/suggestion';
 import useEffectOnce from '@hooks/useEffectOnce';
 import PostForm from '@components/posts/post-form/PostForm';
@@ -96,25 +96,33 @@ const Streams = () => {
   }, [posts, profile]);
 
   return (
-    <div className="streams" data-testid="streams">
-      <div className="streams-content">
-        <div className="streams-post" ref={bodyRef} style={{ height: '98vh' }}>
-          <PostForm />
-          <Posts allPosts={posts} postsLoading={loading} userFollowing={following} />
-          <div>
-            {currentPage > Math.ceil(totalPostsCount / PAGE_SIZE) &&
-              <div className="no-chat" data-testid="no-chat">
-                You have read all posts.
-              </div>
-            }
-          </div>
-          <div ref={bottomLineRef} style={{ marginBottom: '30px', height: '30px' }}>
-            {loadingMore && <Spinner />} 
-          </div>
+    <div className="streams-content col-span-full">
+      <div
+        className="streams-post px-10 bg-background-blur rounded-3xl"
+        ref={bodyRef}
+      >
+        <PostForm />
+        <Posts
+          allPosts={posts}
+          postsLoading={loading}
+          userFollowing={following}
+        />
+        <div>
+          {currentPage > Math.ceil(totalPostsCount / PAGE_SIZE) && (
+            <div className="no-chat" data-testid="no-chat">
+              You have read all posts.
+            </div>
+          )}
         </div>
-        <div className="streams-suggestions">
-          <Suggestions />
+        <div
+          ref={bottomLineRef}
+          style={{ marginBottom: "30px", height: "30px" }}
+        >
+          {loadingMore && <Spinner />}
         </div>
+      </div>
+      <div className="streams-suggestions">
+        <Suggestions />
       </div>
     </div>
   );

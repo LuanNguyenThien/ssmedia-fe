@@ -1,165 +1,102 @@
-@use '../../assets//colors//variables.scss' as *;
+@use "../../assets//colors//variables.scss" as *;
 .social-dropdown {
-  width: 400px;
-  margin: auto;
-  border-radius: 5px;
-  transition: all 0.3s;
-  position: relative;
-  z-index: 2;
-  margin-top: 10px;
-
-  @media screen and (max-width: 768px) {
-    position: fixed;
-    top: 5;
-    left: 0;
-    right: 0;
-    height: auto;
-    width: 100%;
-    margin-top: 20px;
-    z-index: 10000;
-  }
-
-  .social-card {
-    /* Nền xanh */
-    transition: background-color 0.3s ease;
-    box-shadow: 0 0 1px 0 var(--black-1);
-    @media screen and (max-width: 768px) {
-      box-shadow: none;
-      transition: background-color 0.3s ease;
-      padding: 5px;
-    }
-
-    .social-bg-primary {
-      background: $component-color;
-      padding: 15px;
-      height: 57px;
-      color: black;
-      h5 {
-        font-size: 16px;
-        padding: 5px 0;
-        .social-count {
-          float: right;
-          font-size: 12px;
-          font-weight: 700;
-          line-height: 16px;
-          white-space: nowrap;
-          color: $component-color;
-          background-color: var(--white-7);
-          padding: 3px 8px;
-          border-radius: 50px;
+    width: 400px;
+    position: relative;
+    z-index: 100;
+    .social-card {
+        .social-bg-primary {
+            color: black;
+            h5 {
+                font-size: 16px;
+                padding: 5px 0;
+                .social-count {
+                    float: right;
+                    font-size: 12px;
+                    font-weight: 700;
+                    line-height: 16px;
+                    white-space: nowrap;
+                    color: $component-color;
+                    background-color: var(--white-7);
+                    padding: 3px 8px;
+                    border-radius: 50px;
+                }
+            }
         }
-      }
-    }
+        &-body-info {
+            &-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-evenly;
+                gap: 5px;
+                padding: 10px;
+                overflow-y: scroll;
+                max-height: 500px;
 
-    &-body-info {
-      background-color: var(--white-1);
-      border-radius: 0 0 10px 10px;
-      border-bottom: 1px solid var(--black-1);
-      border-width: 1px;
-      border-color: black;
-      &-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-evenly;
-        gap: 10px;
-        padding: 10px;
-        overflow-y: scroll;
+                .social-sub-card {
+                    display: flex;
+                    flex-direction: row;
+                    width: 100%;
+                    .content-avatar {              
+                        text-align: center;
+                        border-radius: 50%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
 
-        .social-sub-card {
-          padding: 10px 15px;
-          margin: 0;
-          border-radius: 5px;
-          display: flex;
-          flex-direction: row;
-          width: 100%;
-          cursor: pointer;
-          box-shadow: none;
-          background-color: #f9f9f9;
-          box-sizing: border-box;
+                        .userIcon {
+                            width: 30px;
+                            height: 30px;
+                            color: #48bb78;
+                        }
+                    }
 
-          .content-avatar {
-            width: 45px;
-            height: 45px;
-            text-align: center;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+                    .content-body {
+                        overflow-x: hidden;
+                        white-space: nowrap; /* Không cho nội dung xuống dòng */
+                        .title {
+                            font-size: 14px;
+                            line-height: 21px;
+                            color: var(--black-4);
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                        }
 
-            .userIcon {
-              width: 30px;
-              height: 30px;
-              color: #48bb78;
-            }
-          }
+                        .subtext {
+                            font-size: 12px;
+                            color: var(--gray-9);
+                            overflow: hidden; /* Ẩn phần nội dung tràn */
+                            text-overflow: ellipsis; /* Thêm dấu ba chấm */
+                            white-space: nowrap; /* Không cho nội dung xuống dòng */
+                        }
+                    }
 
-          .content-body {
-            width: 100%;
-            padding: 0 10px;
-            overflow-x: hidden;
-            white-space: nowrap; /* Không cho nội dung xuống dòng */
-            text-overflow: ellipsis; /* Hiển thị dấu '...' khi nội dung tràn */
-
-            .title {
-              font-size: 14px;
-              line-height: 21px;
-              color: var(--black-4);
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
+                    .content-icons {
+                        .trash {
+                            font-size: 14px;
+                        }
+                    }
+                }
             }
 
-            .subtext {
-              font-size: 12px;
-              color: var(--gray-9);
-              overflow: hidden; /* Ẩn phần nội dung tràn */
-              text-overflow: ellipsis; /* Thêm dấu ba chấm */
-              white-space: nowrap; /* Không cho nội dung xuống dòng */
+            .social-sub-button {
+                text-align: center;
+                margin: 10px 0;
+                cursor: auto;
+
+                .signOut {
+                    background-color: #48bb78;
+                    color: var(--white-1);
+                    border-radius: 5px;
+                    font-size: 14px;
+                    font-weight: 700;
+                    cursor: pointer;
+
+                    &:hover {
+                        opacity: 0.8;
+                    }
+                }
             }
-          }
-
-          .content-icons {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-
-            .trash {
-              font-size: 14px;
-              color: var(--red-3);
-            }
-
-            .circle {
-              font-size: 10px;
-              color: var(--primary-1);
-              margin-top: 6px;
-            }
-          }
-
-          &:hover {
-            background-color: #e0f7e9; /* Màu nền khi hover */
-          }
         }
-      }
-
-      .social-sub-button {
-        text-align: center;
-        margin: 10px 0;
-        cursor: auto;
-
-        .signOut {
-          background-color: #48bb78;
-          color: var(--white-1);
-          border-radius: 5px;
-          font-size: 14px;
-          font-weight: 700;
-          cursor: pointer;
-
-          &:hover {
-            opacity: 0.8;
-          }
-        }
-      }
     }
-  }
 }

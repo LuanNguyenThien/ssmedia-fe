@@ -7,7 +7,6 @@ import {
     FaRegBell,
     FaUser,
     FaUserCheck,
-
 } from "react-icons/fa";
 import { feelings, reactions, icons } from "@/assets/assets";
 import React from "react";
@@ -54,55 +53,31 @@ export const sideBarItems = [
         index: 2,
         name: "Chat",
         url: "/app/social/chat/messages",
-        iconName: icons.chat,
+        iconName: icons.chats,
     },
     {
         index: 3,
-        name: "People",
-        url: "/app/social/people",
-        iconName: icons.group,
+        name: "Group",
+        url: "/app/social/chat/messages",
+        iconName: icons.groups,
     },
     {
         index: 4,
-        name: "Following",
-        url: "/app/social/following",
-        iconName: icons.home,
+        name: "People",
+        url: "/app/social/people",
+        iconName: icons.people,
     },
     {
         index: 5,
-        name: "Followers",
-        url: "/app/social/followers",
-        iconName: icons.heart,
+        name: "Profile",
+        url: "/app/social/profile",
+        iconName: icons.profile,
     },
     {
         index: 6,
-        name: "Photos",
-        url: "/app/social/photos",
-        iconName: icons.picture,
-    },
-    {
-        index: 7,
-        name: "Videos",
-        url: "/app/social/videos",
-        iconName: icons.video,
-    },
-    {
-        index: 8,
-        name: "Notifications",
-        url: "/app/social/notifications",
-        iconName: icons.bell,
-    },
-    {
-        index: 9,
-        name: "Profile",
-        url: "/app/social/profile",
-        iconName: icons.user,
-    },
-    {
-        index: 10,
         name: "Save",
         url: "/app/social/save",
-        iconName: icons.save,
+        iconName: icons.saves,
     },
 ];
 
