@@ -1,6 +1,6 @@
 const UserCardSkeleton = () => {
     return (
-        <div className="w-full py-10 max-w-sm h-[50vh] bg-white rounded-xl flex flex-col justify-between animate-pulse">
+        <div className="w-full py-10 max-w-sm h-[50vh] bg-white rounded-xl flex flex-col justify-between animate-skeleton-animation">
             <div className="flex justify-center mt-4">
                 <div className="w-24 h-24 bg-gray-300 rounded-full" />
             </div>

@@ -10,7 +10,7 @@ import StickySidebar from "@components/sidebar/StickySidebar";
 import { includes } from "lodash";
 
 const layout_1_4_list = ["streams", "profile", "save", "people"];
-const layout_0_5_list = ["chat", "group", "meeting"];
+const layout_0_5_list = ["chat", "groups", "meeting"];
 
 const Social = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 390);
