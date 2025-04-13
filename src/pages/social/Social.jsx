@@ -9,7 +9,7 @@ import Header from "@components/header/Header";
 import StickySidebar from "@components/sidebar/StickySidebar";
 import { includes } from "lodash";
 
-const layout_1_4_list = ["streams", "profile", "save", "people"];
+const layout_1_4_list = ["streams", "profile", "save", "people","post"];
 const layout_0_5_list = ["chat", "groups", "meeting"];
 
 const Social = () => {
