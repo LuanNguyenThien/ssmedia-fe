@@ -14,10 +14,7 @@ import PropTypes from 'prop-types';
 import { ImageUtils } from '@services/utils/image-utils.service';
 import { postService } from '@services/api/post/post.service';
 import Spinner from '@components/spinner/Spinner';
-import { useCreateBlockNote } from "@blocknote/react";
-import { BlockNoteView } from "@blocknote/mantine";
-import "@blocknote/core/fonts/inter.css";
-import "@blocknote/mantine/style.css";
+
 const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const { gifModalIsOpen, feeling } = useSelector((state) => state.modal);
   const { gifUrl, image, privacy, video } = useSelector((state) => state.post);
@@ -37,7 +34,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
     image: '',
     video: ''
   });
-  const [disable, setDisable] = useState();
+  const [disable, setDisable] = useState(true);
   const [apiResponse, setApiResponse] = useState('');
   const [selectedPostImage, setSelectedPostImage] = useState();
   const [selectedVideo, setSelectedVideo] = useState();
@@ -45,16 +42,9 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const inputRef = useRef(null);
   const imageInputRef = useRef(null);
   const dispatch = useDispatch();
-  const editor = useCreateBlockNote();
-  let blocks ='';
-  const maxNumberOfCharacters = 1000;
-const handleEditorDataChange = async () => {
-  blocks = await editor.blocksToHTMLLossy(editor.document);
-  console.log(blocks);
-  PostUtils.postInputEditable(blocks, postData, setPostData);
- 
 
-};
+  const maxNumberOfCharacters = 1000;
+
   const selectBackground = (bgColor) => {
     PostUtils.selectBackground(bgColor, postData, setTextAreaBackground, setPostData);
   };
@@ -71,9 +61,8 @@ const handleEditorDataChange = async () => {
     const currentTextLength = event.target.textContent.length;
     const counter = maxNumberOfCharacters - currentTextLength;
     counterRef.current.textContent = `${counter}/1000`;
-     setDisable(currentTextLength <= 0 && !postImage);
-    // console.log(blocks);
-    // PostUtils.postInputEditable(blocks, postData, setPostData);
+    setDisable(currentTextLength <= 0 && !postImage);
+    PostUtils.postInputEditable(textContent, postData, setPostData);
   };
 
   const closePostModal = () => {
@@ -189,31 +178,20 @@ const handleEditorDataChange = async () => {
         {!gifModalIsOpen && (
           <div className="modal-box">
             {loading && (
-              <div
-                className="modal-box-loading"
-                data-testid="modal-box-loading"
-              >
+              <div className="modal-box-loading" data-testid="modal-box-loading">
                 <span>Posting...</span>
                 <Spinner />
               </div>
             )}
             <div className="modal-box-header">
               <h2>Create Post</h2>
-              <button
-                className="modal-box-header-cancel"
-                onClick={() => closePostModal()}
-              >
+              <button className="modal-box-header-cancel" onClick={() => closePostModal()}>
                 X
               </button>
             </div>
             <hr />
             <ModalBoxContent />
-            <BlockNoteView
-              editor={editor}
-              onChange={() => {
-                handleEditorDataChange();
-              }}
-            />
+
             {!postImage && (
               <>
                 <div
@@ -221,12 +199,7 @@ const handleEditorDataChange = async () => {
                   data-testid="modal-box-form"
                   style={{ background: `${textAreaBackground}` }}
                 >
-                  <div
-                    className="main"
-                    style={{
-                      margin: textAreaBackground !== "#ffffff" ? "0 auto" : "",
-                    }}
-                  >
+                  <div className="main" style={{ margin: textAreaBackground !== '#ffffff' ? '0 auto' : '' }}>
                     <div className="flex-row">
                       <div
                         data-testid="editable"
@@ -236,20 +209,11 @@ const handleEditorDataChange = async () => {
                           inputRef.current = el;
                           inputRef?.current?.focus();
                         }}
-                        className={`editable flex-item ${
-                          textAreaBackground !== "#ffffff"
-                            ? "textInputColor"
-                            : ""
-                        } ${
-                          postData.post.length === 0 &&
-                          textAreaBackground !== "#ffffff"
-                            ? "defaultInputTextColor"
-                            : ""
+                        className={`editable flex-item ${textAreaBackground !== '#ffffff' ? 'textInputColor' : ''} ${
+                          postData.post.length === 0 && textAreaBackground !== '#ffffff' ? 'defaultInputTextColor' : ''
                         }`}
                         contentEditable={true}
-                        onInput={(e) =>
-                          postInputEditable(e, e.currentTarget.textContent)
-                        }
+                        onInput={(e) => postInputEditable(e, e.currentTarget.textContent)}
                         onKeyDown={onKeyDown}
                         onPaste={onPaste}
                         data-placeholder="What's on your mind?..."
@@ -259,6 +223,7 @@ const handleEditorDataChange = async () => {
                 </div>
               </>
             )}
+
             {postImage && (
               <>
                 <div className="modal-box-image-form">
@@ -272,9 +237,7 @@ const handleEditorDataChange = async () => {
                     }}
                     className="post-input flex-item"
                     contentEditable={true}
-                    onInput={(e) =>
-                      postInputEditable(e, e.currentTarget.textContent)
-                    }
+                    onInput={(e) => postInputEditable(e, e.currentTarget.textContent)}
                     onKeyDown={onKeyDown}
                     data-placeholder="What's on your mind?..."
                   ></div>
@@ -282,21 +245,14 @@ const handleEditorDataChange = async () => {
                     <div
                       className="image-delete-btn"
                       data-testid="image-delete-btn"
-                      style={{ marginTop: `${hasVideo ? "-40px" : ""}` }}
+                      style={{ marginTop: `${hasVideo ? '-40px' : ''}` }}
                       onClick={() => clearImage()}
                     >
                       <FaTimes />
                     </div>
-                    {!hasVideo && (
-                      <img
-                        data-testid="post-image"
-                        className="post-image"
-                        src={`${postImage}`}
-                        alt=""
-                      />
-                    )}
+                    {!hasVideo && <img data-testid="post-image" className="post-image" src={`${postImage}`} alt="" />}
                     {hasVideo && (
-                      <div style={{ marginTop: "-40px" }}>
+                      <div style={{ marginTop: '-40px' }}>
                         <video width="100%" controls src={`${video}`} />
                       </div>
                     )}
@@ -304,42 +260,31 @@ const handleEditorDataChange = async () => {
                 </div>
               </>
             )}
+
             <div className="modal-box-bg-colors">
               <ul>
                 {bgColors.map((color, index) => (
                   <li
                     data-testid="bg-colors"
                     key={index}
-                    className={`${
-                      color === "#ffffff" ? "whiteColorBorder" : ""
-                    }`}
+                    className={`${color === '#ffffff' ? 'whiteColorBorder' : ''}`}
                     style={{ backgroundColor: `${color}` }}
                     onClick={() => {
-                      PostUtils.positionCursor("editable");
+                      PostUtils.positionCursor('editable');
                       selectBackground(color);
                     }}
                   ></li>
                 ))}
               </ul>
             </div>
-            <span
-              className="char_count"
-              data-testid="allowed-number"
-              ref={counterRef}
-            >
+            <span className="char_count" data-testid="allowed-number" ref={counterRef}>
               {allowedNumberOfCharacters}
             </span>
-            <ModalBoxSelection
-              setSelectedPostImage={setSelectedPostImage}
-              setSelectedVideo={setSelectedVideo}
-            />
+
+            <ModalBoxSelection setSelectedPostImage={setSelectedPostImage} setSelectedVideo={setSelectedVideo} />
+
             <div className="modal-box-button" data-testid="post-button">
-              <Button
-                label="Create Post"
-                className="post-button"
-                disabled={disable}
-                handleClick={createPost}
-              />
+              <Button label="Create Post" className="post-button" disabled={disable} handleClick={createPost} />
             </div>
           </div>
         )}

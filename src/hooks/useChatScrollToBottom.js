@@ -1,18 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
-const useChatScrollToBottom = (prop, isStopSetScrolling) => {
-    const scrollRef = useRef(null);
-    console.log("useChatScrollToBottom", isStopSetScrolling.current);
-    useEffect(() => {
-        if (scrollRef.current && !isStopSetScrolling.current) {
-            scrollRef.current.scrollTop =
-                scrollRef.current?.scrollHeight -
-                scrollRef.current?.clientHeight;
+const useChatScrollToBottom = (prop) => {
+  const scrollRef = useRef(null);
 
-            isStopSetScrolling.current = true;
-        }
-    }, [prop]);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current?.scrollHeight - scrollRef.current?.clientHeight;
+    }
+  }, [prop]);
 
-    return scrollRef;
+  return scrollRef;
 };
 export default useChatScrollToBottom;

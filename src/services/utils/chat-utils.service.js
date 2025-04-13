@@ -7,7 +7,6 @@ export class ChatUtils {
   static privateChatMessages = [];
   static chatUsers = [];
   static onlineUsers = [];
-  static conversationId;
 
   static fetchOnlineUsers(setOnlineUsers) {
     setOnlineUsers(ChatUtils.onlineUsers);
@@ -36,8 +35,7 @@ export class ChatUtils {
       receiverId: user.receiverId,
       receiverName: user.receiverUsername,
       senderId: profile?._id,
-      senderName: profile?.username,
-      roomId: user.conversationId
+      senderName: profile?.username
     };
     socketService?.socket?.emit('join room', users);
   }
@@ -47,21 +45,13 @@ export class ChatUtils {
   }
 
   static chatUrlParams(user, profile) {
-    const params = { username: '', id: '', isGroup: '' };
-    if(user.isGroupChat){
-      params.username = user.groupName.toLowerCase();
-      params.id = user.groupId;
-      params.isGroup = user.isGroupChat
-      return params;
-    }
+    const params = { username: '', id: '' };
     if (user.receiverUsername === profile?.username) {
       params.username = user.senderUsername.toLowerCase();
       params.id = user.senderId;
-      params.isGroup = false;
     } else {
       params.username = user.receiverUsername.toLowerCase();
       params.id = user.receiverId;
-      params.isGroup = false;
     }
     return params;
   }
@@ -74,17 +64,12 @@ export class ChatUtils {
     chatMessages,
     isRead,
     gifUrl,
-    selectedImage, 
-    isGroupChat,
-    groupId
+    selectedImage
   }) {
-    let chatConversationId;
-    if(!isGroupChat){
-      chatConversationId = find(
-        chatMessages,
-        (chat) => chat.receiverId === searchParamsId || chat.senderId === searchParamsId
-      );
-    }
+    const chatConversationId = find(
+      chatMessages,
+      (chat) => chat.receiverId === searchParamsId || chat.senderId === searchParamsId
+    );
 
     const messageData = {
       conversationId: chatConversationId ? chatConversationId.conversationId : conversationId,
@@ -95,9 +80,7 @@ export class ChatUtils {
       body: message.trim(),
       isRead,
       gifUrl,
-      selectedImage,
-      isGroupChat,
-      groupId
+      selectedImage
     };
     return messageData;
   }
@@ -129,18 +112,11 @@ export class ChatUtils {
 
   static socketIOChatList(profile, chatMessageList, setChatMessageList) {
     socketService?.socket?.on('chat list', (data) => {
-      if (data.senderUsername === profile?.username || data.receiverUsername === profile?.username || data.isGroupChat) {
-        let messageIndex;
-        if(!data.isGroupChat)
-          messageIndex = findIndex(chatMessageList, ['conversationId', data.conversationId]);
-        else
-          messageIndex = findIndex(chatMessageList, ['groupId', data.groupId]);
+      if (data.senderUsername === profile?.username || data.receiverUsername === profile?.username) {
+        const messageIndex = findIndex(chatMessageList, ['conversationId', data.conversationId]);
         chatMessageList = cloneDeep(chatMessageList);
         if (messageIndex > -1) {
-          if(data.isGroupChat) 
-            remove(chatMessageList, (chat) => chat.groupId === data.groupId);
-          else
-            remove(chatMessageList, (chat) => chat.conversationId === data.conversationId);
+          remove(chatMessageList, (chat) => chat.conversationId === data.conversationId);
           chatMessageList = [data, ...chatMessageList];
         } else {
           remove(chatMessageList, (chat) => chat.receiverUsername === data.receiverUsername);
@@ -154,17 +130,11 @@ export class ChatUtils {
   static socketIOMessageReceived(chatMessages, username, setConversationId, setChatMessages) {
     chatMessages = cloneDeep(chatMessages);
     socketService?.socket?.on('message received', (data) => {
-      if (
-        data.senderUsername.toLowerCase() === username ||
-        data.receiverUsername?.toLowerCase() === username ||
-        data.isGroupChat === true
-      ) {
-        if(data.conversationId === ChatUtils.conversationId || data.groupId === ChatUtils.conversationId) {
-          setConversationId(ChatUtils.conversationId);
-          ChatUtils.privateChatMessages.push(data);
-          chatMessages = [...ChatUtils.privateChatMessages];
-          setChatMessages(chatMessages);
-        }
+      if (data.senderUsername.toLowerCase() === username || data.receiverUsername.toLowerCase() === username) {
+        setConversationId(data.conversationId);
+        ChatUtils.privateChatMessages.push(data);
+        chatMessages = [...ChatUtils.privateChatMessages];
+        setChatMessages(chatMessages);
       }
     });
 
@@ -187,17 +157,12 @@ export class ChatUtils {
 
   static socketIOMessageReaction(chatMessages, username, setConversationId, setChatMessages) {
     socketService?.socket?.on('message reaction', (data) => {
-      if (
-        data.senderUsername.toLowerCase() === username ||
-        data.receiverUsername?.toLowerCase() === username ||
-        data.isGroupChat === true
-      ) {
+      if (data.senderUsername.toLowerCase() === username || data.receiverUsername.toLowerCase() === username) {
         chatMessages = cloneDeep(chatMessages);
         setConversationId(data.conversationId);
-        const messageIndex = findIndex(ChatUtils.privateChatMessages, (msg) => msg._id === data._id);
+        const messageIndex = findIndex(chatMessages, (message) => message?._id === data._id);
         if (messageIndex > -1) {
-          ChatUtils.privateChatMessages[messageIndex] = data;
-          chatMessages = [...ChatUtils.privateChatMessages];
+          chatMessages.splice(messageIndex, 1, data);
           setChatMessages(chatMessages);
         }
       }

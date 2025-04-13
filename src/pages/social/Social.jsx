@@ -3,10 +3,10 @@ import "@pages/social/Social.scss";
 import { Outlet, useLocation } from "react-router-dom";
 
 import Sidebar from "@components/sidebar/Sidebar";
-import HeaderMb from "@components/header/HeaderMb";
-import SidebarMb from "@components/sidebar/SidebarMb";
-import Header from "@components/header/Header";
-import StickySidebar from "@components/sidebar/StickySidebar";
+import HeaderMb from "components/header/HeaderMb";
+import SidebarMb from "components/sidebar/SidebarMb";
+import Header from "components/header/Header";
+import StickySidebar from "components/sidebar/StickySidebar";
 import { includes } from "lodash";
 
 const layout_1_4_list = ["profile", "save"];
@@ -14,7 +14,10 @@ const layout_0_5_list = ["chat", "group", "meeting"];
 
 const Social = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 390);
-    const section = useLocation().pathname.split("/")[3];
+    const location = useLocation();
+    const pathSegments = location.pathname.split('/');
+    const section = pathSegments[3]; 
+    console.log(section);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 390);
@@ -42,9 +45,11 @@ const Social = () => {
 
         if (includes(layout_0_5_list, section)) {
             return (
-                <div className="col-span-5 max-h-[86vh] min-h-[86vh] relative">
+                <div className="col-span-5">
                     <StickySidebar />
-                    <Outlet />
+                    <div className="col-span-5 bg-background-blur rounded-t-[30px] h-full min-h-screen">
+                        a
+                    </div>
                 </div>
             );
         }
@@ -56,14 +61,15 @@ const Social = () => {
                     <Sidebar />
                 </div>
                 <div className="col-span-4 grid grid-cols-4">
-                    <Outlet />
+                    <div className="col-span-3 bg-background-blur rounded-t-[30px]"></div>
+                    <div className="col-span-1">d</div>
                 </div>
             </>
         );
     };
 
     return (
-        <div className="!bg-secondary sm:px-12">
+        <div className="!bg-secondary sm:px-10 h-screen">
             {isMobile ? <HeaderMb /> : <Header />}
             <div className="grid grid-cols-5">{getLayout()}</div>
             {isMobile && <SidebarMb />}

@@ -1,12 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 
-import { assets } from "@assets/assets";
+import bell from "@assets/images/bell.svg";
+import mess from "@assets/images/mes.svg";
+import { icons } from "@assets/assets";
 import "@components/header/Header.scss";
+import Logo from "@components/logo/logo";
 import Avatar from "@components/avatar/Avatar";
 import { Utils } from "@services/utils/utils.service";
 import useDetectOutsideClick from "@hooks/useDetectOutsideClick";
+import MessageSidebar from "@components/message-sidebar/MessageSidebar";
 import { useDispatch, useSelector } from "react-redux";
+import Dropdown from "@components/dropdown/Dropdown";
 import useEffectOnce from "@hooks/useEffectOnce";
 import { ProfileUtils } from "@services/utils/profile-utils.service";
 import { createSearchParams, useLocation, useNavigate } from "react-router-dom";
@@ -19,39 +24,27 @@ import { NotificationUtils } from "@services/utils/notification-utils.service";
 import { FollowersUtils } from "@services/utils/followers-utils.service";
 import NotificationPreview from "@components/dialog/NotificationPreview";
 import { socketService } from "@services/socket/socket.service";
-import { sumBy, upperCase } from "lodash";
+import { sumBy } from "lodash";
 import { ChatUtils } from "@services/utils/chat-utils.service";
 import { chatService } from "@services/api/chat/chat.service";
 import { getConversationList } from "@redux/api/chat";
 
+import {
+    setIsOpenSidebar,
+    setIsOpenSearchBar,
+} from "@redux/reducers/navbar/navState.reducer";
+
 // components
 import DropdownSetting from "@components/header/components/dropdown/DropdownSetting";
-import Logo from "./components/logo/Logo";
-import SearchInputDesktop from "./components/search-input.jsx/seach-input-desktop";
-import Dropdown from "@components/dropdown/Dropdown";
-import MessageSidebar from "@components/message-sidebar/MessageSidebar";
+import SearchButtonMb from "@components/header/components/searchButton/SearchButtonMb";
 const Header = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const location = useLocation();
-    const section = useLocation().pathname.split("/")[3];
-
-    //selector
     const { profile } = useSelector((state) => state.user);
-    const { chatList } = useSelector((state) => state.chat);
-    const token = useSelector((state) => state.user.token);
-
-    //local storage
-    const storedUsername = useLocalStorage("username", "get");
-    const [deleteStorageUsername] = useLocalStorage("username", "delete");
-    const [setLoggedIn] = useLocalStorage("keepLoggedIn", "set");
-    const [deleteSessionPageReload] = useSessionStorage("pageReload", "delete");
-
     const [blockedUsers, setBlockedUsers] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
+    const token = useSelector((state) => state.user.token);
+    const { chatList } = useSelector((state) => state.chat);
 
-    //notifications
-    const notificationRef = useRef(null);
+    // const [environment, setEnvironment] = useState('');
+    // const [settings, setSettings] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [notificationCount, setNotificationCount] = useState(0);
     const [notificationDialogContent, setNotificationDialogContent] = useState({
@@ -60,74 +53,34 @@ const Header = () => {
         comment: "",
         reaction: "",
         senderName: "",
-        entityId: "",
     });
-    const [isNotificationActive, setIsNotificationActive] =
-        useDetectOutsideClick(notificationRef, false);
-
-    //chats
     const [messageCount, setMessageCount] = useState(0);
     const [messageNotifications, setMessageNotifications] = useState([]);
     const messageRef = useRef(null);
+    const notificationRef = useRef(null);
+    const settingsRef = useRef(null);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const location = useLocation();
     const [isMessageActive, setIsMessageActive] = useDetectOutsideClick(
         messageRef,
         false
     );
-
-    //settings
-    const settingsRef = useRef(null);
+    const [isNotificationActive, setIsNotificationActive] =
+        useDetectOutsideClick(notificationRef, false);
     const [isSettingsActive, setIsSettingsActive] = useDetectOutsideClick(
         settingsRef,
         false
     );
+    const storedUsername = useLocalStorage("username", "get");
+    const [deleteStorageUsername] = useLocalStorage("username", "delete");
+    const [setLoggedIn] = useLocalStorage("keepLoggedIn", "set");
+    const [deleteSessionPageReload] = useSessionStorage("pageReload", "delete");
 
-    useEffectOnce(() => {
-        ChatUtils.usersOnlines();
-        // Utils.mapSettingsDropdownItems(setSettings);
-        getUserNotifications();
-    });
+    // const backgrounColor = `${
+    //   environment === 'DEV' || environment === 'LOCAL' ? '#50b5ff' : environment === 'STG' ? '#e9710f' : ''
+    // }`;
 
-    useEffect(() => {
-        const count = sumBy(chatList, (notification) => {
-            return !notification?.isRead &&
-                notification?.receiverUsername === profile?.username
-                ? 1
-                : 0;
-        });
-        setMessageCount(count);
-        setMessageNotifications(chatList);
-    }, [chatList, profile]);
-
-    useEffect(() => {
-        NotificationUtils.socketIOAnalyzeNotifications(profile, dispatch);
-        NotificationUtils.socketIONotification(
-            profile,
-            notifications,
-            setNotifications,
-            "header",
-            setNotificationCount
-        );
-        NotificationUtils.socketIOMessageNotification(
-            chatList,
-            profile,
-            messageNotifications,
-            setMessageNotifications,
-            setMessageCount,
-            dispatch,
-            location
-        );
-    }, [profile, notifications, dispatch, location, messageNotifications]);
-
-    useEffect(() => {
-        FollowersUtils.socketIOBlockAndUnblock(
-            profile,
-            token,
-            setBlockedUsers,
-            dispatch
-        );
-    }, [dispatch, profile, token]);
-
-    //notifications
     const getUserNotifications = async () => {
         try {
             const response = await notificationService.getUserNotifications();
@@ -146,21 +99,13 @@ const Header = () => {
             );
         }
     };
-    const onMarkAsRead = async ({ notification, isMarkAsReadAll = false }) => {
+    const onMarkAsRead = async (notification) => {
         try {
-            console.log("notification", notification);
-            if (isMarkAsReadAll) {
-                NotificationUtils.markMessageAsRead(
-                    notification?._id,
-                    notification
-                );
-            } else {
-                NotificationUtils.markMessageAsRead(
-                    notification?._id,
-                    notification,
-                    setNotificationDialogContent
-                );
-            }
+            NotificationUtils.markMessageAsRead(
+                notification?._id,
+                notification,
+                setNotificationDialogContent
+            );
         } catch (error) {
             Utils.dispatchNotification(
                 error.response.data.message,
@@ -169,6 +114,7 @@ const Header = () => {
             );
         }
     };
+
     const onDeleteNotification = async (messageId) => {
         try {
             const response = await notificationService.deleteNotification(
@@ -187,7 +133,7 @@ const Header = () => {
             );
         }
     };
-    //chats
+
     const openChatPage = async (notification) => {
         try {
             const params = ChatUtils.chatUrlParams(notification, profile);
@@ -207,12 +153,10 @@ const Header = () => {
                 notification?.receiverUsername !== profile?.username
                     ? notification?.receiverUsername
                     : notification?.senderUsername;
-            if (!notification.isGroupChat) {
-                await chatService.addChatUsers({
-                    userOne: profile?.username,
-                    userTwo: userTwoName,
-                });
-            }
+            await chatService.addChatUsers({
+                userOne: profile?.username,
+                userTwo: userTwoName,
+            });
             navigate(`/app/social/chat/messages?${createSearchParams(params)}`);
             setIsMessageActive(false);
             dispatch(getConversationList());
@@ -224,6 +168,7 @@ const Header = () => {
             );
         }
     };
+
     const onLogout = async () => {
         try {
             setLoggedIn(false);
@@ -247,18 +192,59 @@ const Header = () => {
         }
     };
 
-    const handleSearchKeyPress = () => {
-        navigate("/app/social/search", { state: { query: searchTerm } });
-    };
+    useEffectOnce(() => {
+        ChatUtils.usersOnlines();
+        // Utils.mapSettingsDropdownItems(setSettings);
+        getUserNotifications();
+    });
 
-    const handleSetNotificationDialogContentToNull = () => {
-        setNotificationDialogContent({
-            post: "",
-            imgUrl: "",
-            comment: "",
-            reaction: "",
-            senderName: "",
+    useEffect(() => {
+        // const env = Utils.appEnvironment();
+        // // setEnvironment(env);
+        const count = sumBy(chatList, (notification) => {
+            return !notification.isRead &&
+                notification.receiverUsername === profile?.username
+                ? 1
+                : 0;
         });
+        setMessageCount(count);
+        setMessageNotifications(chatList);
+    }, [chatList, profile]);
+
+    useEffect(() => {
+        NotificationUtils.socketIOAnalyzeNotifications(profile, dispatch);
+        NotificationUtils.socketIONotification(
+            profile,
+            notifications,
+            setNotifications,
+            "header",
+            setNotificationCount
+        );
+        NotificationUtils.socketIOMessageNotification(
+            profile,
+            messageNotifications,
+            setMessageNotifications,
+            setMessageCount,
+            dispatch,
+            location
+        );
+    }, [profile, notifications, dispatch, location, messageNotifications]);
+
+    useEffect(() => {
+        FollowersUtils.socketIOBlockAndUnblock(
+            profile,
+            token,
+            setBlockedUsers,
+            dispatch
+        );
+    }, [dispatch, profile, token]);
+
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const handleSearchKeyPress = (event) => {
+        if (event.key === "Enter") {
+            navigate("/app/social/search", { state: { query: searchTerm } });
+        }
     };
 
     return (
@@ -270,39 +256,86 @@ const Header = () => {
                     className="header-nav-wrapper bg-secondary"
                     data-testid="header-wrapper"
                 >
+                    {isMessageActive && (
+                        <div ref={messageRef}>
+                            <MessageSidebar
+                                profile={profile}
+                                messageCount={messageCount}
+                                messageNotifications={messageNotifications}
+                                openChatPage={openChatPage}
+                            />
+                        </div>
+                    )}
+
                     {notificationDialogContent?.senderName && (
                         <NotificationPreview
                             title="Your post"
-                            entityId={notificationDialogContent?.entityId}
                             post={notificationDialogContent?.post}
                             imgUrl={notificationDialogContent?.imgUrl}
                             comment={notificationDialogContent?.comment}
                             reaction={notificationDialogContent?.reaction}
                             senderName={notificationDialogContent?.senderName}
                             secondButtonText="Close"
-                            secondBtnHandler={
-                                handleSetNotificationDialogContentToNull
-                            }
+                            secondBtnHandler={() => {
+                                setNotificationDialogContent({
+                                    post: "",
+                                    imgUrl: "",
+                                    comment: "",
+                                    reaction: "",
+                                    senderName: "",
+                                });
+                            }}
                         />
                     )}
-
-                    <div className="header-navbar grid grid-cols-5">
-                        <div className="col-span-1">
+                    <div className="header-navbar ">
+                        <div
+                            className="header-image"
+                            data-testid="header-image"
+                            onClick={() => {
+                                navigate("/app/social/streams");
+                                window.location.reload();
+                            }}
+                        >
                             <Logo />
                         </div>
+
                         {/* SEARCH */}
-                        <div className="col-span-3 flex justify-between items-center mx-10 gap-4">
-                            <span className="font-extrabold text-primary-black flex items-center">
-                                {upperCase(section)}
-                            </span>
-                            <SearchInputDesktop
-                                onClick={handleSearchKeyPress}
-                                searchTerm={searchTerm}
-                                setSearchTerm={setSearchTerm}
-                            />
+                        <div className="search-container">
+                            <div className="search">
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                    onKeyPress={handleSearchKeyPress}
+                                    name="text"
+                                    placeholder="Discover what you need..."
+                                    className="input"
+                                />
+                                {/* <img src={icons.search} alt="" /> */}
+                            </div>
                         </div>
 
-                        <ul className="header-nav w-full h-6 col-span-1 flex justify-end gap-4">
+                        <ul className="header-nav">
+                            {/* SEARCH MOBILE */}
+                            <li
+                                data-testid="settings-list-item"
+                                className="header-nav-item header-nav-item-search-mb"
+                            >
+                                <span
+                                    onClick={() =>
+                                        dispatch(setIsOpenSearchBar())
+                                    }
+                                    className="header-list-name"
+                                >
+                                    <img
+                                        src={icons.search}
+                                        className="header-list-icon"
+                                    />
+                                </span>
+                                <SearchButtonMb />
+                            </li>
                             {/* MESSAGE */}
                             <li
                                 data-testid="message-list-item"
@@ -315,31 +348,16 @@ const Header = () => {
                                     setIsSettingsActive(false);
                                 }}
                             >
-                                <span className="header-list-name relative group ">
+                                <span className="header-list-name">
                                     <img
-                                        src={assets.message}
-                                        className="h-7 w-7 group-hover:scale-110 duration-200"
+                                        src={mess}
+                                        className="header-list-icon"
                                     />
                                     {messageCount > 0 && (
                                         <span
-                                            className="bg-danger-dots dots group-hover:scale-110 duration-200"
+                                            className="bg-danger-dots dots"
                                             data-testid="messages-dots"
                                         ></span>
-                                    )}
-                                    {isMessageActive && (
-                                        <div
-                                            className="absolute top-8 right-0 z-50"
-                                            ref={messageRef}
-                                        >
-                                            <MessageSidebar
-                                                profile={profile}
-                                                messageCount={messageCount}
-                                                messageNotifications={
-                                                    messageNotifications
-                                                }
-                                                openChatPage={openChatPage}
-                                            />
-                                        </div>
                                     )}
                                 </span>
                                 &nbsp;
@@ -356,26 +374,32 @@ const Header = () => {
                                     setIsSettingsActive(false);
                                 }}
                             >
-                                <span className="header-list-name group relative">
+                                <span className="header-list-name">
                                     {notificationCount > 0 && (
                                         <span
-                                            className="bg-danger-dots dots group-hover:scale-110 duration-200"
+                                            className="bg-danger-dots dots"
                                             data-testid="notification-dots"
                                         >
                                             {notificationCount}
                                         </span>
                                     )}
                                     <img
-                                        src={assets.notification}
-                                        className="w-8 h-8 group-hover:scale-110 duration-200"
+                                        src={bell}
+                                        className="header-list-icon"
                                     />
-                                    {/* notification dropdown */}
-                                    {isNotificationActive && (
-                                        <div
-                                            className="absolute top-8 right-0 z-50"
-                                            ref={notificationRef}
-                                        >
+                                </span>
+                                {isNotificationActive && (
+                                    <ul
+                                        className="dropdown-ul"
+                                        ref={notificationRef}
+                                    >
+                                        <li className="dropdown-li">
                                             <Dropdown
+                                                height={300}
+                                                style={{
+                                                    right: "315px",
+                                                    top: "30px",
+                                                }}
                                                 data={notifications}
                                                 notificationCount={
                                                     notificationCount
@@ -385,28 +409,42 @@ const Header = () => {
                                                 onDeleteNotification={
                                                     onDeleteNotification
                                                 }
-                                                onNavigate={navigate}
-                                                setIsNotificationActive={
-                                                    setIsNotificationActive
-                                                }
                                             />
-                                        </div>
-                                    )}
+                                        </li>
+                                    </ul>
+                                )}
+                                &nbsp;
+                            </li>
+                            {/* NAV_SIDEBAR_OPEN */}
+                            <li
+                                id="sidebar-toggler"
+                                data-testid="header-nav-list-item"
+                                className="header-nav-item header-nav-item-sidebar"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    dispatch(setIsOpenSidebar());
+                                }}
+                            >
+                                <span className="header-list-name">
+                                    <img
+                                        src={icons.sidebarSelector}
+                                        className="header-list-icon"
+                                    />
                                 </span>
                             </li>
-
                             {/* PROFILE */}
                             <li
-                                data-testid="settings-list-item "
-                                className="header-nav-item relative"
+                                data-testid="settings-list-item"
+                                className="header-nav-item"
                                 onClick={() => {
                                     setIsSettingsActive(!isSettingsActive);
                                     setIsMessageActive(false);
                                     setIsNotificationActive(false);
                                 }}
                             >
-                                <div className="flex items-center relative">
-                                    <div className="size-[35px]">
+                                <div className="header-nav-item-profile">
+                                    <span className="header-list-name">
+                                        {" "}
                                         <Avatar
                                             name={profile?.username}
                                             bgColor={profile?.avatarColor}
@@ -415,37 +453,39 @@ const Header = () => {
                                             avatarSrc={profile?.profilePicture}
                                         />
                                         <IoIosArrowBack
-                                            className={`absolute bottom-[-5px] right-0 text-white bg-gray-700 bg-opacity-70 rounded-full ${
+                                            className={`${
                                                 isSettingsActive
-                                                    ? "transition-all -rotate-90 duration-100 ease-linear "
-                                                    : ""
+                                                    ? "header-nav-item-profile-arrow-down"
+                                                    : "header-nav-item-profile-arrow"
                                             } `}
                                         />
-                                        {isSettingsActive && (
-                                            <ul
-                                                className="absolute top-8 right-0 z-50"
-                                                ref={settingsRef}
-                                            >
-                                                <DropdownSetting
-                                                    isSettingsActive={
-                                                        isSettingsActive
-                                                    }
-                                                    avatarSrc={
-                                                        profile?.profilePicture
-                                                    }
-                                                    name={profile?.username}
-                                                    onLogout={onLogout}
-                                                    onNavigate={() =>
-                                                        ProfileUtils.navigateToProfile(
-                                                            profile,
-                                                            navigate
-                                                        )
-                                                    }
-                                                />
-                                            </ul>
-                                        )}
-                                    </div>
+                                    </span>
                                 </div>
+                                {isSettingsActive && (
+                                    <ul
+                                        className="dropdown-ul"
+                                        ref={settingsRef}
+                                    >
+                                        <li className="dropdown-li ">
+                                            <DropdownSetting
+                                                isSettingsActive={
+                                                    isSettingsActive
+                                                }
+                                                avatarSrc={
+                                                    profile?.profilePicture
+                                                }
+                                                name={profile?.username}
+                                                onLogout={onLogout}
+                                                onNavigate={() =>
+                                                    ProfileUtils.navigateToProfile(
+                                                        profile,
+                                                        navigate
+                                                    )
+                                                }
+                                            />
+                                        </li>
+                                    </ul>
+                                )}
                             </li>
                         </ul>
                     </div>

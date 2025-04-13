@@ -20,10 +20,7 @@ import Dialog from '@components/dialog/Dialog';
 import { postService } from '@services/api/post/post.service';
 import { ImageUtils } from '@services/utils/image-utils.service';
 import { Link } from 'react-router-dom';
-import { useCreateBlockNote } from "@blocknote/react";
-import { BlockNoteView } from "@blocknote/mantine";
-import "@blocknote/core/fonts/inter.css";
-import "@blocknote/mantine/style.css";
+
 const Post = ({ post, showIcons }) => {
   const { _id } = useSelector((state) => state.post);
   const { reactionsModalIsOpen, commentsModalIsOpen, deleteDialogIsOpen } = useSelector((state) => state.modal);
@@ -34,7 +31,7 @@ const Post = ({ post, showIcons }) => {
   const selectedPostCommentId = useLocalStorage('selectedPostCommentId', 'get');
   const selectedPostReactId = useLocalStorage('selectedPostReactId', 'get');
   const dispatch = useDispatch();
-  const editor = useCreateBlockNote();
+
   const getFeeling = (name) => {
     const feeling = find(feelingsList, (data) => data.name === name);
     return feeling?.image;
@@ -78,32 +75,17 @@ const Post = ({ post, showIcons }) => {
     const bgColor = await ImageUtils.getBackgroundImageColor(imageUrl);
     setBackgroundImageColor(bgColor);
   };
-  const loadEditor = async (text) => {
-    console.log("day la text", text);
-    const blocks = await editor.tryParseHTMLToBlocks(text);
-    console.log("day là bocls" , blocks);
-    editor.replaceBlocks(editor.document, blocks);
-  };
+
   useEffect(() => {
     getBackgroundImageColor(post);
-    console.log(post.post);
-    loadEditor(post.post || "");
   }, [post]);
 
   return (
     <>
-      {reactionsModalIsOpen && selectedPostReactId === post?._id && (
-        <ReactionsModal />
-      )}
-      {commentsModalIsOpen && selectedPostCommentId === post?._id && (
-        <CommentsModal />
-      )}
+      {reactionsModalIsOpen && selectedPostReactId === post?._id && <ReactionsModal />}
+      {commentsModalIsOpen && selectedPostCommentId === post?._id && <CommentsModal />}
       {showImageModal && (
-        <ImageModal
-          image={`${imageUrl}`}
-          onCancel={() => setShowImageModal(!showImageModal)}
-          showArrow={false}
-        />
+        <ImageModal image={`${imageUrl}`} onCancel={() => setShowImageModal(!showImageModal)} showArrow={false} />
       )}
       {deleteDialogIsOpen && (
         <Dialog
@@ -134,16 +116,8 @@ const Post = ({ post, showIcons }) => {
                 <h5 data-testid="username">
                   {post?.username}
                   {post?.feelings && (
-                    <div
-                      className="inline-display"
-                      data-testid="inline-display"
-                    >
-                      is feeling{" "}
-                      <img
-                        className="feeling-icon"
-                        src={`${getFeeling(post?.feelings)}`}
-                        alt=""
-                      />{" "}
+                    <div className="inline-display" data-testid="inline-display">
+                      is feeling <img className="feeling-icon" src={`${getFeeling(post?.feelings)}`} alt="" />{' '}
                       <div>{post?.feelings}</div>
                     </div>
                   )}
@@ -151,42 +125,28 @@ const Post = ({ post, showIcons }) => {
                 {showIcons && (
                   <div className="post-icons" data-testid="post-icons">
                     <FaPencilAlt className="pencil" onClick={openPostModal} />
-                    <FaRegTrashAlt
-                      className="trash"
-                      onClick={openDeleteDialog}
-                    />
+                    <FaRegTrashAlt className="trash" onClick={openDeleteDialog} />
                   </div>
                 )}
               </div>
 
               {post?.createdAt && (
                 <p className="time-text-display" data-testid="time-display">
-                  <Link
-                    to={`/app/social/post/${post._id}`}
-                    className="time-link"
-                  >
+                  <Link to={`/app/social/post/${post._id}`} className="time-link">
                     {timeAgo.transform(post?.createdAt)}
                   </Link>
                   &nbsp;&middot; {getPrivacy(post?.privacy)}
                 </p>
               )}
             </div>
-
             <hr />
-            <div
-              className="user-post"
-              style={{ marginTop: "1rem", borderBottom: "" }}
-            >
-              <BlockNoteView
-                editor={editor}
-                editable={false} 
-              />
-              {post?.post && post?.bgColor === "#ffffff" && (
+            <div className="user-post" style={{ marginTop: '1rem', borderBottom: '' }}>
+              {post?.post && post?.bgColor === '#ffffff' && (
                 <p className="post" data-testid="user-post">
                   {post?.post}
                 </p>
               )}
-              {post?.post && post?.bgColor !== "#ffffff" && (
+              {post?.post && post?.bgColor !== '#ffffff' && (
                 <div
                   data-testid="user-post-with-bg"
                   className="user-post-with-bg"
@@ -196,14 +156,11 @@ const Post = ({ post, showIcons }) => {
                 </div>
               )}
 
-              {post?.imgId && !post?.gifUrl && post.bgColor === "#ffffff" && (
+              {post?.imgId && !post?.gifUrl && post.bgColor === '#ffffff' && (
                 <div
                   data-testid="post-image"
                   className="image-display-flex"
-                  style={{
-                    height: "600px",
-                    backgroundColor: `${backgroundImageColor}`,
-                  }}
+                  style={{ height: '600px', backgroundColor: `${backgroundImageColor}` }}
                   onClick={() => {
                     setImageUrl(Utils.getImage(post.imgId, post.imgVersion));
                     setShowImageModal(!showImageModal);
@@ -211,18 +168,18 @@ const Post = ({ post, showIcons }) => {
                 >
                   <img
                     className="post-image"
-                    style={{ objectFit: "contain" }}
+                    style={{ objectFit: 'contain' }}
                     src={`${Utils.getImage(post.imgId, post.imgVersion)}`}
                     alt=""
                   />
                 </div>
               )}
 
-              {post?.videoId && post.bgColor === "#ffffff" && (
+              {post?.videoId && post.bgColor === '#ffffff' && (
                 <div
                   data-testid="post-image"
                   className="image-display-flex"
-                  style={{ height: "600px", backgroundColor: "#000000" }}
+                  style={{ height: '600px', backgroundColor: '#000000' }}
                 >
                   <video
                     width="100%"
@@ -234,29 +191,19 @@ const Post = ({ post, showIcons }) => {
                 </div>
               )}
 
-              {post?.gifUrl && post.bgColor === "#ffffff" && (
+              {post?.gifUrl && post.bgColor === '#ffffff' && (
                 <div
                   className="image-display-flex"
-                  style={{
-                    height: "600px",
-                    backgroundColor: `${backgroundImageColor}`,
-                  }}
+                  style={{ height: '600px', backgroundColor: `${backgroundImageColor}` }}
                   onClick={() => {
                     setImageUrl(post?.gifUrl);
                     setShowImageModal(!showImageModal);
                   }}
                 >
-                  <img
-                    className="post-image"
-                    style={{ objectFit: "contain" }}
-                    src={`${post?.gifUrl}`}
-                    alt=""
-                  />
+                  <img className="post-image" style={{ objectFit: 'contain' }} src={`${post?.gifUrl}`} alt="" />
                 </div>
               )}
-              {(post?.reactions.length > 0 || post?.commentsCount > 0) && (
-                <hr />
-              )}
+              {(post?.reactions.length > 0 || post?.commentsCount > 0) && <hr />}
               <PostCommentSection post={post} />
             </div>
           </div>

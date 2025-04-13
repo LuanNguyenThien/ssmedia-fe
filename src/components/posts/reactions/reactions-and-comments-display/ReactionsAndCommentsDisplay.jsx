@@ -68,45 +68,30 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
             {reactions.length > 0 &&
               reactions.map((reaction) => (
                 <div className="tooltip-container" key={reaction?.type}>
-                  {/* <img
+                  <img
                     data-testid="reaction-img"
                     className="reaction-img"
                     src={`${reactionsMap[reaction?.type]}`}
                     alt=""
                     onMouseEnter={getPostReactions}
-                  /> */}
-                  <div
-                    className="tooltip-container-text tooltip-container-bottom"
-                    data-testid="reaction-tooltip"
-                  >
+                  />
+                  <div className="tooltip-container-text tooltip-container-bottom" data-testid="reaction-tooltip">
                     <p className="title">
-                      <img
-                        className="title-img"
-                        src={`${reactionsMap[reaction?.type]}`}
-                        alt=""
-                      />
+                      <img className="title-img" src={`${reactionsMap[reaction?.type]}`} alt="" />
                       {reaction?.type.toUpperCase()}
                     </p>
                     <div className="likes-block-icons-list">
-                      {postReactions.length === 0 && (
-                        <FaSpinner className="circle-notch" />
-                      )}
+                      {postReactions.length === 0 && <FaSpinner className="circle-notch" />}
                       {postReactions.length && (
                         <>
                           {postReactions.slice(0, 19).map((postReaction) => (
                             <div key={Utils.generateString(10)}>
                               {postReaction?.type === reaction?.type && (
-                                <span key={postReaction?._id}>
-                                  {postReaction?.username}
-                                </span>
+                                <span key={postReaction?._id}>{postReaction?.username}</span>
                               )}
                             </div>
                           ))}
-                          {postReactions.length > 20 && (
-                            <span>
-                              and {postReactions.length - 20} others...
-                            </span>
-                          )}
+                          {postReactions.length > 20 && <span>and {postReactions.length - 20} others...</span>}
                         </>
                       )}
                     </div>
@@ -120,27 +105,16 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
             onMouseEnter={getPostReactions}
             onClick={() => openReactionsComponent()}
           >
-            {post.reactions["upvote"] > 0 && (
-              <>View {post.reactions["upvote"]} upvotes</>
-            )}
-            <div
-              className="tooltip-container-text tooltip-container-likes-bottom"
-              data-testid="tooltip-container"
-            >
+            {sumAllReactions(reactions)}
+            <div className="tooltip-container-text tooltip-container-likes-bottom" data-testid="tooltip-container">
               <div className="likes-block-icons-list">
-                {postReactions.length === 0 && (
-                  <FaSpinner className="circle-notch" />
-                )}
+                {postReactions.length === 0 && <FaSpinner className="circle-notch" />}
                 {postReactions.length && (
                   <>
                     {postReactions.slice(0, 19).map((reaction) => (
-                      <span key={Utils.generateString(10)}>
-                        {reaction?.username}
-                      </span>
+                      <span key={Utils.generateString(10)}>{reaction?.username}</span>
                     ))}
-                    {postReactions.length > 20 && (
-                      <span>and {postReactions.length - 20} others...</span>
-                    )}
+                    {postReactions.length > 20 && <span>and {postReactions.length - 20} others...</span>}
                   </>
                 )}
               </div>
@@ -155,26 +129,18 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
       >
         {post?.commentsCount > 0 && (
           <span onMouseEnter={getPostCommentsNames} data-testid="comment-count">
-            {Utils.shortenLargeNumbers(post?.commentsCount)}{" "}
-            {`${post?.commentsCount === 1 ? "Comment" : "Comments"}`}
+            {Utils.shortenLargeNumbers(post?.commentsCount)} {`${post?.commentsCount === 1 ? 'Comment' : 'Comments'}`}
           </span>
         )}
-        <div
-          className="tooltip-container-text tooltip-container-comments-bottom"
-          data-testid="comment-tooltip"
-        >
+        <div className="tooltip-container-text tooltip-container-comments-bottom" data-testid="comment-tooltip">
           <div className="likes-block-icons-list">
-            {postCommentNames.length === 0 && (
-              <FaSpinner className="circle-notch" />
-            )}
+            {postCommentNames.length === 0 && <FaSpinner className="circle-notch" />}
             {postCommentNames.length && (
               <>
                 {postCommentNames.slice(0, 19).map((names) => (
                   <span key={Utils.generateString(10)}>{names}</span>
                 ))}
-                {postCommentNames.length > 20 && (
-                  <span>and {postCommentNames.length - 20} others...</span>
-                )}
+                {postCommentNames.length > 20 && <span>and {postCommentNames.length - 20} others...</span>}
               </>
             )}
           </div>

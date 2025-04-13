@@ -31,10 +31,7 @@ const Suggestions = () => {
   }, [suggestions, users]);
 
   return (
-    <div
-      className="suggestions-list-container"
-      data-testid="suggestions-container"
-    >
+    <div className="suggestions-list-container" data-testid="suggestions-container">
       <div className="suggestions-header">
         <div className="title-text">Suggestions</div>
       </div>
@@ -57,32 +54,18 @@ const Suggestions = () => {
               />
               <div className="title-text">{user?.username}</div>
               <div className="add-icon">
-                <button
-                  className="bg-transparent border border-black text-black px-4 py-1 text-sm rounded-md cursor-pointer transition-all duration-300 hover:border-gray-500 hover:text-gray-500"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Ngừng sự kiện click từ lan truyền ra ngoài
-                    followUser(user);
-                  }}
-                  disabled={false}
-                >
-                  Follow
-                </button> 
-                {/* <Button
+                <Button
                   label="Follow"
                   className="button follow"
-                  
                   disabled={false}
-                  handleClick={() => { e.stopPropagation(), followUser(user);}}
-                /> */}
+                  handleClick={() => followUser(user)}
+                />
               </div>
             </div>
           ))}
         </div>
         {users.length > 8 && (
-          <div
-            className="view-more"
-            onClick={() => navigate("/app/social/people")}
-          >
+          <div className="view-more" onClick={() => navigate('/app/social/people')}>
             View More
           </div>
         )}

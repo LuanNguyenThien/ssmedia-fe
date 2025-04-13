@@ -1,28 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 const useDetectOutsideClick = (ref, initialState) => {
-    const [isActive, setIsActive] = useState(initialState);
+  const [isActive, setIsActive] = useState(initialState);
 
-    useEffect(() => {
-        const onClick = (event) => {
-            if (
-                ref.current !== null &&
-                !ref.current.contains(event.target) &&
-                !event.target.closest(".header-nav-item")
-            ) {
-                setIsActive(!isActive);
-            }
-        };
+  useEffect(() => {
+    const onClick = (event) => {
+      if (ref.current !== null && !ref.current.contains(event.target) && !event.target.closest('.header-nav-item')) {
+        setIsActive(!isActive);
+      }
+    };
 
-        if (isActive) {
-            window.addEventListener("mousedown", onClick);
-        }
+    if (isActive) {
+      window.addEventListener('mousedown', onClick);
+    }
 
-        return () => {
-            window.removeEventListener("mousedown", onClick);
-        };
-    }, [isActive, ref]);
+    return () => {
+      window.removeEventListener('mousedown', onClick);
+    };
+  }, [isActive, ref]);
 
-    return [isActive, setIsActive];
+  return [isActive, setIsActive];
 };
 export default useDetectOutsideClick;

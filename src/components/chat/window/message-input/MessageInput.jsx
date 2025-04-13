@@ -1,265 +1,179 @@
-import PropTypes from "prop-types";
-import { icons } from "@assets/assets";
-import loadable from "@loadable/component";
-import "@components/chat/window/message-input/MessageInput.scss";
-import { useEffect, useRef, useState } from "react";
-import { ImageUtils } from "@services/utils/image-utils.service";
-import Input from "@components/input/Input";
-import { DynamicSVG } from "@components/sidebar/components/SidebarItems";
-import GiphyContainer from "@components/chat/giphy-container/GiphyContainer";
-import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
-import ImagePreview from "@components/chat/image-preview/ImagePreview";
+import Button from '@components/button/Button';
+import Input from '@components/input/Input';
+import PropTypes from 'prop-types';
+import { FaPaperPlane } from 'react-icons/fa';
+import gif from '@assets/images/gif.png';
+import photo from '@assets/images/photo.png';
+import feeling from '@assets/images/feeling.png';
 
-const EmojiPickerComponent = loadable(() => import("./EmojiPicker"), {
-    fallback: (
-        <div
-            style={{ width: "352px", height: "447px", background: "white" }}
-            className="flex items-center justify-center rounded-[30px]"
-            id="loading"
-        >
-            Loading...
-        </div>
-    ),
+import {icons} from '@assets/assets';
+import loadable from '@loadable/component';
+import '@components/chat/window/message-input/MessageInput.scss';
+import { useEffect, useRef, useState } from 'react';
+import GiphyContainer from '@components/chat/giphy-container/GiphyContainer';
+import ImagePreview from '@components/chat/image-preview/ImagePreview';
+import { ImageUtils } from '@services/utils/image-utils.service';
+
+const EmojiPickerComponent = loadable(() => import('./EmojiPicker'), {
+  fallback: <p id="loading">Loading...</p>
 });
 
 const MessageInput = ({ setChatMessage }) => {
-    let [message, setMessage] = useState("");
+  let [message, setMessage] = useState('');
+  const [showEmojiContainer, setShowEmojiContainer] = useState(false);
+  const [showGifContainer, setShowGifContainer] = useState(false);
+  const [showImagePreview, setShowImagePreview] = useState(false);
+  const [file, setFile] = useState();
+  const [base64File, setBase64File] = useState('');
+  const [hasFocus, setHasFocus] = useState(false);
+  const fileInputRef = useRef();
+  const messageInputRef = useRef();
 
-    //handle container click outside
-    const fileInputRef = useRef();
-    const messageInputRef = useRef();
-    const emojiRef = useRef(null);
-    const gifRef = useRef(null);
-    const inputContainerRef = useRef(null);
+  const handleClick = (event) => {
+    event.preventDefault();
+    message = message || 'Sent an Image';
+    setChatMessage(message.replace(/ +(?= )/g, ''), '', base64File);
+    setMessage('');
+    reset();
+  };
 
-    const [showEmojiContainer, setShowEmojiContainer] = useState(false);
-    const [showGifContainer, setShowGifContainer] = useState(false);
-    useHandleOutsideClick(emojiRef, setShowEmojiContainer);
-    useHandleOutsideClick(gifRef, setShowGifContainer);
-    useHandleOutsideClick(inputContainerRef, () => setHasFocus(false));
+  const handleGiphyClick = (url) => {
+    setChatMessage('Sent a GIF', url, '');
+    reset();
+  };
 
-    const [showImagePreview, setShowImagePreview] = useState(false);
+  const addToPreview = async (file) => {
+    let type;
+    if (file.type.startsWith('image/')) {
+      type = 'image';
+    } else if (file.type.startsWith('video/')) {
+      type = 'video';
+    } else {
+      // Nếu không phải là hình ảnh hoặc video, có thể xử lý lỗi ở đây
+      window.alert(`File ${file.name} is not a valid image or video.`);
+      return;
+    }
+    ImageUtils.checkFile(file, type);
+    setFile(URL.createObjectURL(file));
+    const result = await ImageUtils.readAsBase64(file);
+    setBase64File(result);
+    setShowImagePreview(!showImagePreview);
+    setShowEmojiContainer(false);
+    setShowGifContainer(false);
+  };
 
-    //focus on input
-    const [hasFocus, setHasFocus] = useState(false);
+  const fileInputClicked = () => {
+    fileInputRef.current.click();
+  };
 
-    //handle image files
-    const [file, setFile] = useState();
-    const [base64File, setBase64File] = useState("");
+  const reset = () => {
+    setBase64File('');
+    setShowImagePreview(false);
+    setShowEmojiContainer(false);
+    setShowGifContainer(false);
+    setFile('');
+  };
 
-    const handleClick = (event) => {
-        if (message.trim() === "" && base64File === "") {
-            return;
-        }
-        event.preventDefault();
-        message = message || "Sent an Image";
-        setChatMessage(message.replace(/ +(?= )/g, ""), "", base64File);
-        setMessage("");
-        reset();
-    };
+  useEffect(() => {
+    if (messageInputRef?.current) {
+      messageInputRef.current.focus();
+    }
+  }, [setChatMessage]);
 
-    const handleGiphyClick = (url) => {
-        setChatMessage("Sent a GIF", url, "");
-        reset();
-    };
+  return (
+    <>
+      {showEmojiContainer && (
+        <EmojiPickerComponent
+          onEmojiClick={(event, eventObject) => {
+            setMessage((text) => (text += ` ${eventObject.emoji}`));
+          }}
+          pickerStyle={{ width: '352px', height: '447px' }}
+        />
+      )}
+      {showGifContainer && <GiphyContainer handleGiphyClick={handleGiphyClick} />}
+      <div className="chat-inputarea" data-testid="chat-inputarea">
+        {showImagePreview && (
+          <ImagePreview
+            image={file}
+            onRemoveImage={() => {
+              setFile('');
+              setBase64File('');
+              setShowImagePreview(!showImagePreview);
+            }}
+          />
+        )}
 
-    const addToPreview = async (file) => {
-        let type;
-        if (file.type.startsWith("image/")) {
-            type = "image";
-        } else if (file.type.startsWith("video/")) {
-            type = "video";
-        } else {
-            // Nếu không phải là hình ảnh hoặc video, có thể xử lý lỗi ở đây
-            window.alert(`File ${file.name} is not a valid image or video.`);
-            return;
-        }
-        ImageUtils.checkFile(file, type);
-        setFile(URL.createObjectURL(file));
-        const result = await ImageUtils.readAsBase64(file);
-        setBase64File(result);
-        setShowImagePreview(!showImagePreview);
-        setShowEmojiContainer(false);
-        setShowGifContainer(false);
-    };
 
-    const fileInputClicked = () => {
-        fileInputRef.current.click();
-    };
-
-    const reset = () => {
-        setBase64File("");
-        setShowImagePreview(false);
-        setShowEmojiContainer(false);
-        setShowGifContainer(false);
-        setFile("");
-    };
-
-    useEffect(() => {
-        if (file === "" || base64File === "") {
-            setShowImagePreview(false);
-        } else {
-            setShowImagePreview(true);
-        }
-    }, [file, base64File]);
-
-    useEffect(() => {
-        if (messageInputRef?.current) {
-            messageInputRef.current.focus();
-        }
-    }, [setChatMessage]);
-
-    return (
-        <>
-            {showEmojiContainer && (
-                <div
-                    onClick={(e) => e.stopPropagation()}
-                    className="absolute bottom-0 left-5 z-10"
-                    style={{ width: "352px", height: "447px" }}
-                >
-                    <EmojiPickerComponent
-                        onEmojiClick={(emojiObject) => {
-                            setMessage(
-                                (text) => text + ` ${emojiObject.emoji}`
-                            );
-                        }}
-                    />
-                </div>
-            )}
-
-            {showGifContainer && (
-                <GiphyContainer handleGiphyClick={handleGiphyClick} />
-            )}
+        {/* Bottom chat input area */}
+        <form onSubmit={handleClick}>
+          <div className="chat-list" style={{ borderColor: `${hasFocus ? '#50b5ff' : '#f1f0f0'}` }}>
             <div
-                className={`chat-inputarea size-full`}
-                data-testid="chat-inputarea"
-                ref={inputContainerRef}
+              className="chat-list-item"
+              onClick={() => {
+                fileInputClicked();
+                setShowEmojiContainer(false);
+                setShowGifContainer(false);
+              }}
             >
-                {showImagePreview && (
-                    <ImagePreview
-                        image={file}
-                        onRemoveImage={() => {
-                            setFile("");
-                            setBase64File("");
-                            setShowImagePreview(!showImagePreview);
-                        }}
-                    />
-                )}
-
-                {/* Bottom chat input area */}
-                <form
-                    onSubmit={handleClick}
-                    onFocus={() => setHasFocus(true)}
-                    onBlur={() => setHasFocus(false)}
-                >
-                    <div
-                        className={`size-full flex rounded-[30px] items-center justify-between py-4 gap-4 ${
-                            hasFocus
-                                ? "bg-background-blur border-4 border-primary-white transition-all duration-300 px-4"
-                                : ""
-                        }`}
-                    >
-                        <Input
-                            ref={messageInputRef}
-                            id="message"
-                            name="message"
-                            type="text"
-                            value={message}
-                            className="chat-input truncate !pl-6"
-                            labelText=""
-                            placeholder="Enter your message..."
-                            handleChange={(event) =>
-                                setMessage(event.target.value)
-                            }
-                        />
-                        <div className="chat-list gap-0 sm:gap-2">
-                            <div
-                                onMouseDown={(e) => e.preventDefault()}
-                                className="chat-list-item"
-                                onClick={() => {
-                                    fileInputClicked();
-                                    setHasFocus(true);
-                                    setShowEmojiContainer(false);
-                                    setShowGifContainer(false);
-                                }}
-                            >
-                                <Input
-                                    ref={fileInputRef}
-                                    id="image"
-                                    name="image"
-                                    type="file"
-                                    className="file-input"
-                                    placeholder="Select file"
-                                    onClick={() => {
-                                        if (fileInputRef.current) {
-                                            fileInputRef.current.value = null;
-                                        }
-                                    }}
-                                    handleChange={(event) =>
-                                        addToPreview(event.target.files[0])
-                                    }
-                                />
-                                <DynamicSVG
-                                    svgData={icons.picture}
-                                    className={"size-6"}
-                                />
-                            </div>
-                            <div
-                                onMouseDown={(e) => e.preventDefault()}
-                                ref={gifRef}
-                                className="chat-list-item"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    setHasFocus(true);
-                                    setShowGifContainer(!showGifContainer);
-                                    setShowEmojiContainer(false);
-                                    setShowImagePreview(false);
-                                }}
-                            >
-                                <DynamicSVG
-                                    svgData={icons.gif}
-                                    className={"size-6"}
-                                />
-                            </div>
-                            <div
-                                onMouseDown={(e) => e.preventDefault()}
-                                ref={emojiRef}
-                                className="chat-list-item"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    setHasFocus(true);
-                                    setShowEmojiContainer(!showEmojiContainer);
-                                    setShowGifContainer(false);
-                                    setShowImagePreview(false);
-                                }}
-                            >
-                                <DynamicSVG
-                                    svgData={icons.feeling}
-                                    className={"size-6"}
-                                />
-                            </div>
-                        </div>
-
-                        <div
-                            onClick={handleClick}
-                            className="w-8 h-8 px-6 py-2 bg-primary flex items-center justify-center rounded-xl text-primary-white hover:bg-primary/70"
-                        >
-                            <DynamicSVG
-                                svgData={icons.send}
-                                className={"size-6"}
-                            />
-                        </div>
-                    </div>
-                </form>
+              <Input
+                ref={fileInputRef}
+                id="image"
+                name="image"
+                type="file"
+                className="file-input"
+                placeholder="Select file"
+                onClick={() => {
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = null;
+                  }
+                }}
+                handleChange={(event) => addToPreview(event.target.files[0])}
+              />
+              <img src={icons.picture} alt="" />
             </div>
-        </>
-    );
+            <div
+              className="chat-list-item"
+              onClick={() => {
+                setShowGifContainer(!showGifContainer);
+                setShowEmojiContainer(false);
+                setShowImagePreview(false);
+              }}
+            >
+              <img src={icons.gif} alt="" />
+            </div>
+            <div
+              className="chat-list-item"
+              onClick={() => {
+                setShowEmojiContainer(!showEmojiContainer);
+                setShowGifContainer(false);
+                setShowImagePreview(false);
+              }}
+            >
+              <img src={icons.feeling} alt="" />
+            </div>
+          </div>
+          <Input
+            ref={messageInputRef}
+            id="message"
+            name="message"
+            type="text"
+            value={message}
+            className="chat-input"
+            labelText=""
+            placeholder="Enter your message..."
+            onFocus={() => setHasFocus(true)}
+            onBlur={() => setHasFocus(false)}
+            handleChange={(event) => setMessage(event.target.value)}
+          />
+          <Button type="submit" label={<FaPaperPlane />} className="paper" disabled={!message && !showImagePreview} />
+        </form>
+      </div>
+    </>
+  );
 };
 
 MessageInput.propTypes = {
-    setChatMessage: PropTypes.func,
+  setChatMessage: PropTypes.func
 };
 
 export default MessageInput;
