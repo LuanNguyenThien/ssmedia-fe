@@ -28,7 +28,6 @@ import NotificationPermissionPrompt from "@components/call-noti/NotificationPerm
 
 // components
 import DropdownSetting from "@components/header/components/dropdown/DropdownSetting";
-import SearchButtonMb from "@components/header/components/searchButton/SearchButtonMb";
 import Logo from "./components/logo/Logo";
 import SearchInputDesktop from "./components/search-input.jsx/seach-input-desktop";
 import Dropdown from "@components/dropdown/Dropdown";
@@ -63,6 +62,7 @@ const Header = () => {
         comment: "",
         reaction: "",
         senderName: "",
+        entityId: "",
     });
     const [isNotificationActive, setIsNotificationActive] =
         useDetectOutsideClick(notificationRef, false);
@@ -148,13 +148,21 @@ const Header = () => {
             );
         }
     };
-    const onMarkAsRead = async (notification) => {
+    const onMarkAsRead = async ({ notification, isMarkAsReadAll = false }) => {
         try {
-            NotificationUtils.markMessageAsRead(
-                notification?._id,
-                notification,
-                setNotificationDialogContent
-            );
+            console.log("notification", notification);
+            if (isMarkAsReadAll) {
+                NotificationUtils.markMessageAsRead(
+                    notification?._id,
+                    notification
+                );
+            } else {
+                NotificationUtils.markMessageAsRead(
+                    notification?._id,
+                    notification,
+                    setNotificationDialogContent
+                );
+            }
         } catch (error) {
             Utils.dispatchNotification(
                 error.response.data.message,
@@ -201,7 +209,7 @@ const Header = () => {
                 notification?.receiverUsername !== profile?.username
                     ? notification?.receiverUsername
                     : notification?.senderUsername;
-            if(!notification.isGroupChat){        
+            if (!notification.isGroupChat) {
                 await chatService.addChatUsers({
                     userOne: profile?.username,
                     userTwo: userTwoName,
@@ -245,6 +253,16 @@ const Header = () => {
         navigate("/app/social/search", { state: { query: searchTerm } });
     };
 
+    const handleSetNotificationDialogContentToNull = () => {
+        setNotificationDialogContent({
+            post: "",
+            imgUrl: "",
+            comment: "",
+            reaction: "",
+            senderName: "",
+        });
+    };
+
     return (
         <>
             {!profile ? (
@@ -258,32 +276,20 @@ const Header = () => {
                         className="header-nav-wrapper bg-secondary"
                         data-testid="header-wrapper"
                     >
-                        {/* popups */}
-                        {/* message  */}
-
                         {/* notifications */}
-                        
                         {notificationDialogContent?.senderName && (
                             <NotificationPreview
                                 title="Your post"
+                                entityId={notificationDialogContent?.entityId}
                                 post={notificationDialogContent?.post}
                                 imgUrl={notificationDialogContent?.imgUrl}
                                 comment={notificationDialogContent?.comment}
                                 reaction={notificationDialogContent?.reaction}
                                 senderName={notificationDialogContent?.senderName}
                                 secondButtonText="Close"
-                                secondBtnHandler={() => {
-                                    setNotificationDialogContent({
-                                        post: "",
-                                        imgUrl: "",
-                                        comment: "",
-                                        reaction: "",
-                                        senderName: "",
-                                    });
-                                }}
+                                secondBtnHandler={handleSetNotificationDialogContentToNull}
                             />
                         )}
-
                         <div className="header-navbar grid grid-cols-5">
                             <div className="col-span-1">
                                 <Logo />
@@ -299,7 +305,6 @@ const Header = () => {
                                     setSearchTerm={setSearchTerm}
                                 />
                             </div>
-
                             <ul className="header-nav w-full h-6 col-span-1 flex justify-end gap-4">
                                 {/* MESSAGE */}
                                 <li
@@ -375,20 +380,15 @@ const Header = () => {
                                             >
                                                 <Dropdown
                                                     data={notifications}
-                                                    notificationCount={
-                                                        notificationCount
-                                                    }
+                                                    notificationCount={notificationCount}
                                                     title="Notifications"
                                                     onMarkAsRead={onMarkAsRead}
-                                                    onDeleteNotification={
-                                                        onDeleteNotification
-                                                    }
+                                                    onDeleteNotification={onDeleteNotification}
                                                 />
                                             </ul>
                                         )}
                                     </span>
                                 </li>
-
                                 {/* PROFILE */}
                                 <li
                                     data-testid="settings-list-item "
@@ -421,12 +421,8 @@ const Header = () => {
                                                     ref={settingsRef}
                                                 >
                                                     <DropdownSetting
-                                                        isSettingsActive={
-                                                            isSettingsActive
-                                                        }
-                                                        avatarSrc={
-                                                            profile?.profilePicture
-                                                        }
+                                                        isSettingsActive={isSettingsActive}
+                                                        avatarSrc={profile?.profilePicture}
                                                         name={profile?.username}
                                                         onLogout={onLogout}
                                                         onNavigate={() =>

@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import Avatar from "@components/avatar/Avatar";
 import { useDispatch, useSelector } from "react-redux";
 import "@components/chat/window/ChatWindow.scss";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Utils } from "@services/utils/utils.service";
 import { userService } from "@services/api/user/user.service";
@@ -16,6 +16,8 @@ import MessageDisplay from "./message-display/MessageDisplay";
 import MessageInput from "./message-input/MessageInput";
 import LoadingSpinner from "@components/state/loading";
 import VideoCallWindow from "@pages/callwindow/VideoCallWindow";
+import FirstChatScreen from "./FirstChatScreen/FirstChatScreen";
+import LoadingMessage from "@/components/state/loading-message/LoadingMessage";
 
 const ChatWindow = () => {
     const { profile } = useSelector((state) => state.user);
@@ -27,204 +29,37 @@ const ChatWindow = () => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [searchParams] = useSearchParams();
     const [rendered, setRendered] = useState(false);
+    const [isMessagesLoading, setIsMessagesLoading] = useState(true);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    // Debug counter - consider removing in production
+    const count = useRef(0);
+    console.log("chatMessages", count.current++);
 
     //loading state
     const [isSending, setIsSending] = useState(false);
 
-    // const initiateCall = async (callType, receiverId) => {
-    //     const callData = {
-    //         callerId: profile.userId,
-    //         receiverId,
-    //         callType,
-    //         isReceivingCall: false,
-    //     };
+    // Memoized values
+    const isGroup = useMemo(
+        () => searchParams.get("isGroup") === "true",
+        [searchParams]
+    );
+    const searchParamsId = useMemo(
+        () => searchParams.get("id"),
+        [searchParams]
+    );
+    const searchParamsUsername = useMemo(
+        () => searchParams.get("username"),
+        [searchParams]
+    );
 
-    //     const cssContent = `
-    //         .video-call-container {
-    //             display: flex;
-    //             flex-direction: column;
-    //             height: 100vh;
-    //             width: 100%;
-    //             background-color: #1e293b;
-    //             color: white;
-    //             overflow: hidden;
-    //             position: relative;
-            
-    //             .video-wrapper {
-    //             flex: 1;
-    //             display: flex;
-    //             position: relative;
-    //             background-color: #0f172a;
-    //             border-radius: 8px;
-    //             margin: 10px;
-    //             overflow: hidden;
-            
-    //             .remote-video {
-    //                 width: 100%;
-    //                 height: 100%;
-    //                 object-fit: cover;
-    //                 background-color: #000;
-    //             }
-            
-    //             .local-video {
-    //                 position: absolute;
-    //                 bottom: 20px;
-    //                 right: 20px;
-    //                 width: 25%;
-    //                 max-width: 200px;
-    //                 height: auto;
-    //                 border-radius: 8px;
-    //                 z-index: 2;
-    //                 border: 2px solid white;
-    //                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    //                 transition: all 0.3s ease;
-            
-    //                 &:hover {
-    //                 transform: scale(1.05);
-    //                 }
-    //             }
-            
-    //             .call-status {
-    //                 position: absolute;
-    //                 top: 20px;
-    //                 left: 20px;
-    //                 background-color: rgba(0, 0, 0, 0.5);
-    //                 padding: 8px 16px;
-    //                 border-radius: 20px;
-    //                 font-size: 14px;
-    //                 display: flex;
-    //                 align-items: center;
-    //                 gap: 8px;
-            
-    //                 .status-dot {
-    //                 width: 10px;
-    //                 height: 10px;
-    //                 border-radius: 50%;
-    //                 background-color: #10b981;
-            
-    //                 &.ringing {
-    //                     background-color: #f59e0b;
-    //                     animation: pulse 1.5s infinite;
-    //                 }
-    //                 }
-    //             }
-    //             }
-            
-    //             .controls {
-    //             display: flex;
-    //             justify-content: center;
-    //             gap: 20px;
-    //             padding: 20px;
-    //             background-color: rgba(30, 41, 59, 0.8);
-    //             z-index: 10;
-            
-    //             .control-button {
-    //                 display: flex;
-    //                 flex-direction: column;
-    //                 align-items: center;
-    //                 justify-content: center;
-    //                 width: 60px;
-    //                 height: 60px;
-    //                 border-radius: 50%;
-    //                 background-color: #334155;
-    //                 color: white;
-    //                 border: none;
-    //                 cursor: pointer;
-    //                 transition: all 0.2s ease;
-    //                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            
-    //                 &:hover {
-    //                 transform: scale(1.1);
-    //                 background-color: #3b82f6;
-    //                 }
-            
-    //                 &.end-call {
-    //                 background-color: #ef4444;
-            
-    //                 &:hover {
-    //                     background-color: #dc2626;
-    //                     transform: scale(1.1);
-    //                 }
-    //                 }
-            
-    //                 svg {
-    //                 width: 24px;
-    //                 height: 24px;
-    //                 }
-            
-    //                 span {
-    //                 margin-top: 4px;
-    //                 font-size: 12px;
-    //                 }
-    //             }
-    //             }
-            
-    //             .caller-info {
-    //             position: absolute;
-    //             top: 50%;
-    //             left: 50%;
-    //             transform: translate(-50%, -50%);
-    //             text-align: center;
-    //             z-index: 1;
-            
-    //             .caller-name {
-    //                 font-size: 24px;
-    //                 margin-bottom: 10px;
-    //             }
-            
-    //             .call-type {
-    //                 font-size: 16px;
-    //                 color: #94a3b8;
-    //             }
-    //             }
-            
-    //             @keyframes pulse {
-    //             0% {
-    //                 opacity: 1;
-    //             }
-    //             50% {
-    //                 opacity: 0.3;
-    //             }
-    //             100% {
-    //                 opacity: 1;
-    //             }
-    //             }
-    //         }
-    //     `;
-    
-    //     const callWindow = window.open(
-    //         "",
-    //         "_blank",
-    //         "width=800,height=600,top=100,left=100"
-    //     );
-    
-    //     callWindow.document.title = callType === "video" ? "Video Call" : "Voice Call";
-    //     callWindow.document.head.innerHTML = `<style>${cssContent}</style>`;
-    //     callWindow.document.body.innerHTML = "<div id='call-root'></div>";
-    
-    //     try {
-    //         // Gọi getUserMedia trong ngữ cảnh của cửa sổ mới
-    //         const stream = await callWindow.navigator.mediaDevices.getUserMedia({
-    //             video: callType === "video",
-    //             audio: true,
-    //         });
-    
-    //         // Render React component sau khi lấy được stream
-    //         const root = createRoot(callWindow.document.getElementById("call-root"));
-    //         root.render(
-    //             <VideoCallWindow
-    //                 callData={callData}
-    //                 stream={stream} // Truyền stream vào component
-    //                 onClose={() => callWindow.close()}
-    //             />
-    //         );
-    //     } catch (error) {
-    //         console.error("Error accessing media devices:", error);
-    //         callWindow.close();
-    //     }
-    // };
+    const isReceiverOnline = useMemo(() => {
+        return Utils.checkIfUserIsOnline(
+            receiver?.username || receiver?.name,
+            onlineUsers
+        );
+    }, [receiver, onlineUsers]);
 
     const initiateCall = async (callType, receiverId) => {
         const callData = {
@@ -272,17 +107,20 @@ const ChatWindow = () => {
           console.error("Error accessing media devices:", error);
           ChatUtils.callWindow.close();
         }
-      };
+    };
 
     const getChatMessages = useCallback(
         async (receiverId, isGroup) => {
+            setIsMessagesLoading(true);
             try {
-                const response = await chatService.getChatMessages(receiverId, isGroup);
+                const response = await chatService.getChatMessages(
+                    receiverId,
+                    isGroup
+                );
                 ChatUtils.privateChatMessages = [...response.data.messages];
                 if (isGroup === "true") {
                     ChatUtils.conversationId = receiverId;
-                }
-                else if (response.data.messages.length > 0) {
+                } else if (response.data.messages.length > 0) {
                     ChatUtils.conversationId =
                         ChatUtils.privateChatMessages[0]?.conversationId;
                 } else {
@@ -297,30 +135,32 @@ const ChatWindow = () => {
                     "error",
                     dispatch
                 );
+            } finally {
+                setIsMessagesLoading(false);
             }
         },
         [dispatch]
     );
 
     const getNewUserMessages = useCallback(() => {
-        if (searchParams.get("id") && searchParams.get("username")) {
+        if (searchParamsId && searchParamsUsername) {
             setConversationId("");
             setChatMessages([]);
-            getChatMessages(searchParams.get("id"), searchParams.get("isGroup"));
+            getChatMessages(searchParamsId, isGroup);
         }
-    }, [getChatMessages, searchParams]);
+    }, [getChatMessages, searchParamsId, searchParamsUsername, isGroup]);
 
     const getUserProfileByUserId = useCallback(async () => {
         try {
-            if(searchParams.get("id") && searchParams.get("isGroup") === "true") {
+            if (searchParamsId && isGroup) {
                 const response = await chatService.getGroupChatById(
-                    searchParams.get("id")
+                    searchParamsId
                 );
                 setReceiver(response.data.group);
                 ChatUtils.joinRoomEvent(response.data.group, profile);
-            } else {
+            } else if (searchParamsId) {
                 const response = await userService.getUserProfileByUserId(
-                    searchParams.get("id")
+                    searchParamsId
                 );
                 setReceiver(response.data.user);
                 ChatUtils.joinRoomEvent(response.data.user, profile);
@@ -332,96 +172,112 @@ const ChatWindow = () => {
                 dispatch
             );
         }
-    }, [dispatch, profile, searchParams]);
+    }, [dispatch, profile, searchParamsId, isGroup]);
 
-    const sendChatMessage = async (message, gifUrl, selectedImage) => {
-        try {
-            setIsSending(true);
-            const checkUserOne = some(
-                ChatUtils.chatUsers,
-                (user) =>
-                    user?.userOne === profile?.username &&
-                    user?.userTwo === receiver?.username
-            );
-            const checkUserTwo = some(
-                ChatUtils.chatUsers,
-                (user) =>
-                    user?.userOne === receiver?.username &&
-                    user?.userTwo === profile?.username
-            );
-            const messageData = ChatUtils.messageData({
-                receiver: searchParams.get("isGroup") === "true" ? undefined : receiver,
-                conversationId,
-                message,
-                searchParamsId: searchParams.get("id"),
-                chatMessages,
-                gifUrl,
-                selectedImage,
-                isRead: checkUserOne && checkUserTwo,
-                isGroupChat: searchParams.get("isGroup") === "true",
-                groupId: searchParams.get("isGroup") === "true" ? searchParams.get("id") : undefined,
-            });
-            await chatService.saveChatMessage(messageData);
-            setIsSending(false);
-        } catch (error) {
-            Utils.dispatchNotification(
-                error.response.data.message,
-                "error",
-                dispatch
-            );
-            setIsSending(false);
-        }
-    };
+    const sendChatMessage = useCallback(
+        async (message, gifUrl, selectedImage) => {
+            try {
+                setIsSending(true);
+                const checkUserOne = some(
+                    ChatUtils.chatUsers,
+                    (user) =>
+                        user?.userOne === profile?.username &&
+                        user?.userTwo === receiver?.username
+                );
+                const checkUserTwo = some(
+                    ChatUtils.chatUsers,
+                    (user) =>
+                        user?.userOne === receiver?.username &&
+                        user?.userTwo === profile?.username
+                );
+                const messageData = ChatUtils.messageData({
+                    receiver: isGroup ? undefined : receiver,
+                    conversationId,
+                    message,
+                    searchParamsId,
+                    chatMessages,
+                    gifUrl,
+                    selectedImage,
+                    isRead: checkUserOne && checkUserTwo,
+                    isGroupChat: isGroup,
+                    groupId: isGroup ? searchParamsId : undefined,
+                });
+                await chatService.saveChatMessage(messageData);
+            } catch (error) {
+                Utils.dispatchNotification(
+                    error.response.data.message,
+                    "error",
+                    dispatch
+                );
+            } finally {
+                setIsSending(false);
+            }
+        },
+        [
+            profile,
+            receiver,
+            conversationId,
+            searchParamsId,
+            chatMessages,
+            dispatch,
+            isGroup,
+        ]
+    );
 
-    const updateMessageReaction = async (body) => {
-        try {
-            await chatService.updateMessageReaction(body);
-        } catch (error) {
-            Utils.dispatchNotification(
-                error.response.data.message,
-                "error",
-                dispatch
-            );
-        }
-    };
+    const updateMessageReaction = useCallback(
+        async (body) => {
+            try {
+                await chatService.updateMessageReaction(body);
+            } catch (error) {
+                Utils.dispatchNotification(
+                    error.response.data.message,
+                    "error",
+                    dispatch
+                );
+            }
+        },
+        [dispatch]
+    );
 
-    const deleteChatMessage = async (senderId, receiverId, messageId, type) => {
-        try {
-            await chatService.markMessageAsDelete(
-                messageId,
-                senderId,
-                receiverId,
-                type
-            );
-        } catch (error) {
-            Utils.dispatchNotification(
-                error.response.data.message,
-                "error",
-                dispatch
-            );
-        }
-    };
+    const deleteChatMessage = useCallback(
+        async (senderId, receiverId, messageId, type) => {
+            try {
+                await chatService.markMessageAsDelete(
+                    messageId,
+                    senderId,
+                    receiverId,
+                    type
+                );
+            } catch (error) {
+                Utils.dispatchNotification(
+                    error.response.data.message,
+                    "error",
+                    dispatch
+                );
+            }
+        },
+        [dispatch]
+    );
 
+    // Load user profile and chat messages when search params change
     useEffect(() => {
         if (rendered) {
             getUserProfileByUserId();
             getNewUserMessages();
         }
         if (!rendered) setRendered(true);
-    }, [getUserProfileByUserId, getNewUserMessages, searchParams, rendered]);
+    }, [getUserProfileByUserId, getNewUserMessages, rendered]);
 
+    // Socket events for message receiving
     useEffect(() => {
-        const username = searchParams.get("username");
-
         if (rendered) {
             ChatUtils.socketIOMessageReceived(
                 chatMessages,
-                username,
+                searchParamsUsername,
                 setConversationId,
                 setChatMessages
             );
         }
-
         if (!rendered) setRendered(true);
 
         const fetchInitialOnlineUsers = () => {
@@ -435,17 +291,22 @@ const ChatWindow = () => {
         return () => {
             ChatUtils.removeSocketListeners();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams, rendered]);
+    }, [searchParamsUsername, rendered, chatMessages]);
 
+    // Socket events for message reactions
     useEffect(() => {
         ChatUtils.socketIOMessageReaction(
             chatMessages,
-            searchParams.get("username"),
+            searchParamsUsername,
             setConversationId,
             setChatMessages
         );
-    }, [chatMessages, searchParams]);
+    }, [chatMessages, searchParamsUsername]);
+
+    // Function to go back for mobile
+    const handleBackClick = useCallback(() => {
+        navigate("/app/social/chat/messages");
+    }, [navigate]);
 
     return (
         <div
@@ -459,25 +320,20 @@ const ChatWindow = () => {
                 ></div>
             ) : (
                 <>
-                    {searchParams.get("id") && searchParams.get("username") ? (
+                    {searchParamsId && searchParamsUsername ? (
                         <div
                             data-testid="chatWindow"
                             className="chatWindow max-h-full relative bg-slate-800"
                         >
                             {/* header */}
                             <div
-                                className="chat-title  h-15 min-h-15 w-full bg-background-blur  rounded-[30px] py-2 px-4"
+                                className="chat-title h-15 min-h-15 w-full bg-background-blur rounded-[30px] py-2 px-4"
                                 data-testid="chat-title"
                             >
                                 {isMobile && (
                                     <div
                                         className="text-2xl text-gray-500 cursor-pointer pr-2"
-                                        onClick={() => {
-                                            searchParams.delete("username");
-                                            searchParams.delete("id");
-                                            searchParams.delete("isGroup");
-                                            navigate(searchParams.toString());
-                                        }}
+                                        onClick={handleBackClick}
                                     >
                                         <IoIosArrowBack />
                                     </div>
@@ -498,10 +354,7 @@ const ChatWindow = () => {
                                     {/* name */}
                                     <div
                                         className={`chat-name ${
-                                            Utils.checkIfUserIsOnline(
-                                                receiver?.username || receiver?.name,
-                                                onlineUsers
-                                            )
+                                            isReceiverOnline
                                                 ? ""
                                                 : "user-not-online"
                                         }`}
@@ -509,10 +362,7 @@ const ChatWindow = () => {
                                         {receiver?.username || receiver?.name}
                                     </div>
                                     {/* online dot */}
-                                    {Utils.checkIfUserIsOnline(
-                                        receiver?.username,
-                                        onlineUsers
-                                    ) && (
+                                    {isReceiverOnline && (
                                         <div className="chat-active size-full flex items-center gap-1">
                                             <div className="size-2 bg-green-500 rounded-full"></div>
                                             Online
@@ -567,14 +417,24 @@ const ChatWindow = () => {
 
                             {/* chat window */}
                             <div className="flex-1 max-h-full pb-16 overflow-y-scroll">
-                                <MessageDisplay
-                                    chatMessages={chatMessages}
-                                    profile={profile}
-                                    updateMessageReaction={
-                                        updateMessageReaction
-                                    }
-                                    deleteChatMessage={deleteChatMessage}
-                                />
+                                {isMessagesLoading ? (
+                                    <div className="flex items-center justify-center size-full max-h-full">
+                                        <div className="size-auto">
+                                            <LoadingMessage />
+                                        </div>
+                                    </div>
+                                ) : chatMessages.length > 0 ? (
+                                    <MessageDisplay
+                                        chatMessages={chatMessages}
+                                        profile={profile}
+                                        updateMessageReaction={
+                                            updateMessageReaction
+                                        }
+                                        deleteChatMessage={deleteChatMessage}
+                                    />
+                                ) : (
+                                    <FirstChatScreen />
+                                )}
                             </div>
                             <div className="absolute left-0 bottom-0 h-16 w-full flex items-center justify-center z-50">
                                 <MessageInput
@@ -607,4 +467,5 @@ const ChatWindow = () => {
         </div>
     );
 };
+
 export default ChatWindow;

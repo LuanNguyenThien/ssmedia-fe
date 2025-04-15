@@ -11,18 +11,26 @@ import {
   toggleImageModal,
   toggleVideoModal
 } from '@redux/reducers/modal/modal.reducer';
-import AddPost from '@components/posts/post-modal/post-add/AddPost1';
+import ModalManager from "@components/posts/post-modal/post-add/PostTab";
 import { useRef, useState } from 'react';
 import { ImageUtils } from '@services/utils/image-utils.service';
 import EditPost from '@components/posts/post-modal/post-edit/EditPost1';
 import PostButtonItem from '../post-button-item/PostButtonItem';
 import PostInputItem from '../post-input-item/PostInputItem';
+import AddPost from "@components/posts/post-modal/post-add/AddPost";
+import AddQuestion from "@components/posts/post-modal/post-add/AddQuestion";
 
 const PostForm = () => {
   const { profile } = useSelector((state) => state.user);
-  const { type, isOpen, openFileDialog, gifModalIsOpen, feelingsIsOpen, openVideoDialog } = useSelector(
-    (state) => state.modal
-  );
+  const {
+    type,
+    isOpen,
+    openFileDialog,
+    gifModalIsOpen,
+    feelingsIsOpen,
+    openVideoDialog,
+    modalType,
+  } = useSelector((state) => state.modal);
   const [selectedPostImage, setSelectedPostImage] = useState();
   const [selectedPostVideo, setSelectedPostVideo] = useState();
   const fileInputRef = useRef();
@@ -100,10 +108,26 @@ const PostForm = () => {
 
         <div className="border-t border-gray-200 pt-3 mt-2">
           <div className="flex justify-start gap-6">
-            <button className="flex items-center gap-2 text-gray-600 text-sm font-medium">
-              <Camera className="w-5 h-5 text-blue-600" />
-              <span>Image/Video</span>
-            </button>
+            <div className="relative">
+              <button
+                type="button"
+                className="flex items-center gap-2 text-gray-600 text-sm font-medium px-2 py-1 rounded"
+                onClick={() => {
+                  if (fileInputRef.current) fileInputRef.current.click();
+                  dispatch(openModal({ type: "add" }));
+                  dispatch(toggleImageModal(!openFileDialog));
+                }}
+              >
+                <Camera className="w-5 h-5 text-blue-600" />
+                <span>Image/Video</span>
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                hidden
+              />
+            </div>
 
             <button
               className="flex items-center gap-2 text-gray-600 text-sm font-medium bg-yellow-100 px-2 py-1 rounded"
@@ -112,7 +136,10 @@ const PostForm = () => {
               <span className="text-yellow-500 font-bold">GIF</span>
             </button>
 
-            <button className="flex items-center gap-2 text-gray-600 text-sm font-medium">
+            <button
+              className="flex items-center gap-2 text-gray-600 text-sm font-medium"
+              onClick={openFeelingsComponent}
+            >
               <SmilePlus className="w-5 h-5 text-pink-500" />
               <span>Feeling</span>
             </button>
@@ -159,7 +186,9 @@ const PostForm = () => {
           </div>
         </div>
       </div> */}
-      {isOpen && type === "add" && <AddPost />}
+      {/* {isOpen && type === "add" && <ModalManager />} */}
+      {isOpen && type === "add" && modalType === "createpost" && <AddPost />}
+      {isOpen && type === "add" && modalType === "createquestion" && <AddQuestion />}
       {isOpen && type === "edit" && <EditPost />}
     </>
   );
