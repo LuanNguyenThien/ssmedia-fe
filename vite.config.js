@@ -28,7 +28,7 @@ export default defineConfig({
         'localhost',
         '192.168.1.8',                              // IP local của bạn
         '0416-2001-ee0-5201-5e20-59b9-553a-6a8d-4ab8.ngrok-free.app',
-        '386b-2001-ee0-5201-5e20-bcb6-d9d9-bd52-12fb.ngrok-free.app', // Host ngrok hiện tại
+        '40ba-2001-ee0-5201-5e20-cc4c-d8d4-2703-1165.ngrok-free.app', // Host ngrok hiện tại
         '*.ngrok-free.app'                          // Cho phép tất cả subdomains của ngrok
         ],
         proxy: {

@@ -1,23 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import IncomingCallNotification from "./IncomingCallNotification";
-import VideoCallWindow from "@/pages/callwindow/VideoCallWindow";
+import VideoCallWindow from "@pages/callwindow/VideoCallWindow";
 import { socketService } from "@services/socket/socket.service";
 import { createRoot } from "react-dom/client";
 
 const CallNotificationManager = () => {
     const [callData, setCallData] = useState(null);
 
-    useEffect(() => {
-        // Lắng nghe sự kiện 'call-incoming' từ Socket.IO
-        socketService?.socket?.on("call-incoming", (data) => {
-            setCallData(data);
-        });
-
-        // Cleanup listener khi component bị unmount
-        return () => {
-            socketService?.socket?.off("call-incoming");
-        };
+    const handleCallIncoming = useCallback((data) => {
+        setCallData(data);
     }, []);
+
+    const handleCallEnded = useCallback(() => {
+        setCallData(null);
+    }, []);
+
+    useEffect(() => {
+        const socket = socketService?.socket;
+        
+        // Đảm bảo có kết nối socket
+        if (!socket) {
+            console.warn("Socket connection not available");
+            return;
+        }
+        
+        // Đầu tiên, remove các listeners cũ (nếu có)
+        socket.off("call-incoming", handleCallIncoming);
+        socket.off("call-ended", handleCallEnded);
+        
+        // Sau đó đăng ký listeners mới
+        socket.on("call-incoming", handleCallIncoming);
+        socket.on("call-ended", handleCallEnded);
+        
+        // Cleanup khi component unmount
+        return () => {
+            if (socket) {
+                socket.off("call-incoming", handleCallIncoming);
+                socket.off("call-ended", handleCallEnded);
+            }
+        };
+    }, [handleCallIncoming, handleCallEnded]);
 
     const handleAccept = async () => {
         if (callData) {
@@ -48,13 +70,6 @@ const CallNotificationManager = () => {
                     video: callData.callType === "video",
                     audio: true,
                 });
-                
-                // Thông báo cho người gọi biết cuộc gọi đã được chấp nhận
-                // socketService.socket.emit("call-accepted", {
-                //     to: callData.from,
-                //     signal: updatedCallData.signal,
-                //     callType: updatedCallData.callType
-                // });
                 
                 // Render VideoCallWindow vào cửa sổ mới
                 const root = createRoot(callWindow.document.getElementById("call-root"));
