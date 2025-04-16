@@ -276,7 +276,6 @@ const Header = () => {
                         className="header-nav-wrapper bg-secondary"
                         data-testid="header-wrapper"
                     >
-                        {/* notifications */}
                         {notificationDialogContent?.senderName && (
                             <NotificationPreview
                                 title="Your post"
@@ -287,15 +286,18 @@ const Header = () => {
                                 reaction={notificationDialogContent?.reaction}
                                 senderName={notificationDialogContent?.senderName}
                                 secondButtonText="Close"
-                                secondBtnHandler={handleSetNotificationDialogContentToNull}
+                                secondBtnHandler={
+                                    handleSetNotificationDialogContentToNull
+                                }
                             />
                         )}
+
                         <div className="header-navbar grid grid-cols-5">
                             <div className="col-span-1">
                                 <Logo />
                             </div>
                             {/* SEARCH */}
-                            <div className="col-span-3 flex justify-between items-center mx-10 gap-4">
+                            <div className="col-span-3 flex justify-between items-center gap-4">
                                 <span className="font-extrabold text-primary-black flex items-center">
                                     {upperCase(section)}
                                 </span>
@@ -305,6 +307,7 @@ const Header = () => {
                                     setSearchTerm={setSearchTerm}
                                 />
                             </div>
+
                             <ul className="header-nav w-full h-6 col-span-1 flex justify-end gap-4">
                                 {/* MESSAGE */}
                                 <li
@@ -331,7 +334,7 @@ const Header = () => {
                                         )}
                                         {isMessageActive && (
                                             <div
-                                                className="absolute top-8 right-0 z-50"
+                                                className="absolute top-8 right-0"
                                                 ref={messageRef}
                                             >
                                                 <MessageSidebar
@@ -374,21 +377,30 @@ const Header = () => {
                                         />
                                         {/* notification dropdown */}
                                         {isNotificationActive && (
-                                            <ul
+                                            <div
                                                 className="absolute top-8 right-0 z-50"
                                                 ref={notificationRef}
                                             >
                                                 <Dropdown
                                                     data={notifications}
-                                                    notificationCount={notificationCount}
+                                                    notificationCount={
+                                                        notificationCount
+                                                    }
                                                     title="Notifications"
                                                     onMarkAsRead={onMarkAsRead}
-                                                    onDeleteNotification={onDeleteNotification}
+                                                    onDeleteNotification={
+                                                        onDeleteNotification
+                                                    }
+                                                    onNavigate={navigate}
+                                                    setIsNotificationActive={
+                                                        setIsNotificationActive
+                                                    }
                                                 />
-                                            </ul>
+                                            </div>
                                         )}
                                     </span>
                                 </li>
+
                                 {/* PROFILE */}
                                 <li
                                     data-testid="settings-list-item "
@@ -421,8 +433,12 @@ const Header = () => {
                                                     ref={settingsRef}
                                                 >
                                                     <DropdownSetting
-                                                        isSettingsActive={isSettingsActive}
-                                                        avatarSrc={profile?.profilePicture}
+                                                        isSettingsActive={
+                                                            isSettingsActive
+                                                        }
+                                                        avatarSrc={
+                                                            profile?.profilePicture
+                                                        }
                                                         name={profile?.username}
                                                         onLogout={onLogout}
                                                         onNavigate={() =>
