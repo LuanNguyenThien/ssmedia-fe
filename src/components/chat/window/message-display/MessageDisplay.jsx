@@ -164,7 +164,7 @@ const MessageDisplay = ({
             )}
 
             <div
-                className="message-page h-full relative"
+                className="message-page h-full relative scrollbar-hide"
                 ref={scrollRef}
                 data-testid="message-page"
             >

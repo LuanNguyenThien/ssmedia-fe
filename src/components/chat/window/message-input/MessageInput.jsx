@@ -149,6 +149,7 @@ const MessageInput = ({ setChatMessage }) => {
                 {/* Bottom chat input area */}
                 <form
                     onSubmit={(e) => {
+                        e.stopPropagation();
                         e.preventDefault(); 
                         handleClick(); 
                     }}
@@ -244,20 +245,18 @@ const MessageInput = ({ setChatMessage }) => {
                             </div>
                         </div>
 
-                        <div
+                        <button
                             onClick={(e) => {
-                                console.log("clicked");
-                                e.preventDefault();
                                 e.stopPropagation();
                                 handleClick();
                             }}
-                            className="w-8 h-8 z-50 px-6 py-2 bg-primary flex items-center justify-center rounded-xl text-primary-white hover:bg-primary/70"
+                            className="w-8 h-8 z-[1000] px-6 py-2 bg-primary flex items-center justify-center rounded-xl text-primary-white hover:bg-primary/70"
                         >
                             <DynamicSVG
                                 svgData={icons.send}
                                 className={"size-6"}
                             />
-                        </div>
+                        </button>
                     </div>
                 </form>
             </div>

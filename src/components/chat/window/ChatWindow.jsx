@@ -19,6 +19,10 @@ import VideoCallWindow from "@pages/callwindow/VideoCallWindow";
 import FirstChatScreen from "./FirstChatScreen/FirstChatScreen";
 import LoadingMessage from "@/components/state/loading-message/LoadingMessage";
 
+import { IoIosVideocam } from "react-icons/io";
+import { PiPhoneFill } from "react-icons/pi";
+
+
 const ChatWindow = () => {
     const { profile } = useSelector((state) => state.user);
     const { isLoading } = useSelector((state) => state.chat);
@@ -327,7 +331,7 @@ const ChatWindow = () => {
                         >
                             {/* header */}
                             <div
-                                className="chat-title h-15 min-h-15 w-full bg-background-blur rounded-[30px] py-2 px-4"
+                                className="chat-title h-15 min-h-15 w-[100vw]  sm:rounded-[30px] py-2 px-2"
                                 data-testid="chat-title"
                             >
                                 {isMobile && (
@@ -370,8 +374,10 @@ const ChatWindow = () => {
                                     )}
                                 </div>
                                 {/* Call buttons */}
-                                <div className="chat-call-buttons flex items-center gap-3 ml-auto">
-                                    <button
+                                <div className="chat-call-buttons flex justify-end items-center gap-4 ml-auto pr-2">
+                                    <PiPhoneFill className="size-6 text-primary/80 hover:text-primary/60" onClick={() => initiateCall("voice")}/>  
+                                    <IoIosVideocam className="size-6 text-primary/80 hover:text-primary/70" onClick={() => initiateCall("video")}/>
+                                    {/* <button
                                         className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 transition-colors duration-200 text-white shadow-md"
                                         onClick={() => initiateCall("voice")}
                                         aria-label="Voice Call"
@@ -411,12 +417,12 @@ const ChatWindow = () => {
                                         <polygon points="23 7 16 12 23 17 23 7"></polygon>
                                         <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
                                         </svg>
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>
 
                             {/* chat window */}
-                            <div className="flex-1 max-h-full pb-16 overflow-y-scroll">
+                            <div className="flex-1 max-h-full pb-16 overflow-y-scroll pt-2 px-4 scrollbar-hide">
                                 {isMessagesLoading ? (
                                     <div className="flex items-center justify-center size-full max-h-full">
                                         <div className="size-auto">
@@ -436,7 +442,7 @@ const ChatWindow = () => {
                                     <FirstChatScreen />
                                 )}
                             </div>
-                            <div className="absolute left-0 bottom-0 h-16 w-full flex items-center justify-center z-50">
+                            <div className="absolute left-0 bottom-0 h-16 w-full px-4 sm:px-0 flex items-center justify-center z-50">
                                 <MessageInput
                                     setChatMessage={sendChatMessage}
                                 />

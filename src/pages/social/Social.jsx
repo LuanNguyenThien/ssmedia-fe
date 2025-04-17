@@ -13,7 +13,7 @@ const layout_1_4_list = ["streams", "profile", "save", "people","post"];
 const layout_0_5_list = ["chat", "groups", "meeting", "search"];
 
 const Social = () => {
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 390);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 480);
     const section = useLocation().pathname.split("/")[3];
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 390);
@@ -62,9 +62,9 @@ const Social = () => {
     };
 
     return (
-        <div className="!bg-secondary sm:px-12">
+        <div className={`!bg-secondary sm:px-12`}>
             {isMobile ? <HeaderMb /> : <Header />}
-            <div className="grid grid-cols-10">{getLayout()}</div>
+            <div className={`grid grid-cols-10 ${isMobile ? "pb-[8dvh]" : ""}`}>{getLayout()}</div>
             {isMobile && <SidebarMb />}
         </div>
     );

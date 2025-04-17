@@ -15,13 +15,13 @@ const ChatMobile = () => {
         dispatch(getConversationList());
     });
     return (
-        <div className="size-full col-span-5 bg-background p-4 rounded-t-[30px] rounded-b-[30px]">
+        <div className="size-full col-span-5 bg-background px-4 rounded-t-[30px] rounded-b-[30px]">
             {!isSelectedChatUser ? (
                 <div className="size-full">
                     <ChatList />
                 </div>
             ) : (
-                <div className="size-full">
+                <div className="h-[100dvh] w-screen fixed top-0 left-0 bg-primary-white py-2 z-[100]">
                     <ChatWindow />
                 </div>
             )}

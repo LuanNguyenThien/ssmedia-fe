@@ -215,14 +215,14 @@ const ChatList = () => {
     }, [chatMessageList, profile, rendered, location]);
 
     return (
-        <div data-testid="chatList" className="h-full">
-            <div className="conversation-container h-full">
-                <div className="flex justify-between items-center py-3">
+        <div className="conversation-container size-full">
+            <div className="flex flex-col justify-end items-start h-max w-full ">
+                <div className="flex justify-between items-center pt-3">
                     <div className="font-extrabold text-xl">Your chats</div>
                 </div>
 
                 <div
-                    className="conversation-container-search"
+                    className="conversation-container-search w-full border my-2 rounded-[20px] z-50 bg-white"
                     data-testid="search-container"
                 >
                     <FaSearch className="search" />
@@ -250,145 +250,141 @@ const ChatList = () => {
                         />
                     )}
                 </div>
+            </div>
 
-                <div className="conversation-container-body h-4/5 overflow-y-scroll scroll-smooth">
-                    {!search && (
-                        <div className="conversation size-full flex flex-col gap-1">
-                            {chatMessageList.map((data) => {
-                                const isActive =
-                                    (searchParams.get("username") ===
-                                        data?.receiverUsername?.toLowerCase() &&
-                                        searchParams.get("username") !==
-                                            profile?.username.toLowerCase()) ||
-                                    (searchParams.get("username") ===
-                                        data?.senderUsername?.toLowerCase() &&
-                                        searchParams.get("username") !==
-                                            profile?.username.toLowerCase()) ||
-                                    (searchParams.get("username") ===
-                                        data?.receiverUsername?.toLowerCase() &&
-                                        data?.receiverUsername?.toLowerCase() ===
-                                            data?.senderUsername?.toLowerCase());
-                                return (
-                                    <div
-                                        key={Utils.generateString(10)}
-                                        data-testid="conversation-item"
-                                        className={`conversation-item ${
-                                            isActive ? "active" : ""
-                                        }`}
-                                        onClick={() => {
-                                            addUsernameToUrlQuery(data);
-                                        }}
-                                    >
-                                        <div className="avatar">
-                                            <Avatar
-                                                name={
-                                                    data?.isGroupChat
-                                                        ? data?.groupName
-                                                        : data?.receiverUsername ===
-                                                          profile?.username
-                                                        ? profile?.username
-                                                        : data?.receiverUsername
-                                                }
-                                                bgColor={
-                                                    data?.receiverUsername ===
-                                                    profile?.username
-                                                        ? profile?.avatarColor
-                                                        : data?.receiverAvatarColor
-                                                }
-                                                textColor="#ffffff"
-                                                size={40}
-                                                avatarSrc={
-                                                    data?.isGroupChat
-                                                        ? data?.groupImage
-                                                        : data?.receiverUsername !==
-                                                          profile?.username
-                                                        ? data?.receiverProfilePicture
-                                                        : data?.senderProfilePicture
-                                                }
-                                            />
-                                        </div>
-                                        <div
-                                            className={`title-text ${
-                                                selectedUser && !data.body
-                                                    ? "selected-user-text"
-                                                    : ""
-                                            }`}
-                                        >
-                                            {data?.isGroupChat
-                                                ? data?.groupName
-                                                : data?.receiverUsername !==
-                                                  profile?.username
-                                                ? data?.receiverUsername
-                                                : data?.senderUsername}
-                                        </div>
-                                        {data?.createdAt && (
-                                            <div className="created-date">
-                                                {timeAgo.transform(
-                                                    data?.createdAt
-                                                )}
-                                            </div>
-                                        )}
-                                        {!data?.body && !data?.groupName && (
-                                            <div
-                                                className="created-date bg-black"
-                                                onClick={
-                                                    removeSelectedUserFromList
-                                                }
-                                            >
-                                                <FaTimes />
-                                            </div>
-                                        )}
-                                        {data?.body &&
-                                            !data?.deleteForMe &&
-                                            !data.deleteForEveryone && (
-                                                <ChatListBody
-                                                    data={data}
-                                                    profile={profile}
-                                                />
-                                            )}
-                                        {data?.deleteForMe &&
-                                            data?.deleteForEveryone && (
-                                                <div className="conversation-message">
-                                                    <span className="message-deleted">
-                                                        message deleted
-                                                    </span>
-                                                </div>
-                                            )}
-                                        {data?.deleteForMe &&
-                                            !data.deleteForEveryone &&
-                                            data.senderUsername ===
-                                                profile?.username && (
-                                                <div className="conversation-message">
-                                                    <span className="message-deleted">
-                                                        message deleted
-                                                    </span>
-                                                </div>
-                                            )}
-                                        {data?.deleteForMe &&
-                                            !data.deleteForEveryone &&
-                                            data?.receiverUsername ===
-                                                profile?.username && (
-                                                <ChatListBody
-                                                    data={data}
-                                                    profile={profile}
-                                                />
-                                            )}
+            <div className="conversation-container-body flex-1 h-4/5 max-h-4/5 overflow-y-scroll scroll-smooth">
+                {!search && (
+                    <div className="conversation size-full flex flex-col gap-1">
+                        {chatMessageList.map((data) => {
+                            const isActive =
+                                (searchParams.get("username") ===
+                                    data?.receiverUsername?.toLowerCase() &&
+                                    searchParams.get("username") !==
+                                        profile?.username.toLowerCase()) ||
+                                (searchParams.get("username") ===
+                                    data?.senderUsername?.toLowerCase() &&
+                                    searchParams.get("username") !==
+                                        profile?.username.toLowerCase()) ||
+                                (searchParams.get("username") ===
+                                    data?.receiverUsername?.toLowerCase() &&
+                                    data?.receiverUsername?.toLowerCase() ===
+                                        data?.senderUsername?.toLowerCase());
+                            return (
+                                <div
+                                    key={Utils.generateString(10)}
+                                    data-testid="conversation-item"
+                                    className={`conversation-item  ${
+                                        isActive ? "active" : ""
+                                    }`}
+                                    onClick={() => {
+                                        addUsernameToUrlQuery(data);
+                                    }}
+                                >
+                                    <div className="avatar">
+                                        <Avatar
+                                            name={
+                                                data?.isGroupChat
+                                                    ? data?.groupName
+                                                    : data?.receiverUsername ===
+                                                      profile?.username
+                                                    ? profile?.username
+                                                    : data?.receiverUsername
+                                            }
+                                            bgColor={
+                                                data?.receiverUsername ===
+                                                profile?.username
+                                                    ? profile?.avatarColor
+                                                    : data?.receiverAvatarColor
+                                            }
+                                            textColor="#ffffff"
+                                            size={40}
+                                            avatarSrc={
+                                                data?.isGroupChat
+                                                    ? data?.groupImage
+                                                    : data?.receiverUsername !==
+                                                      profile?.username
+                                                    ? data?.receiverProfilePicture
+                                                    : data?.senderProfilePicture
+                                            }
+                                        />
                                     </div>
-                                );
-                            })}
-                        </div>
-                    )}
-                    <SearchList
-                        searchTerm={search}
-                        result={searchResult}
-                        isSearching={isSearching}
-                        setSearchResult={setSearchResult}
-                        setIsSearching={setIsSearching}
-                        setSearch={setSearch}
-                        setSelectedUser={setSelectedUser}
-                        setComponentType={setComponentType}
-                    />
-                </div>
+                                    <div
+                                        className={`title-text ${
+                                            selectedUser && !data.body
+                                                ? "selected-user-text"
+                                                : ""
+                                        }`}
+                                    >
+                                        {data?.isGroupChat
+                                            ? data?.groupName
+                                            : data?.receiverUsername !==
+                                              profile?.username
+                                            ? data?.receiverUsername
+                                            : data?.senderUsername}
+                                    </div>
+                                    {data?.createdAt && (
+                                        <div className="created-date">
+                                            {timeAgo.transform(data?.createdAt)}
+                                        </div>
+                                    )}
+                                    {!data?.body && !data?.groupName && (
+                                        <div
+                                            className="created-date bg-black"
+                                            onClick={removeSelectedUserFromList}
+                                        >
+                                            <FaTimes />
+                                        </div>
+                                    )}
+                                    {data?.body &&
+                                        !data?.deleteForMe &&
+                                        !data.deleteForEveryone && (
+                                            <ChatListBody
+                                                data={data}
+                                                profile={profile}
+                                            />
+                                        )}
+                                    {data?.deleteForMe &&
+                                        data?.deleteForEveryone && (
+                                            <div className="conversation-message">
+                                                <span className="message-deleted">
+                                                    message deleted
+                                                </span>
+                                            </div>
+                                        )}
+                                    {data?.deleteForMe &&
+                                        !data.deleteForEveryone &&
+                                        data.senderUsername ===
+                                            profile?.username && (
+                                            <div className="conversation-message">
+                                                <span className="message-deleted">
+                                                    message deleted
+                                                </span>
+                                            </div>
+                                        )}
+                                    {data?.deleteForMe &&
+                                        !data.deleteForEveryone &&
+                                        data?.receiverUsername ===
+                                            profile?.username && (
+                                            <ChatListBody
+                                                data={data}
+                                                profile={profile}
+                                            />
+                                        )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+                <SearchList
+                    searchTerm={search}
+                    result={searchResult}
+                    isSearching={isSearching}
+                    setSearchResult={setSearchResult}
+                    setIsSearching={setIsSearching}
+                    setSearch={setSearch}
+                    setSelectedUser={setSelectedUser}
+                    setComponentType={setComponentType}
+                />
             </div>
         </div>
     );

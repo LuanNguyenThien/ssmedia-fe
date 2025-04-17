@@ -11,7 +11,7 @@ const Logo = () => {
                 navigate("/app/social/streams");
             }}
         >
-            <img src={assets.logo} alt="logo" className="size-full" />
+            <img src={assets.logo} alt="logo" className="size-10" />
             {!isMobile && <span className="h-full flex items-center text-xl font-extrabold text-[#1264AB]">RAINET</span>}
         </div>
     );

@@ -6,7 +6,7 @@ export let BASE_ENDPOINT = "";
 export const APP_ENVIRONMENT = "local";
 
 if (APP_ENVIRONMENT === "local") {
-    BASE_ENDPOINT = "http://localhost:5000";
+    BASE_ENDPOINT = "http://10.20.6.72:5000";
 } else if (APP_ENVIRONMENT === "development") {
     BASE_ENDPOINT = "https://api.dev.younghub.online";
 } else if (APP_ENVIRONMENT === "staging") {
