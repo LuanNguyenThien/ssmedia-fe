@@ -43,7 +43,8 @@ const useSocialActions = ({
         return false;
     }, []);
 
-    const handleClickMessageButton = useCallback(() => {
+    const handleClickMessageButton = useCallback((e) => {
+        e.stopPropagation();
         if (user) {
             ChatUtils.navigateToChat(user, navigate);
         }
@@ -144,6 +145,7 @@ const useSocialActions = ({
     );
 
     return {
+        navigate,
         isFollow,
         isBlocked,
         followUser,

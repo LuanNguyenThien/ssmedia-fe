@@ -34,7 +34,10 @@ const ActionSelector = ({
     return (
         <div className="relative">
             <div
-                onClick={() => setShowActions(!showActions)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setShowActions(!showActions);
+                }}
                 className="text-sm w-max flex items-center gap-1 px-4 py-2 bg-background-blur text-primary-black/70 hover:text-primary/50 cursor-pointer rounded-[30px]"
             >
                 {isFollow ? (
@@ -63,14 +66,20 @@ const ActionSelector = ({
                         <InformationButton
                             title="Follow"
                             icon={<RiUserFollowLine />}
-                            onClick={() => onClickFollow(user)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onClickFollow(user);
+                            }}
                             className={"!bg-primary-white"}
                         />
                     ) : (
                         <InformationButton
                             title="Unfollow"
                             icon={<RiUserUnfollowLine />}
-                            onClick={() => onClickUnfollow(user)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onClickUnfollow(user);
+                            }}
                             className="hover:!text-red-500 !bg-primary-white"
                         />
                     )}
@@ -79,14 +88,20 @@ const ActionSelector = ({
                         <InformationButton
                             title="Unblock"
                             icon={<CgUnblock />}
-                            onClick={() => onClickUnblock(user)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onClickUnblock(user);
+                            }}
                             className="!bg-primary-white hover:!text-red-500"
                         />
                     ) : (
                         <InformationButton
                             title="Block"
                             icon={<GoBlocked />}
-                            onClick={() => onClickBlock(user)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onClickBlock(user);
+                            }}
                             className="!bg-primary-white hover:!text-red-500"
                         />
                     )}
