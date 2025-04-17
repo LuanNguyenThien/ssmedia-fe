@@ -1,4 +1,8 @@
-
+import { ChatUtils } from "@services/utils/chat-utils.service";
+import useLocalStorage from "@hooks/useLocalStorage";
+import NotificationPermissionPrompt from "@components/call-noti/NotificationPermissionPrompt";
+import CallNotificationManager from "@components/call/CallNotificationManager";
+import { socketService } from "@services/socket/socket.service";
 import { IoIosSettings } from "react-icons/io";
 import { PiSignOutBold } from "react-icons/pi";
 import { RxHamburgerMenu } from "react-icons/rx";
@@ -8,7 +12,9 @@ import { useNavigate } from "react-router-dom";
 import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
 import Logo from "./components/logo/Logo";
 import SearchInputMb from "./components/search-input.jsx/seach-input-mb";
+import useEffectOnce from "@/hooks/useEffectOnce";
 const HeaderMb = () => {
+    const storedUsername = useLocalStorage("username", "get");
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const containerRef = useRef(null);
     const navigate = useNavigate();
@@ -23,8 +29,15 @@ const HeaderMb = () => {
         setIsOpenMenu(!isOpenMenu);
     };
 
+    useEffectOnce(() => {
+        ChatUtils.usersOnlines();
+        socketService?.socket.emit("setup", { userId: storedUsername });
+    }, []);
+
     return (
         <div className="h-[8vh] bg-secondary flex items-center justify-between px-4">
+            <NotificationPermissionPrompt />
+            <CallNotificationManager />
             <Logo />
             <div className="flex items-center justify-end gap-4 relative max-w-[80%]">
                 <SearchInputMb

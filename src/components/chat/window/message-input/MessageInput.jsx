@@ -112,8 +112,9 @@ const MessageInput = ({ setChatMessage }) => {
         <>
             {showEmojiContainer && (
                 <div
+                    ref={emojiRef}
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute bottom-0 left-5 z-10"
+                    className="absolute flex justify-end items-end bottom-0 sm:left-5 z-50"
                     style={{ width: "352px", height: "447px" }}
                 >
                     <EmojiPickerComponent
@@ -147,7 +148,10 @@ const MessageInput = ({ setChatMessage }) => {
 
                 {/* Bottom chat input area */}
                 <form
-                    onSubmit={handleClick}
+                    onSubmit={(e) => {
+                        e.preventDefault(); 
+                        handleClick(); 
+                    }}
                     onFocus={() => setHasFocus(true)}
                     onBlur={() => setHasFocus(false)}
                 >
@@ -223,7 +227,6 @@ const MessageInput = ({ setChatMessage }) => {
                             </div>
                             <div
                                 onMouseDown={(e) => e.preventDefault()}
-                                ref={emojiRef}
                                 className="chat-list-item"
                                 onClick={(e) => {
                                     e.stopPropagation();

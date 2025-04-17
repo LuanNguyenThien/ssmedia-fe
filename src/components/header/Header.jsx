@@ -23,6 +23,8 @@ import { sumBy, upperCase } from "lodash";
 import { ChatUtils } from "@services/utils/chat-utils.service";
 import { chatService } from "@services/api/chat/chat.service";
 import { getConversationList } from "@redux/api/chat";
+import CallNotificationManager from "@components/call/CallNotificationManager";
+import NotificationPermissionPrompt from "@components/call-noti/NotificationPermissionPrompt";
 
 // components
 import DropdownSetting from "@components/header/components/dropdown/DropdownSetting";
@@ -266,190 +268,195 @@ const Header = () => {
             {!profile ? (
                 <HeaderSkeleton />
             ) : (
-                <div
-                    className="header-nav-wrapper bg-secondary"
-                    data-testid="header-wrapper"
-                >
-                    {notificationDialogContent?.senderName && (
-                        <NotificationPreview
-                            title="Your post"
-                            entityId={notificationDialogContent?.entityId}
-                            post={notificationDialogContent?.post}
-                            imgUrl={notificationDialogContent?.imgUrl}
-                            comment={notificationDialogContent?.comment}
-                            reaction={notificationDialogContent?.reaction}
-                            senderName={notificationDialogContent?.senderName}
-                            secondButtonText="Close"
-                            secondBtnHandler={
-                                handleSetNotificationDialogContentToNull
-                            }
-                        />
-                    )}
-
-                    <div className="header-navbar grid grid-cols-5">
-                        <div className="col-span-1">
-                            <Logo />
-                        </div>
-                        {/* SEARCH */}
-                        <div className="col-span-3 flex justify-between items-center gap-4">
-                            <span className="font-extrabold text-primary-black flex items-center">
-                                {upperCase(section)}
-                            </span>
-                            <SearchInputDesktop
-                                onClick={handleSearchKeyPress}
-                                searchTerm={searchTerm}
-                                setSearchTerm={setSearchTerm}
+                <>
+                    <NotificationPermissionPrompt />
+                    <CallNotificationManager />
+                    {/* HEADER */}
+                    <div
+                        className="header-nav-wrapper bg-secondary"
+                        data-testid="header-wrapper"
+                    >
+                        {notificationDialogContent?.senderName && (
+                            <NotificationPreview
+                                title="Your post"
+                                entityId={notificationDialogContent?.entityId}
+                                post={notificationDialogContent?.post}
+                                imgUrl={notificationDialogContent?.imgUrl}
+                                comment={notificationDialogContent?.comment}
+                                reaction={notificationDialogContent?.reaction}
+                                senderName={notificationDialogContent?.senderName}
+                                secondButtonText="Close"
+                                secondBtnHandler={
+                                    handleSetNotificationDialogContentToNull
+                                }
                             />
-                        </div>
+                        )}
 
-                        <ul className="header-nav w-full h-6 col-span-1 flex justify-end gap-4">
-                            {/* MESSAGE */}
-                            <li
-                                data-testid="message-list-item"
-                                className="header-nav-item active-item"
-                                onClick={() => {
-                                    setIsMessageActive(
-                                        (prevState) => !prevState
-                                    );
-                                    setIsNotificationActive(false);
-                                    setIsSettingsActive(false);
-                                }}
-                            >
-                                <span className="header-list-name relative group ">
-                                    <img
-                                        src={assets.message}
-                                        className="h-7 w-7 group-hover:scale-110 duration-200"
-                                    />
-                                    {messageCount > 0 && (
-                                        <span
-                                            className="bg-danger-dots dots group-hover:scale-110 duration-200"
-                                            data-testid="messages-dots"
-                                        ></span>
-                                    )}
-                                    {isMessageActive && (
-                                        <div
-                                            className="absolute top-8 right-0"
-                                            ref={messageRef}
-                                        >
-                                            <MessageSidebar
-                                                profile={profile}
-                                                messageCount={messageCount}
-                                                messageNotifications={
-                                                    messageNotifications
-                                                }
-                                                openChatPage={openChatPage}
-                                            />
-                                        </div>
-                                    )}
+                        <div className="header-navbar grid grid-cols-5">
+                            <div className="col-span-1">
+                                <Logo />
+                            </div>
+                            {/* SEARCH */}
+                            <div className="col-span-3 flex justify-between items-center gap-4">
+                                <span className="font-extrabold text-primary-black flex items-center">
+                                    {upperCase(section)}
                                 </span>
-                                &nbsp;
-                            </li>
-                            {/* NOTIFICATION */}
-                            <li
-                                data-testid="notification-list-item"
-                                className="header-nav-item active-item"
-                                onClick={() => {
-                                    if (isNotificationActive === true)
+                                <SearchInputDesktop
+                                    onClick={handleSearchKeyPress}
+                                    searchTerm={searchTerm}
+                                    setSearchTerm={setSearchTerm}
+                                />
+                            </div>
+
+                            <ul className="header-nav w-full h-6 col-span-1 flex justify-end gap-4">
+                                {/* MESSAGE */}
+                                <li
+                                    data-testid="message-list-item"
+                                    className="header-nav-item active-item"
+                                    onClick={() => {
+                                        setIsMessageActive(
+                                            (prevState) => !prevState
+                                        );
                                         setIsNotificationActive(false);
-                                    else setIsNotificationActive(true);
-                                    setIsMessageActive(false);
-                                    setIsSettingsActive(false);
-                                }}
-                            >
-                                <span className="header-list-name group relative">
-                                    {notificationCount > 0 && (
-                                        <span
-                                            className="bg-danger-dots dots group-hover:scale-110 duration-200"
-                                            data-testid="notification-dots"
-                                        >
-                                            {notificationCount}
-                                        </span>
-                                    )}
-                                    <img
-                                        src={assets.notification}
-                                        className="w-8 h-8 group-hover:scale-110 duration-200"
-                                    />
-                                    {/* notification dropdown */}
-                                    {isNotificationActive && (
-                                        <div
-                                            className="absolute top-8 right-0 z-50"
-                                            ref={notificationRef}
-                                        >
-                                            <Dropdown
-                                                data={notifications}
-                                                notificationCount={
-                                                    notificationCount
-                                                }
-                                                title="Notifications"
-                                                onMarkAsRead={onMarkAsRead}
-                                                onDeleteNotification={
-                                                    onDeleteNotification
-                                                }
-                                                onNavigate={navigate}
-                                                setIsNotificationActive={
-                                                    setIsNotificationActive
-                                                }
-                                            />
-                                        </div>
-                                    )}
-                                </span>
-                            </li>
-
-                            {/* PROFILE */}
-                            <li
-                                data-testid="settings-list-item "
-                                className="header-nav-item relative"
-                                onClick={() => {
-                                    setIsSettingsActive(!isSettingsActive);
-                                    setIsMessageActive(false);
-                                    setIsNotificationActive(false);
-                                }}
-                            >
-                                <div className="flex items-center relative">
-                                    <div className="size-[35px]">
-                                        <Avatar
-                                            name={profile?.username}
-                                            bgColor={profile?.avatarColor}
-                                            textColor="#ffffff"
-                                            size={35}
-                                            avatarSrc={profile?.profilePicture}
+                                        setIsSettingsActive(false);
+                                    }}
+                                >
+                                    <span className="header-list-name relative group ">
+                                        <img
+                                            src={assets.message}
+                                            className="h-7 w-7 group-hover:scale-110 duration-200"
                                         />
-                                        <IoIosArrowBack
-                                            className={`absolute bottom-[-5px] right-0 text-white bg-gray-700 bg-opacity-70 rounded-full ${
-                                                isSettingsActive
-                                                    ? "transition-all -rotate-90 duration-100 ease-linear "
-                                                    : ""
-                                            } `}
-                                        />
-                                        {isSettingsActive && (
-                                            <ul
-                                                className="absolute top-8 right-0 z-50"
-                                                ref={settingsRef}
+                                        {messageCount > 0 && (
+                                            <span
+                                                className="bg-danger-dots dots group-hover:scale-110 duration-200"
+                                                data-testid="messages-dots"
+                                            ></span>
+                                        )}
+                                        {isMessageActive && (
+                                            <div
+                                                className="absolute top-8 right-0"
+                                                ref={messageRef}
                                             >
-                                                <DropdownSetting
-                                                    isSettingsActive={
-                                                        isSettingsActive
+                                                <MessageSidebar
+                                                    profile={profile}
+                                                    messageCount={messageCount}
+                                                    messageNotifications={
+                                                        messageNotifications
                                                     }
-                                                    avatarSrc={
-                                                        profile?.profilePicture
+                                                    openChatPage={openChatPage}
+                                                />
+                                            </div>
+                                        )}
+                                    </span>
+                                    &nbsp;
+                                </li>
+                                {/* NOTIFICATION */}
+                                <li
+                                    data-testid="notification-list-item"
+                                    className="header-nav-item active-item"
+                                    onClick={() => {
+                                        if (isNotificationActive === true)
+                                            setIsNotificationActive(false);
+                                        else setIsNotificationActive(true);
+                                        setIsMessageActive(false);
+                                        setIsSettingsActive(false);
+                                    }}
+                                >
+                                    <span className="header-list-name group relative">
+                                        {notificationCount > 0 && (
+                                            <span
+                                                className="bg-danger-dots dots group-hover:scale-110 duration-200"
+                                                data-testid="notification-dots"
+                                            >
+                                                {notificationCount}
+                                            </span>
+                                        )}
+                                        <img
+                                            src={assets.notification}
+                                            className="w-8 h-8 group-hover:scale-110 duration-200"
+                                        />
+                                        {/* notification dropdown */}
+                                        {isNotificationActive && (
+                                            <div
+                                                className="absolute top-8 right-0 z-50"
+                                                ref={notificationRef}
+                                            >
+                                                <Dropdown
+                                                    data={notifications}
+                                                    notificationCount={
+                                                        notificationCount
                                                     }
-                                                    name={profile?.username}
-                                                    onLogout={onLogout}
-                                                    onNavigate={() =>
-                                                        ProfileUtils.navigateToProfile(
-                                                            profile,
-                                                            navigate
-                                                        )
+                                                    title="Notifications"
+                                                    onMarkAsRead={onMarkAsRead}
+                                                    onDeleteNotification={
+                                                        onDeleteNotification
+                                                    }
+                                                    onNavigate={navigate}
+                                                    setIsNotificationActive={
+                                                        setIsNotificationActive
                                                     }
                                                 />
-                                            </ul>
+                                            </div>
                                         )}
+                                    </span>
+                                </li>
+
+                                {/* PROFILE */}
+                                <li
+                                    data-testid="settings-list-item "
+                                    className="header-nav-item relative"
+                                    onClick={() => {
+                                        setIsSettingsActive(!isSettingsActive);
+                                        setIsMessageActive(false);
+                                        setIsNotificationActive(false);
+                                    }}
+                                >
+                                    <div className="flex items-center relative">
+                                        <div className="size-[35px]">
+                                            <Avatar
+                                                name={profile?.username}
+                                                bgColor={profile?.avatarColor}
+                                                textColor="#ffffff"
+                                                size={35}
+                                                avatarSrc={profile?.profilePicture}
+                                            />
+                                            <IoIosArrowBack
+                                                className={`absolute bottom-[-5px] right-0 text-white bg-gray-700 bg-opacity-70 rounded-full ${
+                                                    isSettingsActive
+                                                        ? "transition-all -rotate-90 duration-100 ease-linear "
+                                                        : ""
+                                                } `}
+                                            />
+                                            {isSettingsActive && (
+                                                <ul
+                                                    className="absolute top-8 right-0 z-50"
+                                                    ref={settingsRef}
+                                                >
+                                                    <DropdownSetting
+                                                        isSettingsActive={
+                                                            isSettingsActive
+                                                        }
+                                                        avatarSrc={
+                                                            profile?.profilePicture
+                                                        }
+                                                        name={profile?.username}
+                                                        onLogout={onLogout}
+                                                        onNavigate={() =>
+                                                            ProfileUtils.navigateToProfile(
+                                                                profile,
+                                                                navigate
+                                                            )
+                                                        }
+                                                    />
+                                                </ul>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
-                        </ul>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
+                </>
             )}
         </>
     );
