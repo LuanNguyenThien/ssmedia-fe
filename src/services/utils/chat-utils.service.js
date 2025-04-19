@@ -149,7 +149,7 @@ export class ChatUtils {
         setChatMessageList(chatMessageList);
       }
     });
-  }
+  } 
 
   static socketIOMessageReceived(chatMessages, username, setConversationId, setChatMessages) {
     chatMessages = cloneDeep(chatMessages);
