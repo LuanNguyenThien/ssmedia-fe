@@ -14,7 +14,7 @@ const MessageSidebar = ({
 }) => {
     return (
         <div
-            className="message-dropdown text-primary-black bg-background rounded-b-xl rounded-l-xl  shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] border border-primary/20  z-[10000]"
+            className="message-dropdown text-primary-black bg-background rounded-b-xl rounded-l-xl  shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] border border-primary/20 z-[10000]"
             data-testid="message-sidebar"
         >
             <div className="message-card">

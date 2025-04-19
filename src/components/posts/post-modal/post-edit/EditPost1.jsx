@@ -126,7 +126,6 @@ const EditPost = () => {
   );
   const handleEditorDataChange = async () => {
     blocks = await editor.blocksToHTMLLossy(editor.document);
-    
     const doc = new DOMParser().parseFromString(blocks, "text/html");
 
     const elements = doc.body.querySelectorAll("h1,h2,h3, p, div");
@@ -135,12 +134,10 @@ const EditPost = () => {
       .map((element) => element.textContent.trim())
       .join(" ");
 
-    // console.log("plain", plainText);
     PostUtils.postInputEditable(plainText, postData, setPostData);
     PostUtils.postInputHtml(blocks, postData, setPostData);
     setDisable(blocks.trim().length === 0);
-    // console.log(disable);
-    // console.log(postData);
+
   };
   const postInputData = useCallback(() => {
     setTimeout(() => {
@@ -268,9 +265,7 @@ const EditPost = () => {
     }
   };
   const loadEditor = async (text) => {
-    
     blocks = await editor.tryParseHTMLToBlocks(text);
-    
     editor.replaceBlocks(editor.document, blocks);
   };
   useEffect(() => {

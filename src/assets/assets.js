@@ -15,6 +15,7 @@ import remove from "./icons/common/delete.svg";
 import check from "./icons/messages/checked.png";
 import uncheck from "./icons/messages/uncheck.png";
 import options from "./icons/messages/options.svg";
+import say_hi from "./icons/messages/say_hi.png";
 
 //feelings
 import blessed from "./icons/feelings/blessed.jpg";
@@ -98,5 +99,6 @@ export const icons = {
     check,
     uncheck,
     remove,
-    options
+    options,
+    say_hi
 };

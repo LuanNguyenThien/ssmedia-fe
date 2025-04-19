@@ -10,7 +10,7 @@ export const isValidUrl = (url) => {
 export const SocialInfoItem = ({ icon, value }) => {
     if (!value || !isValidUrl(value)) return null;
     return (
-        <div className="flex justify-start items-center gap-2 cursor-pointer" onClick={() => window.open(value, "_blank")}>
+        <div className="w-full flex justify-start items-center gap-2 cursor-pointer" onClick={() => window.open(value, "_blank")}>
             <div className="size-4">
                 <img
                     src={icon}
@@ -18,7 +18,8 @@ export const SocialInfoItem = ({ icon, value }) => {
                     alt="social_icon"
                 />
             </div>
-            {value}
+            <span className="size-full max-w-[90%] truncate ">{value}</span>
+            
         </div>
     );
 };

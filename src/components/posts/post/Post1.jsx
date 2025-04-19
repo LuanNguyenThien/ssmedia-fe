@@ -92,12 +92,10 @@ const Post = ({ post, showIcons }) => {
   };
   const loadEditor = async (text) => {
     const blocks = await editor.tryParseHTMLToBlocks(text);
-
     editor.replaceBlocks(editor.document, blocks);
   };
   useEffect(() => {
     // getBackgroundImageColor(post);
-
     loadEditor(post.htmlPost || "");
   }, [post]);
 

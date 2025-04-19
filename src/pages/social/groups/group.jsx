@@ -4,7 +4,7 @@ import PostForm from '@components/posts/post-form/PostForm';
 
 const Group = () => {
   return (
-    <div className="group-container">
+    <div className="group-container col-span-full">
       {/* Khung tìm kiếm bên trái */}
       <div className="group-search">
         <h3>Your Group</h3>

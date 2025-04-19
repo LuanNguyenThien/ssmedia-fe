@@ -9,6 +9,11 @@ export class ChatUtils {
   static onlineUsers = [];
   static conversationId;
 
+  static navigateToChat(data, navigate) {
+    const url = `/app/social/chat/messages?${createSearchParams({ username: data?.username, id: data?._id ,isGroup:false})}`;
+    navigate(url);
+  }
+
   static fetchOnlineUsers(setOnlineUsers) {
     setOnlineUsers(ChatUtils.onlineUsers);
   }
