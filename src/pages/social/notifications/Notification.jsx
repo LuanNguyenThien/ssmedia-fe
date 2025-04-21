@@ -11,6 +11,7 @@ import NotificationPreview from "@components/dialog/NotificationPreview";
 import { timeAgo } from "@services/utils/timeago.utils";
 import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
 import FilterNotifications from "./components/FilterNotifications";
+import NotificationSkeleton from "./NotificationSkeleton";
 const Notification = () => {
     const dispatch = useDispatch();
     const { profile } = useSelector((state) => state.user);
@@ -132,116 +133,118 @@ const Notification = () => {
                     }}
                 />
             )}
-            <div className="notifications-container col-span-10 px-4">
-                <div className="w-full flex justify-center items-center">
-                    <div className="w-1/2 h-[0.1px] bg-primary-black/20 mt-2"></div>
-                </div>
-                <div className="flex items-center justify-between py-4">
-                    <span className="text-2xl font-bold">Notifications</span>
-                    <FilterNotifications
-                        isChosenFilter={isChosenFilter}
-                        setIsChosenFilter={setIsChosenFilter}
-                    />
-                </div>
+            {!loading && (
+                <div className="notifications-container col-span-10 px-4">
+                    <div className="w-full flex justify-center items-center">
+                        <div className="w-1/2 h-[0.1px] bg-primary-black/20 mt-2"></div>
+                    </div>
+                    <div className="flex items-center justify-between py-4">
+                        <span className="text-2xl font-bold">Notifications</span>
+                        <FilterNotifications
+                            isChosenFilter={isChosenFilter}
+                            setIsChosenFilter={setIsChosenFilter}
+                        />
+                    </div>
 
-                {displayNotification.length > 0 && (
-                    <div className="notifications-box flex-1 max-h-[80vh] overflow-y-scroll flex flex-col justify-start items-start gap-2">
-                        {displayNotification.map((notification) => (
-                            <div
-                                className={`flex w-full items-center justify-start gap-3 bg-background-blur/50 hover:bg-primary/10 rounded-[20px] px-4 py-2
-                                    ${
-                                        notification?.read
-                                            ? "font-light"
-                                            : "font-bold"
-                                    }`}
-                                key={notification?._id}
-                                onClick={() => markAsRead(notification)}
-                            >
-                                {/* avatar */}
-                                <div className="notification-box-sub-card-media-image-icon w-max">
-                                    <Avatar
-                                        name={notification?.userFrom?.username}
-                                        bgColor={
-                                            notification?.userFrom?.avatarColor
-                                        }
-                                        textColor="#ffffff"
-                                        size={40}
-                                        avatarSrc={
-                                            notification?.userFrom
-                                                ?.profilePicture
-                                        }
-                                    />
-                                </div>
-                                {/* content */}
-                                <div className="notification-box-sub-card-media-body flex-1 flex items-center justify-between">
-                                    <span className="title text-sm text-primary-black flex flex-col">
-                                        <span className="text-sm text-primary-black">
-                                            {notification?.message}
+                    {displayNotification.length > 0 && (
+                        <div className="notifications-box flex-1 max-h-[80vh] overflow-y-scroll flex flex-col justify-start items-start gap-2">
+                            {displayNotification.map((notification) => (
+                                <div
+                                    className={`flex w-full items-center justify-start gap-3 bg-background-blur/50 hover:bg-primary/10 rounded-[20px] px-4 py-2
+                                        ${
+                                            notification?.read
+                                                ? "font-light"
+                                                : "font-bold"
+                                        }`}
+                                    key={notification?._id}
+                                    onClick={() => markAsRead(notification)}
+                                >
+                                    {/* avatar */}
+                                    <div className="notification-box-sub-card-media-image-icon w-max">
+                                        <Avatar
+                                            name={notification?.userFrom?.username}
+                                            bgColor={
+                                                notification?.userFrom?.avatarColor
+                                            }
+                                            textColor="#ffffff"
+                                            size={40}
+                                            avatarSrc={
+                                                notification?.userFrom
+                                                    ?.profilePicture
+                                            }
+                                        />
+                                    </div>
+                                    {/* content */}
+                                    <div className="notification-box-sub-card-media-body flex-1 flex items-center justify-between">
+                                        <span className="title text-sm text-primary-black flex flex-col">
+                                            <span className="text-sm text-primary-black">
+                                                {notification?.message}
+                                            </span>
+                                            {/* time */}
+                                            <span className="subtext text-xs text-primary-black/80">
+                                                {timeAgo.transform(
+                                                    notification?.createdAt
+                                                )}
+                                            </span>
                                         </span>
-                                        {/* time */}
-                                        <span className="subtext text-xs text-primary-black/80">
-                                            {timeAgo.transform(
-                                                notification?.createdAt
+                                        {/* trash can and active dot */}
+                                        <div className="flex justify-center items-center gap-4">
+                                            {!notification?.read && (
+                                                <FaCircle className="text-xs text-primary/50" />
                                             )}
-                                        </span>
-                                    </span>
-                                    {/* trash can and active dot */}
-                                    <div className="flex justify-center items-center gap-4">
-                                        {!notification?.read && (
-                                            <FaCircle className="text-xs text-primary/50" />
-                                        )}
-                                        <div
-                                            data-testid="subtitle"
-                                            className="subtitle"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setChosenNotification(
-                                                    notification
-                                                );
-                                                setShowConfirmModal(true);
-                                            }}
-                                        >
-                                            <FaRegTrashAlt className="trash text-primary-black/50 hover:text-red-500" />
+                                            <div
+                                                data-testid="subtitle"
+                                                className="subtitle"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setChosenNotification(
+                                                        notification
+                                                    );
+                                                    setShowConfirmModal(true);
+                                                }}
+                                            >
+                                                <FaRegTrashAlt className="trash text-primary-black/50 hover:text-red-500" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                        {showConfirmModal && (
-                            <ConfirmModal
-                                title="Delete notification"
-                                subTitle="Are you sure you want to delete this notification?"
-                                labelButtonCancel="Cancel"
-                                labelButtonConfirm="Delete"
-                                icon="delete"
-                                classNameButtonConfirm={
-                                    "bg-red-500 hover:bg-red-300"
-                                }
-                                handleConfirm={(event) => {
-                                    deleteNotification(
-                                        event,
-                                        chosenNotification?._id
-                                    );
-                                    setShowConfirmModal(false);
-                                }}
-                                handleCancel={(event) => {
-                                    event.stopPropagation();
-                                    setShowConfirmModal(false);
-                                }}
-                            />
-                        )}
-                    </div>
-                )}
-
-                {loading && !displayNotification.length && (
-                    <div className="notifications-box"></div>
-                )}
-                {!loading && !displayNotification.length && (
-                    <h4 className="empty-page" data-testid="empty-page">
-                        You have no notification
-                    </h4>
-                )}
-            </div>
+                            ))}
+                            {showConfirmModal && (
+                                <ConfirmModal
+                                    title="Delete notification"
+                                    subTitle="Are you sure you want to delete this notification?"
+                                    labelButtonCancel="Cancel"
+                                    labelButtonConfirm="Delete"
+                                    icon="delete"
+                                    classNameButtonConfirm={
+                                        "bg-red-500 hover:bg-red-300"
+                                    }
+                                    handleConfirm={(event) => {
+                                        deleteNotification(
+                                            event,
+                                            chosenNotification?._id
+                                        );
+                                        setShowConfirmModal(false);
+                                    }}
+                                    handleCancel={(event) => {
+                                        event.stopPropagation();
+                                        setShowConfirmModal(false);
+                                    }}
+                                />
+                            )}
+                        </div>
+                    )}
+                    {!loading && !displayNotification.length && (
+                        <h4 className="empty-page" data-testid="empty-page">
+                            You have no notification
+                        </h4>
+                    )}
+                </div>
+            )}
+            {/* Loading skeleton */}
+            {loading && (
+                <NotificationSkeleton />
+            )}
         </>
     );
 };

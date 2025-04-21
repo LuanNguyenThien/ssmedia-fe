@@ -1,5 +1,5 @@
 .reactions-display {
-  padding: 10px 0;
+  padding: 0;
   border-bottom: 1px solid var(--white-4);
   display: grid;
   grid-template-areas: "reaction comment";
@@ -7,25 +7,31 @@
   grid-template-rows: 1fr;
 
   span {
-    padding-top: 2px;
-    padding-left: 8px;
+    padding-top: 0px;
+    padding-left: 0px;
   }
 
   .tooltip-container {
     position: relative;
     display: inline-block;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 14px;
+
+    :hover {
+      text-decoration: underline;
+      text-underline-position: below;
+    }
 
     .tooltip-container-likes-bottom {
-      top: 135%;
+      top: 115%;
       left: 50%;
-      margin-left: -30px;
+      margin-left: -45px;
     }
 
     .tooltip-container-comments-bottom {
-      top: 135%;
-      left: -100%;
+      top: 115%;
+      right: 50%;
+      margin-right: -45px;
     }
   }
 
@@ -94,15 +100,21 @@
       }
 
       .reactions-count {
+        padding-top: 5px;
         grid-area: reactions-count;
-        font-size: 15px;
+        font-size: 14px;
+      }
+
+      :hover {
+        text-decoration: underline;
+        text-underline-position: below;
       }
 
       .likes-block-icons {
         .reaction-img {
           width: 18px;
           height: 18px;
-          margin-top: 2px;
+          margin-top: 5px;
         }
       }
 
@@ -135,7 +147,7 @@
   .comment {
     grid-area: comment;
     margin-left: auto;
-    padding-top: 2px;
+    padding-top: 5px;
     cursor: pointer;
   }
 

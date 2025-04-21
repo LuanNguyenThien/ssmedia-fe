@@ -22,6 +22,7 @@ export default function AddQuestion() {
   const [loading, setLoading] = useState(false);
   const [postType, setPostType] = useState("createquestion");
   const [postData, setPostData] = useState({
+    htmlPost: "",
     post: "",
     bgColor: "#ffffff",
     privacy: "",
@@ -35,12 +36,31 @@ export default function AddQuestion() {
   const handleEditorDataChange = async () => {
     const blocks = await editor.blocksToHTMLLossy(editor.document);
     const doc = new DOMParser().parseFromString(blocks, "text/html");
+    const images = doc.body.querySelectorAll("img");
+  
+    // Giả sử vùng chứa là 400px (hoặc lấy ref thực tế nếu có)
+    const containerWidth = 400;
+  
+    // Duyệt từng ảnh, kiểm tra naturalWidth
+    await Promise.all(
+      Array.from(images).map(
+        (img) =>
+          new Promise((resolve) => {
+            if (img.width > containerWidth) {
+              img.setAttribute("width", 1200);
+              img.removeAttribute("data-preview-width");
+            }
+            resolve();
+          })
+      )
+    );
+    const newBlocks = doc.body.innerHTML;
     const plainText = Array.from(doc.body.querySelectorAll("h1, p, div"))
       .map((element) => element.textContent.trim())
       .join(" ");
     PostUtils.postInputEditable(plainText, postData, setPostData);
-    PostUtils.postInputHtml(blocks, postData, setPostData);
-    setDisable(blocks.trim().length === 0);
+    PostUtils.postInputHtml(newBlocks, postData, setPostData);
+    setDisable(newBlocks.trim().length === 0);
   };
 
   const closePostModal = () => {
@@ -48,7 +68,15 @@ export default function AddQuestion() {
   };
 
   useEffect(() => {
-    setDisable(postData.post.length <= 0);
+    const trimmed = postData.htmlPost.trim();
+    // Disable nếu rỗng hoặc chỉ chứa <br> (có thể là <br> hoặc <br></br>)
+    setDisable(
+      trimmed.length <= 0 ||
+      trimmed === "<br>" ||
+      trimmed === "<br/>" ||
+      trimmed === "<br></br>" ||
+      trimmed === "<p></p><p></p>"
+    );
   }, [postData]);
 
   const createPost = async () => {
@@ -59,6 +87,13 @@ export default function AddQuestion() {
       }
       postData.privacy = privacy || "Public";
       postData.profilePicture = profile?.profilePicture;
+      // Xóa <br>, <br/>, <br></br> ở cuối post
+      if (typeof postData.htmlPost === "string") {
+        // Thêm class="none" vào <p></p> rỗng ở cuối
+        postData.htmlPost = postData.htmlPost
+          .replace(/(<br\s*\/?>|<br><\/br>)+$/gi, "")
+          .replace(/(<p>\s*<\/p>)+$/gi, '<p class="none"></p>');
+      }
       const response = await postService.createPost(postData);
       if (response) {
         setLoading(false);
@@ -86,11 +121,9 @@ export default function AddQuestion() {
     setPostType(value);
 
     if (value === "createpost") {
-      
       // console.log();
       dispatch(setModalType("createpost")); // mở modal loại khác, ví dụ sẽ render AddQuestion
       // closePostModal();
-      
     }
   };
   return (
@@ -103,7 +136,7 @@ export default function AddQuestion() {
           </div>
         )}
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full sm:w-4/5 md:w-1/3 flex flex-col h-[75vh] sm:h-[90vh]">
+          <div className="bg-white rounded-lg shadow-xl w-full sm:w-4/5 md:w-2/5 flex flex-col h-[75vh] sm:h-[90vh]">
             <div className="p-4 border-b border-gray-200 flex justify-between items-center">
               <div className="relative w-fit">
                 <select

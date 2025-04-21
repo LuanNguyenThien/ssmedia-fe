@@ -274,15 +274,16 @@ const Post = ({ post, showIcons }) => {
             <hr />
             <div
               className="user-post"
-              style={{ marginTop: "1rem", borderBottom: "" }}
+              style={{ marginTop: "0.5rem", borderBottom: "" }}
             >
               {post.htmlPost && (
-                <p className="post" data-testid="user-post">
+                <span className="post" data-testid="user-post">
                   <BlockNoteView
                     editor={editor}
                     editable={false} // Ngăn chặn chỉnh sửa
+                    className="my-blocknote"
                   />
-                </p>
+                </span>
               )}
               {!post.htmlPost && (
                 <>
@@ -369,8 +370,8 @@ const Post = ({ post, showIcons }) => {
                 </>
               )}
 
-              {(post?.reactions.length > 0 || post?.commentsCount > 0) && (
-                <hr />
+              {((Object.values(post?.reactions || {}).reduce((a, b) => a + b, 0) > 0) || post?.commentsCount > 0) && (
+                <hr style={{marginTop: "0.5rem"}}/>
               )}
               <PostCommentSection post={post} />
             </div>
