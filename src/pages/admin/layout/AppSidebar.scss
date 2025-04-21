@@ -34,18 +34,43 @@
 /* Hover effect chỉ áp dụng khi chưa active */
 .menu-item:not(.menu-item-active):hover {
   background-color: #f0f0f0; /* Màu nền xám khi hover */
-//   color: #0069d9; /* Màu chữ xanh dương khi hover */
 }
 
+// Giữ màu nền khi hover đối với item đã được active
 .menu-item-active:hover {
   background-color: #d1e7ff; /* Giữ màu nền khi hover */
-//   color: #007bff; /* Giữ màu chữ khi hover */
 }
 
-.menu-item-chevron {
-  margin-left: auto;
-  font-size: 14px; /* Thay đổi kích thước mũi tên */
-  width: 12px;  /* Thêm thuộc tính width để điều chỉnh kích thước */
-  height: 12px; /* Thêm thuộc tính height để điều chỉnh kích thước */
-  transition: transform 0.2s ease, background-color 0.3s, color 0.3s;
+/* Sub item khi được chọn */
+.menu-dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  text-align: left;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 6px;
+}
+
+.menu-dropdown-item-active {
+  background-color: #d1e7ff; /* Màu nền cho sub item đã được chọn */
+  color: #007bff; /* Đổi màu chữ thành xanh đậm khi chọn */
+  font-weight: 600; /* Làm đậm chữ khi sub item được chọn */
+}
+
+.menu-dropdown-item .menu-dropdown-item-icon-size {
+  font-size: 16px;
+}
+
+.menu-dropdown-item:hover {
+  background-color: #f1f5f9; /* Nền sáng hơn khi hover */
+}
+
+.menu-dropdown-item-active:hover {
+  background-color: #cfe2ff; /* Giữ màu nền khi hover */
+}
+
+/* Màu badge 'new' hoặc 'pro' cho sub item */
+.menu-dropdown-badge-active {
+  background-color: #007bff;
+  color: white;
 }

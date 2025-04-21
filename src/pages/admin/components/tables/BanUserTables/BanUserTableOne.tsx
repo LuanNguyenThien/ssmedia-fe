@@ -26,7 +26,7 @@ interface UserData {
   budget: string;
 }
 
-export default function BasicTableOne() {
+export default function BanUserTableOne() {
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState<UserData[]>([]);
   const [total, setTotal] = useState(1);
@@ -36,22 +36,22 @@ export default function BasicTableOne() {
   const getAllUsers = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await userService.getAllUsersAdminRole(currentPage);
-      const rawUsers = response.data.users;
+      const response = await userService.getAllBanUsersAdminRole(currentPage);
+      const rawUsers = response.data.data;
 
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
         _id: u._id,
         user: {
           image: u.profilePicture || "/default-avatar.jpg",
           name: u.username,
-          role: "Member", // hoặc dùng u.role nếu backend trả về
+          role: "Member",
         },
         projectName: u.work || "No project",
         team: {
           images: [u.profilePicture || "/default-avatar.jpg"],
         },
-        status: "Active", // có thể random hoặc từ API nếu có trường này
-        budget: "$1,000", // có thể gán mặc định
+        status: "Active",
+        budget: "$1,000",
       }));
 
       setUsers(mappedUsers);
@@ -62,6 +62,18 @@ export default function BasicTableOne() {
       setLoading(false);
     }
   }, [currentPage]);
+
+  const UnbanUser = async (userId: string, reason: string) => {
+      try {
+        // await userService.ChangeStatus({ reportId, status: "reviewed" });
+        await userService.UnBanUser({ userId, reason });
+        // alert("Ban user thành công");
+        getAllUsers(); // gọi lại API để cập nhật danh sách
+      } catch (error) {
+        console.error("Ban user thất bại:", error);
+        alert("Ban user thất bại");
+      }
+    };
 
   useEffectOnce(() => {
     getAllUsers();
@@ -75,11 +87,11 @@ export default function BasicTableOne() {
     setCurrentPage(pageNumber);
   };
 
-  const totalPages = Math.ceil(total / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full h-[350px] max-sm:max-h-[calc(100vh-350px)] overflow-x-auto ">
+      <div className="max-w-full h-[350px] max-sm:max-h-[calc(100vh-350px)] overflow-x-auto">
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
@@ -112,6 +124,12 @@ export default function BasicTableOne() {
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
                 Budget
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Actions
               </TableCell>
             </TableRow>
           </TableHeader>
@@ -176,6 +194,21 @@ export default function BasicTableOne() {
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   {order.budget}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-start">
+                  <button
+                    className="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600 transition"
+                    onClick={(e) => {
+                      e.stopPropagation(); // không trigger click vào row
+                      UnbanUser(
+                       
+                        order._id,
+                        order.projectName || "Vi phạm nội quy"
+                      );
+                    }}
+                  >
+                    Unban
+                  </button>
                 </TableCell>
               </TableRow>
             ))}

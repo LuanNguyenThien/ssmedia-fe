@@ -10,8 +10,11 @@ import Badge from "../../ui/badge/Badge";
 import React, { useState, useCallback, useEffect } from "react";
 import { userService } from "@services/api/user/user.service";
 import useEffectOnce from "@hooks/useEffectOnce";
+import ReportDetailModal from "./ReportDetailModal";
+import Alert from "../../ui/alert/Alert";
 
 interface UserData {
+  reportId: string;
   _id: string;
   user: {
     image: string;
@@ -24,6 +27,7 @@ interface UserData {
   };
   status: string;
   budget: string;
+  description: string;
 }
 
 export default function BasicTableOne() {
@@ -32,26 +36,33 @@ export default function BasicTableOne() {
   const [total, setTotal] = useState(1);
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(5);
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
 
   const getAllUsers = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await userService.getAllUsersAdminRole(currentPage);
-      const rawUsers = response.data.users;
-
+      const response = await userService.getAllUsersReportAdminRole(
+        currentPage
+      );
+      const rawUsers = response.data.reportusers;
+      
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
+        reportId : u.reportProfileInfo._id,
         _id: u._id,
         user: {
           image: u.profilePicture || "/default-avatar.jpg",
           name: u.username,
-          role: "Member", // hoặc dùng u.role nếu backend trả về
+          role: "Member",
         },
-        projectName: u.work || "No project",
+        projectName: u.reportProfileInfo.reason || "No project",
         team: {
           images: [u.profilePicture || "/default-avatar.jpg"],
         },
-        status: "Active", // có thể random hoặc từ API nếu có trường này
-        budget: "$1,000", // có thể gán mặc định
+        description: u.reportProfileInfo.description || "No description",
+        status: u.reportProfileInfo.status,
+        budget: new Date(u.reportProfileInfo.createdAt).toLocaleDateString(
+          "vi-VN"
+        ),
       }));
 
       setUsers(mappedUsers);
@@ -62,6 +73,19 @@ export default function BasicTableOne() {
       setLoading(false);
     }
   }, [currentPage]);
+
+  const banUser = async (reportId: string ,userId: string, reason: string) => {
+    try {
+      await userService.ChangeStatus({ reportId, status: "reviewed" });
+      await userService.BanUser({ userId, reason });
+      // alert("Ban user thành công");
+      getAllUsers(); // gọi lại API để cập nhật danh sách
+    } catch (error) {
+      console.error("Ban user thất bại:", error);
+      alert("Ban user thất bại");
+    }
+  };
+
 
   useEffectOnce(() => {
     getAllUsers();
@@ -75,11 +99,11 @@ export default function BasicTableOne() {
     setCurrentPage(pageNumber);
   };
 
-  const totalPages = Math.ceil(total / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full h-[350px] max-sm:max-h-[calc(100vh-350px)] overflow-x-auto ">
+      <div className="max-w-full h-[350px] max-sm:max-h-[calc(100vh-350px)] overflow-x-auto">
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
@@ -93,13 +117,7 @@ export default function BasicTableOne() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Project Name
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Team
+                Reason
               </TableCell>
               <TableCell
                 isHeader
@@ -113,12 +131,22 @@ export default function BasicTableOne() {
               >
                 Budget
               </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Actions
+              </TableCell>
             </TableRow>
           </TableHeader>
 
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {users.map((order) => (
-              <TableRow key={order._id}>
+              <TableRow
+                key={order._id}
+                onClick={() => setSelectedUser(order)}
+                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.05]"
+              >
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
@@ -143,30 +171,12 @@ export default function BasicTableOne() {
                   {order.projectName}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <div className="flex -space-x-2">
-                    {order.team.images.map((teamImage, index) => (
-                      <div
-                        key={index}
-                        className="w-6 h-6 overflow-hidden border-2 border-white rounded-full dark:border-gray-900"
-                      >
-                        <img
-                          width={24}
-                          height={24}
-                          src={teamImage}
-                          alt={`Team member ${index + 1}`}
-                          className="w-full size-6"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
-                      order.status === "Active"
+                      order.status === "reviewed"
                         ? "success"
-                        : order.status === "Pending"
+                        : order.status === "pending"
                         ? "warning"
                         : "error"
                     }
@@ -176,6 +186,25 @@ export default function BasicTableOne() {
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   {order.budget}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-start">
+                  <div className="flex gap-2">
+                    <button className="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600">
+                      Accept
+                    </button>
+                    <button
+                      className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600"
+                      onClick={(e) => {
+                        e.stopPropagation(); // không trigger click vào row
+                        banUser( order.reportId, 
+                          order._id,
+                          order.projectName || "Vi phạm nội quy"
+                        );
+                      }}
+                    >
+                      Ban
+                    </button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -199,6 +228,14 @@ export default function BasicTableOne() {
           </button>
         ))}
       </div>
+
+      {/* Chi tiết user */}
+      {selectedUser && (
+        <ReportDetailModal
+          selectedUser={selectedUser}
+          onClose={() => setSelectedUser(null)}
+        />
+      )}
     </div>
   );
 }

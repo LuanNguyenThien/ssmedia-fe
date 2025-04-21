@@ -226,6 +226,12 @@ const SearchPage = lazy(() => import("@pages/social/search/SearchPage"));
 const DashBoard = lazy(() => import("@pages/admin/dashboard/dashboard"));
 const AdminLayout = lazy(() => import("@pages/admin/layout/AppLayout"));
 const BasicTables = lazy(() => import("@pages/admin/pages/Tables/BasicTables"));
+const ReportUserTable = lazy(() =>
+  import("@pages/admin/pages/Tables/ReportUserTable")
+);
+const BanUserTable = lazy(() =>
+  import("@pages/admin/pages/Tables/BanUserTable")
+);
 
 const withSuspense = (Component) => (
   <Suspense fallback={<div>Loading...</div>}>{Component}</Suspense>
@@ -372,8 +378,16 @@ export const AppRouter = () => {
       element: <AdminLayout />,
       children: [
         {
-          path: "",
+          path: "user",
           element: withSuspense(<BasicTables />),
+        },
+        {
+          path: "reportuser",
+          element: withSuspense(<ReportUserTable />),
+        },
+        {
+          path: "hideuser",
+          element: withSuspense(<BanUserTable />),
         },
       ],
     },

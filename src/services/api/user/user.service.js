@@ -2,17 +2,17 @@ import axios from '@services/axios';
 
 class UserService {
   async getUserSuggestions() {
-    const response = await axios.get('/user/profile/user/suggestions');
+    const response = await axios.get("/user/profile/user/suggestions");
     return response;
   }
 
   async logoutUser() {
-    const response = await axios.get('/signout');
+    const response = await axios.get("/signout");
     return response;
   }
 
   async checkCurrentUser() {
-    const response = await axios.get('/currentuser');
+    const response = await axios.get("/currentuser");
     return response;
   }
 
@@ -23,6 +23,14 @@ class UserService {
 
   async getAllUsersAdminRole(page) {
     const response = await axios.get(`/admin/users/all/${page}`);
+    return response;
+  }
+  async getAllUsersReportAdminRole(page) {
+    const response = await axios.get(`/reportprofile/${page}`);
+    return response;
+  }
+  async getAllBanUsersAdminRole(page) {
+    const response = await axios.get(`/admin/banuser/${page}`);
     return response;
   }
 
@@ -37,27 +45,44 @@ class UserService {
   }
 
   async getUserProfileByUsername(username, userId, uId) {
-    const response = await axios.get(`/user/profile/posts/${username}/${userId}/${uId}`);
+    const response = await axios.get(
+      `/user/profile/posts/${username}/${userId}/${uId}`
+    );
+    return response;
+  }
+
+  async BanUser(body) {
+    const response = await axios.post(`/admin/banuser`, body);
+    return response;
+  }
+
+  async UnBanUser(body) {
+    const response = await axios.post(`/admin/unbanuser`, body);
+    return response;
+  }
+
+  async ChangeStatus(body) {
+    const response = await axios.put(`/admin/reportprofile/status`, body);
     return response;
   }
 
   async changePassword(body) {
-    const response = await axios.put('/user/profile/change-password', body);
+    const response = await axios.put("/user/profile/change-password", body);
     return response;
   }
 
   async updateNotificationSettings(settings) {
-    const response = await axios.put('/user/profile/settings', settings);
+    const response = await axios.put("/user/profile/settings", settings);
     return response;
   }
 
   async updateBasicInfo(info) {
-    const response = await axios.put('/user/profile/basic-info', info);
+    const response = await axios.put("/user/profile/basic-info", info);
     return response;
   }
 
   async updateSocialLinks(info) {
-    const response = await axios.put('/user/profile/social-links', info);
+    const response = await axios.put("/user/profile/social-links", info);
     return response;
   }
 }
