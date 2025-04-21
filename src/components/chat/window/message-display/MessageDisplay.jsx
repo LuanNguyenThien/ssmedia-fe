@@ -1,6 +1,5 @@
 import "@components/chat/window/message-display/MessageDisplay.scss";
 import { timeAgo } from "@services/utils/timeago.utils";
-import { Utils } from "@services/utils/utils.service";
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import useDetectOutsideClick from "@hooks/useDetectOutsideClick";
 import RightMessageDisplay from "./right-message-display/RightMessageDisplay";
@@ -9,15 +8,21 @@ import { useSearchParams } from "react-router-dom";
 import ImageModal from "@components/image-modal/ImageModal";
 import LoadingMessage from "@components/state/loading-message/LoadingMessage";
 import Dialog from "@components/dialog/Dialog";
+import { useDispatch } from "react-redux";
+import { groupChatService } from "@/services/api/chat/group-chat.service";
+import ReactionsTab from "./reactions/ReactionsTab";
 
 const MessageDisplay = ({
     chatMessages,
     profile,
     updateMessageReaction,
     deleteChatMessage,
+    isGroup,
 }) => {
+    const dispatch = useDispatch();
     const [imageUrl, setImageUrl] = useState("");
     const [searchParams] = useSearchParams();
+    const [groupChatData, setGroupChatData] = useState(null);
 
     const [showReactionIcon, setShowReactionIcon] = useState(false);
     const [showImageModal, setShowImageModal] = useState(false);
@@ -29,15 +34,17 @@ const MessageDisplay = ({
     const [selectedReaction, setSelectedReaction] = useState(null);
     const [activeElementIndex, setActiveElementIndex] = useState(null);
     const [isLoadingMessage, setIsLoadingMessage] = useState(false);
-    const [messagesToShow, setMessagesToShow] = useState(10);
+    const [messagesToShow, setMessagesToShow] = useState(15);
+    const [chosenMessage, setChosenMessage] = useState(null);
 
     const reactionRef = useRef(null);
+    const scrollRef = useRef(null);
+    const hasScrollToBottom = useRef(false);
+
     const [toggleReaction, setToggleReaction] = useDetectOutsideClick(
         reactionRef,
         false
     );
-    const scrollRef = useRef(null);
-
     const displayedMessages = useMemo(
         () => chatMessages.slice(-messagesToShow),
         [chatMessages, messagesToShow]
@@ -45,17 +52,28 @@ const MessageDisplay = ({
 
     useEffect(() => {
         const username = searchParams.get("username");
-        if (username) {
+        const id = searchParams.get("id");
+
+        if (username && !hasScrollToBottom.current) {
             if (scrollRef.current) {
                 setTimeout(() => {
                     scrollRef.current.scrollTop =
-                        scrollRef.current.scrollHeight -
-                        scrollRef.current.clientHeight;
-                }, 1200);
+                        scrollRef.current?.scrollHeight -
+                        scrollRef.current?.clientHeight;
+                }, 50);
             }
-            setMessagesToShow(10);
+            hasScrollToBottom.current = true;
+            setMessagesToShow(15);
         }
-    }, [searchParams]);
+
+        const fetchGroupChatMembers = async () => {
+            const response = await groupChatService.getGroupChatById(id);
+            setGroupChatData(response.data.group.members);
+        };
+        if (id) {
+            fetchGroupChatMembers();
+        }
+    }, [searchParams, dispatch, chatMessages]);
 
     const handleScroll = useCallback(() => {
         if (!scrollRef.current || isLoadingMessage) return;
@@ -65,7 +83,7 @@ const MessageDisplay = ({
         ) {
             setIsLoadingMessage(true);
             setTimeout(() => {
-                setMessagesToShow((prev) => prev + 10);
+                setMessagesToShow((prev) => prev + 20);
                 setIsLoadingMessage(false);
             }, 1000);
         }
@@ -104,9 +122,10 @@ const MessageDisplay = ({
     const deleteMessage = useCallback((message, type) => {
         setDeleteDialog({ open: true, message, type });
     }, []);
-
     return (
         <>
+            {/* Group chat members display */}
+
             {showImageModal && (
                 <ImageModal
                     image={imageUrl}
@@ -184,6 +203,37 @@ const MessageDisplay = ({
                                 className="message-chat"
                                 data-testid="message-chat"
                             >
+                                {chosenMessage &&
+                                    isGroup &&
+                                    chat.reaction === chosenMessage && (
+                                        <ReactionsTab
+                                            reactions={chat?.reaction}
+                                            groupChatData={groupChatData}
+                                            onRemoveReaction={() => {
+                                                const userReact =
+                                                    chat?.reaction.find(
+                                                        (reaction) =>
+                                                            reaction.senderName ===
+                                                            profile?.username
+                                                    );
+
+                                                if (
+                                                    userReact?.senderName ===
+                                                    profile?.username
+                                                ) {
+                                                    const body = {
+                                                        conversationId:
+                                                            chat?.conversationId ||
+                                                            chat?.groupId,
+                                                        messageId: chat?._id,
+                                                        reaction: userReact.type,
+                                                        type: "remove",
+                                                    };
+                                                    setSelectedReaction(body);
+                                                }
+                                            }}
+                                        />
+                                    )}
                                 {(index === 0 ||
                                     timeAgo.dayMonthYear(chat.createdAt) !==
                                         timeAgo.dayMonthYear(
@@ -250,6 +300,14 @@ const MessageDisplay = ({
                                                 setSelectedReaction={
                                                     setSelectedReaction
                                                 }
+                                                onShowReactionsTab={() =>
+                                                    setChosenMessage(
+                                                        chat.reaction
+                                                    )
+                                                }
+                                                onCloseReactionTab={() =>
+                                                    setChosenMessage(null)
+                                                }
                                             />
                                         ) : (
                                             <LeftMessageDisplay
@@ -284,6 +342,15 @@ const MessageDisplay = ({
                                                 showImageModal={showImageModal}
                                                 setSelectedReaction={
                                                     setSelectedReaction
+                                                }
+                                                groupChatMembers={groupChatData}
+                                                onShowReactionsTab={() =>
+                                                    setChosenMessage(
+                                                        chat.reaction
+                                                    )
+                                                }
+                                                onCloseReactionTab={() =>
+                                                    setChosenMessage(null)
                                                 }
                                             />
                                         )}

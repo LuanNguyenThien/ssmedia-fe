@@ -134,6 +134,7 @@ export class ChatUtils {
 
   static socketIOChatList(profile, chatMessageList, setChatMessageList) {
     socketService?.socket?.on('chat list', (data) => {
+      console.log('chat list', data);
       if (data.senderUsername === profile?.username || data.receiverUsername === profile?.username || data.isGroupChat) {
         let messageIndex;
         if(!data.isGroupChat)
@@ -157,6 +158,7 @@ export class ChatUtils {
   }
 
   static socketIOMessageReceived(chatMessages, username, setConversationId, setChatMessages) {
+    console.log('socketIOMessageReceived', chatMessages);
     chatMessages = cloneDeep(chatMessages);
     socketService?.socket?.on('message received', (data) => {
       if (
@@ -164,7 +166,9 @@ export class ChatUtils {
         data.receiverUsername?.toLowerCase() === username ||
         data.isGroupChat === true
       ) {
+        console.log('message received ne', ChatUtils.conversationId);
         if(data.conversationId === ChatUtils.conversationId || data.groupId === ChatUtils.conversationId) {
+          console.log('set message');
           setConversationId(ChatUtils.conversationId);
           ChatUtils.privateChatMessages.push(data);
           chatMessages = [...ChatUtils.privateChatMessages];

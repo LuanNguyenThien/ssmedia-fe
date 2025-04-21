@@ -21,22 +21,26 @@ import { chatService } from "@services/api/chat/chat.service";
 import { timeAgo } from "@services/utils/timeago.utils";
 import SearchList from "./search-list/SearchList";
 import ChatListBody from "./ChatListBody";
+import CreateGroup from "../group/CreateGroup";
 
 const ChatList = () => {
-    const { profile } = useSelector((state) => state.user);
-    const { chatList } = useSelector((state) => state.chat);
-    const [search, setSearch] = useState("");
-    const [searchResult, setSearchResult] = useState([]);
-    const [isSearching, setIsSearching] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [componentType, setComponentType] = useState("chatList");
-    let [chatMessageList, setChatMessageList] = useState([]);
-    const [rendered, setRendered] = useState(false);
-    const debouncedValue = useDebounce(search, 1000);
     const dispatch = useDispatch();
     const location = useLocation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const [search, setSearch] = useState("");
+    const debouncedValue = useDebounce(search, 1000);
+
+    const { profile } = useSelector((state) => state.user);
+    const { chatList } = useSelector((state) => state.chat);
+    let [chatMessageList, setChatMessageList] = useState([]);
+    const [searchResult, setSearchResult] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [componentType, setComponentType] = useState("chatList");
+    const [rendered, setRendered] = useState(false);
+
+    const [isOpenCreateGroup, setIsOpenCreateGroup] = useState(false);
 
     const searchUsers = useCallback(
         async (query) => {
@@ -216,9 +220,20 @@ const ChatList = () => {
 
     return (
         <div className="conversation-container size-full">
+            {isOpenCreateGroup && <CreateGroup onClickBack={()=>setIsOpenCreateGroup(false)}/>}
             <div className="flex flex-col justify-end items-start h-max w-full ">
                 <div className="flex justify-between items-center pt-3">
                     <div className="font-extrabold text-xl">Your chats</div>
+                    <div className="flex items-center gap-2">
+                        <div>waiting list</div>
+                        <div
+                            onClick={() => {
+                                setIsOpenCreateGroup(true);
+                            }}
+                        >
+                            create group
+                        </div>
+                    </div>
                 </div>
 
                 <div

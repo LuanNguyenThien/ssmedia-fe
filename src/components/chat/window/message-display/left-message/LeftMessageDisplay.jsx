@@ -1,39 +1,34 @@
 import Avatar from "@components/avatar/Avatar";
 import Reactions from "@components/posts/reactions/Reactions";
-import { reactionsMap } from "@services/utils/static.data";
 import { timeAgo } from "@services/utils/timeago.utils";
-import PropTypes from "prop-types";
 import { useState, useRef } from "react";
 import { DynamicSVG } from "./../../../../sidebar/components/SidebarItems";
 import { icons } from "@assets/assets";
-import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
 import LeftMessageBubble from "./LeftMessageBubble";
+import ReactionsDisplay from "../reactions/ReactionsDisplay";
+import useHandleOutsideClick from "@/hooks/useHandleOutsideClick";
 
 const LeftMessageDisplay = ({
     chat,
-    profile,
     toggleReaction,
-    showReactionIcon,
     index,
     activeElementIndex,
     reactionRef,
     setToggleReaction,
     handleReactionClick,
-    deleteMessage,
-    showReactionIconOnHover,
     setActiveElementIndex,
-    setSelectedReaction,
     setShowImageModal,
     setImageUrl,
     showImageModal,
+    onShowReactionsTab,
+    onCloseReactionTab,
 }) => {
     const optionsRef = useRef(null);
-    const showOptionsRef = useRef(null);
-    const [isShowOptions, setIsShowOptions] = useState(false);
     const [isShowBottom, setIsShowBottom] = useState(false);
     const [isHoverMessage, setIsHoverMessage] = useState(false);
 
-    useHandleOutsideClick(showOptionsRef, setIsShowOptions);
+    const reactionTabRef = useRef(null);
+    useHandleOutsideClick(reactionTabRef, onCloseReactionTab);
 
     const handleClickMessage = () => {
         setIsShowBottom(!isShowBottom);
@@ -61,7 +56,8 @@ const LeftMessageDisplay = ({
                                     handleClick={(event) => {
                                         const body = {
                                             conversationId:
-                                                chat?.conversationId || chat?.groupId,
+                                                chat?.conversationId ||
+                                                chat?.groupId,
                                             messageId: chat?._id,
                                             reaction: event,
                                             type: "add",
@@ -121,19 +117,6 @@ const LeftMessageDisplay = ({
                                         svgData={icons.feeling}
                                     />
                                 </div>
-                                {/* <div
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setIsHoverMessage(false);
-                                        setIsShowOptions(!isShowOptions);
-                                    }}
-                                    className="text-primary-black/30 size-6"
-                                >
-                                    <DynamicSVG
-                                        className={""}
-                                        svgData={icons.options}
-                                    />
-                                </div> */}
                             </div>
                         )}
 
@@ -144,7 +127,7 @@ const LeftMessageDisplay = ({
                                 </span>
                             </div>
                         )}
-                        {!chat?.deleteForEveryone  && (
+                        {!chat?.deleteForEveryone && (
                             <LeftMessageBubble
                                 chat={chat}
                                 showImageModal={showImageModal}
@@ -157,30 +140,42 @@ const LeftMessageDisplay = ({
                     {chat?.reaction &&
                         chat?.reaction.length > 0 &&
                         !chat.deleteForEveryone && (
-                            <div className="absolute left-0 -bottom-2 size-4 z-50">
-                                {chat?.reaction.map((data, index) => (
-                                    <img
-                                        className="size-full object-cover"
-                                        key={index}
-                                        src={reactionsMap[data?.type]}
-                                        alt=""
-                                        onClick={() => {
-                                            if (
-                                                data?.senderName ===
-                                                profile?.username
-                                            ) {
-                                                const body = {
-                                                    conversationId:
-                                                        chat?.conversationId || chat?.groupId,
-                                                    messageId: chat?._id,
-                                                    reaction: data?.type,
-                                                    type: "remove",
-                                                };
-                                                setSelectedReaction(body);
-                                            }
-                                        }}
-                                    />
-                                ))}
+                            <div
+                                ref={reactionTabRef}
+                                className="absolute left-0 -bottom-2 size-4 z-50 flex items-start"
+                            >
+                                <ReactionsDisplay
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onShowReactionsTab();
+                                    }}
+                                    reactions={chat?.reaction}
+                                    direction={false}
+                                />
+                                {/* {chat?.reaction.map((data, index) => (
+                                <img
+                                    className="size-full object-cover"
+                                    key={index}
+                                    src={reactionsMap[data?.type]}
+                                    alt=""
+                                    onClick={() => {
+                                        if (
+                                            data?.senderName ===
+                                            profile?.username
+                                        ) {
+                                            const body = {
+                                                conversationId:
+                                                    chat?.conversationId ||
+                                                    chat?.groupId,
+                                                messageId: chat?._id,
+                                                reaction: data?.type,
+                                                type: "remove",
+                                            };
+                                            setSelectedReaction(body);
+                                        }
+                                    }}
+                                />
+                            ))} */}
                             </div>
                         )}
                 </div>
@@ -202,24 +197,4 @@ const LeftMessageDisplay = ({
         </div>
     );
 };
-
-LeftMessageDisplay.propTypes = {
-    chat: PropTypes.object,
-    profile: PropTypes.object,
-    reactionRef: PropTypes.any,
-    toggleReaction: PropTypes.bool,
-    showReactionIcon: PropTypes.bool,
-    index: PropTypes.number,
-    activeElementIndex: PropTypes.number,
-    setToggleReaction: PropTypes.func,
-    handleReactionClick: PropTypes.func,
-    deleteMessage: PropTypes.func,
-    showReactionIconOnHover: PropTypes.func,
-    setActiveElementIndex: PropTypes.func,
-    setSelectedReaction: PropTypes.func,
-    setShowImageModal: PropTypes.func,
-    showImageModal: PropTypes.bool,
-    setImageUrl: PropTypes.func,
-};
-
 export default LeftMessageDisplay;

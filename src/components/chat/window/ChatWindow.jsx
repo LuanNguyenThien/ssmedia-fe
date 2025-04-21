@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import Avatar from "@components/avatar/Avatar";
 import { useDispatch, useSelector } from "react-redux";
 import "@components/chat/window/ChatWindow.scss";
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Utils } from "@services/utils/utils.service";
 import { userService } from "@services/api/user/user.service";
@@ -22,11 +22,10 @@ import LoadingMessage from "@/components/state/loading-message/LoadingMessage";
 import { IoIosVideocam } from "react-icons/io";
 import { PiPhoneFill } from "react-icons/pi";
 
-
 const ChatWindow = () => {
+    const isMobile = Utils.isMobileDevice();
     const { profile } = useSelector((state) => state.user);
     const { isLoading } = useSelector((state) => state.chat);
-    const isMobile = window.innerWidth <= 768;
     const [receiver, setReceiver] = useState();
     const [conversationId, setConversationId] = useState("");
     const [chatMessages, setChatMessages] = useState([]);
@@ -36,10 +35,6 @@ const ChatWindow = () => {
     const [isMessagesLoading, setIsMessagesLoading] = useState(true);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    // Debug counter - consider removing in production
-    const count = useRef(0);
-    console.log("chatMessages", count.current++);
 
     //loading state
     const [isSending, setIsSending] = useState(false);
@@ -67,49 +62,55 @@ const ChatWindow = () => {
 
     const initiateCall = async (callType, receiverId) => {
         const callData = {
-          callerName: profile.username,
-          callerId: profile.userId,
-          callType,
-          isReceivingCall: false,
-          receiverId,
-          receiverName: receiver?.username || receiver?.name
+            callerName: profile.username,
+            callerId: profile.userId,
+            callType,
+            isReceivingCall: false,
+            receiverId,
+            receiverName: receiver?.username || receiver?.name,
         };
 
         // Kiểm tra xem cửa sổ popup đã được mở hay chưa
         if (ChatUtils.callWindow && !ChatUtils.callWindow.closed) {
-            ChatUtils.callWindow.postMessage({ type: 'FORCE_CLOSE' }, '*');
+            ChatUtils.callWindow.postMessage({ type: "FORCE_CLOSE" }, "*");
             ChatUtils.callWindow.close();
         }
-      
+
         ChatUtils.callWindow = window.open(
-          "",
-          "_blank",
-          "width=800,height=600,top=100,left=100,scrollbars=no"
+            "",
+            "_blank",
+            "width=800,height=600,top=100,left=100,scrollbars=no"
         );
-      
-        ChatUtils.callWindow.document.title = `${callType === "video" ? "Video" : "Voice"} Call`;
-        ChatUtils.callWindow.document.body.style.margin = '0';
-        ChatUtils.callWindow.document.body.style.overflow = 'hidden';
-        ChatUtils.callWindow.document.body.innerHTML = '<div id="call-root"></div>';
-      
+
+        ChatUtils.callWindow.document.title = `${
+            callType === "video" ? "Video" : "Voice"
+        } Call`;
+        ChatUtils.callWindow.document.body.style.margin = "0";
+        ChatUtils.callWindow.document.body.overflow = "hidden";
+        ChatUtils.callWindow.document.body.innerHTML =
+            '<div id="call-root"></div>';
+
         try {
-          const stream = await ChatUtils.callWindow.navigator.mediaDevices.getUserMedia({
-            video: callType === "video",
-            audio: true,
-          });
-      
-          const root = createRoot(ChatUtils.callWindow.document.getElementById("call-root"));
-          root.render(
-            <VideoCallWindow
-              callData={callData}
-              stream={stream}
-              onClose={() => ChatUtils.callWindow.close()}
-              popupWindowRef={ChatUtils.callWindow} // Truyền tham chiếu cửa sổ popup
-            />
-          );
+            const stream =
+                await ChatUtils.callWindow.navigator.mediaDevices.getUserMedia({
+                    video: callType === "video",
+                    audio: true,
+                });
+
+            const root = createRoot(
+                ChatUtils.callWindow.document.getElementById("call-root")
+            );
+            root.render(
+                <VideoCallWindow
+                    callData={callData}
+                    stream={stream}
+                    onClose={() => ChatUtils.callWindow.close()}
+                    popupWindowRef={ChatUtils.callWindow} // Truyền tham chiếu cửa sổ popup
+                />
+            );
         } catch (error) {
-          console.error("Error accessing media devices:", error);
-          ChatUtils.callWindow.close();
+            console.error("Error accessing media devices:", error);
+            ChatUtils.callWindow.close();
         }
     };
 
@@ -122,7 +123,7 @@ const ChatWindow = () => {
                     isGroup
                 );
                 ChatUtils.privateChatMessages = [...response.data.messages];
-                if (isGroup === "true") {
+                if (isGroup) {
                     ChatUtils.conversationId = receiverId;
                 } else if (response.data.messages.length > 0) {
                     ChatUtils.conversationId =
@@ -194,6 +195,37 @@ const ChatWindow = () => {
                         user?.userOne === receiver?.username &&
                         user?.userTwo === profile?.username
                 );
+
+                // Create temporary message object for immediate UI update
+                const tempMessageId = new ObjectId().toString();
+                const tempMessage = {
+                    _id: tempMessageId,
+                    conversationId: conversationId || new ObjectId().toString(),
+                    receiverId: searchParamsId,
+                    receiverUsername: receiver?.username || receiver?.name,
+                    receiverAvatarColor: receiver?.avatarColor || "",
+                    receiverProfilePicture: receiver?.profilePicture || "",
+                    senderUsername: profile?.username,
+                    senderId: profile?.userId,
+                    senderAvatarColor: profile?.avatarColor,
+                    senderProfilePicture: profile?.profilePicture,
+                    body: message,
+                    isRead: false,
+                    gifUrl: gifUrl || "",
+                    selectedImage: selectedImage || "",
+                    reaction: [],
+                    createdAt: new Date().toISOString(),
+                    deleteForMe: false,
+                    deleteForEveryone: false,
+                };
+
+                // Update local state immediately for better UX
+                setChatMessages((prevMessages) => [
+                    ...prevMessages,
+                    tempMessage,
+                ]);
+
+                // Then proceed with sending to server
                 const messageData = ChatUtils.messageData({
                     receiver: isGroup ? undefined : receiver,
                     conversationId,
@@ -206,6 +238,7 @@ const ChatWindow = () => {
                     isGroupChat: isGroup,
                     groupId: isGroup ? searchParamsId : undefined,
                 });
+
                 await chatService.saveChatMessage(messageData);
             } catch (error) {
                 Utils.dispatchNotification(
@@ -272,18 +305,20 @@ const ChatWindow = () => {
         if (!rendered) setRendered(true);
     }, [getUserProfileByUserId, getNewUserMessages, rendered]);
 
-    // Socket events for message receiving
+    // Socket events for message receiving - modified for more reliable updates
     useEffect(() => {
         if (rendered) {
             ChatUtils.socketIOMessageReceived(
                 chatMessages,
                 searchParamsUsername,
                 setConversationId,
-                setChatMessages
+                (messages) => {
+                    console.log("Socket message update", messages?.length);
+                    setChatMessages(messages);
+                }
             );
         }
         if (!rendered) setRendered(true);
-
         const fetchInitialOnlineUsers = () => {
             ChatUtils.fetchOnlineUsers(setOnlineUsers);
         };
@@ -375,61 +410,27 @@ const ChatWindow = () => {
                                 </div>
                                 {/* Call buttons */}
                                 <div className="chat-call-buttons flex justify-end items-center gap-4 ml-auto pr-2">
-                                    <PiPhoneFill className="size-6 text-primary/80 hover:text-primary/60" onClick={() => initiateCall("voice")}/>  
-                                    <IoIosVideocam className="size-6 text-primary/80 hover:text-primary/70" onClick={() => initiateCall("video")}/>
-                                    {/* <button
-                                        className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 transition-colors duration-200 text-white shadow-md"
+                                    <PiPhoneFill
+                                        className="size-6 text-primary/80 hover:text-primary/60"
                                         onClick={() => initiateCall("voice")}
-                                        aria-label="Voice Call"
-                                        title="Voice Call"
-                                    >
-                                        <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="18"
-                                        height="18"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        >
-                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                                        </svg>
-                                    </button>
-                                    <button
-                                        className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 transition-colors duration-200 text-white shadow-md"
+                                    />
+                                    <IoIosVideocam
+                                        className="size-6 text-primary/80 hover:text-primary/70"
                                         onClick={() => initiateCall("video")}
-                                        aria-label="Video Call"
-                                        title="Video Call"
-                                    >
-                                        <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="18"
-                                        height="18"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        >
-                                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
-                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                                        </svg>
-                                    </button> */}
+                                    />
                                 </div>
                             </div>
 
                             {/* chat window */}
-                            <div className="flex-1 max-h-full pb-16 overflow-y-scroll pt-2 px-4 scrollbar-hide">
+                            <div className="flex-1 max-h-full pb-16 overflow-y-scroll pt-2 px-4 sm:px-0 scrollbar-hide">
                                 {isMessagesLoading ? (
                                     <div className="flex items-center justify-center size-full max-h-full">
                                         <div className="size-auto">
                                             <LoadingMessage />
                                         </div>
                                     </div>
-                                ) : chatMessages.length > 0 ? (
+                                ) : Array.isArray(chatMessages) &&
+                                  chatMessages.length > 0 ? (
                                     <MessageDisplay
                                         chatMessages={chatMessages}
                                         profile={profile}
@@ -437,6 +438,7 @@ const ChatWindow = () => {
                                             updateMessageReaction
                                         }
                                         deleteChatMessage={deleteChatMessage}
+                                        isGroup={isGroup}
                                     />
                                 ) : (
                                     <FirstChatScreen />

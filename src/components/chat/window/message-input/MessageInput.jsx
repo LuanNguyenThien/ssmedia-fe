@@ -106,6 +106,10 @@ const MessageInput = ({ setChatMessage }) => {
         if (messageInputRef?.current) {
             messageInputRef.current.focus();
         }
+
+        return () => {
+            setMessage("");
+        };
     }, [setChatMessage]);
 
     return (
@@ -131,7 +135,7 @@ const MessageInput = ({ setChatMessage }) => {
                 <GiphyContainer handleGiphyClick={handleGiphyClick} />
             )}
             <div
-                className={`chat-inputarea size-full`}
+                className={`chat-inputarea size-full z-50`}
                 data-testid="chat-inputarea"
                 ref={inputContainerRef}
             >
@@ -150,16 +154,16 @@ const MessageInput = ({ setChatMessage }) => {
                 <form
                     onSubmit={(e) => {
                         e.stopPropagation();
-                        e.preventDefault(); 
-                        handleClick(); 
+                        e.preventDefault();
+                        handleClick();
                     }}
                     onFocus={() => setHasFocus(true)}
                     onBlur={() => setHasFocus(false)}
                 >
                     <div
-                        className={`size-full flex rounded-[30px] items-center justify-between py-4 gap-4 ${
+                        className={`size-full flex rounded-[30px] items-center justify-between py-4 gap-4  ${
                             hasFocus || message.length > 0 || showImagePreview
-                                ? "bg-background-blur border-4 border-primary-white transition-all duration-300 px-4"
+                                ? "bg-background-blur border-4 border-primary-white transition-all duration-300 px-4 "
                                 : ""
                         }`}
                     >

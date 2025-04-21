@@ -1,22 +1,19 @@
 import Reactions from "@components/posts/reactions/Reactions";
 import { timeAgo } from "@services/utils/timeago.utils";
-import PropTypes from "prop-types";
 import RightMessageBubble from "@components/chat/window/message-display/right-message-display/RightMessageBubble";
-import { reactionsMap } from "@services/utils/static.data";
 import { icons } from "@assets/assets";
 import { useState } from "react";
 import { DynamicSVG } from "./../../../../sidebar/components/SidebarItems";
 import { useRef } from "react";
 import OptionSelector from "../options-selector/OptionSelector";
 import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
+import ReactionsDisplay from "../reactions/ReactionsDisplay";
 
 const RightMessageDisplay = ({
     chat,
     lastChatMessage,
     profile,
     toggleReaction,
-    showReactionIcon,
-    showReactionIconOnHover,
     index,
     activeElementIndex,
     reactionRef,
@@ -24,16 +21,19 @@ const RightMessageDisplay = ({
     handleReactionClick,
     deleteMessage,
     setActiveElementIndex,
-    setSelectedReaction,
     setShowImageModal,
     setImageUrl,
     showImageModal,
     lastIndex,
+    onShowReactionsTab,
+    onCloseReactionTab,
 }) => {
     const optionsRef = useRef(null);
     const showOptionsRef = useRef(null);
     const [isShowOptions, setIsShowOptions] = useState(false);
     useHandleOutsideClick(showOptionsRef, setIsShowOptions);
+    const reactionTabRef = useRef(null);
+    useHandleOutsideClick(reactionTabRef, onCloseReactionTab);
 
     const [isShowBottom, setIsShowBottom] = useState(false);
     const [isHoverMessage, setIsHoverMessage] = useState(false);
@@ -46,7 +46,10 @@ const RightMessageDisplay = ({
         !chat?.deleteForEveryone &&
         index === lastIndex;
     return (
-        <div className="message right-message pl-[20%] sm:pl-0" data-testid="right-message">
+        <div
+            className="message right-message pl-[20%] sm:pl-0"
+            data-testid="right-message"
+        >
             {/* message item */}
             <div className="message-right-content-container-wrapper relative">
                 {/* reactions */}
@@ -60,7 +63,8 @@ const RightMessageDisplay = ({
                                     handleClick={(event) => {
                                         const body = {
                                             conversationId:
-                                                chat?.conversationId || chat?.groupId,
+                                                chat?.conversationId ||
+                                                chat?.groupId,
                                             messageId: chat?._id,
                                             reaction: event,
                                             type: "add",
@@ -146,8 +150,8 @@ const RightMessageDisplay = ({
                         </div>
                     )}
 
-                     {/* thu hồi tất cả */}
-                    {(chat?.deleteForEveryone && chat?.deleteForMe) && (
+                    {/* thu hồi tất cả */}
+                    {chat?.deleteForEveryone && chat?.deleteForMe && (
                         <div className="message-bubble right-message-bubble">
                             <span className="message-deleted">
                                 message deleted
@@ -155,9 +159,9 @@ const RightMessageDisplay = ({
                         </div>
                     )}
                     {/* thu hồi bản thân */}
-                    {(!chat?.deleteForEveryone &&
+                    {!chat?.deleteForEveryone &&
                         chat?.deleteForMe &&
-                        chat?.senderUsername === profile?.username) && (
+                        chat?.senderUsername === profile?.username && (
                             <div className="message-bubble right-message-bubble">
                                 <span className="message-deleted">
                                     message deleted
@@ -165,7 +169,7 @@ const RightMessageDisplay = ({
                             </div>
                         )}
 
-                        {/* không thu hồi */}
+                    {/* không thu hồi */}
                     {!chat?.deleteForEveryone && !chat?.deleteForMe && (
                         <RightMessageBubble
                             chat={chat}
@@ -174,14 +178,25 @@ const RightMessageDisplay = ({
                             setShowImageModal={setShowImageModal}
                         />
                     )}
-
                 </div>
 
                 {chat?.reaction &&
                     chat?.reaction.length > 0 &&
                     !chat.deleteForEveryone && (
-                        <div className="absolute right-0 -bottom-2 size-4 z-50">
-                            {chat?.reaction.map((data, index) => (
+                        <div
+                            ref={reactionTabRef}
+                            className="absolute w-max right-0 -bottom-2 size-4 z-50"
+                        >
+                            <ReactionsDisplay
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onShowReactionsTab();
+                                }}
+                                reactions={chat?.reaction}
+                                direction={true}
+                            />
+
+                            {/* {chat?.reaction.map((data, index) => (
                                 <img
                                     className="size-full object-cover"
                                     key={index}
@@ -204,7 +219,7 @@ const RightMessageDisplay = ({
                                         }
                                     }}
                                 />
-                            ))}
+                            ))} */}
                         </div>
                     )}
             </div>
@@ -230,20 +245,10 @@ const RightMessageDisplay = ({
                                 {lastChatMessage?.isRead ? (
                                     <div className="h-3 w-max flex items-center justify-end gap-1">
                                         seen
-                                        {/* <img
-                                            src={icons.check}
-                                            className="size-full object-fit"
-                                            alt=""
-                                        /> */}
                                     </div>
                                 ) : (
                                     <div className="h-3 w-max flex items-center justify-end gap-1">
                                         delivered
-                                        {/* <img
-                                            src={icons.uncheck}
-                                            className="size-full object-fit"
-                                            alt=""
-                                        /> */}
                                     </div>
                                 )}
                             </>
@@ -255,23 +260,4 @@ const RightMessageDisplay = ({
     );
 };
 
-RightMessageDisplay.propTypes = {
-    chat: PropTypes.object,
-    lastChatMessage: PropTypes.object,
-    profile: PropTypes.object,
-    reactionRef: PropTypes.any,
-    toggleReaction: PropTypes.bool,
-    showReactionIcon: PropTypes.bool,
-    index: PropTypes.number,
-    activeElementIndex: PropTypes.number,
-    setToggleReaction: PropTypes.func,
-    handleReactionClick: PropTypes.func,
-    deleteMessage: PropTypes.func,
-    showReactionIconOnHover: PropTypes.func,
-    setActiveElementIndex: PropTypes.func,
-    setSelectedReaction: PropTypes.func,
-    setShowImageModal: PropTypes.func,
-    showImageModal: PropTypes.bool,
-    setImageUrl: PropTypes.func,
-};
 export default RightMessageDisplay;

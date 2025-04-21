@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import "@pages/social/Social.scss";
 import { Outlet, useLocation } from "react-router-dom";
 
@@ -8,18 +7,15 @@ import SidebarMb from "@components/sidebar/SidebarMb";
 import Header from "@components/header/Header";
 import StickySidebar from "@components/sidebar/StickySidebar";
 import { includes } from "lodash";
+import { Utils } from "@/services/utils/utils.service";
 
 const layout_1_4_list = ["streams", "profile", "save", "people","post"];
 const layout_0_5_list = ["chat", "groups", "meeting", "search"];
 
 const Social = () => {
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 480);
+    const isMobile = Utils.isMobileDevice()
     const section = useLocation().pathname.split("/")[3];
-    useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth <= 390);
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+
 
     const getLayout = () => {
         if (isMobile) {
