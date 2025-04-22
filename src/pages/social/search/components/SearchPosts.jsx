@@ -1,7 +1,7 @@
 import Post from "@/components/posts/post/Post";
 import PeopleCard from "./PeopleCard";
-import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { IoIosArrowDown } from "react-icons/io";
 
 const PostCards = ({ posts }) => {
     return (
@@ -19,14 +19,14 @@ const PostCards = ({ posts }) => {
         </div>
     );
 };
-const PeopleCards = ({ users, setRendered }) => {
+const PeopleCards = ({ users, setRendered, handleShowMore, hasMoreUsers }) => {
     return (
         <>
             <div className=" rounded-[10px]  flex flex-col gap-2 bg-primary-white p-6 ">
                 <span className="text-xl font-extrabold">
                     Look Who We Found
                 </span>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 ">
                     {users &&
                         users.map((user) => (
                             <PeopleCard
@@ -36,6 +36,15 @@ const PeopleCards = ({ users, setRendered }) => {
                             />
                         ))}
                 </div>
+                {hasMoreUsers && (
+                    <div
+                        onClick={handleShowMore}
+                        className="text-primary-black hover:text-primary font-semibold text-sm mt-2 flex flex-col justify-center items-center cursor-pointer"
+                    >
+                        <span> Show More</span>
+                        <IoIosArrowDown className="" />
+                    </div>
+                )}
 
                 {users.length === 0 && (
                     <div className="flex items-center justify-center h-full">
@@ -54,7 +63,8 @@ const PeopleCards = ({ users, setRendered }) => {
 const SearchPosts = ({
     searchResults = [],
     state,
-    fetchSearchResults,
+    handleShowMore,
+    hasMoreUsers,
 }) => {
     const [rendered, setRendered] = useState(false);
 
@@ -66,15 +76,21 @@ const SearchPosts = ({
             case "People":
                 return (
                     <PeopleCards
+                        handleShowMore={handleShowMore}
                         setRendered={setRendered}
                         users={searchResults?.users}
+                        hasMoreUsers={hasMoreUsers}
                     />
                 );
             default:
                 return (
                     <>
                         {searchResults.users && (
-                            <PeopleCards users={searchResults?.users} />
+                            <PeopleCards
+                                hasMoreUsers={hasMoreUsers}
+                                handleShowMore={handleShowMore}
+                                users={searchResults?.users}
+                            />
                         )}
                         {searchResults.posts && (
                             <PostCards posts={searchResults?.posts} />
@@ -90,10 +106,6 @@ const SearchPosts = ({
                 );
         }
     };
-    useEffect(() => {
-        fetchSearchResults();
-    }, [rendered]);
-
     return (
         <div className="size-full max-h-full overflow-y-scroll scroll-smooth flex flex-col gap-4 px-4">
             {renderContent()}
