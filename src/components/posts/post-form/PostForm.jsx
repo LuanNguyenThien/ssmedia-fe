@@ -87,7 +87,7 @@ const PostForm = () => {
   return (
     <>
       {" "}
-      <div className="w-full max-w-3xl bg-white rounded-xl shadow-sm p-4">
+      <div className="w-full max-w-full bg-white rounded-xl shadow-sm p-4">
         <div
           className="flex gap-3 mb-4 cursor-pointer"
           onClick={() => openPostModal()}

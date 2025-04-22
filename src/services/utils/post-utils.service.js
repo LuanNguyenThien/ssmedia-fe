@@ -22,8 +22,10 @@ export class PostUtils {
     setPostData(postData);
   }
   static postInputHtml(textContent, postData, setPostData) {
-    postData.htmlPost = textContent;
-    setPostData(postData);
+    setPostData({
+      ...postData,
+      htmlPost: textContent
+    });
   }
 
   static closePostModal(dispatch) {

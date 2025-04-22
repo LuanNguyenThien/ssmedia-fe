@@ -229,11 +229,11 @@ const CommentArea = ({ post }) => {
   }, [selectedUserReaction, reactions]);
 
   return (
-    <div className="flex items-center justify-between w-full max-w-3xl py-3 ">
+    <div className="flex items-center justify-between w-full max-w-full py-1 ">
       <div className="flex items-center">
         {/* Upvote button */}
         <button
-          className={`flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-l-full border border-gray-200 ${
+          className={`flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-3 h-7 rounded-l-full border border-gray-200 ${
             userSelectedReaction.toLowerCase() === "upvote"
               ? "text-green-500"
               : "text-gray-700"
@@ -248,7 +248,7 @@ const CommentArea = ({ post }) => {
 
         {/* Downvote button */}
         <button
-          className={`flex items-center justify-center bg-gray-100 hover:bg-gray-200 w-9 h-9 rounded-r-full border border-gray-200 border-l-0 ${
+          className={`flex items-center justify-center bg-gray-100 hover:bg-gray-200 w-9 h-7 rounded-r-full border border-gray-200 border-l-0 ${
             userSelectedReaction.toLowerCase() === "downvote"
               ? "text-red-500"
               : "text-gray-400"
@@ -260,7 +260,7 @@ const CommentArea = ({ post }) => {
       </div>
       <div className="flex items-center gap-2">
         <button
-          className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200"
+          className="flex items-center gap-2 px-4 py-0.5 text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200"
           onClick={toggleCommentInput}
         >
           <MessageSquare className="w-5 h-5" />
@@ -268,11 +268,11 @@ const CommentArea = ({ post }) => {
         </button>
 
         <button
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+          className="flex items-center gap-2 px-4 py-0.5 rounded-full bg-gray-100 hover:bg-gray-200 transition"
           onClick={addFavoritePost}
         >
           <FaBookmark
-            className={`favorite-icon ${
+            className={`favorite-icon w-5 h-5 ${
               isFavorite ? "text-blue-600" : "text-gray-500"
             }`}
           />
@@ -285,7 +285,7 @@ const CommentArea = ({ post }) => {
           </span>
         </button>
 
-        <button className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200">
+        <button className="flex items-center gap-2 px-4 py-0.5 text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200">
           <Share2 className="w-5 h-5" />
           <span className="font-medium hidden sm:block">Share</span>
         </button>

@@ -1,41 +1,34 @@
-import Skeleton from 'react-loading-skeleton';
-import '@components/posts/post/Post.scss';
+import Skeleton from "react-loading-skeleton"
+import "react-loading-skeleton/dist/skeleton.css"
+import "@components/posts/post/PostSkeleton.scss"
 
 const PostSkeleton = () => {
   return (
-    <div className="post-body" data-testid="posts-skeleton">
-      <div className="user-post-data">
-        <div className="user-post-data-wrap">
-          <Skeleton baseColor="#EFF1F6" circle height="100%" containerClassName="avatar-skeleton" />
-          <div className="user-post-info">
-            <div className="inline-title-display">
-              <h5>
-                <Skeleton baseColor="#EFF1F6" width={120} height={20} style={{ marginBottom: '5px' }} />
-              </h5>
-            </div>
+    <div className="post-skeleton" data-testid="posts-skeleton">
+      <div className="post-header">
+        <div className="avatar-container">
+          <Skeleton circle height={40} width={40} baseColor="#EFF1F6" />
+        </div>
+        <div className="user-info">
+          <Skeleton width={120} height={20} baseColor="#EFF1F6" />
+          <Skeleton width={70} height={14} baseColor="#EFF1F6" />
+        </div>
+      </div>
 
-            <p className="time-text-display">
-              <Skeleton baseColor="#EFF1F6" width={70} />
-            </p>
-          </div>
-          <div className="user-post" style={{ marginTop: '1rem', borderBottom: '' }}>
-            <div className="user-post-with-bg" style={{ backgroundColor: '#EFF1F6' }}>
-              <p className="time-text-display">
-                <Skeleton baseColor="#EFF1F6" width={70} /> &middot; <Skeleton baseColor="#EFF1F6" width={70} />
-              </p>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0px' }}>
-              <div>
-                <Skeleton baseColor="#EFF1F6" width={120} height={25} />
-              </div>
-              <div>
-                <Skeleton baseColor="#EFF1F6" width={120} height={25} />
-              </div>
-            </div>
-          </div>
+      <div className="post-content">
+        <div className="post-background">
+          <Skeleton width={70} height={14} baseColor="#EFF1F6" />
+          <span className="separator">&middot;</span>
+          <Skeleton width={70} height={14} baseColor="#EFF1F6" />
+        </div>
+
+        <div className="post-actions">
+          <Skeleton width={120} height={25} baseColor="#EFF1F6" />
+          <Skeleton width={120} height={25} baseColor="#EFF1F6" />
         </div>
       </div>
     </div>
-  );
-};
-export default PostSkeleton;
+  )
+}
+
+export default PostSkeleton

@@ -38,10 +38,9 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
   };
 
   const sumAllReactions = (reactions) => {
-    if (reactions?.length) {
-      const result = reactions.map((item) => item.value).reduce((prev, next) => prev + next);
-      return Utils.shortenLargeNumbers(result);
-    }
+    if (!reactions || typeof reactions !== "object") return 0;
+    const result = Object.values(reactions).reduce((prev, next) => prev + next, 0);
+    return Utils.shortenLargeNumbers(result);
   };
 
   const openReactionsComponent = () => {
@@ -120,8 +119,8 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
             onMouseEnter={getPostReactions}
             onClick={() => openReactionsComponent()}
           >
-            {post.reactions["upvote"] > 0 && (
-              <>View {post.reactions["upvote"]} upvotes</>
+            {sumAllReactions(post?.reactions) > 0 && (
+              <>View {sumAllReactions(post?.reactions)} votes</>
             )}
             <div
               className="tooltip-container-text tooltip-container-likes-bottom"

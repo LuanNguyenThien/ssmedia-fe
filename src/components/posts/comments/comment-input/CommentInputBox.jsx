@@ -103,7 +103,7 @@ const CommentInputBox = ({ post, parentId = null, onCommentAdded }) => {
 
   return (
     <>
-      <div className="w-full max-w-3xl mx-auto mt-2">
+      <div className="w-full max-w-full mx-auto mt-2">
         <div className="relative flex items-center gap-2 p-1 bg-slate-50 rounded-2xl">
           <div className="flex-1">
             {showImagePreview && (

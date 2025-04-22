@@ -10,6 +10,7 @@ import PhotoSkeleton from "@pages/social/photos/PhotoSkeleton";
 import ProfileSkeleton from "@pages/social/profile/ProfileSkeleton";
 import ChatSkeleton from "@pages/social/chat/ChatSkeleton";
 import VideoSkeleton from "@pages/social/videos/VideoSkeleton";
+import PostSkeleton from "@components/posts/post/PostSkeleton";
 import { ChakraProvider } from "@chakra-ui/react";
 import Group from "@pages/social/groups/group";
 
@@ -41,7 +42,6 @@ export const AppRouter = () => {
         },
         {
             path: "/forgot-password",
-
             element: (
                 <ChakraProvider>
                     <ForgotPassword />
@@ -79,7 +79,7 @@ export const AppRouter = () => {
                 {
                     path: "save",
                     element: (
-                        <Suspense fallback={<StreamsSkeleton />}>
+                        <Suspense fallback={<SavePage />}>
                             <SavePage />
                         </Suspense>
                     ),
@@ -87,7 +87,7 @@ export const AppRouter = () => {
                 {
                     path: "post/:postId",
                     element: (
-                        <Suspense fallback={<StreamsSkeleton />}>
+                        <Suspense fallback={<PostSkeleton />}>
                             <PostDetail />
                         </Suspense>
                     ),
@@ -103,7 +103,7 @@ export const AppRouter = () => {
                 {
                     path: "people",
                     element: (
-                        <Suspense fallback={<CardSkeleton />}>
+                        <Suspense fallback={<People />}>
                             <People />
                         </Suspense>
                     ),

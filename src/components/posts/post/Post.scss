@@ -134,6 +134,21 @@
             text-decoration: underline;
           }
         }
+        
+        .my-blocknote {
+          .bn-content {
+            background: #f0f0f0;
+          }
+          .bn-editor {
+            padding: 0px;
+          }
+          .bn-visual-media {
+            max-height: 400px;
+          }
+          .bn-inline-content .ProseMirror-trailingBreak {
+            display: none;
+          }
+        }
       }
 
       .user-post-with-bg {
