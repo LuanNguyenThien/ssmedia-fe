@@ -8,107 +8,98 @@ import {
 
 import Badge from "../../ui/badge/Badge";
 import React, { useState, useCallback, useEffect } from "react";
-import { userService } from "@services/api/user/user.service";
+import { postService } from "@services/api/post/post.service"; 
+import { userService } from "@services/api/user/user.service";// Giả sử bạn có service để lấy báo cáo
 import useEffectOnce from "@hooks/useEffectOnce";
-import ReportDetailModal from "./ReportDetailModal";
+// import ReportDetailModal from "./ReportDetailModal";
 import Alert from "../../ui/alert/Alert";
 
-interface UserData {
+interface ReportData {
   reportId: string;
-  _id: string;
+  postId: string;
   user: {
     image: string;
     name: string;
     role: string;
   };
-  projectName: string;
-  team: {
-    images: string[];
-  };
+  content: string;
   status: string;
-  budget: string;
-  description: string;
+  reportDate: string;
+  post : string;
 }
 
 export default function BasicTableOne() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [users, setUsers] = useState<UserData[]>([]);
+  const [reports, setReports] = useState<ReportData[]>([]);
   const [total, setTotal] = useState(1);
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(5);
-  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
 
-  const getAllUsers = useCallback(async () => {
+  const getAllReports = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await userService.getAllUsersReportAdminRole(
-        currentPage
-      );
-      const rawUsers = response.data.reportusers;
-      
-      const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
-        reportId : u.reportProfileInfo._id,
-        _id: u._id,
+      const response = await postService.getAllReportPost(currentPage);
+      console.log("response", response);
+      const rawReports = response.data.reportposts; // Giả sử bạn nhận được dữ liệu báo cáo trong mảng 'reports'
+    console.log("rawReports", rawReports);
+      const mappedReports: ReportData[] = rawReports.map((r: any) => ({
+        reportId: r.report._id,
+        postId: r.report.postId,
         user: {
-          image: u.profilePicture || "/default-avatar.jpg",
-          name: u.username,
-          role: "Member",
+          image: r.post.profilePicture || "/default-avatar.jpg",
+          name: r.post.username,
+          role: "Member", // Tùy chỉnh nếu cần lấy thêm thông tin về role
         },
-        projectName: u.reportProfileInfo.reason || "No project",
-        team: {
-          images: [u.profilePicture || "/default-avatar.jpg"],
-        },
-        description: u.reportProfileInfo.description || "No description",
-        status: u.reportProfileInfo.status,
-        budget: new Date(u.reportProfileInfo.createdAt).toLocaleDateString(
-          "vi-VN"
-        ),
+        content: r.report.content,
+        post: r.post.post,
+        status: r.report.status,
+        reportDate: new Date(r.report.createdAt).toLocaleDateString("vi-VN"),
       }));
 
-      setUsers(mappedUsers);
-      setTotal(response.data.totalUsers);
+      setReports(mappedReports);
+      setTotal(response.data.totalReports); // Giả sử bạn có tổng số báo cáo
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Error fetching reports:", error);
       setLoading(false);
     }
   }, [currentPage]);
 
-  const banUser = async (reportId: string ,userId: string, reason: string) => {
-    try {
-      await userService.ChangeStatus({ reportId, status: "reviewed" });
-      await userService.BanUser({ userId, reason });
-      
-      getAllUsers(); 
-    } catch (error) {
-      console.error("Ban user thất bại:", error);
-      alert("Ban user thất bại");
-    }
-  };
-
-  const accept = async (reportId: string, userId: string) => {
-    try {
-      await userService.ChangeStatus({ reportId, status: "reviewed" });
-     
-      getAllUsers();
-    } catch (error) {
-      console.error("Ban user thất bại:", error);
-      alert("Ban user thất bại");
-    }
-  };
-
-
   useEffectOnce(() => {
-    getAllUsers();
+    getAllReports();
   });
 
   useEffect(() => {
-    getAllUsers();
-  }, [getAllUsers]);
+    getAllReports();
+  }, [getAllReports]);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
+
+  const hirePost = async (reportId: string ,postId: string, reason: string) => {
+      try {
+        await postService.ChangeStatus({ reportId, status: "reviewed" });
+        await postService.HirePost({ postId, reason });
+        
+        getAllReports();
+      } catch (error) {
+        console.error("Ban user thất bại:", error);
+        alert("Ban user thất bại");
+      }
+    };
+  
+    const accept = async (reportId: string) => {
+      try {
+        await postService.ChangeStatus({ reportId, status: "reviewed" });
+       
+        getAllReports();
+      } catch (error) {
+        console.error("Ban user thất bại:", error);
+        alert("Ban user thất bại");
+      }
+    };
 
   const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
@@ -128,7 +119,13 @@ export default function BasicTableOne() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Reason
+                Post
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Reasion
               </TableCell>
               <TableCell
                 isHeader
@@ -152,10 +149,10 @@ export default function BasicTableOne() {
           </TableHeader>
 
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {users.map((order) => (
+            {reports.map((report) => (
               <TableRow
-                key={order._id}
-                onClick={() => setSelectedUser(order)}
+                key={report.reportId}
+                onClick={() => setSelectedReport(report)}
                 className="cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.05]"
               >
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
@@ -164,39 +161,42 @@ export default function BasicTableOne() {
                       <img
                         width={40}
                         height={40}
-                        src={order.user.image}
-                        alt={order.user.name}
+                        src={report.user.image}
+                        alt={report.user.name}
                       />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {order.user.name}
+                        {report.user.name}
                       </span>
                       <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                        {order.user.role}
+                        {report.user.role}
                       </span>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {order.projectName}
+                  {report.post}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {report.content}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
-                      order.status === "reviewed"
+                      report.status === "reviewed"
                         ? "success"
-                        : order.status === "pending"
+                        : report.status === "pending"
                         ? "warning"
                         : "error"
                     }
                   >
-                    {order.status}
+                    {report.status}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {order.budget}
+                  {report.reportDate}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start">
                   <div className="flex gap-2">
@@ -204,7 +204,7 @@ export default function BasicTableOne() {
                       className="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600"
                       onClick={(e) => {
                         e.stopPropagation(); // không trigger click vào row
-                        accept(order.reportId, order._id);
+                        accept(report.reportId);
                       }}
                     >
                       Accept
@@ -212,11 +212,9 @@ export default function BasicTableOne() {
                     <button
                       className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                       onClick={(e) => {
-                        e.stopPropagation(); // không trigger click vào row
-                        banUser(
-                          order.reportId,
-                          order._id,
-                          order.projectName || "Vi phạm nội quy"
+                        e.stopPropagation(); 
+                        hirePost(
+                          report.reportId, report.postId, report.content
                         );
                       }}
                     >
@@ -247,13 +245,13 @@ export default function BasicTableOne() {
         ))}
       </div>
 
-      {/* Chi tiết user */}
-      {selectedUser && (
+      {/* Chi tiết báo cáo */}
+      {/* {selectedReport && (
         <ReportDetailModal
-          selectedUser={selectedUser}
-          onClose={() => setSelectedUser(null)}
+          selectedReport={selectedReport}
+          onClose={() => setSelectedReport(null)}
         />
-      )}
+      )} */}
     </div>
   );
 }

@@ -41,8 +41,7 @@ const Badge: React.FC<BadgeProps> = ({
       primary:
         "bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400",
       success: "bg-green-100 text-green-800",
-      error:
-        "bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500",
+      error: "bg-red-100 text-red-800",
       warning: "bg-yellow-100 text-yellow-800",
       info: "bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500",
       light: "bg-gray-100 text-gray-700 dark:bg-white/5 dark:text-white/80",

@@ -225,12 +225,19 @@ const SavePage = lazy(() => import("@pages/social/saves/SavePage"));
 const SearchPage = lazy(() => import("@pages/social/search/SearchPage"));
 const DashBoard = lazy(() => import("@pages/admin/dashboard/dashboard"));
 const AdminLayout = lazy(() => import("@pages/admin/layout/AppLayout"));
-const BasicTables = lazy(() => import("@pages/admin/pages/Tables/BasicTables"));
+const BasicTables = lazy(() => import("@pages/admin/pages/TablesUser/BasicTables"));
 const ReportUserTable = lazy(() =>
-  import("@pages/admin/pages/Tables/ReportUserTable")
+  import("@pages/admin/pages/TablesUser/ReportUserTable")
 );
 const BanUserTable = lazy(() =>
-  import("@pages/admin/pages/Tables/BanUserTable")
+  import("@pages/admin/pages/TablesUser/BanUserTable")
+);
+
+const ReportPostTable = lazy(() =>
+  import("@pages/admin/pages/TablesPost/ReportPostTable")
+);
+const HirePostTable = lazy(() =>
+  import("@pages/admin/pages/TablesPost/HirePostTable")
 );
 
 const withSuspense = (Component) => (
@@ -388,6 +395,14 @@ export const AppRouter = () => {
         {
           path: "hideuser",
           element: withSuspense(<BanUserTable />),
+        },
+        {
+          path: "reportpost",
+          element: withSuspense(<ReportPostTable />),
+        },
+        {
+          path: "hirepost",
+          element: withSuspense(<HirePostTable />),
         },
       ],
     },

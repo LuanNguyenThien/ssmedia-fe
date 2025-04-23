@@ -24,6 +24,8 @@ interface UserData {
   };
   status: string;
   budget: string;
+  email: string;
+
 }
 
 export default function BasicTableOne() {
@@ -46,12 +48,14 @@ export default function BasicTableOne() {
           name: u.username,
           role: "Member", // hoặc dùng u.role nếu backend trả về
         },
-        projectName: u.work || "No project",
+        projectName: u.work || "No information",
         team: {
           images: [u.profilePicture || "/default-avatar.jpg"],
         },
+        email : u.email,
         status: "Active", // có thể random hoặc từ API nếu có trường này
-        budget: "$1,000", // có thể gán mặc định
+        budget: new Date(u.createdAt).toLocaleDateString(
+          "vi-VN",) // có thể gán mặc định
       }));
 
       setUsers(mappedUsers);
@@ -93,13 +97,13 @@ export default function BasicTableOne() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Project Name
+                Work
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Team
+                Email
               </TableCell>
               <TableCell
                 isHeader
@@ -111,7 +115,7 @@ export default function BasicTableOne() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Budget
+                Creat At
               </TableCell>
             </TableRow>
           </TableHeader>
@@ -143,22 +147,7 @@ export default function BasicTableOne() {
                   {order.projectName}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <div className="flex -space-x-2">
-                    {order.team.images.map((teamImage, index) => (
-                      <div
-                        key={index}
-                        className="w-6 h-6 overflow-hidden border-2 border-white rounded-full dark:border-gray-900"
-                      >
-                        <img
-                          width={24}
-                          height={24}
-                          src={teamImage}
-                          alt={`Team member ${index + 1}`}
-                          className="w-full size-6"
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  {order.email}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge

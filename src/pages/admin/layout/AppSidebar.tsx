@@ -26,6 +26,8 @@ const navItems: NavItem[] = [
       { name: "AllUser", path: "/admin/user", pro: false },
       { name: "ReportUser", path: "/admin/reportuser", pro: false },
       { name: "HideUser", path: "/admin/hideuser", pro: false },
+      { name: "ReportPost", path: "/admin/reportpost", pro: false },
+      { name: "HirePost", path: "/admin/hirepost", pro: false },
     ],
   },
   ,
