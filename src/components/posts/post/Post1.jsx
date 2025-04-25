@@ -12,7 +12,7 @@ import { Utils } from "@services/utils/utils.service";
 import useLocalStorage from "@hooks/useLocalStorage";
 import CommentInputBox from "@components/posts/comments/comment-input/CommentInputBox";
 import CommentsModal from "@components/posts/comments/comments-modal/CommentsModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ImageModal from "@components/image-modal/ImageModal";
 import { useRef } from "react";
 import {
@@ -28,7 +28,14 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+import Zoom from "yet-another-react-lightbox/plugins/zoom"; // Import plugin Zoom
+
 const Post = ({ post, showIcons }) => {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImageSrc, setCurrentImageSrc] = useState("");
+  const viewContainerRef = useRef(null); 
   const { _id } = useSelector((state) => state.post);
   const { reactionsModalIsOpen, commentsModalIsOpen, deleteDialogIsOpen } =
     useSelector((state) => state.modal);
@@ -95,7 +102,7 @@ const Post = ({ post, showIcons }) => {
     editor.replaceBlocks(editor.document, blocks);
   };
   useEffect(() => {
-    // getBackgroundImageColor(post);
+    getBackgroundImageColor(post);
     loadEditor(post.htmlPost || "");
   }, [post]);
 
@@ -111,6 +118,35 @@ const Post = ({ post, showIcons }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Hàm xử lý khi click vào khu vực BlockNoteView
+  const handleContentClick = useCallback((event) => {
+    // Kiểm tra xem phần tử được click có phải là thẻ IMG không
+    if (event.target.tagName === 'IMG') {
+      const clickedImageSrc = event.target.src;
+      if (clickedImageSrc) {
+        setCurrentImageSrc(clickedImageSrc);
+        setLightboxOpen(true);
+      }
+    }
+  }, []);
+
+  // Gắn và gỡ bỏ event listener bằng useEffect
+  useEffect(() => {
+    const container = viewContainerRef.current;
+    if (container) {
+      // Gắn listener vào container
+      container.addEventListener('click', handleContentClick);
+    }
+
+    // Cleanup listener khi component unmount
+    return () => {
+      if (container) {
+        container.removeEventListener('click', handleContentClick);
+      }
+    };
+  }, [handleContentClick]);
+
   return (
     <>
       {reactionsModalIsOpen && selectedPostReactId === post?._id && (
@@ -277,11 +313,22 @@ const Post = ({ post, showIcons }) => {
               style={{ marginTop: "0.5rem", borderBottom: "" }}
             >
               {post.htmlPost && (
-                <span className="post" data-testid="user-post">
+                <span className="post" data-testid="user-post" ref={viewContainerRef}>
                   <BlockNoteView
                     editor={editor}
                     editable={false} // Ngăn chặn chỉnh sửa
                     className="my-blocknote"
+                    data-color-scheme="light"
+                    data-mantine-color-scheme="light"
+                  />
+
+                  <Lightbox
+                    open={lightboxOpen}
+                    close={() => setLightboxOpen(false)}
+                    slides={[{ src: currentImageSrc }]} // chỉ hiển thị ảnh hiện tại
+                    // Thêm các plugin nếu muốn (zoom, fullscreen,...)
+                    plugins={[Zoom]}
+                    on={{ click: handleContentClick }} // Gọi lại hàm khi mở lightbox
                   />
                 </span>
               )}
@@ -309,7 +356,7 @@ const Post = ({ post, showIcons }) => {
                         data-testid="post-image"
                         className="image-display-flex"
                         style={{
-                          height: "600px",
+                          height: "auto",
                           backgroundColor: `${backgroundImageColor}`,
                         }}
                         onClick={() => {

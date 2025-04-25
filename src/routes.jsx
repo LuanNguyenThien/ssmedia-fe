@@ -71,7 +71,7 @@ export const AppRouter = () => {
                 {
                     path: "search",
                     element: (
-                        <Suspense fallback={<StreamsSkeleton />}>
+                        <Suspense fallback={<SearchPage />}>
                             <SearchPage />
                         </Suspense>
                     ),

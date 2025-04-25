@@ -1,20 +1,26 @@
-import Post from "@/components/posts/post/Post";
+import Posts from "@components/posts/Posts";
 import PeopleCard from "./PeopleCard";
 import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+import useEffectOnce from "@hooks/useEffectOnce";
 
-const PostCards = ({ posts }) => {
+const PostCards = ({ posts, postsLoading, userFollowing }) => {
     return (
         <div className="rounded-md">
             <div className="flex flex-col">
-                {posts.map((post) => (
+                <Posts
+                    allPosts={posts}
+                    postsLoading={postsLoading}
+                    userFollowing={userFollowing}
+                />
+                {/* {posts.map((post) => (
                     <Post
                         key={post.id}
                         post={post}
                         showIcons={false}
                         className="search-page__posts"
                     />
-                ))}
+                ))} */}
             </div>
         </div>
     );
@@ -67,11 +73,30 @@ const SearchPosts = ({
     hasMoreUsers,
 }) => {
     const [rendered, setRendered] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [following, setFollowing] = useState([]);
+    
+    const getUserFollowing = async () => {
+        try {
+            const response = await followerService.getUserFollowing();
+            setFollowing(response.data.following);
+        } catch (error) {
+            Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
+        }
+    };
+
+    useEffectOnce(() => {
+        getUserFollowing();
+    }, []);
 
     const renderContent = () => {
         switch (state) {
             case "Posts":
-                return <PostCards posts={searchResults?.posts} />;
+                return <PostCards 
+                            posts={searchResults?.posts}
+                            postsLoading={loading}
+                            userFollowing={following} 
+                        />
 
             case "People":
                 return (
@@ -93,7 +118,11 @@ const SearchPosts = ({
                             />
                         )}
                         {searchResults.posts && (
-                            <PostCards posts={searchResults?.posts} />
+                            <PostCards 
+                                posts={searchResults?.posts}
+                                postsLoading={loading}
+                                userFollowing={following} 
+                            />
                         )}
                         {!searchResults?.users && !searchResults?.posts && (
                             <div className="flex items-center justify-center h-full">

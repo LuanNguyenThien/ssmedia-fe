@@ -113,6 +113,11 @@ class PostService {
     const response = await axios.get(`/search/${encodedQuery}`);
     return response;
   }
+
+  async searchWithImage(body) {
+    const response = await axios.post('/search/image', body);
+    return response;
+  }
 }
 
 export const postService = new PostService();

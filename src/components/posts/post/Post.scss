@@ -148,6 +148,11 @@
           .bn-inline-content .ProseMirror-trailingBreak {
             display: none;
           }
+          .bn-block-content.ProseMirror-selectednode>*, .ProseMirror-selectednode>.bn-block-content>*  {
+            outline: none; /* Loại bỏ outline (thường là nguyên nhân của viền xanh) */
+            border: none;   /* Đảm bảo không có border nào được áp dụng */
+            box-shadow: none; /* Đảm bảo không có box-shadow nào gây hiệu ứng tương tự */
+          }
         }
       }
 
@@ -156,7 +161,7 @@
         max-height: 400px;
         height: 400px;
         color: var(--white-1);
-        font-size: 45px;
+        font-size: 40px;
         font-weight: bolder;
         text-align: center;
         align-items: center;
@@ -165,7 +170,7 @@
         overflow-y: scroll;
         display: flex;
         overflow-x: hidden;
-        // word-break: break-all;
+        word-break: break-word;
 
         a {
           color: var(--white-1);
@@ -179,7 +184,7 @@
 
       .image-display-flex {
         display: flex;
-        height: 400px;
+        max-height: 400px;
 
         .post-image {
           border-radius: 5px;

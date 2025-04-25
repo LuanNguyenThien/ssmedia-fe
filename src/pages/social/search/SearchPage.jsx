@@ -17,12 +17,19 @@ const SearchPage = () => {
     const [loadingMore, setLoadingMore] = useState(false);
     const location = useLocation();
     const searchQuery = location.state?.query || "";
+    const searchImage = location.state?.image || null;
+    const hasImage = location.state?.hasImage || false;
+    const searchData = {
+        query: searchQuery,
+        image: searchImage,
+        hasImage: hasImage,
+    };
     const [sidebarState, setSidebarState] = useState("All");
 
     useEffect(() => {
         resetState();
         fetchSearchResults();
-    }, [searchQuery]);
+    }, [searchQuery, searchImage, hasImage]);
 
     const resetState = () => {
         setAllUsers([]);
@@ -34,7 +41,7 @@ const SearchPage = () => {
     const fetchSearchResults = async () => {
         setLoading(true);
         try {
-            const response = await postService.searchPosts(searchQuery);
+            const response = await postService.searchWithImage(searchData);
             const { users, posts } = response.data.result;
 
             setAllUsers(users);
@@ -68,7 +75,7 @@ const SearchPage = () => {
         <div className="search-pagee max-h-full size-full bg-background-blur rounded-t-[30px] px-4 pt-4 flex gap-4">
             <SearchSidebar state={sidebarState} setState={setSidebarState} />
 
-            <div className="flex-1 flex justify-center">
+            <div className="flex-1 flex w-3/4 justify-center">
                 <div className="w-2/3 h-full rounded-t-[30px] flex flex-col">
                     {loading && displayedUsers.length === 0 && (
                         <SearchSkeleton />

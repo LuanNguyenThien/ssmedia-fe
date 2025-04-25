@@ -50,7 +50,10 @@ const Header = () => {
     const [deleteSessionPageReload] = useSessionStorage("pageReload", "delete");
 
     const [blockedUsers, setBlockedUsers] = useState([]);
+
+    //search term, image
     const [searchTerm, setSearchTerm] = useState("");
+    const [searchImage, setSearchImage] = useState(null);
 
     //notifications
     const notificationRef = useRef(null);
@@ -250,7 +253,20 @@ const Header = () => {
     };
 
     const handleSearchKeyPress = () => {
-        navigate("/app/social/search", { state: { query: searchTerm } });
+        // Check if we have an image to search with
+        if (searchImage) {
+            // Navigate to search page with image search info
+            navigate("/app/social/search", { 
+                state: { 
+                    query: searchTerm,
+                    hasImage: true,
+                    image: searchImage,
+                } 
+            });
+        } else {
+            // Regular text search
+            navigate("/app/social/search", { state: { query: searchTerm } });
+        }
     };
 
     const handleSetNotificationDialogContentToNull = () => {
@@ -305,6 +321,7 @@ const Header = () => {
                                     onClick={handleSearchKeyPress}
                                     searchTerm={searchTerm}
                                     setSearchTerm={setSearchTerm}
+                                    onImageSelect={(file) => setSearchImage(file)}
                                 />
                             </div>
 

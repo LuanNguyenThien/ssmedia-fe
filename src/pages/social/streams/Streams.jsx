@@ -95,6 +95,27 @@ const Streams = () => {
     PostUtils.socketIOPost(posts, setPosts, profile);
   }, [posts, profile]);
 
+  useEffect(() => {
+    const viewportHeight = window.innerHeight;
+    console.log('Viewport Height:', viewportHeight);
+    const headerDesktopElement = document.querySelector('div[class="header-navbar grid grid-cols-5"]');
+    const headerElement = document.querySelector('div[class="h-[8vh] bg-secondary flex items-center justify-between px-4"]');
+    const footerElement = document.querySelector('div.fixed.bottom-0.bg-background.z-50');
+
+    document.documentElement.style.setProperty('--root-height', `${viewportHeight}px`);
+    if (headerElement && footerElement) {
+      const headerHeight = headerElement.offsetHeight;
+      const footerHeight = footerElement.offsetHeight;
+      const totalHeight = headerHeight + footerHeight;
+      document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
+    }else {
+      const headerHeight = headerDesktopElement.offsetHeight;
+      const footerHeight = 0; // Assuming no footer in this case
+      const totalHeight = headerHeight + footerHeight;
+      document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
+    }
+  }, []);
+
   return (
     <div className="streams-content col-span-full">
       <div
@@ -116,7 +137,7 @@ const Streams = () => {
         </div>
         <div
           ref={bottomLineRef}
-          style={{ marginBottom: "30px", height: "30px" }}
+          style={{ marginBottom: "20px", height: "30px" }}
         >
           {loadingMore && <Spinner />}
         </div>
