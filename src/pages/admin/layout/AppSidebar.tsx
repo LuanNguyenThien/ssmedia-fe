@@ -7,6 +7,9 @@ import {
   FaEllipsisH as HorizontaLDots,
   FaChartPie as PieChartIcon,
   FaPlug as PlugInIcon,
+  FaBars,
+  FaUsers,
+  FaRegUserCircle,
 } from "react-icons/fa";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
@@ -22,13 +25,29 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
+    subItems: [{ name: "Dashboard", path: "/admin/dashboard", pro: false }],
+  },
+  {
+    icon: <FaBars />,
+    name: "Post Manager",
+    subItems: [
+      { name: "ReportPost", path: "/admin/reportpost", pro: false },
+      { name: "HirePost", path: "/admin/hirepost", pro: false },
+    ],
+  },
+  {
+    icon: <FaUsers />,
+    name: "User Manager",
     subItems: [
       { name: "AllUser", path: "/admin/user", pro: false },
       { name: "ReportUser", path: "/admin/reportuser", pro: false },
       { name: "HideUser", path: "/admin/hideuser", pro: false },
-      { name: "ReportPost", path: "/admin/reportpost", pro: false },
-      { name: "HirePost", path: "/admin/hirepost", pro: false },
     ],
+  },
+  {
+    icon: <FaRegUserCircle />,
+    name: "User Profile",
+    path: "/admin/profile",
   },
   ,
 ];
@@ -38,17 +57,17 @@ const othersItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Charts",
     subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
+      { name: "Line Chart", path: "/admin/line-chart", pro: false },
+      { name: "Bar Chart", path: "/admin/bar-chart", pro: false },
     ],
   },
-  
+
   {
     icon: <PlugInIcon />,
     name: "Authentication",
     subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
+      { name: "Sign In", path: "/admin/signin", pro: false },
+      { name: "Sign Up", path: "/admin/signup", pro: false },
     ],
   },
 ];
@@ -264,14 +283,14 @@ const AppSidebar: React.FC = () => {
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
-        <Link to="/">
+        <Link to="/" >
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <img
-                className="dark:hidden"
-                src="/images/logo/logo.svg"
+                className="dark:hidden "
+                src="/logo.svg"
                 alt="Logo"
-                width={150}
+                width={40}
                 height={40}
               />
               <img
@@ -284,7 +303,7 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <img
-              src="/images/logo/logo-icon.svg"
+              src="/logo.svg"
               alt="Logo"
               width={32}
               height={32}

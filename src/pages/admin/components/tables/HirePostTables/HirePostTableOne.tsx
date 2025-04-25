@@ -57,7 +57,7 @@ export default function BasicTableOne() {
       }));
 
       setReports(mappedReports);
-      setTotal(response.data.totalReports); // Giả sử bạn có tổng số báo cáo
+      setTotal(response.data.totalReports); 
       setLoading(false);
     } catch (error) {
       console.error("Error fetching reports:", error);
@@ -67,10 +67,10 @@ export default function BasicTableOne() {
 
   const UnHire = async (postId: string) => {
         try {
-          // await userService.ChangeStatus({ reportId, status: "reviewed" });
+          
           await postService.UnHirePost({ postId});
-          // alert("Ban user thành công");
-          getAllReports(); // gọi lại API để cập nhật danh sách
+        
+          getAllReports(); 
         } catch (error) {
           console.error("Ban user thất bại:", error);
           alert("Ban user thất bại");

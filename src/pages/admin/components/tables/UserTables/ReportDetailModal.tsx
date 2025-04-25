@@ -1,9 +1,13 @@
 import React from "react";
-
+import { ProfileUtils } from "@services/utils/profile-utils.service";
+import { useNavigate } from "react-router-dom";
+      
 interface ReportedUser {
   user: {
-    name: string;
+    _id: string;
+    uId: string;
     image: string;
+    username: string;
     role: string;
   };
   projectName: string;
@@ -15,7 +19,9 @@ interface Props {
   onClose: () => void;
 }
 
+
 const ReportDetailModal: React.FC<Props> = ({ selectedUser, onClose }) => {
+  const navigate = useNavigate();
   if (!selectedUser) return null;
 
   return (
@@ -31,12 +37,12 @@ const ReportDetailModal: React.FC<Props> = ({ selectedUser, onClose }) => {
         <div className="flex items-center gap-4 mb-4">
           <img
             src={selectedUser.user.image}
-            alt={selectedUser.user.name}
+            alt={selectedUser.user.username}
             className="w-14 h-14 rounded-full object-cover"
           />
           <div>
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-              {selectedUser.user.name}
+              {selectedUser.user.username}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {selectedUser.user.role}
@@ -69,6 +75,16 @@ const ReportDetailModal: React.FC<Props> = ({ selectedUser, onClose }) => {
         </div>
 
         <div className="mt-4 flex justify-end gap-3">
+          <button
+            onClick={() => {
+             
+              ProfileUtils.navigateToProfileAdmin(selectedUser.user)
+            }}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Profile
+          </button>
+
           <button
             onClick={onClose}
             className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"

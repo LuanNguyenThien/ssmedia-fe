@@ -240,6 +240,18 @@ const HirePostTable = lazy(() =>
   import("@pages/admin/pages/TablesPost/HirePostTable")
 );
 
+const BarChart = lazy(() =>
+  import("@pages/admin/pages/Charts/BarChart")
+);
+
+const UserProfiles = lazy(() =>
+  import("@pages/admin/pages/UserProfiles") );
+
+const LineChart = lazy(() => import("@pages/admin/pages/Charts/LineChart"));
+
+const SignIn = lazy(() => import("@pages/admin/pages/AuthPages/SignIn"));
+const SignUp = lazy(() => import("@pages/admin/pages/AuthPages/SignUp"));
+
 const withSuspense = (Component) => (
   <Suspense fallback={<div>Loading...</div>}>{Component}</Suspense>
 );
@@ -381,6 +393,14 @@ export const AppRouter = () => {
       ],
     },
     {
+      path: "/admin/signup",
+      element: <SignUp />,
+    },
+    {
+      path: "/admin/signin",
+      element: <SignIn />,
+    },
+    {
       path: "/admin",
       element: <AdminLayout />,
       children: [
@@ -403,6 +423,18 @@ export const AppRouter = () => {
         {
           path: "hirepost",
           element: withSuspense(<HirePostTable />),
+        },
+        {
+          path: "bar-chart",
+          element: withSuspense(<BarChart />),
+        },
+        {
+          path: "line-chart",
+          element: withSuspense(<LineChart />),
+        },
+        {
+          path: "profile",
+          element: withSuspense(<UserProfiles />),
         },
       ],
     },

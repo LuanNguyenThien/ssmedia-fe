@@ -34,6 +34,7 @@ export class Utils {
     }
 
     static dispatchUser(result, pageReload, dispatch, setUser) {
+        console.log(result.data, "result data");
         pageReload(true);
         dispatch(
             addUser({ token: result.data.token, profile: result.data.user })

@@ -7,12 +7,12 @@ export default function BasicTables() {
   return (
     <>
       <PageMeta
-        title="React.js Basic Tables Dashboard | TailAdmin - Next.js Admin Dashboard Template"
-        description="This is React.js Basic Tables Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="React.js Hire Post Dashboard | TailAdmin - Next.js Admin Dashboard Template"
+        description="This is React.js Hire Post Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
-      <PageBreadcrumb pageTitle="Report User" />
+      <PageBreadcrumb pageTitle="Hire Post" />
       <div className="space-y-6">
-        <ComponentCard title="Report User">
+        <ComponentCard title="Hire Post">
           <HiddenPostTable />
         </ComponentCard>
       </div>

@@ -16,9 +16,12 @@ import Alert from "../../ui/alert/Alert";
 interface UserData {
   reportId: string;
   _id: string;
+  uId: string;
   user: {
+    _id: string;
+    uId: string;
     image: string;
-    name: string;
+    username: string;
     role: string;
   };
   projectName: string;
@@ -44,14 +47,18 @@ export default function BasicTableOne() {
       const response = await userService.getAllUsersReportAdminRole(
         currentPage
       );
+
       const rawUsers = response.data.reportusers;
       
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
-        reportId : u.reportProfileInfo._id,
+        reportId: u.reportProfileInfo._id,
         _id: u._id,
+        uId: u.uId,
         user: {
+          _id: u._id,
+          uId: u.uId,
           image: u.profilePicture || "/default-avatar.jpg",
-          name: u.username,
+          username: u.username,
           role: "Member",
         },
         projectName: u.reportProfileInfo.reason || "No project",
@@ -165,12 +172,12 @@ export default function BasicTableOne() {
                         width={40}
                         height={40}
                         src={order.user.image}
-                        alt={order.user.name}
+                        alt={order.user.username}
                       />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {order.user.name}
+                        {order.user.username}
                       </span>
                       <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
                         {order.user.role}

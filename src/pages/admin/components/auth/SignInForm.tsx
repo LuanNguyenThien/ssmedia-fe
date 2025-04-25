@@ -1,6 +1,21 @@
-import { useState } from "react";
-import { Link } from "react-router";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { authService } from "@services/api/auth/auth.service";
+import useLocalStorage from "@hooks/useLocalStorage";
+import { Utils } from "@services/utils/utils.service";
+import useSessionStorage from "@hooks/useSessionStorage";
+import { useSelector } from "react-redux";
+// import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
+import {
+  FaChevronDown as ChevronDownIcon,
+  FaChevronLeft as ChevronLeftIcon,
+  FaEye as EyeCloseIcon,
+  FaEyeSlash as EyeIcon,
+  FaPlug as PlugInIcon,
+  FaBars,
+  FaUsers,
+} from "react-icons/fa";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
@@ -9,6 +24,53 @@ import Button from "../ui/button/Button";
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+
+  const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [keepLoggedIn, setKeepLoggedIn] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [hasError, setHasError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [alertType, setAlertType] = useState('');
+    const [user, setUser] = useState();
+    const state = useSelector((state) => state);
+    // const [usernameTouched, setUsernameTouched] = useState(false);
+    // const [passwordTouched, setPasswordTouched] = useState(false);
+    const [setStoredUsername] = useLocalStorage('username', 'set');
+    const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'set');
+    const [pageReload] = useSessionStorage('pageReload', 'set');
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+  
+    const loginUser = async (event) => {
+      setLoading(true);
+      event.preventDefault();
+      try {
+        const result = await authService.signIn({
+          username,
+          password
+        });
+        console.log(result);
+        setLoggedIn(keepLoggedIn);
+        setStoredUsername(username);
+
+        setHasError(false);
+        setAlertType('alert-success');
+        Utils.dispatchUser(result, pageReload, dispatch, setUser);
+      } catch (error) {
+        setLoading(false);
+        setHasError(true);
+        setAlertType('alert-error');
+        setErrorMessage(error?.response?.data.message);
+      }
+    };
+  
+    useEffect(() => {
+      if (loading && !user) return;
+      if (user) navigate('/admin');
+      console.log(state, "token")
+    }, [loading, user, navigate]);
+
   return (
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">
@@ -83,13 +145,17 @@ export default function SignInForm() {
                 </span>
               </div>
             </div>
-            <form>
+            <form onSubmit={loginUser}>
               <div className="space-y-6">
                 <div>
                   <Label>
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" />
+                  <Input
+                    placeholder="info@gmail.com"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
                 </div>
                 <div>
                   <Label>
@@ -99,6 +165,8 @@ export default function SignInForm() {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -114,7 +182,13 @@ export default function SignInForm() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Checkbox checked={isChecked} onChange={setIsChecked} />
+                    <Checkbox
+                      checked={isChecked}
+                      onChange={(value) => {
+                        setIsChecked(value);
+                        setKeepLoggedIn(value);
+                      }}
+                    />
                     <span className="block font-normal text-gray-700 text-theme-sm dark:text-gray-400">
                       Keep me logged in
                     </span>
@@ -127,9 +201,12 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm">
-                    Sign in
-                  </Button>
+                  <button
+                    type="submit"
+                    className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-blue-500 shadow-md hover:bg-blue-600"
+                  >
+                    {loading ? "Signing In..." : "Sign In"}
+                  </button>
                 </div>
               </div>
             </form>
@@ -138,7 +215,7 @@ export default function SignInForm() {
               <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
                 Don&apos;t have an account? {""}
                 <Link
-                  to="/signup"
+                  to="/admin/signup"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
                 >
                   Sign Up

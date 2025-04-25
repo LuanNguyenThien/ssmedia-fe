@@ -8,11 +8,9 @@ import {
 
 import Badge from "../../ui/badge/Badge";
 import React, { useState, useCallback, useEffect } from "react";
-import { postService } from "@services/api/post/post.service"; 
-import { userService } from "@services/api/user/user.service";// Giả sử bạn có service để lấy báo cáo
+import { postService } from "@services/api/post/post.service";
 import useEffectOnce from "@hooks/useEffectOnce";
-// import ReportDetailModal from "./ReportDetailModal";
-import Alert from "../../ui/alert/Alert";
+import { Link } from "react-router-dom";
 
 interface ReportData {
   reportId: string;
@@ -25,7 +23,7 @@ interface ReportData {
   content: string;
   status: string;
   reportDate: string;
-  post : string;
+  post: string;
 }
 
 export default function BasicTableOne() {
@@ -40,16 +38,14 @@ export default function BasicTableOne() {
     try {
       setLoading(true);
       const response = await postService.getAllReportPost(currentPage);
-      console.log("response", response);
-      const rawReports = response.data.reportposts; // Giả sử bạn nhận được dữ liệu báo cáo trong mảng 'reports'
-    console.log("rawReports", rawReports);
+      const rawReports = response.data.reportposts;
       const mappedReports: ReportData[] = rawReports.map((r: any) => ({
         reportId: r.report._id,
         postId: r.report.postId,
         user: {
           image: r.post.profilePicture || "/default-avatar.jpg",
           name: r.post.username,
-          role: "Member", // Tùy chỉnh nếu cần lấy thêm thông tin về role
+          role: "Member",
         },
         content: r.report.content,
         post: r.post.post,
@@ -58,7 +54,7 @@ export default function BasicTableOne() {
       }));
 
       setReports(mappedReports);
-      setTotal(response.data.totalReports); // Giả sử bạn có tổng số báo cáo
+      setTotal(response.data.totalReports);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching reports:", error);
@@ -78,28 +74,26 @@ export default function BasicTableOne() {
     setCurrentPage(pageNumber);
   };
 
-  const hirePost = async (reportId: string ,postId: string, reason: string) => {
-      try {
-        await postService.ChangeStatus({ reportId, status: "reviewed" });
-        await postService.HirePost({ postId, reason });
-        
-        getAllReports();
-      } catch (error) {
-        console.error("Ban user thất bại:", error);
-        alert("Ban user thất bại");
-      }
-    };
-  
-    const accept = async (reportId: string) => {
-      try {
-        await postService.ChangeStatus({ reportId, status: "reviewed" });
-       
-        getAllReports();
-      } catch (error) {
-        console.error("Ban user thất bại:", error);
-        alert("Ban user thất bại");
-      }
-    };
+  const hirePost = async (reportId: string, postId: string, reason: string) => {
+    try {
+      await postService.ChangeStatus({ reportId, status: "reviewed" });
+      await postService.HirePost({ postId, reason });
+      getAllReports();
+    } catch (error) {
+      console.error("Ban user thất bại:", error);
+      alert("Ban user thất bại");
+    }
+  };
+
+  const accept = async (reportId: string) => {
+    try {
+      await postService.ChangeStatus({ reportId, status: "reviewed" });
+      getAllReports();
+    } catch (error) {
+      console.error("Duyệt thất bại:", error);
+      alert("Duyệt thất bại");
+    }
+  };
 
   const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
@@ -175,12 +169,30 @@ export default function BasicTableOne() {
                     </div>
                   </div>
                 </TableCell>
+
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {report.post}
+                  {/* <Link
+                    to={`/app/social/post/${report.postId}`}
+                    className="text-blue-600 hover:underline dark:text-blue-400"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {report.post}
+                  </Link> */}
+                  <a
+                    href={`/app/social/post/${report.postId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline dark:text-blue-400"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {report.post}
+                  </a>
                 </TableCell>
+
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {report.content}
                 </TableCell>
+
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
@@ -195,15 +207,17 @@ export default function BasicTableOne() {
                     {report.status}
                   </Badge>
                 </TableCell>
+
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   {report.reportDate}
                 </TableCell>
+
                 <TableCell className="px-4 py-3 text-start">
                   <div className="flex gap-2">
                     <button
                       className="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600"
                       onClick={(e) => {
-                        e.stopPropagation(); // không trigger click vào row
+                        e.stopPropagation();
                         accept(report.reportId);
                       }}
                     >
@@ -212,9 +226,11 @@ export default function BasicTableOne() {
                     <button
                       className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                       onClick={(e) => {
-                        e.stopPropagation(); 
+                        e.stopPropagation();
                         hirePost(
-                          report.reportId, report.postId, report.content
+                          report.reportId,
+                          report.postId,
+                          report.content
                         );
                       }}
                     >
@@ -228,7 +244,6 @@ export default function BasicTableOne() {
         </Table>
       </div>
 
-      {/* Pagination */}
       <div className="flex justify-end p-4 gap-2">
         {Array.from({ length: totalPages }, (_, index) => (
           <button
@@ -244,14 +259,6 @@ export default function BasicTableOne() {
           </button>
         ))}
       </div>
-
-      {/* Chi tiết báo cáo */}
-      {/* {selectedReport && (
-        <ReportDetailModal
-          selectedReport={selectedReport}
-          onClose={() => setSelectedReport(null)}
-        />
-      )} */}
     </div>
   );
 }
