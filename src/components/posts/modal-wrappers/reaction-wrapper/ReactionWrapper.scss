@@ -10,7 +10,7 @@
   grid-template-areas: 'modal';
   .modal-bg {
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     z-index: 0;
     background-color: black;
     opacity: 0.3;
@@ -24,7 +24,7 @@
     overflow: hidden;
     box-sizing: border-box;
     z-index: 1;
-    min-height: 600px;
+    min-height: 80%;
     border-radius: 8px;
     pointer-events: all;
     background-color: var(--white-1);

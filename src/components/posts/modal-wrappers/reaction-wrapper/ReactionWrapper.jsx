@@ -6,7 +6,7 @@ const ReactionWrapper = ({ children, closeModal }) => {
   return (
     <>
       <div className="modal-wrapper" data-testid="modal-wrapper">
-        <div className="modal-wrapper-container size-full sm:size-1/2 p-2 flex flex-col gap-4">
+        <div className="modal-wrapper-container size-full sm:size-2/5 p-1 flex flex-col gap-4">
           <div className="modal-wrapper-container-header">
             {children[0]}
             <RxCross2 className="text-2xl hover:text-red-400 transition-all" onClick={closeModal}/>

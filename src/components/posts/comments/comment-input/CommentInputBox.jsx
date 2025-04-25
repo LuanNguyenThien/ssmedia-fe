@@ -5,19 +5,18 @@ import { icons } from "@assets/assets";
 import { Image, SmilePlus, Send } from "lucide-react";
 import PropTypes from "prop-types";
 import "@components/posts/comments/comment-input/CommentInputBox.scss";
-import "@components/chat/window/message-input/MessageInput.scss";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useRef, useState } from "react";
 import { Utils } from "@services/utils/utils.service";
 import { cloneDeep } from "lodash";
 import { socketService } from "@services/socket/socket.service";
 import { postService } from "@services/api/post/post.service";
-import ImagePreview from "@components/chat/image-preview/ImagePreview";
+import ImagePreview from "@components/posts/comments/comment-input/ImagePreview";
 import { ImageUtils } from "@services/utils/image-utils.service";
 import loadable from "@loadable/component";
 
 const EmojiPickerComponent = loadable(
-  () => import("@components/chat/window/message-input/EmojiPicker"),
+  () => import("@components/posts/comments/comment-input/EmojiPicker"),
   {
     fallback: <p id="loading">Loading...</p>,
   }
@@ -104,21 +103,31 @@ const CommentInputBox = ({ post, parentId = null, onCommentAdded }) => {
   return (
     <>
       <div className="w-full max-w-full mx-auto mt-2">
+        {showEmojiContainer && (
+          <div className="static w-2xl z-10">
+            <EmojiPickerComponent
+              onEmojiClick={(emoji) => {
+                setComment((prev) => prev + emoji.emoji);
+              }}
+              onClose={() => setShowEmojiContainer(false)}
+            />
+          </div>
+        )}
+        {showImagePreview && (
+          <div className="relative w-full z-10">
+            <ImagePreview
+              image={file}
+              onClick={() => setIsZoomed(true)}
+              onRemoveImage={() => {
+                setFile("");
+                setBase64File("");
+                setShowImagePreview(false);
+              }}
+            />
+          </div>
+        )}
         <div className="relative flex items-center gap-2 p-1 bg-slate-50 rounded-2xl">
           <div className="flex-1">
-            {showImagePreview && (
-              <div className="absolute top-14 left-0 w-full z-10">
-                <ImagePreview
-                  image={file}
-                  onClick={() => setIsZoomed(true)}
-                  onRemoveImage={() => {
-                    setFile("");
-                    setBase64File("");
-                    setShowImagePreview(false);
-                  }}
-                />
-              </div>
-            )}
             <input
               type="text"
               placeholder="Write your message..."
@@ -181,15 +190,6 @@ const CommentInputBox = ({ post, parentId = null, onCommentAdded }) => {
           </div>
         </div>
       </div>
-
-      {showEmojiContainer && (
-        <EmojiPickerComponent
-          onEmojiClick={(emojiData, event) => {
-            setComment((prev) => prev + emojiData.emoji);
-          }}
-          pickerStyle={{ width: "352px", height: "447px" }}
-        />
-      )}
 
       {isZoomed && (
         <div
