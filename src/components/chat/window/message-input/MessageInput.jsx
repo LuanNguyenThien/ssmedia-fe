@@ -118,7 +118,7 @@ const MessageInput = ({ setChatMessage }) => {
                 <div
                     ref={emojiRef}
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute flex justify-end items-end bottom-0 sm:left-5 z-50"
+                    className="absolute flex justify-end items-end bottom-0  sm:left-5 z-50"
                     style={{ width: "352px", height: "447px" }}
                 >
                     <EmojiPickerComponent
@@ -135,7 +135,7 @@ const MessageInput = ({ setChatMessage }) => {
                 <GiphyContainer handleGiphyClick={handleGiphyClick} />
             )}
             <div
-                className={`chat-inputarea size-full z-50`}
+                className={`chat-inputarea size-full`}
                 data-testid="chat-inputarea"
                 ref={inputContainerRef}
             >
@@ -161,7 +161,7 @@ const MessageInput = ({ setChatMessage }) => {
                     onBlur={() => setHasFocus(false)}
                 >
                     <div
-                        className={`size-full flex rounded-[30px] items-center justify-between py-4 gap-4  ${
+                        className={`size-full flex rounded-[30px] items-center justify-between py-4 gap-4   ${
                             hasFocus || message.length > 0 || showImagePreview
                                 ? "bg-background-blur border-4 border-primary-white transition-all duration-300 px-4 "
                                 : ""
@@ -258,7 +258,7 @@ const MessageInput = ({ setChatMessage }) => {
                         >
                             <DynamicSVG
                                 svgData={icons.send}
-                                className={"size-6"}
+                                className={"size-6 pointer-events-none"}
                             />
                         </button>
                     </div>

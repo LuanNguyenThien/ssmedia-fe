@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import Avatar from "@components/avatar/Avatar";
 import { useDispatch, useSelector } from "react-redux";
 import "@components/chat/window/ChatWindow.scss";
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Utils } from "@services/utils/utils.service";
 import { userService } from "@services/api/user/user.service";
@@ -14,13 +14,18 @@ import ObjectId from "bson-objectid";
 import { IoIosArrowBack } from "react-icons/io";
 import MessageDisplay from "./message-display/MessageDisplay";
 import MessageInput from "./message-input/MessageInput";
-import LoadingSpinner from "@components/state/loading";
+import LoadingSpinner from "@/components/state/LoadingSpinner";
 import VideoCallWindow from "@pages/callwindow/VideoCallWindow";
 import FirstChatScreen from "./FirstChatScreen/FirstChatScreen";
 import LoadingMessage from "@/components/state/loading-message/LoadingMessage";
+import InformationGroup from "./info-group/InfomationGroup";
 
 import { IoIosVideocam } from "react-icons/io";
 import { PiPhoneFill } from "react-icons/pi";
+import { icons } from "@/assets/assets";
+import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
+import useHandleOutsideClick from "@/hooks/useHandleOutsideClick";
+import GroupChatUtils from "@/services/utils/group-chat-utils.service";
 
 const ChatWindow = () => {
     const isMobile = Utils.isMobileDevice();
@@ -33,6 +38,12 @@ const ChatWindow = () => {
     const [searchParams] = useSearchParams();
     const [rendered, setRendered] = useState(false);
     const [isMessagesLoading, setIsMessagesLoading] = useState(true);
+    const [isShowInfoGroup, setIsShowInfoGroup] = useState(false);
+    const groupInfoRef = useRef(null);
+    useHandleOutsideClick(groupInfoRef, setIsShowInfoGroup, {
+        eventType: "click",
+    });
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -161,6 +172,7 @@ const ChatWindow = () => {
                 const response = await chatService.getGroupChatById(
                     searchParamsId
                 );
+
                 setReceiver(response.data.group);
                 ChatUtils.joinRoomEvent(response.data.group, profile);
             } else if (searchParamsId) {
@@ -308,17 +320,30 @@ const ChatWindow = () => {
     // Socket events for message receiving - modified for more reliable updates
     useEffect(() => {
         if (rendered) {
+            // Clear existing socket listeners to prevent duplicates
+            ChatUtils.removeSocketListeners();
+            
+            // Set up message receiver with better error handling
             ChatUtils.socketIOMessageReceived(
                 chatMessages,
                 searchParamsUsername,
                 setConversationId,
                 (messages) => {
-                    console.log("Socket message update", messages?.length);
-                    setChatMessages(messages);
+                    if (Array.isArray(messages)) {
+                        setChatMessages(messages);
+                        // Automatically scroll to bottom when new messages arrive
+                        setTimeout(() => {
+                            const chatContainer = document.querySelector('.message-page');
+                            if (chatContainer) {
+                                chatContainer.scrollTop = chatContainer.scrollHeight;
+                            }
+                        }, 100);
+                    }
                 }
             );
         }
         if (!rendered) setRendered(true);
+        
         const fetchInitialOnlineUsers = () => {
             ChatUtils.fetchOnlineUsers(setOnlineUsers);
         };
@@ -330,9 +355,9 @@ const ChatWindow = () => {
         return () => {
             ChatUtils.removeSocketListeners();
         };
-    }, [searchParamsUsername, rendered, chatMessages]);
+    }, [searchParamsUsername, rendered]);
 
-    // Socket events for message reactions
+    // Socket events for message reactions with improved handling
     useEffect(() => {
         ChatUtils.socketIOMessageReaction(
             chatMessages,
@@ -340,18 +365,108 @@ const ChatWindow = () => {
             setConversationId,
             setChatMessages
         );
+        
+        return () => {
+            // Clean up reaction listeners specifically
+            const socket = ChatUtils.socketIOClient;
+            if (socket) {
+                socket.off("message reaction");
+            }
+        };
     }, [chatMessages, searchParamsUsername]);
+
+    // Listen for group updates with better handling
+    useEffect(() => {
+        if (isGroup && rendered && receiver) {
+            const socket = ChatUtils.socketIOClient;
+            
+            const handleGroupUpdate = (data) => {
+                if (data.groupId === searchParamsId) {
+                    // Force refresh group info
+                    getUserProfileByUserId();
+                }
+            };
+            
+            const handleGroupDeleted = (groupId) => {
+                if (groupId === searchParamsId) {
+                    navigate("/app/social/chat/messages");
+                    Utils.dispatchNotification(
+                        "This group has been deleted",
+                        "info",
+                        dispatch
+                    );
+                }
+            };
+            
+            const handleMemberRemoved = (data) => {
+                if (data.groupId === searchParamsId && data.userId === profile._id) {
+                    navigate("/app/social/chat/messages");
+                    Utils.dispatchNotification(
+                        "You were removed from the group",
+                        "info",
+                        dispatch
+                    );
+                } else if (data.groupId === searchParamsId) {
+                    getUserProfileByUserId();
+                }
+            };
+            
+            // Add socket listeners with specific handlers
+            socket?.on("group action", (action) => {
+                console.log("Group action received:", action);
+                switch(action.type) {
+                    case 'promote':
+                    case 'update':
+                        handleGroupUpdate(action.data);
+                        break;
+                    case 'remove':
+                        handleMemberRemoved(action.data);
+                        break;
+                    case 'leave':
+                        handleGroupUpdate(action.data);
+                        break;
+                    case 'delete':
+                        handleGroupDeleted(action.data.groupId);
+                        break;
+                    default:
+                        break;
+                }
+            });
+            
+            return () => {
+                socket?.off("group action");
+            };
+        }
+    }, [isGroup, rendered, receiver, searchParamsId, profile._id, navigate, dispatch, getUserProfileByUserId]);
+
+    // Clean up all socket listeners
+    useEffect(() => {
+        return () => {
+            ChatUtils.removeSocketListeners();
+            GroupChatUtils.removeGroupSocketListeners();
+        };
+    }, []);
 
     // Function to go back for mobile
     const handleBackClick = useCallback(() => {
         navigate("/app/social/chat/messages");
     }, [navigate]);
-
     return (
         <div
-            className="chat-window-container gap-2 sm:px-4 sm:py-2"
-            data-testid="chat  WindowContainer "
+            className="chat-window-container gap-2 sm:px-4 sm:py-2 relative"
+            data-testid="chat WindowContainer"
         >
+            {isGroup &&
+                !GroupChatUtils.userIsGroupMember(
+                    receiver?.members,
+                    profile._id
+                ) && (
+                    <div className="absolute inset-0 flex justify-center items-center z-[1000] bg-primary-white back ">
+                        <span>
+                            You are not a member of this group
+                        </span>
+                    </div>
+                )}
             {isLoading ? (
                 <div
                     className="message-loading"
@@ -366,7 +481,7 @@ const ChatWindow = () => {
                         >
                             {/* header */}
                             <div
-                                className="chat-title h-15 min-h-15 w-[100vw]  sm:rounded-[30px] py-2 px-2"
+                                className="chat-title h-15 min-h-15 w-[100vw] sm:w-full sm:rounded-[30px] py-2 px-2 flex items-center"
                                 data-testid="chat-title"
                             >
                                 {isMobile && (
@@ -419,6 +534,23 @@ const ChatWindow = () => {
                                         onClick={() => initiateCall("video")}
                                     />
                                 </div>
+                                {/* Add info button for group chats */}
+                                {isGroup && (
+                                    <div
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsShowInfoGroup(
+                                                !isShowInfoGroup
+                                            );
+                                        }}
+                                        className="ml-2 cursor-pointer text-primary-black/60 hover:text-primary-black"
+                                    >
+                                        <DynamicSVG
+                                            svgData={icons.info}
+                                            className="size-6"
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             {/* chat window */}
@@ -444,7 +576,7 @@ const ChatWindow = () => {
                                     <FirstChatScreen />
                                 )}
                             </div>
-                            <div className="absolute left-0 bottom-0 h-16 w-full px-4 sm:px-0 flex items-center justify-center z-50">
+                            <div className="absolute left-0 bottom-0 h-16 w-full px-4 sm:px-0 flex items-center justify-center z-10 ">
                                 <MessageInput
                                     setChatMessage={sendChatMessage}
                                 />
@@ -469,6 +601,19 @@ const ChatWindow = () => {
                         >
                             Select or Search for users to chat with
                         </div>
+                    )}
+                    {isGroup && isShowInfoGroup && (
+                        <InformationGroup
+                            ref={groupInfoRef}
+                            info={receiver}
+                            onClose={() => setIsShowInfoGroup(false)}
+                            currentUser={profile}
+                            onSuccess={() => {
+                                getUserProfileByUserId();
+                                getNewUserMessages();
+                                setIsShowInfoGroup(false);
+                            }}
+                        />
                     )}
                 </>
             )}

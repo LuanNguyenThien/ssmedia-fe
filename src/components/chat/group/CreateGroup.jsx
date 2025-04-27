@@ -14,15 +14,22 @@ import MemberCard from "./components/MemberCard";
 import { DynamicSVG } from "@components/sidebar/components/SidebarItems";
 import { icons } from "@/assets/assets";
 import { groupChatService } from "@/services/api/chat/group-chat.service";
+import { imageService } from "@services/api/image/image.service";
+import { useDispatch } from "react-redux";
+import { Utils } from "@services/utils/utils.service";
+import LoadingSpinner from "@/components/state/LoadingSpinner";
+import ProcessSpinner from "@/components/state/ProcessSpinner";
 
 const CreateGroup = ({ onClickBack }) => {
     const { profile } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
 
     // Group details
     const [groupName, setGroupName] = useState("");
     const [groupDescription, setGroupDescription] = useState("");
     const [groupAvatar, setGroupAvatar] = useState("");
     const [imagePreview, setImagePreview] = useState(null);
+    const [uploadedImageUrl, setUploadedImageUrl] = useState("");
 
     // Member selection
     const [searchQuery, setSearchQuery] = useState("");
@@ -30,6 +37,7 @@ const CreateGroup = ({ onClickBack }) => {
     const [searchResults, setSearchResults] = useState([]);
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingMember, setIsLoadingMember] = useState(false);
 
     const fileInputRef = useRef(null);
 
@@ -41,11 +49,9 @@ const CreateGroup = ({ onClickBack }) => {
                 return;
             }
 
-            setIsLoading(true);
+            setIsLoadingMember(true);
             try {
                 const response = await userService.searchUsers(debouncedSearch);
-                console.log("Search results:", response.data.search);
-                // Filter out the current user from search results
                 const filteredResults = response.data.search.filter(
                     (user) => user.username !== profile?.username
                 );
@@ -54,7 +60,7 @@ const CreateGroup = ({ onClickBack }) => {
                 console.error("Error searching users", error);
                 setSearchResults([]);
             } finally {
-                setIsLoading(false);
+                setIsLoadingMember(false);
             }
         };
 
@@ -65,10 +71,10 @@ const CreateGroup = ({ onClickBack }) => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            setGroupAvatar(file);
             const reader = new FileReader();
             reader.onload = (event) => {
                 setImagePreview(event.target.result);
-                setGroupAvatar(file);
             };
             reader.readAsDataURL(file);
         }
@@ -89,186 +95,266 @@ const CreateGroup = ({ onClickBack }) => {
         });
     };
 
-    // Remove selected image preview
-    const removeImage = () => {
-        setImagePreview(null);
-        setGroupAvatar(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = "";
+    // // Remove selected image preview
+    // const removeImage = () => {
+    //     setImagePreview(null);
+    //     setGroupAvatar(null);
+    //     setUploadedImageUrl("");
+    //     if (fileInputRef.current) {
+    //         fileInputRef.current.value = "";
+    //     }
+    // };
+
+    // Upload image to server before creating group
+    const uploadGroupAvatar = async () => {
+        if (!groupAvatar) return null;
+
+        try {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    console.log("Uploading image:", event.target.result);
+                    try {
+                        const response = await imageService.addImage(
+                            "/images/group-avatar",
+                            event.target.result
+                        );
+                        setUploadedImageUrl(response.data.imageUrl);
+                        resolve(response.data);
+                    } catch (error) {
+                        console.error("Error uploading group avatar:", error);
+                        Utils.dispatchNotification(
+                            error.response?.data?.message ||
+                                "Error uploading image",
+                            "error",
+                            dispatch
+                        );
+                        reject(error);
+                    }
+                };
+                reader.onerror = (error) => {
+                    reject(error);
+                };
+                reader.readAsDataURL(groupAvatar);
+            });
+        } catch (error) {
+            console.error("Error preparing image for upload:", error);
+            return null;
         }
     };
 
     // Handle form submission
-    const handleCreateGroup = () => {
-        const groupData = {
-            name: groupName,
-            description: groupDescription,
-            avatar: groupAvatar,
-            members: selectedMembers.map((member) => member._id),
-        };
-        const response = groupChatService.createGroupChat(groupData);
-        console.log("Group created successfully:", response);
-        console.log("Group data to be sent:", groupData);
+    const handleCreateGroup = async () => {
+        try {
+            setIsLoading(true);
+
+            let imageData = null;
+            if (groupAvatar) {
+                imageData = await uploadGroupAvatar();
+            }
+            const groupData = {
+                name: groupName,
+                description: groupDescription,
+                members: selectedMembers.map((member) => member._id),
+                groupPicture: imageData ? imageData.url : null,
+            };
+
+            const response = await groupChatService.createGroupChat(groupData);
+            console.log("Group created successfully:", response);
+
+            Utils.dispatchNotification(
+                "Group created successfully!",
+                "success",
+                dispatch
+            );
+
+            onClickBack();
+        } catch (error) {
+            console.error("Error creating group:", error);
+            Utils.dispatchNotification(
+                error.response?.data?.message || "Error creating group",
+                "error",
+                dispatch
+            );
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const isFormValid = groupName.trim() !== "" && selectedMembers.length > 0;
 
     return (
-        <div className="create-group overflow-y-scroll h-full max-h-full ">
-            <div className="create-group-header flex items-center justify-between py-2 ">
-                <div className="back-button" onClick={onClickBack}>
-                    <IoIosArrowBack className="back-icon" />
-                    <span>Back</span>
+        <>
+            {isLoading && (
+                <div
+                    className="absolute top-0 left-0 right-0 bottom-0 w-full h-full flex justify-center items-center z-[1000] backdrop-blur-sm"
+                    style={{ minHeight: "100%", position: "absolute" }}
+                >
+                    <ProcessSpinner />
                 </div>
-                <span className="text-xl font-bold">Create Group</span>
-            </div>
+            )}{" "}
+            <div className="create-group overflow-y-scroll h-full max-h-full relative">
+                <div className="create-group-header flex items-center justify-between py-2 ">
+                    <div className="back-button" onClick={onClickBack}>
+                        <IoIosArrowBack className="back-icon" />
+                        <span>Back</span>
+                    </div>
+                    <span className="text-xl font-bold">Create Group</span>
+                </div>
 
-            <div className="create-group-content">
-                <div className="group-avatar-section">
-                    <div
-                        className="group-avatar-container"
-                        onClick={() => fileInputRef.current.click()}
-                    >
-                        {imagePreview ? (
-                            <img
-                                src={imagePreview}
-                                alt="Group"
-                                className="group-avatar-preview"
+                <div className="create-group-content">
+                    <div className="group-avatar-section">
+                        <div
+                            className="group-avatar-container"
+                            onClick={() => fileInputRef.current.click()}
+                        >
+                            {imagePreview ? (
+                                <img
+                                    src={imagePreview}
+                                    alt="Group"
+                                    className="group-avatar-preview"
+                                />
+                            ) : (
+                                <div className="group-avatar-placeholder">
+                                    <FaCamera className="camera-icon" />
+                                    <span>Add Group Photo</span>
+                                </div>
+                            )}
+                        </div>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            style={{ display: "none" }}
+                        />
+                    </div>
+
+                    <div className="group-form">
+                        <div className="form-group">
+                            <PrimaryInput
+                                type="text"
+                                name="groupName"
+                                id="groupName"
+                                value={groupName}
+                                onChange={(e) => setGroupName(e.target.value)}
+                                placeholder="Enter group name"
+                                labelText="Group Name"
+                                icon={<FaUser className="text-gray-400" />}
+                                required={true}
                             />
-                        ) : (
-                            <div className="group-avatar-placeholder">
-                                <FaCamera className="camera-icon" />
-                                <span>Add Group Photo</span>
-                            </div>
-                        )}
-                    </div>
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        style={{ display: "none" }}
-                    />
-                </div>
+                        </div>
 
-                <div className="group-form">
-                    <div className="form-group">
-                        <PrimaryInput
-                            type="text"
-                            name="groupName"
-                            id="groupName"
-                            value={groupName}
-                            onChange={(e) => setGroupName(e.target.value)}
-                            placeholder="Enter group name"
-                            labelText="Group Name"
-                            icon={<FaUser className="text-gray-400" />}
-                            required={true}
-                        />
-                    </div>
+                        <div className="form-group">
+                            <PrimaryInput
+                                type="text"
+                                name="groupDescription"
+                                id="groupDescription"
+                                value={groupDescription}
+                                onChange={(e) =>
+                                    setGroupDescription(e.target.value)
+                                }
+                                placeholder="Enter group description"
+                                labelText="Description (Optional)"
+                                icon={
+                                    <FaInfoCircle className="text-gray-400" />
+                                }
+                            />
+                        </div>
 
-                    <div className="form-group">
-                        <PrimaryInput
-                            type="text"
-                            name="groupDescription"
-                            id="groupDescription"
-                            value={groupDescription}
-                            onChange={(e) => setGroupDescription(e.target.value)}
-                            placeholder="Enter group description"
-                            labelText="Description (Optional)"
-                            icon={<FaInfoCircle className="text-gray-400" />}
-                        />
-                    </div>
+                        <div className="form-group">
+                            <PrimaryInput
+                                type="text"
+                                name="searchMembers"
+                                id="searchMembers"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search for members"
+                                labelText="Add Members"
+                                icon={<FaSearch className="text-gray-400" />}
+                            />
+                        </div>
 
-                    <div className="form-group">
-                        <PrimaryInput
-                            type="text"
-                            name="searchMembers"
-                            id="searchMembers"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search for members"
-                            labelText="Add Members"
-                            icon={<FaSearch className="text-gray-400" />}
-                        />
-                    </div>
-
-                    {/* Selected members display */}
-                    {selectedMembers.length > 0 && (
-                        <div className="selected-members">
-                            <h4>Selected Members ({selectedMembers.length})</h4>
-                            <div className="selected-member-avatars">
-                                {selectedMembers.map((member) => (
-                                    <div
-                                        key={member._id}
-                                        className="selected-member"
-                                    >
-                                        <Avatar
-                                            name={member.username}
-                                            bgColor={member.avatarColor}
-                                            textColor="#ffffff"
-                                            size={40}
-                                            avatarSrc={member.profilePicture}
-                                        />
-
+                        {selectedMembers.length > 0 && (
+                            <div className="selected-members">
+                                <h4>
+                                    Selected Members ({selectedMembers.length})
+                                </h4>
+                                <div className="selected-member-avatars">
+                                    {selectedMembers.map((member) => (
                                         <div
-                                            onClick={() =>
-                                                toggleMemberSelect(member)
-                                            }
-                                            className="absolute size-4 overflow-hidden -bottom-0 -right-0 rounded-full cursor-pointer bg-primary-white flex justify-center items-center"
+                                            key={member._id}
+                                            className="selected-member"
                                         >
-                                            <DynamicSVG
-                                                svgData={icons.remove}
-                                                className={
-                                                    " hover:text-red-400 !size-3"
+                                            <Avatar
+                                                name={member.username}
+                                                bgColor={member.avatarColor}
+                                                textColor="#ffffff"
+                                                size={40}
+                                                avatarSrc={
+                                                    member.profilePicture
                                                 }
                                             />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
 
-                    {/* Search results */}
-                    <div className="member-search-results">
-                        {isLoading ? (
-                            <div className="loading-state">
-                                <Spinner />
+                                            <div
+                                                onClick={() =>
+                                                    toggleMemberSelect(member)
+                                                }
+                                                className="absolute size-4 overflow-hidden -bottom-0 -right-0 rounded-full cursor-pointer bg-primary-white flex justify-center items-center"
+                                            >
+                                                <DynamicSVG
+                                                    svgData={icons.remove}
+                                                    className={
+                                                        " hover:text-red-400 !size-3"
+                                                    }
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        ) : debouncedSearch && searchResults.length > 0 ? (
-                            searchResults.map((user) => (
-                                <MemberCard
-                                    key={user._id}
-                                    user={user}
-                                    isSelected={selectedMembers.some(
-                                        (member) => member._id === user._id
-                                    )}
-                                    onToggleSelect={toggleMemberSelect}
-                                />
-                            ))
-                        ) : debouncedSearch ? (
-                            <div className="no-results">No users found</div>
-                        ) : null}
+                        )}
+
+                        <div className="member-search-results relative  ">
+                            {isLoadingMember ? (
+                                <div className="loading-state">
+                                    <Spinner />
+                                </div>
+                            ) : debouncedSearch && searchResults.length > 0 ? (
+                                searchResults.map((user) => (
+                                    <MemberCard
+                                        key={user._id}
+                                        user={user}
+                                        isSelected={selectedMembers.some(
+                                            (member) => member._id === user._id
+                                        )}
+                                        onToggleSelect={toggleMemberSelect}
+                                    />
+                                ))
+                            ) : debouncedSearch ? (
+                                <div className="no-results">No users found</div>
+                            ) : null}
+                        </div>
+                    </div>
+
+                    <div className="form-actions">
+                        <Button
+                            label="Cancel"
+                            handleClick={onClickBack}
+                            className="cancel-button"
+                        />
+                        <Button
+                            label="Create Group"
+                            handleClick={handleCreateGroup}
+                            className={`create-button ${
+                                !isFormValid ? "disabled" : ""
+                            }`}
+                            disabled={!isFormValid}
+                        />
                     </div>
                 </div>
-
-                <div className="form-actions">
-                    <Button
-                        label="Cancel"
-                        handleClick={onClickBack}
-                        className="cancel-button"
-                    />
-                    <Button
-                        label="Create Group"
-                        handleClick={handleCreateGroup}
-                        className={`create-button ${
-                            !isFormValid ? "disabled" : ""
-                        }`}
-                        disabled={!isFormValid}
-                    />
-                </div>
             </div>
-        </div>
+        </>
     );
 };
 

@@ -22,6 +22,8 @@ import { timeAgo } from "@services/utils/timeago.utils";
 import SearchList from "./search-list/SearchList";
 import ChatListBody from "./ChatListBody";
 import CreateGroup from "../group/CreateGroup";
+import InvitationsList from "../group/InvitationsList";
+import GroupChatUtils from "@/services/utils/group-chat-utils.service";
 
 const ChatList = () => {
     const dispatch = useDispatch();
@@ -41,6 +43,7 @@ const ChatList = () => {
     const [rendered, setRendered] = useState(false);
 
     const [isOpenCreateGroup, setIsOpenCreateGroup] = useState(false);
+    const [isOpenInvitationList, setIsOpenInvitationList] = useState(false);
 
     const searchUsers = useCallback(
         async (query) => {
@@ -205,27 +208,119 @@ const ChatList = () => {
 
     useEffect(() => {
         setChatMessageList(chatList);
+        console.log(chatList);
     }, [chatList]);
 
     useEffect(() => {
         if (rendered) {
-            ChatUtils.socketIOChatList(
-                profile,
-                chatMessageList,
-                setChatMessageList
-            );
+            // Remove existing listeners to prevent duplicates
+            ChatUtils.removeSocketListeners();
+            
+            // Set up chat list socket with better error handling
+            const handleChatListUpdate = (updatedList) => {
+                if (Array.isArray(updatedList) && updatedList.length !== chatMessageList.length) {
+                    console.log("Chat list updated via socket:", updatedList.length);
+                    setChatMessageList(updatedList);
+                } else if (!Array.isArray(updatedList) && updatedList) {
+                    // Single chat update
+                    console.log("Single chat updated via socket");
+                    setChatMessageList(prevList => {
+                        const updatedIndex = prevList.findIndex(item => 
+                            (item._id === updatedList._id) || 
+                            (item.conversationId === updatedList.conversationId)
+                        );
+                        
+                        if (updatedIndex > -1) {
+                            const newList = [...prevList];
+                            newList[updatedIndex] = updatedList;
+                            return newList;
+                        } else {
+                            return [updatedList, ...prevList];
+                        }
+                    });
+                }
+            };
+            
+            ChatUtils.socketIOChatList(profile, chatMessageList, handleChatListUpdate);
         }
         if (!rendered) setRendered(true);
-    }, [chatMessageList, profile, rendered, location]);
+        
+        return () => {
+            ChatUtils.removeSocketListeners();
+        };
+    }, [profile, rendered]);
+
+    // Dedicated effect for handling group actions to refresh chat list
+    useEffect(() => {
+        if (rendered) {
+            const socket = ChatUtils.socketIOClient;
+            
+            const refreshChatList = async () => {
+                try {
+                    console.log("Refreshing chat list...");
+                    const response = await chatService.getChatList();
+                    if (response.data && response.data.list) {
+                        setChatMessageList(response.data.list);
+                        console.log("Chat list refreshed:", response.data.list.length);
+                    }
+                } catch (error) {
+                    console.error("Error refreshing chat list:", error);
+                }
+            };
+            
+            socket?.on("group action", (action) => {
+                console.log("Group action received in chat list:", action.type);
+                
+                // For any group action that affects the current user, refresh the list
+                if ((action.data.userId === profile._id) || 
+                    (action.data.members && action.data.members.some(m => m.userId === profile._id)) ||
+                    action.type === 'create' || 
+                    action.type === 'delete' || 
+                    action.type === 'update') {
+                        
+                    // Small delay to ensure backend is updated
+                    setTimeout(refreshChatList, 300);
+                }
+            });
+            
+            socket?.on("new message", () => {
+                // Refresh chat list when new messages arrive
+                refreshChatList();
+            });
+            
+            return () => {
+                socket?.off("group action");
+                socket?.off("new message");
+            };
+        }
+    }, [rendered, profile._id]);
+
+    // Add to the cleanup effect
+    useEffect(() => {
+        return () => {
+            ChatUtils.removeSocketListeners();
+            GroupChatUtils.removeGroupSocketListeners();
+        };
+    }, []);
 
     return (
         <div className="conversation-container size-full">
-            {isOpenCreateGroup && <CreateGroup onClickBack={()=>setIsOpenCreateGroup(false)}/>}
+            {isOpenCreateGroup && (
+                <CreateGroup onClickBack={() => setIsOpenCreateGroup(false)} />
+            )}
+            {isOpenInvitationList && (
+                <InvitationsList
+                    onClickBack={() => setIsOpenInvitationList(false)}
+                />
+            )}
+
             <div className="flex flex-col justify-end items-start h-max w-full ">
                 <div className="flex justify-between items-center pt-3">
                     <div className="font-extrabold text-xl">Your chats</div>
                     <div className="flex items-center gap-2">
-                        <div>waiting list</div>
+                        <div onClick={() => setIsOpenInvitationList(true)}>
+                            waiting list
+                        </div>
                         <div
                             onClick={() => {
                                 setIsOpenCreateGroup(true);

@@ -25,8 +25,33 @@ const ConfirmModal = ({
                 return null;
         }
     };
+
+    const handleClickConfirm = (e) => {
+        e.stopPropagation();
+
+        try {
+            if (typeof handleConfirm === "function") {
+                handleConfirm();
+            } else {
+                console.error(
+                    "handleConfirm is not a function:",
+                    handleConfirm
+                );
+            }
+        } catch (error) {
+            console.error("Error in handleConfirm:", error);
+        }
+    };
+    const handleClickCancel = (e) => {
+        e.stopPropagation();
+        handleCancel();
+    };
+
     return (
-        <div className="fixed inset-0 w-screen h-screen flex items-center justify-center z-[10000]">
+        <div
+            className="fixed inset-0 w-screen h-screen flex items-center
+            justify-center z-30"
+        >
             <div className="absolute top-5 p-6 w-[90vw] max-w-md flex flex-col h-auto gap-2 bg-primary-white shadow-md border backdrop-blur-sm border-gray-100 rounded-lg animate-fadeInTop">
                 <div className="flex items-center gap-2">
                     <div className="h-full ">{renderIcon()}</div>
@@ -42,7 +67,7 @@ const ConfirmModal = ({
 
                 <div className="flex justify-center space-x-2">
                     <div
-                        onClick={handleCancel}
+                        onClick={handleClickCancel}
                         className={` text-primary-black px-4 py-2 rounded-md cursor-pointer  ${
                             classNameButtonCancel
                                 ? classNameButtonCancel
@@ -52,7 +77,7 @@ const ConfirmModal = ({
                         {labelButtonCancel || "Cancel"}
                     </div>
                     <div
-                        onClick={handleConfirm}
+                        onClick={handleClickConfirm}
                         className={` text-primary-white px-4 py-2 rounded-md cursor-pointer  ${
                             classNameButtonConfirm
                                 ? classNameButtonConfirm

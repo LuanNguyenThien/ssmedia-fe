@@ -54,38 +54,61 @@ const MessageDisplay = ({
         const username = searchParams.get("username");
         const id = searchParams.get("id");
 
-        if (username && !hasScrollToBottom.current) {
+        if (username) {
+            setMessagesToShow(Math.min(15, chatMessages.length));
+            
+            // Immediate scroll attempt
             if (scrollRef.current) {
-                setTimeout(() => {
-                    scrollRef.current.scrollTop =
-                        scrollRef.current?.scrollHeight -
-                        scrollRef.current?.clientHeight;
-                }, 50);
+                scrollRef.current.scrollTop = scrollRef.current?.scrollHeight;
             }
-            hasScrollToBottom.current = true;
-            setMessagesToShow(15);
+            
+            // Delayed scroll for when images might still be loading
+            setTimeout(() => {
+                if (scrollRef.current) {
+                    scrollRef.current.scrollTop = scrollRef.current?.scrollHeight;
+                    hasScrollToBottom.current = true;
+                }
+            }, 300);
         }
 
         const fetchGroupChatMembers = async () => {
-            const response = await groupChatService.getGroupChatById(id);
-            setGroupChatData(response.data.group.members);
+            try {
+                const response = await groupChatService.getGroupChatById(id);
+                setGroupChatData(response.data.group.members);
+            } catch (error) {
+                console.error("Error fetching group members:", error);
+            }
         };
-        if (id) {
+        
+        if (id && isGroup) {
             fetchGroupChatMembers();
         }
-    }, [searchParams, dispatch, chatMessages]);
+    }, [searchParams, chatMessages, isGroup]);
 
+    // Improved scroll handler with throttling
     const handleScroll = useCallback(() => {
         if (!scrollRef.current || isLoadingMessage) return;
-        if (
-            scrollRef.current.scrollTop === 0 &&
-            messagesToShow < chatMessages.length
-        ) {
+        
+        if (scrollRef.current.scrollTop === 0 && messagesToShow < chatMessages.length) {
             setIsLoadingMessage(true);
-            setTimeout(() => {
-                setMessagesToShow((prev) => prev + 20);
-                setIsLoadingMessage(false);
-            }, 1000);
+            
+            // Use requestAnimationFrame for smoother UI updates
+            requestAnimationFrame(() => {
+                const currentScrollHeight = scrollRef.current?.scrollHeight || 0;
+                
+                setTimeout(() => {
+                    setMessagesToShow((prev) => Math.min(prev + 20, chatMessages.length));
+                    
+                    // Maintain scroll position after loading more messages
+                    setTimeout(() => {
+                        if (scrollRef.current) {
+                            const newScrollHeight = scrollRef.current.scrollHeight;
+                            scrollRef.current.scrollTop = newScrollHeight - currentScrollHeight;
+                        }
+                        setIsLoadingMessage(false);
+                    }, 100);
+                }, 500);
+            });
         }
     }, [messagesToShow, chatMessages.length, isLoadingMessage]);
 

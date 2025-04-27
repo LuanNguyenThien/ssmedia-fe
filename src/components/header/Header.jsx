@@ -321,7 +321,7 @@ const Header = () => {
                                         setIsSettingsActive(false);
                                     }}
                                 >
-                                    <span className="header-list-name relative group ">
+                                    <span className="header-list-name relative group">
                                         <img
                                             src={assets.message}
                                             className="h-7 w-7 group-hover:scale-110 duration-200"
@@ -334,7 +334,7 @@ const Header = () => {
                                         )}
                                         {isMessageActive && (
                                             <div
-                                                className="absolute top-8 right-0"
+                                                className="absolute top-8 right-0 z-[1000]"
                                                 ref={messageRef}
                                             >
                                                 <MessageSidebar
