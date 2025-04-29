@@ -17,7 +17,7 @@ export default function StatisticsChart() {
       
       setLoading(true);
       try {
-        if (selectedTab === "optionOne") {
+        if (selectedTab === "optionTwo") {
           const response = await postService.GetStatisticPost();
           const data = response.data.data; // gọi API theo ngày
           // const data = response.data; // Gọi API theo ngày
@@ -31,7 +31,7 @@ export default function StatisticsChart() {
             { name: "TotalPosts", data: postCounts },
             { name: "HirePosts", data: commentCounts },
           ]);
-        } else if (selectedTab === "optionTwo") {
+        } else if (selectedTab === "optionOne") {
           
           const response = await postService.GetStatisticPostperMonth();
           const data = response.data.data; // gọi API theo tháng
@@ -45,22 +45,6 @@ export default function StatisticsChart() {
           setSeries([
             { name: "TotalPosts", data: postCounts },
             { name: "HirePosts", data: commentCounts },
-          ]);
-        } else if (selectedTab === "optionThree") {
-          // Ví dụ nếu muốn lấy theo năm
-          const dummyData = [
-            { year: "2022", totalPosts: 1200, totalComments: 500 },
-            { year: "2023", totalPosts: 1800, totalComments: 700 },
-            { year: "2024", totalPosts: 2100, totalComments: 900 },
-          ];
-          const categories = dummyData.map((item) => item.year);
-          const postCounts = dummyData.map((item) => item.totalPosts);
-          const commentCounts = dummyData.map((item) => item.totalComments);
-
-          setXCategories(categories);
-          setSeries([
-            { name: "Posts", data: postCounts },
-            { name: "Comments", data: commentCounts },
           ]);
         }
       } catch (error) {
@@ -116,16 +100,16 @@ export default function StatisticsChart() {
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
         <div className="w-full">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            {selectedTab === "optionOne" && "Posts & Comments per Day"}
-            {selectedTab === "optionTwo" && "Posts & Comments per Month"}
+            {selectedTab === "optionOne" && "Posts & Comments per Month"}
+            {selectedTab === "optionTwo" && "Posts & Comments per Year"}
             {selectedTab === "optionThree" && "Posts & Comments per Year"}
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
             Statistical view by{" "}
             {selectedTab === "optionOne"
-              ? "day"
-              : selectedTab === "optionTwo"
               ? "month"
+              : selectedTab === "optionTwo"
+              ? "year"
               : "year"}
           </p>
         </div>

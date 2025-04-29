@@ -1,5 +1,7 @@
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
+import { postService } from "@services/api/post/post.service";
+import { useEffect, useState } from "react";
 
 export default function BarChartOne() {
   const options: ApexOptions = {

@@ -1,21 +1,33 @@
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import ComponentCard from "../../components/common/ComponentCard";
-import BarChartOne from "../../components/charts/bar/BarChartOne";
+import StatisticsPost from "../../components/ecommerce/StatisticsPost";
+import MonthlyPost from "../../components/ecommerce/MonthlyPost";
+import PostsChart from "../../components/ecommerce/PostChart";
+import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
+import RecentOrders from "../../components/ecommerce/RecentOrders";
+import DemographicCard from "../../components/ecommerce/DemographicCard";
 import PageMeta from "../../components/common/PageMeta";
 
 export default function BarChart() {
   return (
-    <div>
+    <>
       <PageMeta
-        title="React.js Chart Dashboard | TailAdmin - React.js Admin Dashboard Template"
-        description="This is React.js Chart Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="React.js Ecommerce Dashboard | TailAdmin - React.js Admin Dashboard Template"
+        description="This is React.js Ecommerce Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
-      <PageBreadcrumb pageTitle="Bar Chart" />
-      <div className="space-y-6">
-        <ComponentCard title="Bar Chart 1">
-          <BarChartOne />
-        </ComponentCard>
+      <div className="gap-4 md:gap-6">
+        <div className="col-span-12 mb-4 space-y-6 xl:col-span-7">
+          <StatisticsPost />
+
+          <MonthlyPost/>
+        </div>
+
+        
+
+        <div className="col-span-12">
+          <PostsChart />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
+
+

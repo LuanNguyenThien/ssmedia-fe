@@ -11,15 +11,12 @@ import React, { useState, useCallback, useEffect } from "react";
 import useEffectOnce from "@hooks/useEffectOnce";
 import { set } from "lodash";
 export default function EcommerceMetrics() {
-
- const [total, setTotals] = useState(1);
- const [usertoday, setUserToday] = useState(0);
- const [grow, setGrown] = useState(0);
- const [growPost, setGrownPost] = useState(0);
- const [totalPost, setTotalPost] = useState(1);     
-const getAllUsers = useCallback(async () => {
-  
-    
+  const [total, setTotals] = useState(1);
+  const [usertoday, setUserToday] = useState(0);
+  const [grow, setGrown] = useState(0);
+  const [growPost, setGrownPost] = useState(0);
+  const [totalPost, setTotalPost] = useState(1);
+  const getAllUsers = useCallback(async () => {
     const response = await userService.getAllUsersAdminRole(1);
     const responseData = await userService.getUsersToday();
     const responsePost = await postService.GetPostCount();
@@ -28,22 +25,18 @@ const getAllUsers = useCallback(async () => {
     setTotalPost(responsePost.data.totalPosts);
     setTotals(response.data.totalUsers);
     let percent = 0;
-    
-    
-      percent =
-        (responseData.data.count /
-          (response.data.totalUsers - responseData.data.count)) *
-        100;
-        
-    
+
+    percent =
+      (responseData.data.count /
+        (response.data.totalUsers - responseData.data.count)) *
+      100;
+
     console.log("percent", percent);
     const roundedPercent = parseFloat(percent.toFixed(2));
-          
+
     setGrown(roundedPercent);
 
-    
-    
-    let percentpost = 0; 
+    let percentpost = 0;
 
     percentpost =
       (responsePost.data.postsToday /
@@ -53,12 +46,11 @@ const getAllUsers = useCallback(async () => {
     console.log("percent", percent);
     const roundedPercentpost = parseFloat(percentpost.toFixed(2));
     setGrownPost(roundedPercentpost);
-   
-}, []);
+  }, []);
 
-useEffectOnce(() => {
-  getAllUsers();
-});
+  useEffectOnce(() => {
+    getAllUsers();
+  });
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
@@ -71,16 +63,12 @@ useEffectOnce(() => {
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Total Users
+              Users Today
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              {total}
+              {usertoday}
             </h4>
           </div>
-          <Badge color="success">
-            <ArrowUpIcon />
-            {grow}%
-          </Badge>
         </div>
       </div>
       {/* <!-- Metric Item End --> */}
@@ -93,16 +81,16 @@ useEffectOnce(() => {
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Total Post
+              Total Users
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              {totalPost}
+              {total}
             </h4>
           </div>
 
           <Badge color="success">
             <ArrowUpIcon />
-            {growPost}%
+            {grow}%
           </Badge>
         </div>
       </div>

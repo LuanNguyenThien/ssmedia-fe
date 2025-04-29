@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import ChartTab from "../common/ChartTab";
-import { postService } from "@services/api/post/post.service"; // Import API của bạn
+import { postService } from "@services/api/post/post.service";
+import { userService } from "@/services/api/user/user.service";
 
 type TabOption = "optionOne" | "optionTwo" | "optionThree";
 
@@ -14,40 +15,35 @@ export default function StatisticsChart() {
 
   useEffect(() => {
     const fetchData = async () => {
-      
       setLoading(true);
       try {
         if (selectedTab === "optionOne") {
-          const response = await postService.GetStatisticPost();
-          const data = response.data.data; // gọi API theo ngày
-          // const data = response.data; // Gọi API theo ngày
-          const categories = data.map((item: any) => item._id); // _id mới đúng!
-          const postCounts = data.map((item: any) => item.totalPosts);
-          // Vì không có totalComments trong API => mình có thể set commentCounts = mảng toàn 0 hoặc bỏ nó đi
-          const commentCounts = data.map((item: any) => 0);
+          const response = await userService.GetStatisticUserperMonth();
+          const data = response.data.data;
+          console.log("response", data);
+          const categories = data.map((item: any) => item._id);
+          const totalUsers = data.map((item: any) => item.totalUsers);
+          const bannedUsers = data.map((item: any) => item.bannedUsers);
 
           setXCategories(categories);
           setSeries([
-            { name: "TotalPosts", data: postCounts },
-            { name: "HirePosts", data: commentCounts },
+            { name: "Total Users", data: totalUsers },
+            { name: "Banned Users", data: bannedUsers },
           ]);
         } else if (selectedTab === "optionTwo") {
-          
-          const response = await postService.GetStatisticPostperMonth();
-          const data = response.data.data; // gọi API theo tháng
-          // const data = response.data; // Gọi API theo ngày
-          const categories = data.map((item: any) => item._id); // _id mới đúng!
-          const postCounts = data.map((item: any) => item.totalPosts);
-          // Vì không có totalComments trong API => mình có thể set commentCounts = mảng toàn 0 hoặc bỏ nó đi
-          const commentCounts = data.map((item: any) => 0);
+          const response = await userService.GetStatisticUserperyear();
+          const data = response.data.data;
+          console.log("response", data);
+          const categories = data.map((item: any) => item.yearMonth);
+          const totalUsers = data.map((item: any) => item.totalUsers);
+          const bannedUsers = data.map((item: any) => item.bannedUsers);
 
           setXCategories(categories);
           setSeries([
-            { name: "TotalPosts", data: postCounts },
-            { name: "HirePosts", data: commentCounts },
+            { name: "Total Users", data: totalUsers },
+            { name: "Banned Users", data: bannedUsers },
           ]);
         } else if (selectedTab === "optionThree") {
-          // Ví dụ nếu muốn lấy theo năm
           const dummyData = [
             { year: "2022", totalPosts: 1200, totalComments: 500 },
             { year: "2023", totalPosts: 1800, totalComments: 700 },
@@ -116,16 +112,16 @@ export default function StatisticsChart() {
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
         <div className="w-full">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            {selectedTab === "optionOne" && "Posts & Comments per Day"}
-            {selectedTab === "optionTwo" && "Posts & Comments per Month"}
+            {selectedTab === "optionOne" && "Posts & Comments per Month"}
+            {selectedTab === "optionTwo" && "Users & Banned Users per Year"}
             {selectedTab === "optionThree" && "Posts & Comments per Year"}
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
             Statistical view by{" "}
             {selectedTab === "optionOne"
-              ? "day"
+              ? "Month"
               : selectedTab === "optionTwo"
-              ? "month"
+              ? "year"
               : "year"}
           </p>
         </div>

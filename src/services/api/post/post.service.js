@@ -31,6 +31,26 @@ class PostService {
     return response;
   }
 
+  async GetStatisticPost() {
+    const response = await axios.get(`/admin/statistic/post`);
+    return response;
+  }
+
+  async GetStatisticPostperyear() {
+    const response = await axios.get(`/admin/statistic/postperyear`);
+    return response;
+  }
+
+  async GetPostCount() {
+    const response = await axios.get(`/admin/getpostcount`);
+    return response;
+  }
+
+  async GetStatisticPostperMonth() {
+    const response = await axios.get(`/admin/statistic/postpermonth`);
+    return response;
+  }
+
   async HirePost(body) {
     const response = await axios.post(`/admin/hirepost`, body);
     return response;

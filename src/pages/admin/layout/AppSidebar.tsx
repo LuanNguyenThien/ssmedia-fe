@@ -25,7 +25,7 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Dashboard", path: "/admin/dashboard", pro: false }],
+    subItems: [{ name: "Dashboard", path: "/admin", pro: false }],
   },
   {
     icon: <FaBars />,
@@ -57,8 +57,8 @@ const othersItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Charts",
     subItems: [
-      { name: "Line Chart", path: "/admin/line-chart", pro: false },
-      { name: "Bar Chart", path: "/admin/bar-chart", pro: false },
+      { name: "Post", path: "/admin/Posts", pro: false },
+      { name: "User", path: "/admin/Users", pro: false },
     ],
   },
 

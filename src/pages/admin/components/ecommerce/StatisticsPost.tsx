@@ -15,6 +15,7 @@ export default function EcommerceMetrics() {
  const [total, setTotals] = useState(1);
  const [usertoday, setUserToday] = useState(0);
  const [grow, setGrown] = useState(0);
+ const [postToday, setPostToday] = useState(0);
  const [growPost, setGrownPost] = useState(0);
  const [totalPost, setTotalPost] = useState(1);     
 const getAllUsers = useCallback(async () => {
@@ -23,6 +24,7 @@ const getAllUsers = useCallback(async () => {
     const response = await userService.getAllUsersAdminRole(1);
     const responseData = await userService.getUsersToday();
     const responsePost = await postService.GetPostCount();
+    setPostToday(responsePost.data.postsToday);
     console.log("responsePost", responsePost);
     setUserToday(responseData.data.count);
     setTotalPost(responsePost.data.totalPosts);
@@ -71,16 +73,13 @@ useEffectOnce(() => {
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Total Users
+              Post Today
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              {total}
+              {postToday}
             </h4>
           </div>
-          <Badge color="success">
-            <ArrowUpIcon />
-            {grow}%
-          </Badge>
+          
         </div>
       </div>
       {/* <!-- Metric Item End --> */}

@@ -247,6 +247,9 @@ const BarChart = lazy(() =>
 const UserProfiles = lazy(() =>
   import("@pages/admin/pages/UserProfiles") );
 
+const Home = lazy(() =>
+  import("@pages/admin/pages/Dashboard/Home") );
+
 const LineChart = lazy(() => import("@pages/admin/pages/Charts/LineChart"));
 
 const SignIn = lazy(() => import("@pages/admin/pages/AuthPages/SignIn"));
@@ -405,6 +408,10 @@ export const AppRouter = () => {
       element: <AdminLayout />,
       children: [
         {
+          path: "",
+          element: withSuspense(<Home />),
+        },
+        {
           path: "user",
           element: withSuspense(<BasicTables />),
         },
@@ -425,11 +432,11 @@ export const AppRouter = () => {
           element: withSuspense(<HirePostTable />),
         },
         {
-          path: "bar-chart",
+          path: "Posts",
           element: withSuspense(<BarChart />),
         },
         {
-          path: "line-chart",
+          path: "Users",
           element: withSuspense(<LineChart />),
         },
         {

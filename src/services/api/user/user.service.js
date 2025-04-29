@@ -21,6 +21,27 @@ class UserService {
     return response;
   }
 
+  async getUsersToday() {
+    const response = await axios.get(`/admin/newusertoday`);
+    return response;
+  }
+
+   async GetStatisticUser() {
+    const response = await axios.get(`/admin/statistic/user`);
+    return response;
+  }
+
+  async GetStatisticUserperyear() {
+    const response = await axios.get(`/admin/statistic/userperyear`);
+    return response;
+  }
+
+
+  async GetStatisticUserperMonth() {
+    const response = await axios.get(`/admin/statistic/userpermonth`);
+    return response;
+  }
+  
   async getAllUsersAdminRole(page) {
     const response = await axios.get(`/admin/users/all/${page}`);
     return response;

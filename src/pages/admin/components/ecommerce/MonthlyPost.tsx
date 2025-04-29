@@ -3,95 +3,93 @@ import { ApexOptions } from "apexcharts";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { FaEllipsisH as MoreDotIcon } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { postService } from "@services/api/post/post.service";
 
-export default function MonthlySalesChart() {
+export default function YearlyPostsChart() {
+  const [categories, setCategories] = useState<string[]>([]);
+  const [dataPoints, setDataPoints] = useState<number[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    async function fetchYearlyData() {
+      try {
+        const res = await postService.GetStatisticPostperyear(); // API thống kê theo tháng
+        const rawData = res.data.data;
+
+        // Lọc trùng nếu cần
+        const uniqueData = Array.from(
+          new Map(rawData.map((item: any) => [item.yearMonth, item])).values()
+        );
+
+        // Sắp xếp theo thời gian tăng dần
+        const sortedData = uniqueData.sort(
+          (a: any, b: any) =>
+            new Date(a.yearMonth).getTime() - new Date(b.yearMonth).getTime()
+        );
+
+        const labels = sortedData.map((item: any) => {
+          const [year, month] = item.yearMonth.split("-");
+          return `${month}/${year}`;
+        });
+
+        const totals = sortedData.map((item: any) => item.totalPosts);
+
+        setCategories(labels); // ["04/2024", "05/2024", ...]
+        setDataPoints(totals); // [0, 0, ..., 121, ...]
+      } catch (err) {
+        console.error("Failed to fetch yearly stats", err);
+      }
+    }
+
+    fetchYearlyData();
+  }, []);
+
   const options: ApexOptions = {
     colors: ["#465fff"],
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "bar",
-      height: 180,
-      toolbar: {
-        show: false,
-      },
+      height: 200,
+      toolbar: { show: false },
     },
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "39%",
+        columnWidth: "40%",
         borderRadius: 5,
         borderRadiusApplication: "end",
       },
     },
-    dataLabels: {
-      enabled: false,
-    },
+    dataLabels: { enabled: false },
     stroke: {
       show: true,
       width: 4,
       colors: ["transparent"],
     },
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
+      categories,
+      axisBorder: { show: false },
+      axisTicks: { show: false },
     },
-    legend: {
-      show: true,
-      position: "top",
-      horizontalAlign: "left",
-      fontFamily: "Outfit",
-    },
-    yaxis: {
-      title: {
-        text: undefined,
-      },
-    },
+    yaxis: { title: { text: undefined } },
     grid: {
-      yaxis: {
-        lines: {
-          show: true,
-        },
-      },
+      yaxis: { lines: { show: true } },
     },
-    fill: {
-      opacity: 1,
-    },
-
+    fill: { opacity: 1 },
     tooltip: {
-      x: {
-        show: false,
-      },
       y: {
-        formatter: (val: number) => `${val}`,
+        formatter: (val: number) => `${val} posts`,
       },
     },
   };
+
   const series = [
     {
-      name: "Sales",
-      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+      name: "Total Posts",
+      data: dataPoints,
     },
   ];
-  const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -100,14 +98,19 @@ export default function MonthlySalesChart() {
   function closeDropdown() {
     setIsOpen(false);
   }
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Monthly Sales
+          Yearly Posts
         </h3>
         <div className="relative inline-block">
-          <button className="dropdown-toggle" onClick={toggleDropdown}>
+          <button
+            className="dropdown-toggle"
+            onClick={toggleDropdown}
+            aria-label="Open chart menu"
+          >
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
           </button>
           <Dropdown
@@ -133,7 +136,7 @@ export default function MonthlySalesChart() {
 
       <div className="max-w-full overflow-x-auto custom-scrollbar">
         <div className="-ml-5 min-w-[650px] xl:min-w-full pl-2">
-          <Chart options={options} series={series} type="bar" height={180} />
+          <Chart options={options} series={series} type="bar" height={200} />
         </div>
       </div>
     </div>

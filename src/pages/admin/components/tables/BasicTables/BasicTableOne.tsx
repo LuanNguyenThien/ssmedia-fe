@@ -40,6 +40,7 @@ export default function BasicTableOne() {
       setLoading(true);
       const response = await userService.getAllUsersAdminRole(currentPage);
       const rawUsers = response.data.users;
+     
 
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
         _id: u._id,
