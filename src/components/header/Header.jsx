@@ -54,6 +54,7 @@ const Header = () => {
     //search term, image
     const [searchTerm, setSearchTerm] = useState("");
     const [searchImage, setSearchImage] = useState(null);
+    const [isSearch, setIsSearch] = useState(false);
 
     //notifications
     const notificationRef = useRef(null);
@@ -64,6 +65,7 @@ const Header = () => {
         imgUrl: "",
         comment: "",
         reaction: "",
+        post_analysis: "",
         senderName: "",
         entityId: "",
     });
@@ -259,10 +261,11 @@ const Header = () => {
             navigate("/app/social/search", { 
                 state: { 
                     query: searchTerm,
-                    hasImage: true,
+                    hasImage: isSearch,
                     image: searchImage,
                 } 
             });
+            setIsSearch(!isSearch);
         } else {
             // Regular text search
             navigate("/app/social/search", { state: { query: searchTerm } });
@@ -275,6 +278,8 @@ const Header = () => {
             imgUrl: "",
             comment: "",
             reaction: "",
+            post_analysis: "",
+            htmlPost: "",
             senderName: "",
         });
     };
@@ -297,9 +302,11 @@ const Header = () => {
                                 title="Your post"
                                 entityId={notificationDialogContent?.entityId}
                                 post={notificationDialogContent?.post}
+                                htmlPost={notificationDialogContent?.htmlPost}
                                 imgUrl={notificationDialogContent?.imgUrl}
                                 comment={notificationDialogContent?.comment}
                                 reaction={notificationDialogContent?.reaction}
+                                post_analysis={notificationDialogContent?.post_analysis}
                                 senderName={notificationDialogContent?.senderName}
                                 secondButtonText="Close"
                                 secondBtnHandler={

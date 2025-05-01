@@ -105,6 +105,11 @@ export default function AddQuestion() {
   };
 
   async function uploadFile(file) {
+    const MAX_FILE_SIZE = 35 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      alert("File size exceeds the limit of 35MB.");
+      throw new Error("File size exceeds 35MB limit");
+    }
     const body = new FormData();
     body.append("file", file);
     const ret = await fetch("https://tmpfiles.org/api/v1/upload", {
@@ -164,6 +169,9 @@ export default function AddQuestion() {
               <BlockNoteView
                 editor={editor}
                 onChange={handleEditorDataChange}
+                // data-color-scheme="light"
+                // data-mantine-color-scheme="light"
+                theme="light"
               />
             </div>
 

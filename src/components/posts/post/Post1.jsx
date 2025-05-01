@@ -33,6 +33,7 @@ import "yet-another-react-lightbox/styles.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom"; // Import plugin Zoom
 
 const Post = ({ post, showIcons }) => {
+  const { profile } = useSelector((state) => state.user);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageSrc, setCurrentImageSrc] = useState("");
   const viewContainerRef = useRef(null); 
@@ -214,7 +215,7 @@ const Post = ({ post, showIcons }) => {
                     // </div>
                   )}
                 </h5>
-                {showIcons && (
+                {(showIcons || post.userId === profile._id)  && (
                   <div
                     className="post-icons"
                     style={{ position: "relative" }}

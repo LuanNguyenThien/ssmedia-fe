@@ -103,6 +103,7 @@ export class NotificationUtils {
                     : notification?.profilePicture,
                 read: notification?.read,
                 post: notification?.post,
+                htmlPost: notification?.htmlPost,
                 imgUrl: notification?.imgId
                     ? Utils.appImageUrl(
                           notification?.imgVersion,
@@ -113,6 +114,7 @@ export class NotificationUtils {
                     : notification?.imgUrl,
                 comment: notification?.comment,
                 reaction: notification?.reaction,
+                post_analysis: notification?.post_analysis,
                 senderName: notification?.userFrom
                     ? notification?.userFrom.username
                     : notification?.username,
@@ -139,6 +141,7 @@ export class NotificationUtils {
             const notificationDialog = {
                 createdAt: notification?.createdAt,
                 post: notification?.post,
+                htmlPost: notification?.htmlPost,
                 imgUrl: notification?.imgId
                     ? Utils.appImageUrl(
                           notification?.imgVersion,
@@ -149,6 +152,7 @@ export class NotificationUtils {
                     : notification?.imgUrl,
                 comment: notification?.comment,
                 reaction: notification?.reaction,
+                post_analysis: notification?.post_analysis,
                 senderName: notification?.userFrom
                     ? notification?.userFrom.username
                     : notification?.username,

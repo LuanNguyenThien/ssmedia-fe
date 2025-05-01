@@ -144,6 +144,7 @@
           }
           .bn-visual-media {
             max-height: 400px;
+            object-fit: contain;
           }
           .bn-inline-content .ProseMirror-trailingBreak {
             display: none;
