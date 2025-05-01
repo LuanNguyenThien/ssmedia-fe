@@ -255,6 +255,8 @@ const LineChart = lazy(() => import("@pages/admin/pages/Charts/LineChart"));
 const SignIn = lazy(() => import("@pages/admin/pages/AuthPages/SignIn"));
 const SignUp = lazy(() => import("@pages/admin/pages/AuthPages/SignUp"));
 
+const Checkpoint = lazy(() => import("@pages/admin/pages/AuthPages/report"));
+
 const withSuspense = (Component) => (
   <Suspense fallback={<div>Loading...</div>}>{Component}</Suspense>
 );
@@ -266,6 +268,14 @@ export const AppRouter = () => {
         <ChakraProvider>
           <AuthTabs />
         </ChakraProvider>
+      ),
+    },
+    {
+      path: "/checkpoint",
+      element: (
+        
+          <Checkpoint />
+        
       ),
     },
     {

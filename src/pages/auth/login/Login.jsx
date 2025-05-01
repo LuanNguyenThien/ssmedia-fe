@@ -21,14 +21,12 @@ const Login = ({ onSwitchToRegister }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [alertType, setAlertType] = useState('');
   const [user, setUser] = useState();
-  // const [usernameTouched, setUsernameTouched] = useState(false);
-  // const [passwordTouched, setPasswordTouched] = useState(false);
   const [setStoredUsername] = useLocalStorage('username', 'set');
   const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'set');
   const [pageReload] = useSessionStorage('pageReload', 'set');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [isBan, setIsBan] = useState(false);
   const loginUser = async (event) => {
     setLoading(true);
     event.preventDefault();
@@ -37,6 +35,10 @@ const Login = ({ onSwitchToRegister }) => {
         username,
         password
       });
+      
+      const ban = await authService.CheckUser(result.data.user.authId);
+      
+      setIsBan(ban.data.isBanned);
       setLoggedIn(keepLoggedIn);
       setStoredUsername(username);
       setHasError(false);
@@ -52,8 +54,9 @@ const Login = ({ onSwitchToRegister }) => {
 
   useEffect(() => {
     if (loading && !user) return;
-    if (user) navigate('/app/social/streams');
-  }, [loading, user, navigate]);
+    if (isBan) navigate("/checkpoint")
+    else if (user) navigate("/app/social/streams");
+  }, [loading, user, navigate, isBan]);
 
   return (
     <>

@@ -25,6 +25,8 @@ const ProtectedRoute = ({ children }) => {
   const checkUser = useCallback(async () => {
     try {
       const response = await userService.checkCurrentUser();
+      console.log('checkCurrentUser', response.data.user);
+      console.log('userdata', response.data.token);
       dispatch(getConversationList());
       setUserData(response.data.user);
       setTokenIsValid(true);

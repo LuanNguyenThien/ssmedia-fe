@@ -50,7 +50,7 @@ export default function SignInForm() {
           username,
           password
         });
-        console.log(result);
+        console.log(result,"log");
         setLoggedIn(keepLoggedIn);
         setStoredUsername(username);
 
