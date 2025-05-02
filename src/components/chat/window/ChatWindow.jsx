@@ -26,11 +26,14 @@ import { icons } from "@/assets/assets";
 import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 import useHandleOutsideClick from "@/hooks/useHandleOutsideClick";
 import GroupChatUtils from "@/services/utils/group-chat-utils.service";
+import { socketService } from "@services/socket/socket.service";
 
 const ChatWindow = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const isMobile = Utils.isMobileDevice();
     const { profile } = useSelector((state) => state.user);
-    const { isLoading } = useSelector((state) => state.chat);
+
     const [receiver, setReceiver] = useState();
     const [conversationId, setConversationId] = useState("");
     const [chatMessages, setChatMessages] = useState([]);
@@ -39,13 +42,16 @@ const ChatWindow = () => {
     const [rendered, setRendered] = useState(false);
     const [isMessagesLoading, setIsMessagesLoading] = useState(true);
     const [isShowInfoGroup, setIsShowInfoGroup] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [membershipCheckComplete, setMembershipCheckComplete] =
+        useState(false);
+    const [showNonMemberWarning, setShowNonMemberWarning] = useState(false);
+
     const groupInfoRef = useRef(null);
     useHandleOutsideClick(groupInfoRef, setIsShowInfoGroup, {
         eventType: "click",
     });
-
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     //loading state
     const [isSending, setIsSending] = useState(false);
@@ -127,6 +133,7 @@ const ChatWindow = () => {
 
     const getChatMessages = useCallback(
         async (receiverId, isGroup) => {
+            setIsLoading(true);
             setIsMessagesLoading(true);
             try {
                 const response = await chatService.getChatMessages(
@@ -146,12 +153,14 @@ const ChatWindow = () => {
                 }
                 setChatMessages([...ChatUtils.privateChatMessages]);
             } catch (error) {
+                console.log("Error fetching chat messages:", error);
                 Utils.dispatchNotification(
                     error.response.data.message,
                     "error",
                     dispatch
                 );
             } finally {
+                setIsLoading(false);
                 setIsMessagesLoading(false);
             }
         },
@@ -188,6 +197,8 @@ const ChatWindow = () => {
                 "error",
                 dispatch
             );
+            navigate("/app/social/chat/messages");
+            window.location.reload();
         }
     }, [dispatch, profile, searchParamsId, isGroup]);
 
@@ -322,7 +333,7 @@ const ChatWindow = () => {
         if (rendered) {
             // Clear existing socket listeners to prevent duplicates
             ChatUtils.removeSocketListeners();
-            
+
             // Set up message receiver with better error handling
             ChatUtils.socketIOMessageReceived(
                 chatMessages,
@@ -333,9 +344,11 @@ const ChatWindow = () => {
                         setChatMessages(messages);
                         // Automatically scroll to bottom when new messages arrive
                         setTimeout(() => {
-                            const chatContainer = document.querySelector('.message-page');
+                            const chatContainer =
+                                document.querySelector(".message-page");
                             if (chatContainer) {
-                                chatContainer.scrollTop = chatContainer.scrollHeight;
+                                chatContainer.scrollTop =
+                                    chatContainer.scrollHeight;
                             }
                         }, 100);
                     }
@@ -343,7 +356,7 @@ const ChatWindow = () => {
             );
         }
         if (!rendered) setRendered(true);
-        
+
         const fetchInitialOnlineUsers = () => {
             ChatUtils.fetchOnlineUsers(setOnlineUsers);
         };
@@ -365,7 +378,7 @@ const ChatWindow = () => {
             setConversationId,
             setChatMessages
         );
-        
+
         return () => {
             // Clean up reaction listeners specifically
             const socket = ChatUtils.socketIOClient;
@@ -378,15 +391,15 @@ const ChatWindow = () => {
     // Listen for group updates with better handling
     useEffect(() => {
         if (isGroup && rendered && receiver) {
-            const socket = ChatUtils.socketIOClient;
-            
             const handleGroupUpdate = (data) => {
-                if (data.groupId === searchParamsId) {
+                if (
+                    data.groupId === searchParamsId ||
+                    data._id === searchParamsId
+                ) {
                     // Force refresh group info
                     getUserProfileByUserId();
                 }
             };
-            
             const handleGroupDeleted = (groupId) => {
                 if (groupId === searchParamsId) {
                     navigate("/app/social/chat/messages");
@@ -397,9 +410,11 @@ const ChatWindow = () => {
                     );
                 }
             };
-            
             const handleMemberRemoved = (data) => {
-                if (data.groupId === searchParamsId && data.userId === profile._id) {
+                if (
+                    data.groupId === searchParamsId &&
+                    data.userId === profile._id
+                ) {
                     navigate("/app/social/chat/messages");
                     Utils.dispatchNotification(
                         "You were removed from the group",
@@ -410,34 +425,46 @@ const ChatWindow = () => {
                     getUserProfileByUserId();
                 }
             };
-            
+
             // Add socket listeners with specific handlers
-            socket?.on("group action", (action) => {
-                console.log("Group action received:", action);
-                switch(action.type) {
-                    case 'promote':
-                    case 'update':
-                        handleGroupUpdate(action.data);
-                        break;
-                    case 'remove':
-                        handleMemberRemoved(action.data);
-                        break;
-                    case 'leave':
-                        handleGroupUpdate(action.data);
-                        break;
-                    case 'delete':
-                        handleGroupDeleted(action.data.groupId);
-                        break;
-                    default:
-                        break;
+            socketService.socket?.on("group action", (action) => {
+                if (
+                    action?.data.groupId === receiver?._id ||
+                    action?.data._id === receiver?._id
+                ) {
+                    switch (action.type) {
+                        case "promote":
+                        case "update":
+                        case "leave":
+                        case "accept":
+                            handleGroupUpdate(action.data);
+                            break;
+                        case "remove":
+                            handleMemberRemoved(action.data);
+                            break;
+                        case "delete":
+                            handleGroupDeleted(action.data.groupId);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             });
-            
+
             return () => {
-                socket?.off("group action");
+                socketService.socket?.off("group action");
             };
         }
-    }, [isGroup, rendered, receiver, searchParamsId, profile._id, navigate, dispatch, getUserProfileByUserId]);
+    }, [
+        isGroup,
+        rendered,
+        receiver,
+        searchParamsId,
+        profile._id,
+        navigate,
+        dispatch,
+        getUserProfileByUserId,
+    ]);
 
     // Clean up all socket listeners
     useEffect(() => {
@@ -451,22 +478,80 @@ const ChatWindow = () => {
     const handleBackClick = useCallback(() => {
         navigate("/app/social/chat/messages");
     }, [navigate]);
+
+    const isGroupMember = useMemo(
+        () =>
+            isGroup &&
+            !GroupChatUtils.userIsGroupMember(receiver?.members, profile._id),
+        [isGroup, receiver, profile]
+    );
+
+    // Modify the membership check effect
+    useEffect(() => {
+        setShowNonMemberWarning(false);
+
+        if (isGroup && receiver) {
+            setMembershipCheckComplete(true);
+            if (
+                !GroupChatUtils.userIsGroupMember(
+                    receiver?.members,
+                    profile._id
+                )
+            ) {
+                // Use a short timeout to prevent showing the warning prematurely
+                const timer = setTimeout(() => {
+                    setShowNonMemberWarning(true);
+                }, 400);
+
+                return () => clearTimeout(timer);
+            }
+        } else if (!isGroup) {
+            setMembershipCheckComplete(true);
+        }
+    }, [isGroup, receiver, profile._id]);
+
+    const [contentVisible, setContentVisible] = useState(false);
+
+    useEffect(() => {
+        if (!isGroup) return;
+        if (!isLoading && searchParamsId) {
+            const timer = setTimeout(() => {
+                setContentVisible(true);
+            }, 500);
+            return () => clearTimeout(timer);
+        } else {
+            setContentVisible(false);
+        }
+    }, [isLoading, searchParamsId, isGroupMember]);
+
     return (
         <div
             className="chat-window-container gap-2 sm:px-4 sm:py-2 relative"
             data-testid="chat WindowContainer"
         >
-            {isGroup &&
-                !GroupChatUtils.userIsGroupMember(
-                    receiver?.members,
-                    profile._id
-                ) && (
-                    <div className="absolute inset-0 flex justify-center items-center z-[1000] bg-primary-white back ">
-                        <span>
-                            You are not a member of this group
-                        </span>
-                    </div>
-                )}
+            {/* Replace the previous warning with this improved version */}
+            {showNonMemberWarning && (
+                <div className="absolute inset-0 flex justify-center items-center z-[1000] bg-white/20 transition-all duration-300 ease-in-out animate-fadeIn">
+                    {Utils.isMobileDevice() && (
+                        <div
+                            className="fixed gap-2 top-5 left-5 text-xl text-primary-black cursor-pointer pr-2 flex items-center"
+                            onClick={handleBackClick}
+                        >
+                            <IoIosArrowBack />{" "}
+                            <span className="text-sm">Back to your chats</span>
+                        </div>
+                    )}
+                    <span
+                        className={`font-semibold text-xl ${
+                            isGroupMember || !contentVisible
+                                ? "opacity-100"
+                                : "opacity-0"
+                        }`}
+                    >
+                        You are not a member of this group
+                    </span>
+                </div>
+            )}
             {isLoading ? (
                 <div
                     className="message-loading"
@@ -477,7 +562,15 @@ const ChatWindow = () => {
                     {searchParamsId && searchParamsUsername ? (
                         <div
                             data-testid="chatWindow"
-                            className="chatWindow max-h-full relative bg-slate-800"
+                            className={`chatWindow max-h-full relative transition-all duration-300 ${
+                                isGroup && (isGroupMember || !contentVisible)
+                                    ? "blur-md opacity-90"
+                                    : "blur-none opacity-100"
+                            }`}
+                            style={{
+                                transitionProperty: "filter, opacity",
+                                willChange: "filter, opacity",
+                            }}
                         >
                             {/* header */}
                             <div

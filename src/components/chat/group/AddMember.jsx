@@ -33,10 +33,6 @@ const AddMember = ({ onClose, groupId, existingMembers = [] }) => {
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingMembers, setIsLoadingMembers] = useState(false);
-
-    const countRef = useRef(0);
-    console.log("Searching for users:", countRef.current++);
-
     // Search for members when the debounced search query changes
     useEffect(() => {
         const searchUsers = async () => {
@@ -105,7 +101,7 @@ const AddMember = ({ onClose, groupId, existingMembers = [] }) => {
             const response = await groupChatService.addMembers(groupId, { members: memberIds });
 
             // Emit socket event to notify all clients about members being added
-            GroupChatUtils.emitGroupAction('add_members', {
+            GroupChatUtils.emitGroupAction('ADD_MEMBERS', {
                 groupId: groupId,
                 addedMembers: selectedMembers.map(member => ({
                     userId: member._id,

@@ -1,35 +1,21 @@
 import { reactionsMap } from "@/services/utils/static.data";
 import { Utils } from "@/services/utils/utils.service";
 import Avatar from "@components/avatar/Avatar";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { FaTimes } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import useDetectOutsideClick from "@/hooks/useDetectOutsideClick";
 
 const ReactionsTab = ({
     reactions = [],
     groupChatData = [],
-    onRemoveReaction = () => {},
-    isOpen = true,
-    onClose = () => {},
+    onRemoveReaction,
+    onCloseReactionTab,
 }) => {
     const { profile } = useSelector((state) => state.user);
     const isMobile = Utils.isMobileDevice();
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-        let timer;
-        if (isOpen) {
-            timer = setTimeout(() => {
-                setIsVisible(true);
-            }, 50);
-        } else if (isVisible) {
-            setIsVisible(false);
-            timer = setTimeout(() => {
-                onClose();
-            }, 350);
-        }
-        return () => clearTimeout(timer);
-    }, [isOpen, isVisible, onClose]);
+    const reactionsRef = useRef(null);
+    const [isActive, setIsActive] = useDetectOutsideClick(reactionsRef, true);
 
     // Find if current user has reacted
     const getImage = (userName) => {
@@ -44,13 +30,13 @@ const ReactionsTab = ({
 
     // Base classes for mobile and desktop
     const mobileClasses =
-        "fixed bottom-0 left-0 bg-white shadow-md border-t w-screen h-max max-h-1/2 flex flex-col justify-between gap-2 z-[5002] rounded-t-2xl p-4";
+        "fixed z-[100] bottom-0 left-0 bg-white shadow-md border-t w-screen h-max max-h-1/2 flex flex-col justify-between gap-2  rounded-t-2xl p-4";
     const desktopClasses =
-        "fixed  w-1/3 h-max left-1/2 bottom-1/2 border translate-y-1/2 bg-primary-white p-6 z-[10000] shadow-md rounded-[10px] flex flex-col justify-between -translate-x-1/2";
+        "fixed z-[100] w-max h-max left-1/2 bottom-1/2 border translate-y-1/2 bg-primary-white p-6  shadow-md rounded-[10px] flex flex-col justify-between -translate-x-1/2";
 
     // Animation classes
     const animationClasses = `transition-all duration-300 ease-in-out ${
-        isVisible
+        isActive
             ? isMobile
                 ? "translate-y-0 opacity-100"
                 : "scale-100 opacity-100"
@@ -59,13 +45,23 @@ const ReactionsTab = ({
             : "scale-90 opacity-0"
     }`;
 
-    console.log("ReactionsTab rendered", reactions);
+    // Close the tab when clicking outside
+    useEffect(() => {
+        if (!isActive) {
+            onCloseReactionTab();
+        }
+    }, [isActive, onCloseReactionTab]);
 
     return (
         <div
+            ref={reactionsRef}
             className={`${
                 isMobile ? mobileClasses : desktopClasses
             } ${animationClasses}`}
+            onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }}
         >
             <h3 className="text-xl px-4 font-bold mb-3 text-gray-800 ">
                 Reactions
@@ -98,13 +94,13 @@ const ReactionsTab = ({
             </div>
 
             {isCurrentReacted && (
-                <button
+                <div
                     onClick={onRemoveReaction}
-                    className="w-full py-2 mt-4 text-primary-black flex items-center justify-center gap-2 bg-background-blur hover:bg-red-100 rounded-lg transition-colors"
+                    className="w-full py-2 mt-4 text-primary-black flex items-center justify-center gap-2 bg-background-blur hover:text-red-500 cursor-pointer rounded-lg transition-colors"
                 >
                     <FaTimes />
                     <span>Remove your reaction</span>
-                </button>
+                </div>
             )}
         </div>
     );

@@ -28,7 +28,7 @@ const LeftMessageBubble = ({
                         src={chat?.selectedImage}
                         onClick={() => {
                             setImageUrl(chat?.selectedImage);
-                            setShowImageModal(!showImageModal);
+                            setShowImageModal(true);
                         }}
                         alt=""
                     />
@@ -40,7 +40,7 @@ const LeftMessageBubble = ({
                         src={chat?.gifUrl}
                         onClick={() => {
                             setImageUrl(chat?.gifUrl);
-                            setShowImageModal(!showImageModal);
+                            setShowImageModal(true);
                         }}
                         alt=""
                     />

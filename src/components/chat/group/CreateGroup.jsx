@@ -19,9 +19,12 @@ import { useDispatch } from "react-redux";
 import { Utils } from "@services/utils/utils.service";
 import LoadingSpinner from "@/components/state/LoadingSpinner";
 import ProcessSpinner from "@/components/state/ProcessSpinner";
+import { ChatUtils } from "@/services/utils/chat-utils.service";
+import { useNavigate } from "react-router-dom";
 
 const CreateGroup = ({ onClickBack }) => {
     const { profile } = useSelector((state) => state.user);
+    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     // Group details
@@ -158,17 +161,23 @@ const CreateGroup = ({ onClickBack }) => {
                 members: selectedMembers.map((member) => member._id),
                 groupPicture: imageData ? imageData.url : null,
             };
-
             const response = await groupChatService.createGroupChat(groupData);
-            console.log("Group created successfully:", response);
-
             Utils.dispatchNotification(
                 "Group created successfully!",
                 "success",
                 dispatch
             );
-
-            onClickBack();
+            setTimeout(() => {
+                onClickBack();
+                ChatUtils.navigateToChat(
+                    {
+                        username: response?.data.group.name,
+                        _id: response?.data.group._id,
+                        isGroup: true,
+                    },
+                    navigate
+                );
+            }, 200);
         } catch (error) {
             console.error("Error creating group:", error);
             Utils.dispatchNotification(

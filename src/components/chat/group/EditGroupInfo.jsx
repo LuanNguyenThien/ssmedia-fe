@@ -102,7 +102,7 @@ const EditGroupInfo = ({ groupInfo, onClose, onSuccess }) => {
             );
 
             // Emit socket event to notify all clients about group info update
-            GroupChatUtils.emitGroupAction('update', {
+            GroupChatUtils.emitGroupAction('UPDATE_GROUP', {
                 groupId: groupInfo._id,
                 name: groupName,
                 description: groupDescription,
@@ -155,7 +155,6 @@ const EditGroupInfo = ({ groupInfo, onClose, onSuccess }) => {
                     <span>Cancel</span>
                 </div>
                 <span className="text-xl font-bold">Edit Group</span>
-                <div className="w-[60px]"></div> {/* Spacer for alignment */}
             </div>
             {/* Divider line */}
             <div className="w-full h-auto flex justify-center">

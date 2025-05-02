@@ -91,10 +91,10 @@ const InformationGroup = ({ ref, info, onClose, currentUser, onSuccess }) => {
                 selectedMember.userId
             );
             // Emit socket event for real-time update
-            GroupChatUtils.emitGroupAction('promote', {
+            GroupChatUtils.emitGroupAction("PROMOTE_ADMIN", {
                 groupId: info._id,
                 userId: selectedMember.userId,
-                username: selectedMember.username
+                username: selectedMember.username,
             });
             Utils.dispatchNotification(
                 "Member promoted successfully!",
@@ -118,10 +118,10 @@ const InformationGroup = ({ ref, info, onClose, currentUser, onSuccess }) => {
                 selectedMember.userId
             );
             // Emit socket event for real-time update
-            GroupChatUtils.emitGroupAction('remove', {
+            GroupChatUtils.emitGroupAction("REMOVE_MEMBER", {
                 groupId: info._id,
                 userId: selectedMember.userId,
-                username: selectedMember.username
+                username: selectedMember.username,
             });
             Utils.dispatchNotification(
                 "Member removed successfully!",
@@ -142,10 +142,10 @@ const InformationGroup = ({ ref, info, onClose, currentUser, onSuccess }) => {
         try {
             await groupChatService.leaveGroup(info._id);
             // Emit socket event for real-time update
-            GroupChatUtils.emitGroupAction('leave', {
+            GroupChatUtils.emitGroupAction("LEAVE_GROUP", {
                 groupId: info._id,
                 userId: currentUser._id,
-                username: currentUser.username
+                username: currentUser.username,
             });
             Utils.dispatchNotification(
                 "You have left the group successfully!",
@@ -167,8 +167,8 @@ const InformationGroup = ({ ref, info, onClose, currentUser, onSuccess }) => {
         try {
             await groupChatService.deleteGroup(info._id);
             // Emit socket event for real-time update
-            GroupChatUtils.emitGroupAction('delete', {
-                groupId: info._id
+            GroupChatUtils.emitGroupAction("DELETE_GROUP", {
+                groupId: info._id,
             });
             Utils.dispatchNotification(
                 "Group deleted successfully!",
@@ -254,7 +254,7 @@ const InformationGroup = ({ ref, info, onClose, currentUser, onSuccess }) => {
                 onClick={(e) => {
                     e.stopPropagation();
                 }}
-                className={`absolute top-0 right-0 h-full w-1/2  py-2 px-4 bg-white shadow-lg z-10 flex flex-col border-l border-gray-200 transition-transform duration-300 ease-in-out ${
+                className={`absolute top-0 right-0 h-full w-full lg:w-1/2  py-2 px-4 bg-white shadow-lg z-10 flex flex-col border-l border-gray-200 transition-transform duration-300 ease-in-out ${
                     isVisible ? "translate-x-0" : "translate-x-full"
                 }`}
             >

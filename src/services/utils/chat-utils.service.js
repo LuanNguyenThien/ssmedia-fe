@@ -13,7 +13,7 @@ export class ChatUtils {
         const url = `/app/social/chat/messages?${createSearchParams({
             username: data?.username,
             id: data?._id,
-            isGroup: false,
+            isGroup: data?.isGroup || false,
         })}`;
         navigate(url);
     }

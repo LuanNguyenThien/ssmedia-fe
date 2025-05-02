@@ -27,9 +27,6 @@ const LeftMessageDisplay = ({
     const [isShowBottom, setIsShowBottom] = useState(false);
     const [isHoverMessage, setIsHoverMessage] = useState(false);
 
-    const reactionTabRef = useRef(null);
-    useHandleOutsideClick(reactionTabRef, onCloseReactionTab);
-
     const handleClickMessage = () => {
         setIsShowBottom(!isShowBottom);
     };
@@ -141,7 +138,6 @@ const LeftMessageDisplay = ({
                         chat?.reaction.length > 0 &&
                         !chat.deleteForEveryone && (
                             <div
-                                ref={reactionTabRef}
                                 className="absolute left-0 -bottom-2 size-4 z-50 flex items-start"
                             >
                                 <ReactionsDisplay
@@ -152,30 +148,6 @@ const LeftMessageDisplay = ({
                                     reactions={chat?.reaction}
                                     direction={false}
                                 />
-                                {/* {chat?.reaction.map((data, index) => (
-                                <img
-                                    className="size-full object-cover"
-                                    key={index}
-                                    src={reactionsMap[data?.type]}
-                                    alt=""
-                                    onClick={() => {
-                                        if (
-                                            data?.senderName ===
-                                            profile?.username
-                                        ) {
-                                            const body = {
-                                                conversationId:
-                                                    chat?.conversationId ||
-                                                    chat?.groupId,
-                                                messageId: chat?._id,
-                                                reaction: data?.type,
-                                                type: "remove",
-                                            };
-                                            setSelectedReaction(body);
-                                        }
-                                    }}
-                                />
-                            ))} */}
                             </div>
                         )}
                 </div>

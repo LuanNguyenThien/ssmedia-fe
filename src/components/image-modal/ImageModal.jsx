@@ -8,6 +8,7 @@ import {
     IoIosRefresh,
 } from "react-icons/io";
 import { CgSpinner } from "react-icons/cg";
+import ReactDOM from "react-dom";
 
 import "@components/image-modal/ImageModal.scss";
 
@@ -25,6 +26,16 @@ const ImageModal = ({
     const imageRef = useRef(null);
     const [isDownloading, setIsDownloading] = useState(false);
     const [downloadSuccess, setDownloadSuccess] = useState(false);
+
+    
+    
+    // Touch handling state
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
+    const minSwipeDistance = 50;
+
+    // Determine if we're in portrait or landscape orientation based on rotation
+    const isPortraitOrientation = rotation === 90 || rotation === 270;
 
     // Event handlers with explicit stopPropagation
     const handleZoomIn = useCallback((e) => {
@@ -48,7 +59,6 @@ const ImageModal = ({
         setRotation((prev) => (prev + 90) % 360);
     }, []);
 
-    // Enhanced download function
     const handleDownload = useCallback(
         async (e) => {
             e.stopPropagation();
@@ -56,19 +66,13 @@ const ImageModal = ({
             try {
                 setIsDownloading(true);
 
-                // Fetch the image as a blob
                 const response = await fetch(image);
                 if (!response.ok) throw new Error("Image download failed");
 
                 const blob = await response.blob();
-
-                // Create object URL for the blob
                 const objectUrl = URL.createObjectURL(blob);
-
-                // Get file name from URL or use default
                 const fileName = image.split("/").pop() || "image";
 
-                // Create and trigger download link
                 const link = document.createElement("a");
                 link.href = objectUrl;
                 link.download = fileName;
@@ -76,7 +80,6 @@ const ImageModal = ({
                 document.body.appendChild(link);
                 link.click();
 
-                // Clean up
                 setTimeout(() => {
                     document.body.removeChild(link);
                     URL.revokeObjectURL(objectUrl);
@@ -92,7 +95,6 @@ const ImageModal = ({
         [image]
     );
 
-    // Arrow click handlers with stopPropagation
     const handleLeftArrowClick = useCallback(
         (e) => {
             e.stopPropagation();
@@ -109,7 +111,6 @@ const ImageModal = ({
         [lastItemRight, onClickRight]
     );
 
-    // Cancel handler
     const handleCancel = useCallback(
         (e) => {
             e.stopPropagation();
@@ -118,7 +119,40 @@ const ImageModal = ({
         [onCancel]
     );
 
-    // Keyboard shortcuts
+    // Touch event handlers for swiping
+    const handleTouchStart = useCallback((e) => {
+        setTouchEnd(null);
+        setTouchStart({
+            x: e.targetTouches[0].clientX,
+            y: e.targetTouches[0].clientY
+        });
+    }, []);
+
+    const handleTouchMove = useCallback((e) => {
+        setTouchEnd({
+            x: e.targetTouches[0].clientX,
+            y: e.targetTouches[0].clientY
+        });
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+        if (!touchStart || !touchEnd) return;
+        
+        const xDistance = touchStart.x - touchEnd.x;
+        const yDistance = touchStart.y - touchEnd.y;
+        
+        if (Math.abs(xDistance) > Math.abs(yDistance) && Math.abs(xDistance) > minSwipeDistance) {
+            if (xDistance > 0 && !lastItemRight) {
+                onClickRight();
+            } else if (xDistance < 0 && !lastItemLeft) {
+                onClickLeft();
+            }
+        }
+        
+        setTouchStart(null);
+        setTouchEnd(null);
+    }, [touchStart, touchEnd, onClickLeft, onClickRight, lastItemLeft, lastItemRight]);
+
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === "+" || (e.key === "=" && e.shiftKey)) {
@@ -157,16 +191,19 @@ const ImageModal = ({
         lastItemRight,
     ]);
 
-    return (
+    const modalContent = (
         <div
             onClick={onCancel}
-            className="fixed inset-0 h-screen w-screen flex items-center justify-center p-10 bg-primary-black/50 backdrop-blur-md !z-[1000]"
+            className="z-[5000] fixed inset-0 h-screen w-screen flex items-center justify-center p-2 sm:p-10 bg-primary-black/50 backdrop-blur-md"
             data-testid="image-modal"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
         >
             <div className="size-full relative flex flex-col items-center justify-center rounded-lg">
                 {showArrow && (
                     <div
-                        className="image-modal-icon-left"
+                        className="image-modal-icon-left hidden sm:flex"
                         onClick={handleLeftArrowClick}
                         style={{
                             pointerEvents: `${lastItemLeft ? "none" : "all"}`,
@@ -178,51 +215,63 @@ const ImageModal = ({
                 )}
                 <div
                     onClick={(e) => e.stopPropagation()}
-                    className="size-auto max-h-[70vh] max-w-[70vw] rounded-lg relative flex flex-col items-center"
+                    className={`relative flex flex-col items-center transition-all duration-300 ${
+                        isPortraitOrientation ? 'rotate-container-portrait' : 'rotate-container-landscape'
+                    }`}
+                    style={{
+                        maxHeight: isPortraitOrientation ? '90vw' : '90vh',
+                        maxWidth: isPortraitOrientation ? '90vh' : '90vw',
+                    }}
                 >
-                    <div className="overflow-hidden rounded-lg relative">
+                    <div 
+                        className="overflow-hidden rounded-lg relative"
+                        style={{
+                            transform: `rotate(${rotation}deg)`,
+                            transition: 'transform 0.3s ease',
+                        }}
+                    >
                         <img
                             ref={imageRef}
                             className="size-full object-contain transition-transform duration-200"
                             alt=""
                             src={`${image}`}
                             style={{
-                                transform: `scale(${zoomLevel}) rotate(${rotation}deg)`,
+                                transform: `scale(${zoomLevel})`,
                                 transformOrigin: "center",
-                                maxHeight: "65vh",
+                                maxHeight: isPortraitOrientation ? '80vw' : '80vh',
+                                maxWidth: isPortraitOrientation ? '80vh' : '80vw',
                             }}
                         />
                     </div>
                     <div
-                        className="absolute text-2xl -top-10 -right-10 z-50 text-red-200 hover:text-red-400 cursor-pointer"
+                        className="absolute text-2xl top-2 right-2 sm:-top-10 sm:-right-10 z-50 text-red-200 hover:text-red-400 cursor-pointer bg-black/30 sm:bg-transparent rounded-full p-2 sm:p-0"
                         onClick={handleCancel}
                     >
                         <FaTimes />
                     </div>
                 </div>
 
-                {/* Image control options with explicit stopPropagation */}
                 <div
-                    className="mt-4 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full shadow-lg flex items-center gap-6"
+                    className="mt-4 bg-white/10 backdrop-blur-md px-3 py-2 sm:px-6 sm:py-3 rounded-full shadow-lg flex items-center gap-3 sm:gap-6 overflow-x-auto"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button
                         onClick={handleZoomOut}
                         disabled={zoomLevel <= 0.5}
-                        className="text-white text-xl hover:text-primary transition-colors disabled:text-gray-500"
+                        className="text-white text-xl hover:text-primary transition-colors disabled:text-gray-500 p-2 touch-manipulation"
                         title="Zoom out (-)"
                     >
                         <IoMdRemove />
                     </button>
 
-                    <div className="text-white text-sm px-2">
+                    <div className="text-white text-sm px-2 whitespace-nowrap">
                         {Math.round(zoomLevel * 100)}%
                     </div>
 
                     <button
                         onClick={handleZoomIn}
                         disabled={zoomLevel >= 3}
-                        className="text-white text-xl hover:text-primary transition-colors disabled:text-gray-500"
+                        className="text-white text-xl hover:text-primary transition-colors disabled:text-gray-500 p-2 touch-manipulation"
                         title="Zoom in (+)"
                     >
                         <IoMdAdd />
@@ -232,7 +281,7 @@ const ImageModal = ({
 
                     <button
                         onClick={handleRotate}
-                        className="text-white text-xl hover:text-primary transition-colors"
+                        className="text-white text-xl hover:text-primary transition-colors p-2 touch-manipulation"
                         title="Rotate (R)"
                     >
                         <IoIosRefresh />
@@ -240,7 +289,7 @@ const ImageModal = ({
 
                     <button
                         onClick={handleReset}
-                        className="text-white text-sm hover:text-primary transition-colors"
+                        className="text-white text-sm hover:text-primary transition-colors p-2 touch-manipulation"
                         title="Reset (0)"
                     >
                         Reset
@@ -251,7 +300,7 @@ const ImageModal = ({
                     <button
                         onClick={handleDownload}
                         disabled={isDownloading}
-                        className="text-white text-xl hover:text-primary transition-colors relative flex items-center justify-center"
+                        className="text-white text-xl hover:text-primary transition-colors relative flex items-center justify-center p-2 touch-manipulation"
                         title="Download (D)"
                     >
                         {isDownloading ? (
@@ -268,7 +317,7 @@ const ImageModal = ({
 
                 {showArrow && (
                     <div
-                        className="image-modal-icon-right"
+                        className="image-modal-icon-right hidden sm:flex"
                         onClick={handleRightArrowClick}
                         style={{
                             pointerEvents: `${lastItemRight ? "none" : "all"}`,
@@ -280,6 +329,11 @@ const ImageModal = ({
                 )}
             </div>
         </div>
+    );
+
+    return ReactDOM.createPortal(
+        modalContent,
+        document.body
     );
 };
 

@@ -10,8 +10,10 @@ import "./CreateGroup.scss"; // Reusing the same styles for consistency
 import { groupChatService } from "@/services/api/chat/group-chat.service";
 import GroupChatUtils from "@/services/utils/group-chat-utils.service";
 import { timeAgo } from "@/services/utils/timeago.utils";
+import { useNavigate } from "react-router-dom";
 
 const InvitationsList = ({ onClickBack }) => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const [invitations, setInvitations] = useState([]);
@@ -34,10 +36,14 @@ const InvitationsList = ({ onClickBack }) => {
         }
     };
 
-    const handleAcceptInvitation = async (invitationId) => {
+    const handleAcceptInvitation = async (invitation) => {
         setIsProcessing(true);
         try {
-            await GroupChatUtils.handleGroupInvitation(invitationId, true);
+            await GroupChatUtils.handleGroupInvitation(invitation._id, true);
+            GroupChatUtils.emitGroupAction("ACCEPT_GROUP_INVITATION", {
+                groupId: invitation._id,
+            });
+            GroupChatUtils.navigateToGroupChat(invitation, navigate);
         } catch (error) {
             console.error("Error accepting invitation:", error);
             Utils.dispatchNotification(
@@ -46,6 +52,7 @@ const InvitationsList = ({ onClickBack }) => {
                 dispatch
             );
         } finally {
+            fetchInvitations();
             setIsProcessing(false);
         }
     };
@@ -54,6 +61,10 @@ const InvitationsList = ({ onClickBack }) => {
         setIsProcessing(true);
         try {
             await GroupChatUtils.handleGroupInvitation(invitationId, false);
+
+            GroupChatUtils.emitGroupAction("ACCEPT_GROUP_INVITATION", {
+                groupId: invitationId,
+            });
         } catch (error) {
             console.error("Error declining invitation:", error);
             Utils.dispatchNotification(
@@ -63,6 +74,7 @@ const InvitationsList = ({ onClickBack }) => {
             );
             setIsProcessing(false);
         } finally {
+            fetchInvitations();
             setIsProcessing(false);
         }
     };
@@ -84,11 +96,11 @@ const InvitationsList = ({ onClickBack }) => {
             <div className="waiting-list overflow-y-scroll h-full max-h-full relative">
                 <div className="waiting-list-header flex items-center justify-between py-2 ">
                     <div
-                        className="back-button flex items-center"
+                        className="flex items-center cursor-pointer text-[#1264AB] transition-colors duration-200 mr-5 hover:text-[#0a4d85]"
                         onClick={onClickBack}
                     >
-                        <IoIosArrowBack className="back-icon" />
-                        <span>Back</span>
+                        <IoIosArrowBack className="text-[20px] mr-[5px]" />
+                        <span className="font-medium">Back</span>
                     </div>
                     <span className="text-xl font-bold">Group Invitations</span>
                 </div>
@@ -145,7 +157,7 @@ const InvitationsList = ({ onClickBack }) => {
                                             label="Accept"
                                             handleClick={() =>
                                                 handleAcceptInvitation(
-                                                    invitation._id
+                                                    invitation
                                                 )
                                             }
                                             className="accept-button py-1 px-3 rounded-md bg-blue-600 hover:bg-blue-700 text-white"

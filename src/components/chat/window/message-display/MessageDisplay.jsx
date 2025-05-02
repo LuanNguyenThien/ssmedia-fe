@@ -8,7 +8,6 @@ import { useSearchParams } from "react-router-dom";
 import ImageModal from "@components/image-modal/ImageModal";
 import LoadingMessage from "@components/state/loading-message/LoadingMessage";
 import Dialog from "@components/dialog/Dialog";
-import { useDispatch } from "react-redux";
 import { groupChatService } from "@/services/api/chat/group-chat.service";
 import ReactionsTab from "./reactions/ReactionsTab";
 
@@ -19,7 +18,6 @@ const MessageDisplay = ({
     deleteChatMessage,
     isGroup,
 }) => {
-    const dispatch = useDispatch();
     const [imageUrl, setImageUrl] = useState("");
     const [searchParams] = useSearchParams();
     const [groupChatData, setGroupChatData] = useState(null);
@@ -56,16 +54,17 @@ const MessageDisplay = ({
 
         if (username) {
             setMessagesToShow(Math.min(15, chatMessages.length));
-            
+
             // Immediate scroll attempt
             if (scrollRef.current) {
                 scrollRef.current.scrollTop = scrollRef.current?.scrollHeight;
             }
-            
+
             // Delayed scroll for when images might still be loading
             setTimeout(() => {
                 if (scrollRef.current) {
-                    scrollRef.current.scrollTop = scrollRef.current?.scrollHeight;
+                    scrollRef.current.scrollTop =
+                        scrollRef.current?.scrollHeight;
                     hasScrollToBottom.current = true;
                 }
             }, 300);
@@ -79,7 +78,7 @@ const MessageDisplay = ({
                 console.error("Error fetching group members:", error);
             }
         };
-        
+
         if (id && isGroup) {
             fetchGroupChatMembers();
         }
@@ -88,22 +87,30 @@ const MessageDisplay = ({
     // Improved scroll handler with throttling
     const handleScroll = useCallback(() => {
         if (!scrollRef.current || isLoadingMessage) return;
-        
-        if (scrollRef.current.scrollTop === 0 && messagesToShow < chatMessages.length) {
+
+        if (
+            scrollRef.current.scrollTop === 0 &&
+            messagesToShow < chatMessages.length
+        ) {
             setIsLoadingMessage(true);
-            
+
             // Use requestAnimationFrame for smoother UI updates
             requestAnimationFrame(() => {
-                const currentScrollHeight = scrollRef.current?.scrollHeight || 0;
-                
+                const currentScrollHeight =
+                    scrollRef.current?.scrollHeight || 0;
+
                 setTimeout(() => {
-                    setMessagesToShow((prev) => Math.min(prev + 20, chatMessages.length));
-                    
+                    setMessagesToShow((prev) =>
+                        Math.min(prev + 20, chatMessages.length)
+                    );
+
                     // Maintain scroll position after loading more messages
                     setTimeout(() => {
                         if (scrollRef.current) {
-                            const newScrollHeight = scrollRef.current.scrollHeight;
-                            scrollRef.current.scrollTop = newScrollHeight - currentScrollHeight;
+                            const newScrollHeight =
+                                scrollRef.current.scrollHeight;
+                            scrollRef.current.scrollTop =
+                                newScrollHeight - currentScrollHeight;
                         }
                         setIsLoadingMessage(false);
                     }, 100);
@@ -163,9 +170,10 @@ const MessageDisplay = ({
                     showButtons
                     firstButtonText="Remove"
                     secondButtonText="Cancel"
-                    firstBtnHandler={() =>
-                        handleReactionClick(selectedReaction)
-                    }
+                    firstBtnHandler={(e) => {
+                        e.stopPropagation();
+                        handleReactionClick(selectedReaction);
+                    }}
                     secondBtnHandler={() => setSelectedReaction(null)}
                 />
             )}
@@ -232,7 +240,8 @@ const MessageDisplay = ({
                                         <ReactionsTab
                                             reactions={chat?.reaction}
                                             groupChatData={groupChatData}
-                                            onRemoveReaction={() => {
+                                            onRemoveReaction={(e) => {
+                                                e.stopPropagation();
                                                 const userReact =
                                                     chat?.reaction.find(
                                                         (reaction) =>
@@ -249,12 +258,16 @@ const MessageDisplay = ({
                                                             chat?.conversationId ||
                                                             chat?.groupId,
                                                         messageId: chat?._id,
-                                                        reaction: userReact.type,
+                                                        reaction:
+                                                            userReact.type,
                                                         type: "remove",
                                                     };
                                                     setSelectedReaction(body);
                                                 }
-                                            }}
+                                            }}  
+                                            onCloseReactionTab={() =>
+                                                setChosenMessage(null)
+                                            }                                        
                                         />
                                     )}
                                 {(index === 0 ||

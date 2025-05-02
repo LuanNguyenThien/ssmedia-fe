@@ -1,14 +1,11 @@
 .form-row {
   .form-label {
-    display: block;
     margin-bottom: 0.5rem;
     text-transform: capitalize;
     letter-spacing: var(--letter-spacing);
   }
 
   .form-input {
-    display: block;
-    width: 100%;
     line-height: 1.5;
     color: var(--gray-11);
     background-clip: padding-box;

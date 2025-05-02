@@ -73,7 +73,10 @@ export default class GroupChatUtils {
         socketService?.socket?.on("group chat list", (data) => {
             console.log("Group chat list received:", data);
             // Check if user is a member of this group
-            if (data.members && data.members.some(member => member.userId === profile?._id)) {
+            if (
+                data.members &&
+                data.members.some((member) => member.userId === profile?._id)
+            ) {
                 let groupIndex = findIndex(groupList, ["_id", data._id]);
                 let updatedGroupList = cloneDeep(groupList);
 
@@ -93,7 +96,10 @@ export default class GroupChatUtils {
             console.log("Group updated received:", data);
             if (!data || !data._id) return;
 
-            if (data.members && data.members.some(member => member.userId === profile?._id)) {
+            if (
+                data.members &&
+                data.members.some((member) => member.userId === profile?._id)
+            ) {
                 let updatedGroupList = cloneDeep(groupList);
                 let groupIndex = findIndex(updatedGroupList, ["_id", data._id]);
 
@@ -117,7 +123,7 @@ export default class GroupChatUtils {
         socketService?.socket?.on("group deleted", (groupId) => {
             console.log("Group deleted received:", groupId);
             if (!groupId) return;
-            
+
             let updatedGroupList = cloneDeep(groupList);
             remove(updatedGroupList, (group) => group._id === groupId);
             setGroupList(updatedGroupList);
@@ -181,7 +187,11 @@ export default class GroupChatUtils {
     }
 
     static userIsGroupMember(members, userId) {
-        return members && Array.isArray(members) && members.some((member) => member.userId === userId);
+        if (!Array.isArray(members) || !userId) return false;
+        return members.some(
+            (member) =>
+                member.userId === userId && member.state !== "pending"
+        );
     }
 
     static removeGroupSocketListeners() {

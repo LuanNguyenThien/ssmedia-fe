@@ -32,8 +32,6 @@ const RightMessageDisplay = ({
     const showOptionsRef = useRef(null);
     const [isShowOptions, setIsShowOptions] = useState(false);
     useHandleOutsideClick(showOptionsRef, setIsShowOptions);
-    const reactionTabRef = useRef(null);
-    useHandleOutsideClick(reactionTabRef, onCloseReactionTab);
 
     const [isShowBottom, setIsShowBottom] = useState(false);
     const [isHoverMessage, setIsHoverMessage] = useState(false);
@@ -184,7 +182,6 @@ const RightMessageDisplay = ({
                     chat?.reaction.length > 0 &&
                     !chat.deleteForEveryone && (
                         <div
-                            ref={reactionTabRef}
                             className="absolute w-max right-0 -bottom-2 size-4 z-50"
                         >
                             <ReactionsDisplay
@@ -195,31 +192,6 @@ const RightMessageDisplay = ({
                                 reactions={chat?.reaction}
                                 direction={true}
                             />
-
-                            {/* {chat?.reaction.map((data, index) => (
-                                <img
-                                    className="size-full object-cover"
-                                    key={index}
-                                    data-testid="reaction-img"
-                                    src={reactionsMap[data?.type]}
-                                    alt=""
-                                    onClick={() => {
-                                        if (
-                                            data?.senderName ===
-                                            profile?.username
-                                        ) {
-                                            const body = {
-                                                conversationId:
-                                                    chat?.conversationId || chat?.groupId,
-                                                messageId: chat?._id,
-                                                reaction: data?.type,
-                                                type: "remove",
-                                            };
-                                            setSelectedReaction(body);
-                                        }
-                                    }}
-                                />
-                            ))} */}
                         </div>
                     )}
             </div>
