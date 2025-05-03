@@ -10,6 +10,7 @@ import Badge from "../../ui/badge/Badge";
 import React, { useState, useCallback, useEffect } from "react";
 import { userService } from "@services/api/user/user.service";
 import useEffectOnce from "@hooks/useEffectOnce";
+import { ap } from "react-router/dist/development/fog-of-war-D4x86-Xc";
 import reducer, {
   addNotification,
   clearNotification,
@@ -27,7 +28,8 @@ interface UserData {
   team: {
     images: string[];
   };
-  status: boolean;
+  appealId: string;
+  status: string;
   banAt: string;
 }
 
@@ -41,9 +43,9 @@ export default function BanUserTableOne() {
   const getAllUsers = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await userService.getAllBanUsersAdminRole(currentPage);
+      const response = await userService.getAllAppeal(currentPage);
       const rawUsers = response.data.data;
-
+      console.log("rawUsers", rawUsers);
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
         _id: u._id,
         user: {
@@ -51,12 +53,13 @@ export default function BanUserTableOne() {
           name: u.username,
           role: "Member",
         },
-        projectName: u.authId.banReason || "No project",
+        appealId: u.appeal._id,
+        projectName: u.appeal.content || "No project",
         team: {
           images: [u.profilePicture || "/default-avatar.jpg"],
         },
-        status: u.authId.isBanned,
-        banAt: new Date(u.authId.bannedAt).toLocaleDateString("vi-VN"),
+        status: u.appeal.status,
+        banAt: new Date(u.appeal.createdAt).toLocaleDateString("vi-VN"),
       }));
 
       setUsers(mappedUsers);
@@ -68,18 +71,35 @@ export default function BanUserTableOne() {
     }
   }, [currentPage]);
 
-  const UnbanUser = async (userId: string, reason: string) => {
+  const UnbanUser = async (
+    appealId: string,
+    userId: string,
+    reason: string
+  ) => {
     try {
-      // await userService.ChangeStatus({ reportId, status: "reviewed" });
+      await userService.ChangeStatusAppeal({ appealId, status: "reviewed" });
       await userService.UnBanUser({ userId, reason });
-      // alert("Ban user thành công");
-       dispatch(
-              addNotification({
-                message: "Unban success",
-                type: "success",
-              })
-            );
-      getAllUsers(); // gọi lại API để cập nhật danh sách
+      dispatch(
+        addNotification({
+          message: "Unban success",
+          type: "success",
+        })
+      );
+      getAllUsers();
+    } catch (error) {
+      console.error("Ban user thất bại:", error);
+      alert("Ban user thất bại");
+    }
+  };
+
+  const accept = async (appealId: string, userId: string) => {
+    try {
+      await userService.ChangeStatusAppeal({
+        appealId,
+        status: "reviewed",
+      });
+
+      getAllUsers();
     } catch (error) {
       console.error("Ban user thất bại:", error);
       alert("Ban user thất bại");
@@ -98,7 +118,7 @@ export default function BanUserTableOne() {
     setCurrentPage(pageNumber);
   };
 
-  const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
+  const totalPages = Math.max(2, Math.ceil(total / itemsPerPage));
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -129,7 +149,7 @@ export default function BanUserTableOne() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Ban Date
+                Appeal Date
               </TableCell>
               <TableCell
                 isHeader
@@ -168,8 +188,17 @@ export default function BanUserTableOne() {
                 </TableCell>
 
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <Badge size="sm" color={order.status ? "error" : "success"}>
-                    {order.status ? "Cancel" : "Active"}
+                  <Badge
+                    size="sm"
+                    color={
+                      order.status === "reviewed"
+                        ? "success"
+                        : order.status === "pending"
+                        ? "warning"
+                        : "error"
+                    }
+                  >
+                    {order.status}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
@@ -181,6 +210,7 @@ export default function BanUserTableOne() {
                     onClick={(e) => {
                       e.stopPropagation(); // không trigger click vào row
                       UnbanUser(
+                        order.appealId,
                         order._id,
                         order.projectName || "Vi phạm nội quy"
                       );

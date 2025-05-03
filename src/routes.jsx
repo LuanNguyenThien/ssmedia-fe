@@ -233,6 +233,10 @@ const BanUserTable = lazy(() =>
   import("@pages/admin/pages/TablesUser/BanUserTable")
 );
 
+const AppealTable = lazy(() =>
+  import("@pages/admin/pages/TablesUser/AppealTable")
+);
+
 const ReportPostTable = lazy(() =>
   import("@pages/admin/pages/TablesPost/ReportPostTable")
 );
@@ -255,7 +259,8 @@ const LineChart = lazy(() => import("@pages/admin/pages/Charts/LineChart"));
 const SignIn = lazy(() => import("@pages/admin/pages/AuthPages/SignIn"));
 const SignUp = lazy(() => import("@pages/admin/pages/AuthPages/SignUp"));
 
-const Checkpoint = lazy(() => import("@pages/admin/pages/AuthPages/report"));
+const Checkpoint = lazy(() => import("@pages/social/streams/report"));
+const IssueReport = lazy(() => import("@pages/social/streams/ReportIssue"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<div>Loading...</div>}>{Component}</Suspense>
@@ -272,11 +277,11 @@ export const AppRouter = () => {
     },
     {
       path: "/checkpoint",
-      element: (
-        
-          <Checkpoint />
-        
-      ),
+      element: <Checkpoint />,
+    },
+    {
+      path: "/issua",
+      element: <IssueReport />,
     },
     {
       path: "/forgot-password",
@@ -432,6 +437,10 @@ export const AppRouter = () => {
         {
           path: "hideuser",
           element: withSuspense(<BanUserTable />),
+        },
+        {
+          path: "appeal",
+          element: withSuspense(<AppealTable />),
         },
         {
           path: "reportpost",

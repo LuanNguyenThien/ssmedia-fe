@@ -26,7 +26,7 @@ class UserService {
     return response;
   }
 
-   async GetStatisticUser() {
+  async GetStatisticUser() {
     const response = await axios.get(`/admin/statistic/user`);
     return response;
   }
@@ -36,12 +36,11 @@ class UserService {
     return response;
   }
 
-
   async GetStatisticUserperMonth() {
     const response = await axios.get(`/admin/statistic/userpermonth`);
     return response;
   }
-  
+
   async getAllUsersAdminRole(page) {
     const response = await axios.get(`/admin/users/all/${page}`);
     return response;
@@ -52,6 +51,11 @@ class UserService {
   }
   async getAllBanUsersAdminRole(page) {
     const response = await axios.get(`/admin/banuser/${page}`);
+    return response;
+  }
+
+  async getAllAppeal(page) {
+    const response = await axios.get(`/admin/appeal/${page}`);
     return response;
   }
 
@@ -72,6 +76,11 @@ class UserService {
     return response;
   }
 
+  async GetBanInfo(userId) {
+    const response = await axios.get(`/user/banuser/${userId}`);
+    return response;
+  }
+
   async BanUser(body) {
     const response = await axios.post(`/admin/banuser`, body);
     return response;
@@ -82,8 +91,18 @@ class UserService {
     return response;
   }
 
+  async Appeal(body) {
+    const response = await axios.post(`/appeal`, body);
+    return response;
+  }
+
   async ChangeStatus(body) {
     const response = await axios.put(`/admin/reportprofile/status`, body);
+    return response;
+  }
+
+  async ChangeStatusAppeal(body) {
+    const response = await axios.put(`/admin/appeal/status`, body);
     return response;
   }
 

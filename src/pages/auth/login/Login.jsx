@@ -36,14 +36,15 @@ const Login = ({ onSwitchToRegister }) => {
         password
       });
       
-      const ban = await authService.CheckUser(result.data.user.authId);
       
+      const ban = await authService.CheckUser(result.data.user.authId);
       setIsBan(ban.data.isBanned);
       setLoggedIn(keepLoggedIn);
       setStoredUsername(username);
       setHasError(false);
       setAlertType('alert-success');
       Utils.dispatchUser(result, pageReload, dispatch, setUser);
+      
     } catch (error) {
       setLoading(false);
       setHasError(true);

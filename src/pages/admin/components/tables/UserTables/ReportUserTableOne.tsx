@@ -12,6 +12,11 @@ import { userService } from "@services/api/user/user.service";
 import useEffectOnce from "@hooks/useEffectOnce";
 import ReportDetailModal from "./ReportDetailModal";
 import Alert from "../../ui/alert/Alert";
+import reducer, {
+  addNotification,
+  clearNotification,
+} from "@redux/reducers/notifications/notification.reducer";
+import { useDispatch } from "react-redux";
 
 interface UserData {
   reportId: string;
@@ -40,7 +45,7 @@ export default function BasicTableOne() {
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(5);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
-
+  const dispatch = useDispatch();
   const getAllUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -49,7 +54,7 @@ export default function BasicTableOne() {
       );
 
       const rawUsers = response.data.reportusers;
-      
+
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
         reportId: u.reportProfileInfo._id,
         _id: u._id,
@@ -81,12 +86,18 @@ export default function BasicTableOne() {
     }
   }, [currentPage]);
 
-  const banUser = async (reportId: string ,userId: string, reason: string) => {
+  const banUser = async (reportId: string, userId: string, reason: string) => {
     try {
       await userService.ChangeStatus({ reportId, status: "reviewed" });
       await userService.BanUser({ userId, reason });
-      
-      getAllUsers(); 
+
+      getAllUsers();
+      dispatch(
+              addNotification({
+                message: "ban success",
+                type: "success",
+              })
+            );
     } catch (error) {
       console.error("Ban user thất bại:", error);
       alert("Ban user thất bại");
@@ -96,14 +107,19 @@ export default function BasicTableOne() {
   const accept = async (reportId: string, userId: string) => {
     try {
       await userService.ChangeStatus({ reportId, status: "reviewed" });
-     
+
       getAllUsers();
+      dispatch(
+              addNotification({
+                message: "Accept success",
+                type: "success",
+              })
+            );
     } catch (error) {
       console.error("Ban user thất bại:", error);
       alert("Ban user thất bại");
     }
   };
-
 
   useEffectOnce(() => {
     getAllUsers();

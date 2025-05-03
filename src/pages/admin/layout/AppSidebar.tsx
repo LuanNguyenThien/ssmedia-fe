@@ -42,6 +42,7 @@ const navItems: NavItem[] = [
       { name: "AllUser", path: "/admin/user", pro: false },
       { name: "ReportUser", path: "/admin/reportuser", pro: false },
       { name: "HideUser", path: "/admin/hideuser", pro: false },
+      { name: "Appeal", path: "/admin/appeal", pro: false },
     ],
   },
   {
@@ -348,7 +349,7 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
+        {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}
       </div>
     </aside>
   );
