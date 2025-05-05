@@ -2,6 +2,7 @@ import { chatService } from "@services/api/chat/chat.service";
 import { socketService } from "@services/socket/socket.service";
 import { cloneDeep, find, findIndex, remove } from "lodash";
 import { createSearchParams } from "react-router-dom";
+import GroupChatUtils from "./group-chat-utils.service";
 
 export class ChatUtils {
     static privateChatMessages = [];
@@ -148,46 +149,65 @@ export class ChatUtils {
     }
 
     static socketIOChatList(profile, chatMessageList, setChatMessageList) {
-        socketService?.socket?.on("chat list", (data) => {
-            if (
-                data.senderUsername === profile?.username ||
-                data.receiverUsername === profile?.username ||
-                data.isGroupChat
-            ) {
-                let messageIndex;
-                if (!data.isGroupChat)
-                    messageIndex = findIndex(chatMessageList, [
-                        "conversationId",
-                        data.conversationId,
-                    ]);
-                else
-                    messageIndex = findIndex(chatMessageList, [
-                        "groupId",
-                        data.groupId,
-                    ]);
-                chatMessageList = cloneDeep(chatMessageList);
-                if (messageIndex > -1) {
-                    if (data.isGroupChat)
-                        remove(
-                            chatMessageList,
-                            (chat) => chat.groupId === data.groupId
+
+        socketService?.socket?.off("chat list");
+        socketService?.socket?.on("chat list", async (data) => {
+            console.log("chat list", data);
+            try {
+                let isValidMessageToDisplay = true;
+                // Only check group membership for group chats
+                if (data.isGroupChat) {
+                    isValidMessageToDisplay =
+                        await GroupChatUtils.isValidMessageDisplay(
+                            data?.groupId,
+                            profile._id
                         );
+                }
+
+                if (
+                    (data.isGroupChat && isValidMessageToDisplay) ||
+                    (!data.isGroupChat &&
+                        (data?.receiverUsername === profile?.username ||
+                            data?.senderUsername === profile?.username))
+                ) {
+                    let messageIndex;
+                    if (!data.isGroupChat)
+                        messageIndex = findIndex(chatMessageList, [
+                            "conversationId",
+                            data.conversationId,
+                        ]);
                     else
+                        messageIndex = findIndex(chatMessageList, [
+                            "groupId",
+                            data.groupId,
+                        ]);
+                    chatMessageList = cloneDeep(chatMessageList);
+                    if (messageIndex > -1) {
+                        if (data.isGroupChat)
+                            remove(
+                                chatMessageList,
+                                (chat) => chat.groupId === data.groupId
+                            );
+                        else
+                            remove(
+                                chatMessageList,
+                                (chat) =>
+                                    chat.conversationId === data.conversationId
+                            );
+                        chatMessageList = [data, ...chatMessageList];
+                    } else {
                         remove(
                             chatMessageList,
                             (chat) =>
-                                chat.conversationId === data.conversationId
+                                chat.receiverUsername === data.receiverUsername
                         );
-                    chatMessageList = [data, ...chatMessageList];
-                } else {
-                    remove(
-                        chatMessageList,
-                        (chat) =>
-                            chat.receiverUsername === data.receiverUsername
-                    );
-                    chatMessageList = [data, ...chatMessageList];
+                        chatMessageList = [data, ...chatMessageList];
+                    }
+                    setChatMessageList(chatMessageList);
                 }
-                setChatMessageList(chatMessageList);
+            } catch (error) {
+                console.error("Error processing chat list data:", error);
+                // Keep the socket connection alive even if there's an error
             }
         });
     }

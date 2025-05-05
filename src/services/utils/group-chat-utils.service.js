@@ -17,6 +17,12 @@ export default class GroupChatUtils {
         navigate(url);
     }
 
+    static async getInvitationsCount() {
+        const invitationsCount =
+            await groupChatService.getUserPendingInvitations();
+        return invitationsCount.data.pendingGroups.length;
+    }
+
     static joinGroupRoom(groupId, profile) {
         const userData = {
             groupId: groupId,
@@ -189,9 +195,22 @@ export default class GroupChatUtils {
     static userIsGroupMember(members, userId) {
         if (!Array.isArray(members) || !userId) return false;
         return members.some(
-            (member) =>
-                member.userId === userId && member.state !== "pending"
+            (member) => member.userId === userId && member.state !== "pending"
         );
+    }
+
+    static async isValidMessageDisplay(groupID, userID) {
+        if (!groupID || !userID) return false;
+
+        const response = await groupChatService.checkGroupMember(
+            groupID,
+            userID
+        );
+        console.log("Response from checkGroupMember:", response);
+        if (response) {
+            return true;
+        }
+        return false;
     }
 
     static removeGroupSocketListeners() {

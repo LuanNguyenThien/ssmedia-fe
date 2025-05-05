@@ -1,11 +1,14 @@
-import React, { useRef, useState } from "react";
-import { IoMdAdd } from "react-icons/io";
-import { MdGroups, MdNotifications } from "react-icons/md";
+import React, { useRef } from "react";
+
 import useDetectOutsideClick from "@/hooks/useDetectOutsideClick";
 import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 import { icons } from "@/assets/assets";
 
-const ChatOptionsSelector = ({ onCreateGroup, onViewInvitations }) => {
+const ChatOptionsSelector = ({
+    onCreateGroup,
+    onViewInvitations,
+    isHasInvitation,
+}) => {
     const dropdownRef = useRef(null);
     const [isOpen, setIsOpen] = useDetectOutsideClick(dropdownRef, false);
 
@@ -24,13 +27,16 @@ const ChatOptionsSelector = ({ onCreateGroup, onViewInvitations }) => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={toggleDropdown}
-                className="flex items-center justify-center p-1 transition-colors"
+                className="flex items-center justify-center p-1 transition-colors "
                 aria-label="Chat options"
             >
                 <DynamicSVG
                     svgData={icons.edit}
-                    className=" size-5 text-primary-black text-2xl"
+                    className="size-5 text-primary-black hover:!text-primary/50 text-2xl"
                 />
+                {isHasInvitation > 0 && (
+                    <span className="absolute top-1 left-1 bg-red-500 text-white rounded-full size-2 animate__animated animate__pulse animate__infinite"></span>
+                )}
             </button>
 
             {isOpen && (
@@ -46,7 +52,7 @@ const ChatOptionsSelector = ({ onCreateGroup, onViewInvitations }) => {
                         <span>Create new group</span>
                     </div>
                     <div
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2 relative"
                         onClick={handleOptionClick(onViewInvitations)}
                     >
                         <DynamicSVG
@@ -54,6 +60,12 @@ const ChatOptionsSelector = ({ onCreateGroup, onViewInvitations }) => {
                             className=" size-4 text-primary-black text-lg"
                         />
                         <span>Group invitations</span>
+
+                        {isHasInvitation>0 && (
+                            <span className="text-sm bg-background-blur px-1 rounded-[30px] text-primary">
+                                {isHasInvitation}
+                            </span>
+                        )}
                     </div>
                 </div>
             )}

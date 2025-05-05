@@ -38,6 +38,7 @@ const MessageDisplay = ({
     const reactionRef = useRef(null);
     const scrollRef = useRef(null);
     const hasScrollToBottom = useRef(false);
+    const initialRenderComplete = useRef(false);
 
     const [toggleReaction, setToggleReaction] = useDetectOutsideClick(
         reactionRef,
@@ -48,27 +49,29 @@ const MessageDisplay = ({
         [chatMessages, messagesToShow]
     );
 
+    // Initial scroll to bottom - only happens once
     useEffect(() => {
-        const username = searchParams.get("username");
-        const id = searchParams.get("id");
-
-        if (username) {
-            setMessagesToShow(Math.min(15, chatMessages.length));
+        if (!initialRenderComplete.current) {
+            setMessagesToShow(15);
 
             // Immediate scroll attempt
             if (scrollRef.current) {
                 scrollRef.current.scrollTop = scrollRef.current?.scrollHeight;
             }
-
-            // Delayed scroll for when images might still be loading
             setTimeout(() => {
                 if (scrollRef.current) {
                     scrollRef.current.scrollTop =
                         scrollRef.current?.scrollHeight;
                     hasScrollToBottom.current = true;
                 }
+                initialRenderComplete.current = true;
             }, 300);
         }
+    }, []);
+
+    // Handle group data fetching separately
+    useEffect(() => {
+        const id = searchParams.get("id");
 
         const fetchGroupChatMembers = async () => {
             try {
@@ -82,7 +85,7 @@ const MessageDisplay = ({
         if (id && isGroup) {
             fetchGroupChatMembers();
         }
-    }, [searchParams, chatMessages, isGroup]);
+    }, [searchParams, isGroup]);
 
     // Improved scroll handler with throttling
     const handleScroll = useCallback(() => {
@@ -94,7 +97,6 @@ const MessageDisplay = ({
         ) {
             setIsLoadingMessage(true);
 
-            // Use requestAnimationFrame for smoother UI updates
             requestAnimationFrame(() => {
                 const currentScrollHeight =
                     scrollRef.current?.scrollHeight || 0;
@@ -103,8 +105,6 @@ const MessageDisplay = ({
                     setMessagesToShow((prev) =>
                         Math.min(prev + 20, chatMessages.length)
                     );
-
-                    // Maintain scroll position after loading more messages
                     setTimeout(() => {
                         if (scrollRef.current) {
                             const newScrollHeight =
@@ -228,6 +228,8 @@ const MessageDisplay = ({
 
                 {displayedMessages.length >= 1 &&
                     displayedMessages.map((chat, index) => {
+                        const isSystemMessage =
+                            chat?.senderUsername === "System";
                         return (
                             <div
                                 key={chat._id}
@@ -264,10 +266,10 @@ const MessageDisplay = ({
                                                     };
                                                     setSelectedReaction(body);
                                                 }
-                                            }}  
+                                            }}
                                             onCloseReactionTab={() =>
                                                 setChosenMessage(null)
-                                            }                                        
+                                            }
                                         />
                                     )}
                                 {(index === 0 ||
@@ -287,111 +289,135 @@ const MessageDisplay = ({
                                         </div>
                                     </div>
                                 )}
+                                {isSystemMessage && (
+                                    <div className="system-message w-full flex items-center justify-center py-2 px-4">
+                                        <span className="system-message-content text-xs font-light">
+                                            {chat.body}
+                                        </span>
+                                    </div>
+                                )}
 
                                 {(chat.receiverUsername === profile?.username ||
                                     chat.senderUsername === profile?.username ||
-                                    chat.isGroupChat) && (
-                                    <>
-                                        {chat.senderUsername ===
-                                        profile?.username ? (
-                                            <RightMessageDisplay
-                                                chat={chat}
-                                                lastChatMessage={
-                                                    displayedMessages[
+                                    chat.isGroupChat) &&
+                                    !isSystemMessage && (
+                                        <>
+                                            {chat.senderUsername ===
+                                            profile?.username ? (
+                                                <RightMessageDisplay
+                                                    chat={chat}
+                                                    lastChatMessage={
+                                                        displayedMessages[
+                                                            displayedMessages.length -
+                                                                1
+                                                        ]
+                                                    }
+                                                    profile={profile}
+                                                    toggleReaction={
+                                                        toggleReaction
+                                                    }
+                                                    showReactionIcon={
+                                                        showReactionIcon
+                                                    }
+                                                    index={index}
+                                                    lastIndex={
                                                         displayedMessages.length -
-                                                            1
-                                                    ]
-                                                }
-                                                profile={profile}
-                                                toggleReaction={toggleReaction}
-                                                showReactionIcon={
-                                                    showReactionIcon
-                                                }
-                                                index={index}
-                                                lastIndex={
-                                                    displayedMessages.length - 1
-                                                }
-                                                activeElementIndex={
-                                                    activeElementIndex
-                                                }
-                                                reactionRef={reactionRef}
-                                                setToggleReaction={
-                                                    setToggleReaction
-                                                }
-                                                handleReactionClick={
-                                                    handleReactionClick
-                                                }
-                                                deleteMessage={deleteMessage}
-                                                showReactionIconOnHover={
-                                                    showReactionIconOnHover
-                                                }
-                                                setActiveElementIndex={
-                                                    setActiveElementIndex
-                                                }
-                                                setShowImageModal={
-                                                    setShowImageModal
-                                                }
-                                                setImageUrl={setImageUrl}
-                                                showImageModal={showImageModal}
-                                                setSelectedReaction={
-                                                    setSelectedReaction
-                                                }
-                                                onShowReactionsTab={() =>
-                                                    setChosenMessage(
-                                                        chat.reaction
-                                                    )
-                                                }
-                                                onCloseReactionTab={() =>
-                                                    setChosenMessage(null)
-                                                }
-                                            />
-                                        ) : (
-                                            <LeftMessageDisplay
-                                                chat={chat}
-                                                profile={profile}
-                                                toggleReaction={toggleReaction}
-                                                showReactionIcon={
-                                                    showReactionIcon
-                                                }
-                                                index={index}
-                                                activeElementIndex={
-                                                    activeElementIndex
-                                                }
-                                                reactionRef={reactionRef}
-                                                setToggleReaction={
-                                                    setToggleReaction
-                                                }
-                                                handleReactionClick={
-                                                    handleReactionClick
-                                                }
-                                                deleteMessage={deleteMessage}
-                                                showReactionIconOnHover={
-                                                    showReactionIconOnHover
-                                                }
-                                                setActiveElementIndex={
-                                                    setActiveElementIndex
-                                                }
-                                                setShowImageModal={
-                                                    setShowImageModal
-                                                }
-                                                setImageUrl={setImageUrl}
-                                                showImageModal={showImageModal}
-                                                setSelectedReaction={
-                                                    setSelectedReaction
-                                                }
-                                                groupChatMembers={groupChatData}
-                                                onShowReactionsTab={() =>
-                                                    setChosenMessage(
-                                                        chat.reaction
-                                                    )
-                                                }
-                                                onCloseReactionTab={() =>
-                                                    setChosenMessage(null)
-                                                }
-                                            />
-                                        )}
-                                    </>
-                                )}
+                                                        1
+                                                    }
+                                                    activeElementIndex={
+                                                        activeElementIndex
+                                                    }
+                                                    reactionRef={reactionRef}
+                                                    setToggleReaction={
+                                                        setToggleReaction
+                                                    }
+                                                    handleReactionClick={
+                                                        handleReactionClick
+                                                    }
+                                                    deleteMessage={
+                                                        deleteMessage
+                                                    }
+                                                    showReactionIconOnHover={
+                                                        showReactionIconOnHover
+                                                    }
+                                                    setActiveElementIndex={
+                                                        setActiveElementIndex
+                                                    }
+                                                    setShowImageModal={
+                                                        setShowImageModal
+                                                    }
+                                                    setImageUrl={setImageUrl}
+                                                    showImageModal={
+                                                        showImageModal
+                                                    }
+                                                    setSelectedReaction={
+                                                        setSelectedReaction
+                                                    }
+                                                    onShowReactionsTab={() =>
+                                                        setChosenMessage(
+                                                            chat.reaction
+                                                        )
+                                                    }
+                                                    onCloseReactionTab={() =>
+                                                        setChosenMessage(null)
+                                                    }
+                                                    isGroup={isGroup}
+                                                />
+                                            ) : (
+                                                <LeftMessageDisplay
+                                                    chat={chat}
+                                                    profile={profile}
+                                                    toggleReaction={
+                                                        toggleReaction
+                                                    }
+                                                    showReactionIcon={
+                                                        showReactionIcon
+                                                    }
+                                                    index={index}
+                                                    activeElementIndex={
+                                                        activeElementIndex
+                                                    }
+                                                    reactionRef={reactionRef}
+                                                    setToggleReaction={
+                                                        setToggleReaction
+                                                    }
+                                                    handleReactionClick={
+                                                        handleReactionClick
+                                                    }
+                                                    deleteMessage={
+                                                        deleteMessage
+                                                    }
+                                                    showReactionIconOnHover={
+                                                        showReactionIconOnHover
+                                                    }
+                                                    setActiveElementIndex={
+                                                        setActiveElementIndex
+                                                    }
+                                                    setShowImageModal={
+                                                        setShowImageModal
+                                                    }
+                                                    setImageUrl={setImageUrl}
+                                                    showImageModal={
+                                                        showImageModal
+                                                    }
+                                                    setSelectedReaction={
+                                                        setSelectedReaction
+                                                    }
+                                                    groupChatMembers={
+                                                        groupChatData
+                                                    }
+                                                    onShowReactionsTab={() =>
+                                                        setChosenMessage(
+                                                            chat.reaction
+                                                        )
+                                                    }
+                                                    onCloseReactionTab={() =>
+                                                        setChosenMessage(null)
+                                                    }
+                                                />
+                                            )}
+                                        </>
+                                    )}
                             </div>
                         );
                     })}

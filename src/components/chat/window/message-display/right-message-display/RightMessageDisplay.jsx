@@ -26,7 +26,7 @@ const RightMessageDisplay = ({
     showImageModal,
     lastIndex,
     onShowReactionsTab,
-    onCloseReactionTab,
+    isGroup,
 }) => {
     const optionsRef = useRef(null);
     const showOptionsRef = useRef(null);
@@ -44,14 +44,11 @@ const RightMessageDisplay = ({
         !chat?.deleteForEveryone &&
         index === lastIndex;
     return (
-        <div
-            className="message right-message pl-[20%] sm:pl-0"
-            data-testid="right-message"
-        >
+        <div className="message right-message" data-testid="right-message">
             {/* message item */}
-            <div className="message-right-content-container-wrapper relative">
+            <div className="message-right-content-container-wrapper relative pl-[25%] ">
                 {/* reactions */}
-                <div className="message-right-reactions-contain absolute right-0 -top-2 z-50 flex">
+                <div className="message-right-reactions-contain !w-fit absolute right-0 -bottom-2 z-[100] flex">
                     {toggleReaction &&
                         index === activeElementIndex &&
                         !chat?.deleteForEveryone && (
@@ -74,6 +71,7 @@ const RightMessageDisplay = ({
                             </div>
                         )}
                 </div>
+
                 <div
                     data-testid="message-content"
                     className="message-content relative pb-1"
@@ -121,25 +119,27 @@ const RightMessageDisplay = ({
                                 />
                             </div>
                             {/* options toggle */}
-                            <div
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setIsHoverMessage(false);
-                                    setIsShowOptions(!isShowOptions);
-                                }}
-                                className="text-primary-black/30 size-6 relative"
-                            >
-                                <DynamicSVG
-                                    className={""}
-                                    svgData={icons.options}
-                                />
-                            </div>
+                            {!isGroup && (
+                                <div
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setIsHoverMessage(false);
+                                        setIsShowOptions(!isShowOptions);
+                                    }}
+                                    className="text-primary-black/30 size-6 relative"
+                                >
+                                    <DynamicSVG
+                                        className={""}
+                                        svgData={icons.options}
+                                    />
+                                </div>
+                            )}
                         </div>
                     )}
                     {isShowOptions && (
                         <div
                             ref={showOptionsRef}
-                            className="absolute pr-2 cursor-pointer size-max left-20 sm:left-0 top-1/2 -translate-y-1/2 -translate-x-full z-50 flex items-center justify-between gap-2"
+                            className="absolute z-[100] right-1/3 sm:right-1/2 -bottom-2 transform translate-y-full animate__animated animate__fadeIn animate__faster"
                         >
                             <OptionSelector
                                 chat={chat}
@@ -181,9 +181,7 @@ const RightMessageDisplay = ({
                 {chat?.reaction &&
                     chat?.reaction.length > 0 &&
                     !chat.deleteForEveryone && (
-                        <div
-                            className="absolute w-max right-0 -bottom-2 size-4 z-50"
-                        >
+                        <div className="absolute w-max right-0 -bottom-2 size-4 z-50">
                             <ReactionsDisplay
                                 onClick={(e) => {
                                     e.stopPropagation();

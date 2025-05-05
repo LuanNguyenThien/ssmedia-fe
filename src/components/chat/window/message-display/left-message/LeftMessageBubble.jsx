@@ -1,8 +1,5 @@
-import PropTypes from "prop-types";
-
 const LeftMessageBubble = ({
     chat,
-    showImageModal,
     setImageUrl,
     setShowImageModal,
 }) => {

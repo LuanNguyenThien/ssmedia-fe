@@ -25,6 +25,7 @@ import { socketService } from "@services/socket/socket.service";
 import CreateGroup from "../group/CreateGroup";
 import InvitationsList from "../group/InvitationsList";
 import ChatOptionsSelector from "../selector/ChatOptionsSelector";
+import GroupChatUtils from "@/services/utils/group-chat-utils.service";
 
 const ChatList = () => {
     const location = useLocation();
@@ -40,6 +41,8 @@ const ChatList = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [componentType, setComponentType] = useState("chatList");
     let [chatMessageList, setChatMessageList] = useState([]);
+    const [invitationCount, setInvitationCount] = useState(0);
+
     const debouncedValue = useDebounce(search, 1000);
 
     const [rendered, setRendered] = useState(false);
@@ -182,6 +185,20 @@ const ChatList = () => {
         }
     };
 
+    // Fetch group chat invitations count
+    const fetchGroupChatInvitations = async () => {
+        try {
+            const response = await GroupChatUtils.getInvitationsCount();
+            setInvitationCount(response);
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
+        }
+    };
+
     useEffect(() => {
         if (debouncedValue) {
             searchUsers(debouncedValue);
@@ -207,6 +224,7 @@ const ChatList = () => {
 
     useEffect(() => {
         setChatMessageList(chatList);
+        fetchGroupChatInvitations();
     }, [chatList]);
 
     useEffect(() => {
@@ -223,7 +241,7 @@ const ChatList = () => {
     useEffect(() => {
         if (rendered && profile) {
             const handleGroupUpdate = (data) => {
-                console.log("ChatList: Group update received", data);
+                fetchGroupChatInvitations();
                 setChatMessageList((prev) => {
                     const updatedList = cloneDeep(prev);
                     const groupIndex = findIndex(
@@ -249,7 +267,6 @@ const ChatList = () => {
             };
 
             const handleGroupDeleted = (groupId) => {
-                console.log("ChatList: Group deleted", groupId);
                 setChatMessageList((prev) => {
                     const updatedList = cloneDeep(prev);
                     const groupIndex = findIndex(
@@ -265,7 +282,6 @@ const ChatList = () => {
             };
 
             socketService.socket?.on("group action", (action) => {
-                console.log("ChatList: Group action received:", action);
                 if (action?.data) {
                     switch (action.type) {
                         case "update":
@@ -302,7 +318,8 @@ const ChatList = () => {
             <div className="conversation-container h-full">
                 <div className="flex justify-between items-center py-3">
                     <div className="font-extrabold text-xl">Your chats</div>
-                    <ChatOptionsSelector 
+                    <ChatOptionsSelector
+                        isHasInvitation={invitationCount}
                         onCreateGroup={() => setIsOpenCreateGroup(true)}
                         onViewInvitations={() => setIsOpenInvitationList(true)}
                     />
@@ -338,7 +355,7 @@ const ChatList = () => {
                     )}
                 </div>
 
-                <div className="conversation-container-body h-4/5 overflow-y-scroll scroll-smooth">
+                <div className="conversation-container-body h-4/5 overflow-y-scroll scroll-smooth pt-2">
                     {!search && (
                         <div className="conversation size-full flex flex-col gap-1">
                             {chatMessageList.map((data) => {

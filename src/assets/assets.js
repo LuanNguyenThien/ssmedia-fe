@@ -57,6 +57,8 @@ import arrowUpCircle from "./icons/sidebar/arrow-up-circle.svg";
 import removeMember from "./icons/sidebar/remove-member.svg";
 import edit from "./icons/sidebar/edit.svg";
 import envelope from "./icons/sidebar/envelope.svg";
+import block from "./icons/sidebar/block-closed.svg";
+
 
 export const assets = {
     logo,
@@ -119,4 +121,5 @@ export const icons = {
     removeMember,
     edit,
     envelope,
+    block
 };

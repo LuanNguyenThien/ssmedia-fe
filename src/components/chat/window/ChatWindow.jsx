@@ -1,32 +1,33 @@
 import { createRoot } from "react-dom/client";
-import Avatar from "@components/avatar/Avatar";
-import { useDispatch, useSelector } from "react-redux";
-import "@components/chat/window/ChatWindow.scss";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
+import { some } from "lodash";
+import ObjectId from "bson-objectid";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import "@components/chat/window/ChatWindow.scss";
+
 import { Utils } from "@services/utils/utils.service";
 import { userService } from "@services/api/user/user.service";
 import { ChatUtils } from "@services/utils/chat-utils.service";
 import { chatService } from "@services/api/chat/chat.service";
-import { some } from "lodash";
-import ObjectId from "bson-objectid";
-// icons
-import { IoIosArrowBack } from "react-icons/io";
+import GroupChatUtils from "@services/utils/group-chat-utils.service";
+import { socketService } from "@services/socket/socket.service";
+import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
+
 import MessageDisplay from "./message-display/MessageDisplay";
 import MessageInput from "./message-input/MessageInput";
-import LoadingSpinner from "@/components/state/LoadingSpinner";
-import VideoCallWindow from "@pages/callwindow/VideoCallWindow";
-import FirstChatScreen from "./FirstChatScreen/FirstChatScreen";
-import LoadingMessage from "@/components/state/loading-message/LoadingMessage";
 import InformationGroup from "./info-group/InfomationGroup";
-
+import FirstChatScreen from "./FirstChatScreen/FirstChatScreen";
+import VideoCallWindow from "@pages/callwindow/VideoCallWindow";
+import Avatar from "@components/avatar/Avatar";
+import LoadingSpinner from "@components/state/LoadingSpinner";
+import LoadingMessage from "@components/state/loading-message/LoadingMessage";
+import { DynamicSVG } from "@components/sidebar/components/SidebarItems";
+// icons
+import { IoIosArrowBack } from "react-icons/io";
 import { IoIosVideocam } from "react-icons/io";
 import { PiPhoneFill } from "react-icons/pi";
-import { icons } from "@/assets/assets";
-import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
-import useHandleOutsideClick from "@/hooks/useHandleOutsideClick";
-import GroupChatUtils from "@/services/utils/group-chat-utils.service";
-import { socketService } from "@services/socket/socket.service";
+import { icons } from "@assets/assets";
 
 const ChatWindow = () => {
     const dispatch = useDispatch();
@@ -331,10 +332,7 @@ const ChatWindow = () => {
     // Socket events for message receiving - modified for more reliable updates
     useEffect(() => {
         if (rendered) {
-            // Clear existing socket listeners to prevent duplicates
             ChatUtils.removeSocketListeners();
-
-            // Set up message receiver with better error handling
             ChatUtils.socketIOMessageReceived(
                 chatMessages,
                 searchParamsUsername,
@@ -342,7 +340,6 @@ const ChatWindow = () => {
                 (messages) => {
                     if (Array.isArray(messages)) {
                         setChatMessages(messages);
-                        // Automatically scroll to bottom when new messages arrive
                         setTimeout(() => {
                             const chatContainer =
                                 document.querySelector(".message-page");
@@ -460,7 +457,7 @@ const ChatWindow = () => {
         rendered,
         receiver,
         searchParamsId,
-        profile._id,
+        profile?._id,
         navigate,
         dispatch,
         getUserProfileByUserId,
@@ -482,7 +479,7 @@ const ChatWindow = () => {
     const isGroupMember = useMemo(
         () =>
             isGroup &&
-            !GroupChatUtils.userIsGroupMember(receiver?.members, profile._id),
+            !GroupChatUtils.userIsGroupMember(receiver?.members, profile?._id),
         [isGroup, receiver, profile]
     );
 
@@ -495,7 +492,7 @@ const ChatWindow = () => {
             if (
                 !GroupChatUtils.userIsGroupMember(
                     receiver?.members,
-                    profile._id
+                    profile?._id
                 )
             ) {
                 // Use a short timeout to prevent showing the warning prematurely
@@ -508,7 +505,7 @@ const ChatWindow = () => {
         } else if (!isGroup) {
             setMembershipCheckComplete(true);
         }
-    }, [isGroup, receiver, profile._id]);
+    }, [isGroup, receiver, profile?._id]);
 
     const [contentVisible, setContentVisible] = useState(false);
 
@@ -531,24 +528,28 @@ const ChatWindow = () => {
         >
             {/* Replace the previous warning with this improved version */}
             {showNonMemberWarning && (
-                <div className="absolute inset-0 flex justify-center items-center z-[1000] bg-white/20 transition-all duration-300 ease-in-out animate-fadeIn">
+                <div className="absolute inset-0 flex justify-center items-center bg-white/20 z-10 transition-all duration-300 ease-in-out animate-fadeIn">
                     {Utils.isMobileDevice() && (
                         <div
                             className="fixed gap-2 top-5 left-5 text-xl text-primary-black cursor-pointer pr-2 flex items-center"
                             onClick={handleBackClick}
                         >
-                            <IoIosArrowBack />{" "}
+                            <IoIosArrowBack />
                             <span className="text-sm">Back to your chats</span>
                         </div>
                     )}
                     <span
-                        className={`font-semibold text-xl ${
+                        className={`font-semibold size-full flex flex-col justify-center items-center rounded-xl  p-4 text-gray-500 text-xl ${
                             isGroupMember || !contentVisible
-                                ? "opacity-100"
+                                ? "opacity-100 bg-primary-white"
                                 : "opacity-0"
                         }`}
                     >
-                        You are not a member of this group
+                        <DynamicSVG
+                            svgData={icons.block}
+                            className={"size-[100px]"}
+                        />
+                        You are not currently a member of this group.
                     </span>
                 </div>
             )}
@@ -564,7 +565,7 @@ const ChatWindow = () => {
                             data-testid="chatWindow"
                             className={`chatWindow max-h-full relative transition-all duration-300 ${
                                 isGroup && (isGroupMember || !contentVisible)
-                                    ? "blur-md opacity-90"
+                                    ? "blur-xl"
                                     : "blur-none opacity-100"
                             }`}
                             style={{
@@ -587,7 +588,7 @@ const ChatWindow = () => {
                                 )}
 
                                 {receiver && (
-                                    <div className="chat-title-avatar">
+                                    <div className="chat-title-avatar min-w-fit">
                                         <Avatar
                                             name={receiver?.username}
                                             bgColor={receiver.avatarColor}
@@ -597,10 +598,10 @@ const ChatWindow = () => {
                                         />
                                     </div>
                                 )}
-                                <div className="chat-title-items">
+                                <div className="chat-title-items flex-shrink truncate pr-2">
                                     {/* name */}
                                     <div
-                                        className={`chat-name ${
+                                        className={`chat-name max-w-full truncate  ${
                                             isReceiverOnline
                                                 ? ""
                                                 : "user-not-online"

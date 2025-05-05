@@ -32,9 +32,8 @@ const InformationGroup = ({ ref, info, onClose, currentUser, onSuccess }) => {
     // Check if current user is admin
     // const isAdmin = currentUser.username === info.members[0].username;
     const isAdmin =
-        info.members.find((member) => {
-            return member.userId === currentUser._id;
-        }).role === "admin";
+        info?.members?.find((member) => member.userId === currentUser._id)
+            ?.role === "admin";
 
     const handleClose = () => {
         setIsVisible(false);

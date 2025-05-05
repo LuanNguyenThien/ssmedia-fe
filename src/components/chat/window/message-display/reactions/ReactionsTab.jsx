@@ -28,24 +28,20 @@ const ReactionsTab = ({
         );
     }, [reactions, profile.username]);
 
-    // Base classes for mobile and desktop
     const mobileClasses =
         "fixed z-[100] bottom-0 left-0 bg-white shadow-md border-t w-screen h-max max-h-1/2 flex flex-col justify-between gap-2  rounded-t-2xl p-4";
     const desktopClasses =
         "fixed z-[100] w-max h-max left-1/2 bottom-1/2 border translate-y-1/2 bg-primary-white p-6  shadow-md rounded-[10px] flex flex-col justify-between -translate-x-1/2";
-
-    // Animation classes
-    const animationClasses = `transition-all duration-300 ease-in-out ${
+    const animationClasses = `transition-all duration-700 ease-out delay-150 ${
         isActive
             ? isMobile
                 ? "translate-y-0 opacity-100"
                 : "scale-100 opacity-100"
             : isMobile
             ? "translate-y-full opacity-0"
-            : "scale-90 opacity-0"
+            : "scale-75 opacity-0"
     }`;
 
-    // Close the tab when clicking outside
     useEffect(() => {
         if (!isActive) {
             onCloseReactionTab();

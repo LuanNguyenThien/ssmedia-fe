@@ -23,6 +23,7 @@ const InvitationsList = ({ onClickBack }) => {
     const fetchInvitations = async () => {
         try {
             const response = await groupChatService.getUserPendingInvitations();
+            console.log("Pending invitations:", response.data.pendingGroups);
             setInvitations(response.data.pendingGroups);
             setIsLoading(false);
         } catch (error) {
@@ -111,26 +112,29 @@ const InvitationsList = ({ onClickBack }) => {
                             <Spinner />
                         </div>
                     ) : invitations.length > 0 ? (
-                        <div className="invitation-list cursor-pointer">
+                        <div className="invitation-list cursor-pointer overflow-y-scroll h-max">
                             {invitations.map((invitation) => (
                                 <div
                                     key={invitation._id}
-                                    className="invitation-card bg-background-blur hover:bg-primary/10 rounded-lg p-4 my-3 shadow-sm"
+                                    className="invitation-card bg-background-blur hover:bg-primary/10 rounded-lg p-3 my-3 shadow-sm"
                                 >
-                                    <div className="flex items-center mb-4">
-                                        <Avatar
-                                            name={invitation.name}
-                                            bgColor={invitation.avatarColor}
-                                            textColor="#ffffff"
-                                            size={50}
-                                            avatarSrc={
-                                                invitation.profilePicture
-                                            }
-                                        />
-                                        <div className="ml-4">
-                                            <h3 className="font-bold text-lg">
+                                    <div className="flex items-center mb-4 gap-4 sm:gap-2">
+                                        <div  className="flex-shrink-0 self-center">
+                                            <Avatar
+                                                name={invitation.name}
+                                                bgColor={invitation.avatarColor}
+                                                textColor="#ffffff"
+                                                size={50}
+                                                avatarSrc={
+                                                    invitation.profilePicture
+                                                }
+                                            />
+                                        </div>
+                                    
+                                        <div className="flex-grow-0 flex flex-col justify-start items-start truncate">
+                                            <span className="font-bold text-lg max-w-full truncate">
                                                 {invitation.name}
-                                            </h3>
+                                            </span>
                                             <p className="text-xs text-gray-600">
                                                 Invited by:{" "}
                                                 {invitation.members[0].username}

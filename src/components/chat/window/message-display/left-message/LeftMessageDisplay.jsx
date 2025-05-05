@@ -6,7 +6,6 @@ import { DynamicSVG } from "./../../../../sidebar/components/SidebarItems";
 import { icons } from "@assets/assets";
 import LeftMessageBubble from "./LeftMessageBubble";
 import ReactionsDisplay from "../reactions/ReactionsDisplay";
-import useHandleOutsideClick from "@/hooks/useHandleOutsideClick";
 
 const LeftMessageDisplay = ({
     chat,
@@ -20,8 +19,8 @@ const LeftMessageDisplay = ({
     setShowImageModal,
     setImageUrl,
     showImageModal,
-    onShowReactionsTab,
-    onCloseReactionTab,
+    onShowReactionsTab
+    
 }) => {
     const optionsRef = useRef(null);
     const [isShowBottom, setIsShowBottom] = useState(false);
@@ -33,7 +32,7 @@ const LeftMessageDisplay = ({
 
     return (
         <div className="message left-message" data-testid="left-message">
-            <div className="left-message-bubble-container relative flex justify-start">
+            <div className="left-message-bubble-container relative flex justify-start max-w-[90%]">
                 <div className="message-img w-max">
                     <Avatar
                         name={chat.senderUsername}
@@ -43,7 +42,7 @@ const LeftMessageDisplay = ({
                         avatarSrc={chat.senderProfilePicture}
                     />
                 </div>
-                <div className="message-left-reactions-container absolute left-0 -top-2 z-50 flex">
+                <div className="message-left-reactions-container absolute left-0 -bottom-2 z-[100] flex">
                     {toggleReaction &&
                         index === activeElementIndex &&
                         !chat?.deleteForEveryone && (
@@ -138,7 +137,7 @@ const LeftMessageDisplay = ({
                         chat?.reaction.length > 0 &&
                         !chat.deleteForEveryone && (
                             <div
-                                className="absolute left-0 -bottom-2 size-4 z-50 flex items-start"
+                                className="absolute left-0 -bottom-2 size-4 flex items-start z-0"
                             >
                                 <ReactionsDisplay
                                     onClick={(e) => {
