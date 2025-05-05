@@ -1,6 +1,6 @@
 import { userService } from "@services/api/user/user.service";
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 async function Appeal(body) {
   const { data } = await  await userService.Appeal(body);
   return data;
@@ -12,7 +12,7 @@ export default function LoginIssueReport() {
   );
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
+   const navigate = useNavigate();
   const handleSubmit = async () => {
     try {
       setLoading(true);
@@ -20,7 +20,7 @@ export default function LoginIssueReport() {
 
       const body = { content: description };
       await Appeal(body);
-
+      navigate("/aarovel");
       setMessage("Báo cáo của bạn đã được gửi thành công.");
       setDescription(""); // Reset form nếu cần
     } catch (error) {
@@ -49,12 +49,12 @@ export default function LoginIssueReport() {
 
           <div className="text-gray-600">
             <p className="mb-2">
-              Please provide a detailed description of this issue, including:
+              Vui lòng cung cấp mô tả chi tiết về sự cố này, bao gồm:
             </p>
             <ol className="list-decimal pl-8 space-y-1">
-              <li>What you were doing when the problem occurred</li>
-              <li>What you expected to happen</li>
-              <li>What actually happened</li>
+              <li>Bạn đang làm gì khi sự cố xảy ra</li>
+              <li>Bạn đã mong đợi điều gì sẽ xảy ra</li>
+              <li>Điều gì thực sự đã xảy ra</li>
             </ol>
           </div>
 

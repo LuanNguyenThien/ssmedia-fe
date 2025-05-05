@@ -261,6 +261,9 @@ const SignUp = lazy(() => import("@pages/admin/pages/AuthPages/SignUp"));
 
 const Checkpoint = lazy(() => import("@pages/social/streams/report"));
 const IssueReport = lazy(() => import("@pages/social/streams/ReportIssue"));
+const AppealConfirmation = lazy(() =>
+  import("@pages/social/streams/approval")
+);
 
 const withSuspense = (Component) => (
   <Suspense fallback={<div>Loading...</div>}>{Component}</Suspense>
@@ -282,6 +285,10 @@ export const AppRouter = () => {
     {
       path: "/issua",
       element: <IssueReport />,
+    },
+    {
+      path: "/aarovel",
+      element: <AppealConfirmation />,
     },
     {
       path: "/forgot-password",

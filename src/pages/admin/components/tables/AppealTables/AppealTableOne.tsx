@@ -43,9 +43,10 @@ export default function BanUserTableOne() {
   const getAllUsers = useCallback(async () => {
     try {
       setLoading(true);
+
       const response = await userService.getAllAppeal(currentPage);
       const rawUsers = response.data.data;
-      console.log("rawUsers", rawUsers);
+
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
         _id: u._id,
         user: {
@@ -63,7 +64,8 @@ export default function BanUserTableOne() {
       }));
 
       setUsers(mappedUsers);
-      setTotal(response.data.totalUsers);
+      
+      setTotal(response.data.pagination.totalUsers);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -118,7 +120,7 @@ export default function BanUserTableOne() {
     setCurrentPage(pageNumber);
   };
 
-  const totalPages = Math.max(2, Math.ceil(total / itemsPerPage));
+  const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -162,7 +164,7 @@ export default function BanUserTableOne() {
 
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {users.map((order) => (
-              <TableRow key={order._id}>
+              <TableRow key={order.appealId}>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">

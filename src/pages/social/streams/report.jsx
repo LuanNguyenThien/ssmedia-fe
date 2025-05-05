@@ -85,7 +85,7 @@ export default function AccountLocked() {
           onClick={() => (window.location.href = "/issua")}
           className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-md transition-colors"
         >
-          Tìm hiểu thêm
+          Kháng nghị
         </button>
       </div>
     </div>

@@ -23,7 +23,7 @@ const getAllUsers = useCallback(async () => {
     const response = await userService.getAllUsersAdminRole(1);
     const responseData = await userService.getUsersToday();
     const responsePost = await postService.GetPostCount();
-    console.log("responsePost", responsePost);
+   
     setUserToday(responseData.data.count);
     setTotalPost(responsePost.data.totalPosts);
     setTotals(response.data.totalUsers);
@@ -36,7 +36,7 @@ const getAllUsers = useCallback(async () => {
         100;
         
     
-    console.log("percent", percent);
+    
     const roundedPercent = parseFloat(percent.toFixed(2));
           
     setGrown(roundedPercent);
@@ -50,7 +50,7 @@ const getAllUsers = useCallback(async () => {
         (responsePost.data.totalPosts - responsePost.data.postsToday)) *
       100;
 
-    console.log("percent", percent);
+    
     const roundedPercentpost = parseFloat(percentpost.toFixed(2));
     setGrownPost(roundedPercentpost);
    
