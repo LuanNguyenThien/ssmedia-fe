@@ -265,6 +265,7 @@ const Header = () => {
                     image: searchImage,
                 } 
             });
+            setSearchImage(null);
             setIsSearch(!isSearch);
         } else {
             // Regular text search

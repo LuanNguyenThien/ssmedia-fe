@@ -4,6 +4,7 @@ import logo from "@assets/logo.png";
 import ringtoneSound from "@assets/sounds/ringtone.mp3";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Utils } from "@services/utils/utils.service";
+import { socketService } from "@services/socket/socket.service";
 
 const IncomingCallNotification = ({ callData, onAccept, onReject }) => {
     const audioRef = useRef(null);
@@ -13,7 +14,7 @@ const IncomingCallNotification = ({ callData, onAccept, onReject }) => {
     useEffect(() => {
         // Start playing the ringtone when the component mounts
         if (audioRef.current) {
-            audioRef.current.volume = 0.9; 
+            audioRef.current.volume = 1.0; 
             audioRef.current.loop = true;
             if(!notificationPromptDismissed) {
                 const playPromise = audioRef.current.play();
@@ -56,6 +57,7 @@ const IncomingCallNotification = ({ callData, onAccept, onReject }) => {
     
     // Xử lý nút chấp nhận/từ chối
     const handleAccept = () => {
+        socketService.socket.off("call-incoming");
         if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
@@ -64,6 +66,7 @@ const IncomingCallNotification = ({ callData, onAccept, onReject }) => {
     };
 
     const handleReject = () => {
+        socketService.socket.off("call-incoming");
         if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;

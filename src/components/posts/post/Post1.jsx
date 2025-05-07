@@ -215,7 +215,7 @@ const Post = ({ post, showIcons }) => {
                     // </div>
                   )}
                 </h5>
-                {(showIcons || post.userId === profile._id)  && (
+                {(showIcons || post.userId === profile?._id)  && (
                   <div
                     className="post-icons"
                     style={{ position: "relative" }}

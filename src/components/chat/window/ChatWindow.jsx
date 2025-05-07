@@ -62,13 +62,15 @@ const ChatWindow = () => {
     }, [receiver, onlineUsers]);
 
     const initiateCall = async (callType, receiverId) => {
+        const callId = new ObjectId().toString();
         const callData = {
           callerName: profile.username,
           callerId: profile.userId,
           callType,
           isReceivingCall: false,
           receiverId,
-          receiverName: receiver?.username || receiver?.name
+          receiverName: receiver?.username || receiver?.name,
+          callId
         };
 
         // Kiểm tra xem cửa sổ popup đã được mở hay chưa
@@ -99,7 +101,11 @@ const ChatWindow = () => {
             <VideoCallWindow
               callData={callData}
               stream={stream}
-              onClose={() => ChatUtils.callWindow.close()}
+              onClose={() => 
+                {
+                    ChatUtils.callWindow.close();
+                    ChatUtils.callWindow = null; // Đặt lại tham chiếu cửa sổ popup
+                }}
               popupWindowRef={ChatUtils.callWindow} // Truyền tham chiếu cửa sổ popup
             />
           );
