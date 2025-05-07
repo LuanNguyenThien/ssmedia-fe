@@ -5,6 +5,7 @@ import { authService } from "@services/api/auth/auth.service";
 import useLocalStorage from "@hooks/useLocalStorage";
 import { Utils } from "@services/utils/utils.service";
 import useSessionStorage from "@hooks/useSessionStorage";
+import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
 // import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import {
@@ -48,14 +49,26 @@ export default function SignInForm() {
       try {
         const result = await authService.signIn({
           username,
-          password
+          password,
         });
-        console.log(result,"log");
+        console.log(result, "log");
+        // Và thay thế dòng gây lỗi:
+        const decodedToken = jwtDecode(result.data.token); 
+        console.log(decodedToken, "decode") 
+        const role = (decodedToken as any)?.role;
+        console.log(role, "role");
+        if (role !== "ADMIN") {
+          setHasError(true);
+          setAlertType("alert-error");
+          setErrorMessage("You do not have permission to access this page.");
+          setLoading(false);
+          return;
+        }
         setLoggedIn(keepLoggedIn);
         setStoredUsername(username);
 
         setHasError(false);
-        setAlertType('alert-success');
+        setAlertType("alert-success");
         Utils.dispatchUser(result, pageReload, dispatch, setUser);
       } catch (error) {
         setLoading(false);

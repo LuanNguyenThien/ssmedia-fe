@@ -196,6 +196,7 @@
 import { AuthTabs, ForgotPassword, ResetPassword } from "@pages/auth";
 import Error from "@pages/error/Error";
 import ProtectedRoute from "@pages/ProtectedRoute";
+import ProtectedAdminRoute from "@pages/ProtectedAdminRoute";
 import { useRoutes } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import StreamsSkeleton from "@pages/social/streams/StreamsSkeleton";
@@ -427,7 +428,11 @@ export const AppRouter = () => {
     },
     {
       path: "/admin",
-      element: <AdminLayout />,
+      element: (
+        <ProtectedAdminRoute>
+          <AdminLayout />
+        </ProtectedAdminRoute>
+      ),
       children: [
         {
           path: "",
