@@ -101,7 +101,7 @@ const SavePage = () => {
     <div className="saves col-span-full">
       {(loading || postSaves.length > 0) && (
         <div className="saves-content">
-          <div className="saves-post" ref={bodyRef} style={{ height: "85vh" }}>
+          <div className="saves-post w-full" ref={bodyRef} style={{ height: "85vh" }}>
             <Posts
               allPosts={postSaves}
               postsLoading={loading}

@@ -258,13 +258,16 @@ const Header = () => {
         // Check if we have an image to search with
         if (searchImage) {
             // Navigate to search page with image search info
-            navigate("/app/social/search", { 
-                state: { 
+            navigate("/app/social/search", {
+                state: {
                     query: searchTerm,
                     hasImage: isSearch,
                     image: searchImage,
-                } 
+                },
             });
+            setSearchTerm("");
+            setSearchImage(null);
+            // Reset the search state
             setIsSearch(!isSearch);
         } else {
             // Regular text search
@@ -306,8 +309,12 @@ const Header = () => {
                                 imgUrl={notificationDialogContent?.imgUrl}
                                 comment={notificationDialogContent?.comment}
                                 reaction={notificationDialogContent?.reaction}
-                                post_analysis={notificationDialogContent?.post_analysis}
-                                senderName={notificationDialogContent?.senderName}
+                                post_analysis={
+                                    notificationDialogContent?.post_analysis
+                                }
+                                senderName={
+                                    notificationDialogContent?.senderName
+                                }
                                 secondButtonText="Close"
                                 secondBtnHandler={
                                     handleSetNotificationDialogContentToNull
@@ -328,7 +335,9 @@ const Header = () => {
                                     onClick={handleSearchKeyPress}
                                     searchTerm={searchTerm}
                                     setSearchTerm={setSearchTerm}
-                                    onImageSelect={(file) => setSearchImage(file)}
+                                    onImageSelect={(file) =>
+                                        setSearchImage(file)
+                                    }
                                 />
                             </div>
 
@@ -442,13 +451,15 @@ const Header = () => {
                                                 bgColor={profile?.avatarColor}
                                                 textColor="#ffffff"
                                                 size={35}
-                                                avatarSrc={profile?.profilePicture}
+                                                avatarSrc={
+                                                    profile?.profilePicture
+                                                }
                                             />
                                             <IoIosArrowBack
-                                                className={`absolute bottom-[-5px] right-0 text-white bg-gray-700 bg-opacity-70 rounded-full ${
+                                                className={`absolute transition-all duration-100 ease-linear bottom-[-5px] right-0 text-white bg-gray-700 bg-opacity-70 rounded-full ${
                                                     isSettingsActive
-                                                        ? "transition-all -rotate-90 duration-100 ease-linear "
-                                                        : ""
+                                                        ? " -rotate-90  "
+                                                        : "rotate-0"
                                                 } `}
                                             />
                                             {isSettingsActive && (
@@ -471,6 +482,7 @@ const Header = () => {
                                                                 navigate
                                                             )
                                                         }
+                                                        id={profile?._id}
                                                     />
                                                 </ul>
                                             )}

@@ -16,7 +16,7 @@ const Sidebar = () => {
                 <SidebarItems />
 
                 {/* addition items section */}
-                <ActivitySection />
+                {/* <ActivitySection /> */}
             </div>
         </div>
     );

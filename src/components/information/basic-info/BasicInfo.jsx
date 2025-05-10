@@ -6,9 +6,8 @@ const BasicInfo = ({
     editableInputs,
     username,
     profile,
-    loading,
     setEditableInputs,
-    setIsEditing
+    setIsEditing,
 }) => {
     const editableSocialInputs = {
         instagram: "",
@@ -18,22 +17,15 @@ const BasicInfo = ({
     };
 
     return (
-        <>
-            {loading ? (
-                <BasicInfoSkeleton />
-            ) : (
-                <InfoDisplay
-                    title="Basic Info"
-                    type="basic"
-                    isCurrentUser={username === profile?.username}
-                    editableInputs={editableInputs}
-                    editableSocialInputs={editableSocialInputs}
-                    loading={loading}
-                    setEditableInputs={setEditableInputs}
-                    setIsEditing={setIsEditing}
-                />
-            )}
-        </>
+        <InfoDisplay
+            title="Basic Info"
+            type="basic"
+            isCurrentUser={username === profile?.username}
+            editableInputs={editableInputs}
+            editableSocialInputs={editableSocialInputs}
+            setEditableInputs={setEditableInputs}
+            setIsEditing={setIsEditing}
+        />
     );
 };
 

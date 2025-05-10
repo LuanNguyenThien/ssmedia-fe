@@ -23,6 +23,7 @@ import { tabItems } from "@services/utils/static.data";
 import { Utils } from "@services/utils/utils.service";
 import Follower from "../followers/Followers";
 import Following from "../following/Following";
+import ProfileSkeleton from "./ProfileSkeleton";
 
 // Hooks
 // Removed useEffectOnce - we'll use useEffect with dependencies instead
@@ -36,6 +37,7 @@ const Profile = () => {
     const { deleteDialogIsOpen, data } = useSelector((state) => state.modal);
     const { username } = useParams();
     const [searchParams] = useSearchParams();
+    console.log(profile);
 
     // State management
     const [user, setUser] = useState(null);
@@ -305,7 +307,6 @@ const Profile = () => {
             isCurrentUser() ? currentUserOptions : otherUserOptions
         );
     }, [isCurrentUser]);
-
     return (
         <>
             {showImageModal && (
@@ -331,80 +332,85 @@ const Profile = () => {
                 />
             )}
 
-            <div className="profile-wrapper col-span-10 h-[88vh] max-h-[88vh] grid grid-cols-3 rounded-t-[30px] overflow-y-scroll lg:overflow-hidden bg-background-blur">
-                <div className="profile-header w-full lg:h-[14vh] col-span-3 relative">
-                    <BackgroundHeader
-                        user={user}
-                        isCurrentUser={isCurrentUser}
-                        loading={loading}
-                        hasImage={hasImage}
-                        hasError={hasError}
-                        url={bgUrl}
-                        onClick={changeTabContent}
-                        selectedFileImage={selectedFileImage}
-                        saveImage={saveImage}
-                        cancelFileSelection={cancelFileSelection}
-                        removeBackgroundImage={removeBackgroundImage}
-                        tabItems={tabItems(
-                            username === profile?.username,
-                            username === profile?.username
-                        )}
-                        tab={displayContent}
-                        hideSettings={username === profile?.username}
-                        galleryImages={galleryImages}
-                        selectedImage={setImageUrl}
-                        showImageModal={toggleImageModal}
-                    />
-                </div>
+            {loading ? (
+                <ProfileSkeleton />
+            ) : (
+                <div className="profile-wrapper col-span-10 h-[88vh] max-h-[88vh] grid grid-cols-3 rounded-t-[30px] overflow-y-scroll lg:overflow-hidden bg-background-blur">
+                    <div className="profile-header w-full lg:h-[14vh] col-span-3 relative">
+                        <BackgroundHeader
+                            user={user}
+                            isCurrentUser={isCurrentUser}
+                            hasImage={hasImage}
+                            hasError={hasError}
+                            url={bgUrl}
+                            onClick={changeTabContent}
+                            selectedFileImage={selectedFileImage}
+                            saveImage={saveImage}
+                            cancelFileSelection={cancelFileSelection}
+                            removeBackgroundImage={removeBackgroundImage}
+                            tabItems={tabItems(
+                                username === profile?.username,
+                                username === profile?.username
+                            )}
+                            tab={displayContent}
+                            hideSettings={username === profile?.username}
+                            galleryImages={galleryImages}
+                            selectedImage={setImageUrl}
+                            showImageModal={toggleImageModal}
+                        />
+                    </div>
 
-                {/* main post section */}
-                {!Utils.checkIfUserIsBlocked(
-                    profile?.blockedBy,
-                    userProfileData?.user._id
-                ) || userProfileData?.user._id === profile?._id ? (
-                    <div className="profile-content flex-1 h-[72vh] pt-4 sm:px-4 col-span-3 flex flex-col lg:grid grid-cols-3">
-                        <div className="col-span-1 w-full h-max lg:h-full lg:pr-4 rounded-[10px] flex flex-col gap-2 lg:overflow-y-scroll">
-                            <Information
-                                following={following}
-                                isCurrentUser={isCurrentUser}
-                                userProfileData={userProfileData}
-                                setRendered={getUserProfileByUsername}
-                            />
-                        </div>
-                        <div className="col-span-2 h-full flex flex-col justify-start bg-primary-white rounded-t-[10px]">
-                            <div className="w-full h-max flex items-center justify-between">
-                                {titleOptions.map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className={`flex-1 text-sm py-2 text-center border-b-2 border-gray-300 font-bold cursor-pointer hover:text-primary-black ${
-                                            displayContent === item &&
-                                            "text-primary-black border-primary"
-                                        }`}
-                                        onClick={() => setDisplayContent(item)}
-                                    >
-                                        {item}
-                                    </div>
-                                ))}
+                    {/* main post section */}
+                    {!Utils.checkIfUserIsBlocked(
+                        profile?.blockedBy,
+                        userProfileData?.user._id
+                    ) || userProfileData?.user._id === profile?._id ? (
+                        <div className="profile-content flex-1 h-[72vh] pt-4 sm:px-4 col-span-3 flex flex-col lg:grid grid-cols-3">
+                            <div className="col-span-1 w-full h-max lg:h-full lg:pr-4 rounded-[10px] flex flex-col gap-2 lg:overflow-y-scroll">
+                                <Information
+                                    following={following}
+                                    isCurrentUser={isCurrentUser}
+                                    userProfileData={userProfileData}
+                                    setRendered={getUserProfileByUsername}
+                                />
                             </div>
-                            <div className="size-full min-h-[500px] max-h-[500px] flex flex-col overflow-y-scroll bg-primary-white p-4">
-                                {renderContent()}
+                            <div className="col-span-2 h-full flex flex-col justify-start bg-primary-white rounded-t-[10px]">
+                                <div className="w-full h-max flex items-center justify-between">
+                                    {titleOptions.map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className={`flex-1 text-sm py-2 text-center border-b-2 border-gray-300 font-bold cursor-pointer hover:text-primary-black ${
+                                                displayContent === item &&
+                                                "text-primary-black border-primary"
+                                            }`}
+                                            onClick={() =>
+                                                setDisplayContent(item)
+                                            }
+                                        >
+                                            {item}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="size-full min-h-[500px] max-h-[500px] flex flex-col overflow-y-scroll bg-primary-white p-4">
+                                    {renderContent()}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ) : (
-                    <div className="profile-content flex-1 h-[72vh] w-full pt-4 sm:px-4 col-span-3 flex justify-start items-start ">
-                        <div className="w-full h-max bg-primary-white p-6 rounded-[10px] flex flex-col items-center justify-center text-center">
-                            <span className="text-lg font-semibold text-gray-800">
-                                This profile is currently unavailable.
-                            </span>
-                            <p className="text-sm text-gray-600 mt-2">
-                                The user may have deactivated their account or
-                                changed their privacy settings.
-                            </p>
+                    ) : (
+                        <div className="profile-content flex-1 h-[72vh] w-full pt-4 sm:px-4 col-span-3 flex justify-start items-start ">
+                            <div className="w-full h-max bg-primary-white p-6 rounded-[10px] flex flex-col items-center justify-center text-center">
+                                <span className="text-lg font-semibold text-gray-800">
+                                    This profile is currently unavailable.
+                                </span>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    The user may have deactivated their account
+                                    or changed their privacy settings.
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
         </>
     );
 };

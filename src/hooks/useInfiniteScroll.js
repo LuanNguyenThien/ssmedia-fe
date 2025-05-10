@@ -16,7 +16,11 @@ const useInfiniteScroll = (bodyRef, bottomLineRef, callback) => {
   useEffect(() => {
     const bodyRefCurrent = bodyRef?.current;
     bodyRefCurrent?.addEventListener('scroll', handleScroll, true);
-    return () => bodyRefCurrent.removeEventListener('scroll', handleScroll, true);
+    return () => {
+      if (bodyRefCurrent) {
+        bodyRefCurrent.removeEventListener('scroll', handleScroll, true);
+      }
+    };
   }, [bodyRef, handleScroll]);
 };
 

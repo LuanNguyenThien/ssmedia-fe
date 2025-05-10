@@ -10,6 +10,10 @@ import gif from "./icons/common/gif.svg";
 import feeling from "./icons/common/emoji.svg";
 import send from "./icons/common/send.svg";
 import remove from "./icons/common/delete.svg";
+import search_image from "./icons/common/search-image.png";
+import setting from "./icons/common/setting.svg";
+import chevron from "./icons/common/chevron-up.svg";
+import comment from "./icons/common/comment.svg";
 
 //messages
 import check from "./icons/messages/checked.png";
@@ -100,5 +104,9 @@ export const icons = {
     uncheck,
     remove,
     options,
-    say_hi
+    say_hi,
+    search_image,
+    setting,
+    chevron,
+    comment
 };

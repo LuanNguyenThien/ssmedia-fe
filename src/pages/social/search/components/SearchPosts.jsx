@@ -3,6 +3,9 @@ import PeopleCard from "./PeopleCard";
 import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import useEffectOnce from "@hooks/useEffectOnce";
+import { followerService } from "@/services/api/followers/follower.service";
+import { Utils } from "@/services/utils/utils.service";
+import { useDispatch } from "react-redux";
 
 const PostCards = ({ posts, postsLoading, userFollowing }) => {
     return (
@@ -28,11 +31,11 @@ const PostCards = ({ posts, postsLoading, userFollowing }) => {
 const PeopleCards = ({ users, setRendered, handleShowMore, hasMoreUsers }) => {
     return (
         <>
-            <div className=" rounded-[10px]  flex flex-col gap-2 bg-primary-white p-6 ">
-                <span className="text-xl font-extrabold">
+            <div className=" rounded-[10px]  flex flex-col gap-2 bg-primary-white">
+                <span className="text-xl font-bold px-4 pt-4">
                     Look Who We Found
                 </span>
-                <div className="flex flex-col gap-2 ">
+                <div className="flex flex-col gap-2 p-2">
                     {users &&
                         users.map((user) => (
                             <PeopleCard
@@ -53,7 +56,7 @@ const PeopleCards = ({ users, setRendered, handleShowMore, hasMoreUsers }) => {
                 )}
 
                 {users.length === 0 && (
-                    <div className="flex items-center justify-center h-full">
+                    <div className="flex items-center justify-center h-full pb-4">
                         <span className="text-gray-500">No users found</span>
                     </div>
                 )}
@@ -72,16 +75,21 @@ const SearchPosts = ({
     handleShowMore,
     hasMoreUsers,
 }) => {
+    const dispatch = useDispatch();
     const [rendered, setRendered] = useState(false);
     const [loading, setLoading] = useState(false);
     const [following, setFollowing] = useState([]);
-    
+
     const getUserFollowing = async () => {
         try {
             const response = await followerService.getUserFollowing();
             setFollowing(response.data.following);
         } catch (error) {
-            Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
         }
     };
 
@@ -92,11 +100,13 @@ const SearchPosts = ({
     const renderContent = () => {
         switch (state) {
             case "Posts":
-                return <PostCards 
-                            posts={searchResults?.posts}
-                            postsLoading={loading}
-                            userFollowing={following} 
-                        />
+                return (
+                    <PostCards
+                        posts={searchResults?.posts}
+                        postsLoading={loading}
+                        userFollowing={following}
+                    />
+                );
 
             case "People":
                 return (
@@ -118,10 +128,10 @@ const SearchPosts = ({
                             />
                         )}
                         {searchResults.posts && (
-                            <PostCards 
+                            <PostCards
                                 posts={searchResults?.posts}
                                 postsLoading={loading}
-                                userFollowing={following} 
+                                userFollowing={following}
                             />
                         )}
                         {!searchResults?.users && !searchResults?.posts && (
@@ -136,7 +146,7 @@ const SearchPosts = ({
         }
     };
     return (
-        <div className="size-full max-h-full overflow-y-scroll scroll-smooth flex flex-col gap-4 px-4">
+        <div className="size-full max-h-full overflow-y-scroll scroll-smooth flex flex-col gap-4 sm:px-4">
             {renderContent()}
         </div>
     );

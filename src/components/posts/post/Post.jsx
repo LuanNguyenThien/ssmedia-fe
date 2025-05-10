@@ -1,270 +1,184 @@
-import Avatar from '@components/avatar/Avatar';
-import { timeAgo } from '@services/utils/timeago.utils';
-import PropTypes from 'prop-types';
-import { FaPencilAlt, FaRegTrashAlt } from 'react-icons/fa';
-import { find } from 'lodash';
-import { feelingsList, privacyList } from '@services/utils/static.data';
-import '@components/posts/post/Post.scss';
-import PostCommentSection from '@components/posts/post-comment-section/PostCommentSection';
-import { useDispatch, useSelector } from 'react-redux';
-import ReactionsModal from '@components/posts/reactions/reactions-modal/ReactionsModal';
-import { Utils } from '@services/utils/utils.service';
-import useLocalStorage from '@hooks/useLocalStorage';
-import CommentInputBox from '@components/posts/comments/comment-input/CommentInputBox';
-import CommentsModal from '@components/posts/comments/comments-modal/CommentsModal';
-import { useState, useEffect } from 'react';
-import ImageModal from '@components/image-modal/ImageModal';
-import { openModal, toggleDeleteDialog } from '@redux/reducers/modal/modal.reducer';
-import { clearPost, updatePostItem } from '@redux/reducers/post/post.reducer';
-import Dialog from '@components/dialog/Dialog';
-import { postService } from '@services/api/post/post.service';
-import { ImageUtils } from '@services/utils/image-utils.service';
-import { Link } from 'react-router-dom';
-import { useCreateBlockNote } from "@blocknote/react";
-import { BlockNoteView } from "@blocknote/mantine";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
+import "@components/posts/post/Post.scss";
+
+// BlockNote
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
-const Post = ({ post, showIcons }) => {
-  const { _id } = useSelector((state) => state.post);
-  const { reactionsModalIsOpen, commentsModalIsOpen, deleteDialogIsOpen } = useSelector((state) => state.modal);
-  const [showImageModal, setShowImageModal] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
-  const [backgroundImageColor, setBackgroundImageColor] = useState('');
-  const selectedPostId = useLocalStorage('selectedPostId', 'get');
-  const selectedPostCommentId = useLocalStorage('selectedPostCommentId', 'get');
-  const selectedPostReactId = useLocalStorage('selectedPostReactId', 'get');
-  const dispatch = useDispatch();
-  const editor = useCreateBlockNote();
-  const getFeeling = (name) => {
-    const feeling = find(feelingsList, (data) => data.name === name);
-    return feeling?.image;
-  };
+import "yet-another-react-lightbox/styles.css";
+import { useCreateBlockNote } from "@blocknote/react";
 
-  const getPrivacy = (type) => {
-    const privacy = find(privacyList, (data) => data.topText === type);
-    return privacy?.icon;
-  };
+import { Utils } from "@services/utils/utils.service";
+import { ImageUtils } from "@services/utils/image-utils.service";
+import useLocalStorage from "@hooks/useLocalStorage";
+import ReactionsModal from "@components/posts/reactions/reactions-modal/ReactionsModal";
+import CommentsModal from "@components/posts/comments/comments-modal/CommentsModal";
+import ImageModal from "@components/image-modal/ImageModal";
+import PostVoteBar from "./components/PostVoteBar";
+import PostContent from "./components/PostContent";
+import PostMetaRow from "./components/PostMetaRow";
 
-  const deletePost = async () => {
-    try {
-      const response = await postService.deletePost(_id);
-      if (response) {
-        Utils.dispatchNotification(response.data.message, 'success', dispatch);
-        dispatch(toggleDeleteDialog({ toggle: !deleteDialogIsOpen }));
-        dispatch(clearPost());
-      }
-    } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
-    }
-  };
+const Post = ({ post }) => {
+    const menuRef = useRef(null);
+    const { reactionsModalIsOpen, commentsModalIsOpen } = useSelector(
+        (state) => state.modal
+    );
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [currentImageSrc, setCurrentImageSrc] = useState("");
+    const viewContainerRef = useRef(null);
+    const { _id } = useSelector((state) => state.post);
+    const [showImageModal, setShowImageModal] = useState(false);
+    const [imageUrl, setImageUrl] = useState("");
+    const [backgroundImageColor, setBackgroundImageColor] = useState("");
+    useLocalStorage("selectedPostId", "get");
+    const selectedPostCommentId = useLocalStorage(
+        "selectedPostCommentId",
+        "get"
+    );
+    const selectedPostReactId = useLocalStorage("selectedPostReactId", "get");
+    const editor = useCreateBlockNote();
 
-  const openPostModal = () => {
-    dispatch(openModal({ type: 'edit' }));
-    dispatch(updatePostItem(post));
-  };
+    const getBackgroundImageColor = async (post) => {
+        let imageUrl = "";
+        if (post?.imgId && !post?.gifUrl && post.bgColor === "#ffffff") {
+            imageUrl = Utils.getImage(post.imgId, post.imgVersion);
+        } else if (post?.gifUrl && post.bgColor === "#ffffff") {
+            imageUrl = post?.gifUrl;
+        }
+        const bgColor = await ImageUtils.getBackgroundImageColor(imageUrl);
+        setBackgroundImageColor(bgColor);
+    };
+    const loadEditor = async (text) => {
+        const blocks = await editor.tryParseHTMLToBlocks(text);
+        editor.replaceBlocks(editor.document, blocks);
+    };
+    useEffect(() => {
+        getBackgroundImageColor(post);
+        loadEditor(post.htmlPost || "");
+    }, [post]);
 
-  const openDeleteDialog = () => {
-    dispatch(toggleDeleteDialog({ toggle: !deleteDialogIsOpen }));
-    dispatch(updatePostItem(post));
-  };
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                // setShowOptionsMenu(false); // Removed undefined function
+            }
+        };
 
-  const getBackgroundImageColor = async (post) => {
-    let imageUrl = '';
-    if (post?.imgId && !post?.gifUrl && post.bgColor === '#ffffff') {
-      imageUrl = Utils.getImage(post.imgId, post.imgVersion);
-    } else if (post?.gifUrl && post.bgColor === '#ffffff') {
-      imageUrl = post?.gifUrl;
-    }
-    const bgColor = await ImageUtils.getBackgroundImageColor(imageUrl);
-    setBackgroundImageColor(bgColor);
-  };
-  const loadEditor = async (text) => {
-    const blocks = await editor.tryParseHTMLToBlocks(text);
-    editor.replaceBlocks(editor.document, blocks);
-  };
-  useEffect(() => {
-    getBackgroundImageColor(post);
-    loadEditor(post.post || "");
-  }, [post]);
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
-  return (
-    <>
-      {reactionsModalIsOpen && selectedPostReactId === post?._id && (
-        <ReactionsModal />
-      )}
-      {commentsModalIsOpen && selectedPostCommentId === post?._id && (
-        <CommentsModal />
-      )}
-      {showImageModal && (
-        <ImageModal
-          image={`${imageUrl}`}
-          onCancel={() => setShowImageModal(!showImageModal)}
-          showArrow={false}
-        />
-      )}
-      {deleteDialogIsOpen && (
-        <Dialog
-          title="Are you sure you want to delete this post?"
-          firstButtonText="Delete"
-          secondButtonText="Cancel"
-          firstBtnHandler={() => deletePost()}
-          secondBtnHandler={() => {
-            dispatch(toggleDeleteDialog({ toggle: !deleteDialogIsOpen }));
-            dispatch(clearPost());
-          }}
-        />
-      )}
-      <div className="post-body" data-testid="post">
-        <div className="user-post-data">
-          <div className="user-post-data-wrap">
-            <div className="user-post-image">
-              <Avatar
-                name={post?.username}
-                bgColor={post?.avatarColor}
-                textColor="#ffffff"
-                size={50}
-                avatarSrc={post?.profilePicture}
-              />
-            </div>
-            <div className="user-post-info">
-              <div className="inline-title-display">
-                <h5 data-testid="username">
-                  {post?.username}
-                  {post?.feelings && (
-                    <div
-                      className="inline-display"
-                      data-testid="inline-display"
-                    >
-                      is feeling{" "}
-                      <img
-                        className="feeling-icon"
-                        src={`${getFeeling(post?.feelings)}`}
-                        alt=""
-                      />{" "}
-                      <div>{post?.feelings}</div>
-                    </div>
-                  )}
-                </h5>
-                {showIcons && (
-                  <div className="post-icons" data-testid="post-icons">
-                    <FaPencilAlt className="pencil" onClick={openPostModal} />
-                    <FaRegTrashAlt
-                      className="trash"
-                      onClick={openDeleteDialog}
-                    />
-                  </div>
-                )}
-              </div>
+    // Hàm xử lý khi click vào khu vực BlockNoteView
+    const handleContentClick = useCallback((event) => {
+        // Kiểm tra xem phần tử được click có phải là thẻ IMG không
+        if (event.target.tagName === "IMG") {
+            const clickedImageSrc = event.target.src;
+            if (clickedImageSrc) {
+                setCurrentImageSrc(clickedImageSrc);
+                setLightboxOpen(true);
+            }
+        }
+    }, []);
 
-              {post?.createdAt && (
-                <p className="time-text-display" data-testid="time-display">
-                  <Link
-                    to={`/app/social/post/${post._id}`}
-                    className="time-link"
-                  >
-                    {timeAgo.transform(post?.createdAt)}
-                  </Link>
-                  &nbsp;&middot; {getPrivacy(post?.privacy)}
-                </p>
-              )}
-            </div>
+    useEffect(() => {
+        const container = viewContainerRef.current;
+        if (container) {
+            // Gắn listener vào container
+            container.addEventListener("click", handleContentClick);
+        }
 
-            <hr />
+        // Cleanup listener khi component unmount
+        return () => {
+            if (container) {
+                container.removeEventListener("click", handleContentClick);
+            }
+        };
+    }, [handleContentClick]);
+
+    return (
+        <>
+            {reactionsModalIsOpen && selectedPostReactId === post?._id && (
+                <ReactionsModal />
+            )}
+            {showImageModal && (
+                <ImageModal
+                    image={`${imageUrl}`}
+                    onCancel={() => setShowImageModal(!showImageModal)}
+                    showArrow={false}
+                />
+            )}
+            {/* {deleteDialogIsOpen && (
+                <Dialog
+                    title="Are you sure you want to delete this post?"
+                    firstButtonText="Delete"
+                    secondButtonText="Cancel"
+                    firstBtnHandler={() => deletePost()}
+                    secondBtnHandler={() => {
+                        dispatch(
+                            toggleDeleteDialog({ toggle: !deleteDialogIsOpen })
+                        );
+                        dispatch(clearPost());
+                    }}
+                />
+            )} */}
             <div
-              className="user-post"
-              style={{ marginTop: "1rem", borderBottom: "" }}
+                className={`post-card flex bg-white shadow p-4 md:p-6 md:gap-6 flex-col md:flex-row ${
+                    commentsModalIsOpen && selectedPostCommentId === post?._id
+                        ? "rounded-t-xl"
+                        : "rounded-xl"
+                }`}
             >
-              <BlockNoteView
-                editor={editor}
-                editable={false} 
-              />
-              {post?.post && post?.bgColor === "#ffffff" && (
-                <p className="post" data-testid="user-post">
-                  {post?.post}
-                </p>
-              )}
-              {post?.post && post?.bgColor !== "#ffffff" && (
-                <div
-                  data-testid="user-post-with-bg"
-                  className="user-post-with-bg"
-                  style={{ backgroundColor: `${post?.bgColor}` }}
-                >
-                  {post?.post}
+                {/* Desktop only: Vote bar on the left */}
+                <div className="hidden md:block md:flex-shrink-0">
+                    <PostVoteBar post={post} />
                 </div>
-              )}
 
-              {post?.imgId && !post?.gifUrl && post.bgColor === "#ffffff" && (
-                <div
-                  data-testid="post-image"
-                  className="image-display-flex"
-                  style={{
-                    height: "600px",
-                    backgroundColor: `${backgroundImageColor}`,
-                  }}
-                  onClick={() => {
-                    setImageUrl(Utils.getImage(post.imgId, post.imgVersion));
-                    setShowImageModal(!showImageModal);
-                  }}
-                >
-                  <img
-                    className="post-image"
-                    style={{ objectFit: "contain" }}
-                    src={`${Utils.getImage(post.imgId, post.imgVersion)}`}
-                    alt=""
-                  />
-                </div>
-              )}
+                {/* Post content */}
+                <div className="post-content flex-1 min-w-0">
+                    <div
+                        className="post-body min-h-full flex flex-col justify-between bg-background rounded-3xl"
+                        data-testid="post"
+                    >
+                        <PostContent
+                            post={post}
+                            editor={editor}
+                            viewContainerRef={viewContainerRef}
+                            lightboxOpen={lightboxOpen}
+                            setLightboxOpen={setLightboxOpen}
+                            currentImageSrc={currentImageSrc}
+                            handleContentClick={handleContentClick}
+                            backgroundImageColor={backgroundImageColor}
+                            setImageUrl={setImageUrl}
+                            setShowImageModal={setShowImageModal}
+                            showImageModal={showImageModal}
+                        />
 
-              {post?.videoId && post.bgColor === "#ffffff" && (
-                <div
-                  data-testid="post-image"
-                  className="image-display-flex"
-                  style={{ height: "600px", backgroundColor: "#000000" }}
-                >
-                  <video
-                    width="100%"
-                    height="600px"
-                    autoPlay={true}
-                    controls
-                    src={`${Utils.getVideo(post.videoId, post.videoVersion)}`}
-                  />
-                </div>
-              )}
+                        {/* Mobile only: Vote bar above meta row */}
+                        <div className="flex md:hidden w-full items-center mt-3 mb-1 pl-2">
+                            <div className="mobile-vote-bar">
+                                <PostVoteBar post={post} />
+                            </div>
+                        </div>
 
-              {post?.gifUrl && post.bgColor === "#ffffff" && (
-                <div
-                  className="image-display-flex"
-                  style={{
-                    height: "600px",
-                    backgroundColor: `${backgroundImageColor}`,
-                  }}
-                  onClick={() => {
-                    setImageUrl(post?.gifUrl);
-                    setShowImageModal(!showImageModal);
-                  }}
-                >
-                  <img
-                    className="post-image"
-                    style={{ objectFit: "contain" }}
-                    src={`${post?.gifUrl}`}
-                    alt=""
-                  />
+                        <PostMetaRow post={post} />
+                    </div>
                 </div>
-              )}
-              {(post?.reactions.length > 0 || post?.commentsCount > 0) && (
-                <hr />
-              )}
-              <PostCommentSection post={post} />
             </div>
-          </div>
-          {selectedPostId === post?._id && <CommentInputBox post={post} />}
-        </div>
-      </div>
-    </>
-  );
+            {commentsModalIsOpen && selectedPostCommentId === post?._id && (
+                <div
+                    className="bg-white rounded-b-xl overflow-hidden border-t border-gray-100 shadow-sm"
+                    style={{ marginTop: "-1px" }}
+                >
+                    <CommentsModal />
+                </div>
+            )}
+        </>
+    );
 };
 Post.propTypes = {
-  post: PropTypes.object.isRequired,
-  showIcons: PropTypes.bool
+    post: PropTypes.object.isRequired,
 };
 export default Post;

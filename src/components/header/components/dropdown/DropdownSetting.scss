@@ -2,11 +2,13 @@
 .header-dropdown {
     background-color: white;
     width: 300px;
+    padding-inline: 5px;
     &-content {
         display: flex;
         flex-direction: column;
-        padding: 10px;
+        padding-block: 10px;
         &-item {
+            border: 1px ;
             padding: 10px;
             display: flex;
             align-items: center;
