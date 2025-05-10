@@ -8,6 +8,7 @@ import Dialog from "@components/dialog/Dialog";
 import BackgroundHeader from "@components/background-header/BackgroundHeader";
 import Timeline from "@components/timeline/Timeline";
 import Information from "@/components/information/Information";
+import ModalContainer from "@components/modal/ModalContainer";
 
 // Styles
 import "@pages/social/profile/Profile.scss";
@@ -34,10 +35,9 @@ const otherUserOptions = ["Posts", "Followers"];
 const Profile = () => {
     const dispatch = useDispatch();
     const { profile } = useSelector((state) => state.user);
-    const { deleteDialogIsOpen, data } = useSelector((state) => state.modal);
+    const { deleteDialogIsOpen, deleteDialogType, data } = useSelector((state) => state.modal);
     const { username } = useParams();
     const [searchParams] = useSearchParams();
-    console.log(profile);
 
     // State management
     const [user, setUser] = useState(null);
@@ -235,7 +235,7 @@ const Profile = () => {
     const removeImageFromGallery = useCallback(
         async (imageId) => {
             try {
-                dispatch(toggleDeleteDialog({ toggle: false, data: null }));
+                dispatch(toggleDeleteDialog({ toggle: false, data: null, dialogType: '' }));
                 setGalleryImages((prevImages) =>
                     prevImages.filter((image) => image._id !== imageId)
                 );
@@ -309,6 +309,7 @@ const Profile = () => {
     }, [isCurrentUser]);
     return (
         <>
+            <ModalContainer />
             {showImageModal && (
                 <ImageModal
                     image={imageUrl}
@@ -317,7 +318,7 @@ const Profile = () => {
                 />
             )}
 
-            {deleteDialogIsOpen && (
+            {deleteDialogIsOpen && deleteDialogType === 'image' && data && (
                 <Dialog
                     title="Are you sure you want to delete this image?"
                     showButtons={true}
@@ -326,7 +327,7 @@ const Profile = () => {
                     firstBtnHandler={() => removeImageFromGallery(data)}
                     secondBtnHandler={() =>
                         dispatch(
-                            toggleDeleteDialog({ toggle: false, data: null })
+                            toggleDeleteDialog({ toggle: false, data: null, dialogType: '' })
                         )
                     }
                 />

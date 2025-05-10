@@ -17,6 +17,7 @@ import useLocalStorage from "@hooks/useLocalStorage";
 import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
 import { followerService } from "@services/api/followers/follower.service";
 import StreamsSkeleton from "./StreamsSkeleton";
+import ModalContainer from "@components/modal/ModalContainer";
 
 const Streams = () => {
     const { allPosts } = useSelector((state) => state);
@@ -161,6 +162,7 @@ const Streams = () => {
 
     return (
         <>
+            <ModalContainer />
             {loading ? (
                 <StreamsSkeleton />
             ) : (

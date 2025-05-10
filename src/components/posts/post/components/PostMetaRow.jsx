@@ -2,34 +2,55 @@ import PropTypes from "prop-types";
 import Avatar from "@components/avatar/Avatar";
 import { timeAgo } from "@services/utils/timeago.utils";
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { postService } from "@services/api/post/post.service";
 import { Utils } from "@services/utils/utils.service";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa6";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { updatePostItem } from "@redux/reducers/post/post.reducer";
-import { toggleCommentsModal } from "@redux/reducers/modal/modal.reducer";
+import { toggleCommentsModal, openModal, toggleDeleteDialog } from "@redux/reducers/modal/modal.reducer";
 import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 import { icons } from "@/assets/assets";
+
 const PostMetaRow = ({ post }) => {
     const { profile } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const { commentsModalIsOpen } = useSelector((state) => state.modal);
     const [isFavorite, setIsFavorite] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
     const [setSelectedPostCommentId] = useLocalStorage(
         "selectedPostCommentId",
         "set"
     );
-    console.log(post);
+    
+    const isPostOwner = profile?._id === post?.userId;
+
     useEffect(() => {
         if (post.savedBy === undefined) setIsFavorite(false);
         else setIsFavorite(post.savedBy.includes(profile?._id));
     }, [post, profile?._id]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     const openCommentsComponent = () => {
         setSelectedPostCommentId(post._id);
         dispatch(updatePostItem(post));
         dispatch(toggleCommentsModal(!commentsModalIsOpen));
     };
+
     const addFavoritePost = async () => {
         try {
             const favPostData = {
@@ -50,6 +71,21 @@ const PostMetaRow = ({ post }) => {
                 dispatch
             );
         }
+    };
+
+    const handleEditPost = () => {
+        dispatch(updatePostItem(post));
+        dispatch(openModal({ type: "edit" }));
+        setIsDropdownOpen(false);
+    };
+
+    const handleDeletePost = () => {
+        dispatch(toggleDeleteDialog({ toggle: true, data: post, dialogType: 'post' }));
+        setIsDropdownOpen(false);
+    };
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
     };
 
     return (
@@ -81,11 +117,10 @@ const PostMetaRow = ({ post }) => {
                 </div>
                 {/* Divider */}
                 <span className="mx-2 h-4 border-r border-gray-200" />
-                {/* Favorite Button */}
+                {/* Favorite*/}
                 <button
                     aria-label={isFavorite ? "Unsave post" : "Save post"}
-                    className={`flex items-center gap-1 px-2 h-7 rounded-full  hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition
-           `}
+                    className={`flex items-center gap-1 px-2 h-7 rounded-full hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition`}
                     onClick={addFavoritePost}
                     type="button"
                 >
@@ -110,6 +145,40 @@ const PostMetaRow = ({ post }) => {
                         {isFavorite ? "Saved" : "Save"}
                     </span>
                 </button>
+
+                {/* Post Actions Dropdown - Only for post owner */}
+                {isPostOwner && (
+                    <div className="relative" ref={dropdownRef}>
+                        <button
+                            aria-label="Post options"
+                            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-blue-50 transition-colors"
+                            onClick={toggleDropdown}
+                            type="button"
+                        >
+                            <DynamicSVG svgData={icons.options} className="size-5" />
+                            {/* <FaEllipsisV className="w-4 h-4 text-gray-500" /> */}
+                        </button>
+                        
+                        {isDropdownOpen && (
+                            <div className="absolute right-0 mt-1 w-36 bg-white rounded-md shadow-lg z-10 border border-gray-100 py-1">
+                                <button
+                                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50"
+                                    onClick={handleEditPost}
+                                >
+                                    <FaEdit className="w-4 h-4 text-blue-500" />
+                                    <span>Edit post</span>
+                                </button>
+                                <button
+                                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50"
+                                    onClick={handleDeletePost}
+                                >
+                                    <FaTrash className="w-4 h-4 text-red-500" />
+                                    <span>Delete post</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

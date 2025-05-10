@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import "@components/posts/post/Post.scss";
 
@@ -11,17 +11,21 @@ import { useCreateBlockNote } from "@blocknote/react";
 
 import { Utils } from "@services/utils/utils.service";
 import { ImageUtils } from "@services/utils/image-utils.service";
+import { postService } from "@services/api/post/post.service";
 import useLocalStorage from "@hooks/useLocalStorage";
 import ReactionsModal from "@components/posts/reactions/reactions-modal/ReactionsModal";
 import CommentsModal from "@components/posts/comments/comments-modal/CommentsModal";
 import ImageModal from "@components/image-modal/ImageModal";
+import Dialog from "@components/dialog/Dialog";
 import PostVoteBar from "./components/PostVoteBar";
 import PostContent from "./components/PostContent";
 import PostMetaRow from "./components/PostMetaRow";
+import { toggleDeleteDialog } from "@redux/reducers/modal/modal.reducer";
 
 const Post = ({ post }) => {
+    const dispatch = useDispatch();
     const menuRef = useRef(null);
-    const { reactionsModalIsOpen, commentsModalIsOpen } = useSelector(
+    const { reactionsModalIsOpen, commentsModalIsOpen, deleteDialogIsOpen, deleteDialogType, data } = useSelector(
         (state) => state.modal
     );
     const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -38,6 +42,20 @@ const Post = ({ post }) => {
     );
     const selectedPostReactId = useLocalStorage("selectedPostReactId", "get");
     const editor = useCreateBlockNote();
+
+    const handleDeletePost = async () => {
+        try {
+            await postService.deletePost(post._id);
+            Utils.dispatchNotification("Post deleted successfully", "success", dispatch);
+            dispatch(toggleDeleteDialog({ toggle: false, dialogType: '' }));
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response?.data?.message || "Failed to delete post",
+                "error",
+                dispatch
+            );
+        }
+    };
 
     const getBackgroundImageColor = async (post) => {
         let imageUrl = "";
@@ -110,20 +128,15 @@ const Post = ({ post }) => {
                     showArrow={false}
                 />
             )}
-            {/* {deleteDialogIsOpen && (
+            {deleteDialogIsOpen && deleteDialogType === 'post' && data && data._id === post?._id && (
                 <Dialog
                     title="Are you sure you want to delete this post?"
                     firstButtonText="Delete"
                     secondButtonText="Cancel"
-                    firstBtnHandler={() => deletePost()}
-                    secondBtnHandler={() => {
-                        dispatch(
-                            toggleDeleteDialog({ toggle: !deleteDialogIsOpen })
-                        );
-                        dispatch(clearPost());
-                    }}
+                    firstBtnHandler={handleDeletePost}
+                    secondBtnHandler={() => dispatch(toggleDeleteDialog({ toggle: false }))}
                 />
-            )} */}
+            )}
             <div
                 className={`post-card flex bg-white shadow p-4 md:p-6 md:gap-6 flex-col md:flex-row ${
                     commentsModalIsOpen && selectedPostCommentId === post?._id
