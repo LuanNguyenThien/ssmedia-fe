@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { getConversationList } from "@redux/api/chat";
-
+import { jwtDecode } from "jwt-decode";
 const ProtectedAdminRoute = ({ children }) => {
   const { profile, token } = useSelector((state) => state.user);
   const [userData, setUserData] = useState(null);
@@ -21,12 +21,16 @@ const ProtectedAdminRoute = ({ children }) => {
   const [deleteSessionPageReload] = useSessionStorage("pageReload", "delete");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [role, setRole] = useState(null);
   const checkUser = useCallback(async () => {
     try {
       const response = await userService.checkCurrentUser();
-      console.log("checkCurrentUser", response.data.user);
-      console.log("userdata", response.data.token);
+
+      // console.log("userdata", response.data.token);
+      const decodedToken = jwtDecode(response.data.token);
+      console.log(decodedToken, "decode");
+      const role = decodedToken?.role;
+      setRole(role);
       dispatch(getConversationList());
       setUserData(response.data.user);
       setTokenIsValid(true);
@@ -65,12 +69,16 @@ const ProtectedAdminRoute = ({ children }) => {
     pageReload
   ) {
     if (!tokenIsValid) {
-      return <></>;
-    } else {
-      return <>{children}</>;
+      return <></>; // Đợi xác thực
     }
+
+    if (role !== "ADMIN") {
+      return <Navigate to="/admin/signin" />;
+    }
+
+    return <>{children}</>;
   } else {
-    return <>{<Navigate to="/admin/signin" />}</>;
+    return <Navigate to="/admin/signin" />;
   }
 };
 ProtectedAdminRoute.propTypes = {

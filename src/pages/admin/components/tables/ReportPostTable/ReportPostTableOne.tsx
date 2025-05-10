@@ -38,12 +38,14 @@ export default function BasicTableOne() {
     try {
       setLoading(true);
       const response = await postService.getAllReportPost(currentPage);
-      const rawReports = response.data.reportposts;
+      const rawReports = response.data.reportposts.reportposts;
+      ;
+      console.log("rawReports", rawReports);
       const mappedReports: ReportData[] = rawReports.map((r: any) => ({
         reportId: r.report._id,
         postId: r.report.postId,
         user: {
-          image: r.post.profilePicture || "/default-avatar.jpg",
+          image: r.post.profilePicture ? r.post.profilePicture : "/default-avatar.jpg",
           name: r.post.username,
           role: "Member",
         },
@@ -54,7 +56,7 @@ export default function BasicTableOne() {
       }));
 
       setReports(mappedReports);
-      setTotal(response.data.totalReports);
+      setTotal(response.data.reportposts.total);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching reports:", error);

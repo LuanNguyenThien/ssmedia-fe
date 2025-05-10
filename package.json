@@ -19,7 +19,7 @@
         "@loadable/component": "^5.16.4",
         "@reduxjs/toolkit": "^2.6.1",
         "animate.css": "^4.1.1",
-        "apexcharts": "^4.6.0",
+        "apexcharts": "^4.7.0",
         "axios": "^1.8.2",
         "bson-objectid": "^2.0.4",
         "chart.js": "^4.4.8",

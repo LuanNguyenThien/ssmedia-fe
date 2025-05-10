@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { getConversationList } from '@redux/api/chat';
-
+import { authService } from "@services/api/auth/auth.service";
 const ProtectedRoute = ({ children }) => {
   const { profile, token } = useSelector((state) => state.user);
   const [userData, setUserData] = useState(null);
@@ -21,12 +21,14 @@ const ProtectedRoute = ({ children }) => {
   const [deleteSessionPageReload] = useSessionStorage('pageReload', 'delete');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isBan, setIsBan] = useState(false);
 
   const checkUser = useCallback(async () => {
     try {
       const response = await userService.checkCurrentUser();
-      console.log('checkCurrentUser', response.data.user);
-      console.log('userdata', response.data.token);
+      
+      const ban = await authService.CheckUser(response.data.user.authId);
+      setIsBan(ban.data.isBanned);
       dispatch(getConversationList());
       setUserData(response.data.user);
       setTokenIsValid(true);
@@ -44,7 +46,10 @@ const ProtectedRoute = ({ children }) => {
   useEffectOnce(() => {
     checkUser();
   });
-
+  if (isBan) {
+    return <Navigate to="/" />;
+  }
+  
   if (keepLoggedIn || (!keepLoggedIn && userData) || (profile && token) || pageReload) {
     if (!tokenIsValid) {
       return <></>;

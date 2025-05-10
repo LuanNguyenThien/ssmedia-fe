@@ -16,9 +16,10 @@ import { PostUtils } from '@services/utils/post-utils.service';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { addReactions } from '@redux/reducers/post/user-post-reaction.reducer';
 import { followerService } from '@services/api/followers/follower.service';
-
+import { socketService } from "@services/socket/socket.service";
 const Streams = () => {
   const { allPosts } = useSelector((state) => state);
+  const socket = socketService?.socket;
   const [posts, setPosts] = useState([]);
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,15 +29,16 @@ const Streams = () => {
   const bottomLineRef = useRef();
   const appPosts = useRef([]);
   const dispatch = useDispatch();
-  const storedUsername = useLocalStorage('username', 'get');
-  const [deleteSelectedPostId] = useLocalStorage('selectedPostId', 'delete');
+  const storedUsername = useLocalStorage("username", "get");
+  const [deleteSelectedPostId] = useLocalStorage("selectedPostId", "delete");
   useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
   const PAGE_SIZE = 10;
   const [loadingMore, setLoadingMore] = useState(false);
   const { profile } = useSelector((state) => state.user);
 
   function fetchPostData() {
-    if (loadingMore || currentPage > Math.ceil(totalPostsCount / PAGE_SIZE)) return;
+    if (loadingMore || currentPage > Math.ceil(totalPostsCount / PAGE_SIZE))
+      return;
 
     setLoadingMore(true);
     getAllPosts().finally(() => setLoadingMore(false));
@@ -47,23 +49,73 @@ const Streams = () => {
       const response = await postService.getAllPosts(currentPage);
       if (response.data.posts.length > 0) {
         appPosts.current = [...posts, ...response.data.posts];
-        const allPosts = uniqBy(appPosts.current, '_id');
+        const allPosts = uniqBy(appPosts.current, "_id");
         // const orderedPosts = orderBy(allPosts, ['createdAt'], ['desc']);
         setPosts(allPosts);
         setCurrentPage((prevPage) => prevPage + 1); // Increment page only when data is valid
       }
       setLoading(false);
     } catch (error) {
-      Utils.dispatchNotification(error.response?.data?.message || 'Failed to load posts.', 'error', dispatch);
+      Utils.dispatchNotification(
+        error.response?.data?.message || "Failed to load posts.",
+        "error",
+        dispatch
+      );
     }
   };
+
+  useEffect(() => {
+    const handleHidePost = ({ postId }) => {
+      setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+    };
+
+    const handleUnhidePost = async ({ postId }) => {
+      try {
+        const response = await postService.getPost(postId);
+        const newPost = response.data.post;
+
+        setPosts((prevPosts) => {
+          const exists = prevPosts.find((p) => p._id === newPost._id);
+          if (exists) return prevPosts;
+          return [newPost, ...prevPosts];
+        });
+
+       
+        setFollowing((prev) => {
+          if (prev.length === 0) {
+            followerService.getUserFollowing().then((res) => {
+              setFollowing(res.data.following);
+            });
+          }
+          return prev;
+        });
+      } catch (error) {
+        console.error("Failed to unhide post", error);
+      }
+    };
+
+    
+    socket?.on("hide post", handleHidePost);
+    socket?.on("unhide post", handleUnhidePost);
+
+ 
+    return () => {
+      socket?.off("hide post", handleHidePost);
+      socket?.off("unhide post", handleUnhidePost);
+    };
+  }, []); 
+
 
   const getUserFollowing = async () => {
     try {
       const response = await followerService.getUserFollowing();
       setFollowing(response.data.following);
     } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
     }
   };
 
@@ -72,7 +124,11 @@ const Streams = () => {
       const response = await postService.getReactionsByUsername(storedUsername);
       dispatch(addReactions(response.data.reactions));
     } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
     }
   };
 

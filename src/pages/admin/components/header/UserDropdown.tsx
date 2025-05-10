@@ -1,18 +1,65 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
+import useLocalStorage from "@hooks/useLocalStorage";
+import useSessionStorage from "@hooks/useSessionStorage";
+import { userService } from "@services/api/user/user.service";
 import { Dropdown } from "../ui/dropdown/Dropdown";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-
+import { createSearchParams, useLocation, useNavigate } from "react-router-dom"; 
+import Avatar from "@components/avatar/Avatar";
+import { socketService } from "@services/socket/socket.service";
+import { Utils } from "@services/utils/utils.service";
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const section = useLocation().pathname.split("/")[3];
+  const [banReason, setBanReason] = useState("");
+  //selector
+  const { profile } = useSelector((state: any) => state.user);
+  const { chatList } = useSelector((state: any) => state.chat);
+  const token = useSelector((state: any) => state.user.token);
+
+  //local storage
+  const storedUsername = useLocalStorage("username", "get");
+  const [deleteStorageUsername] = useLocalStorage("username", "delete");
+  const [setLoggedIn] = useLocalStorage("keepLoggedIn", "set");
+  const [deleteSessionPageReload] = useSessionStorage("pageReload", "delete");
   function toggleDropdown() {
+    console.log("toggleDropdown", profile);
     setIsOpen(!isOpen);
   }
 
   function closeDropdown() {
     setIsOpen(false);
   }
+
+  const onLogout = async () => {
+    try {
+      setLoggedIn(false);
+      Utils.clearStore({
+        dispatch,
+        deleteStorageUsername,
+        deleteSessionPageReload,
+        setLoggedIn,
+      });
+      await userService.logoutUser();
+      socketService?.socket.disconnect();
+      socketService?.removeAllListeners();
+      socketService.setupSocketConnection();
+      navigate("/admin/signin");
+    } catch (error) {
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
+    }
+  };
+
   return (
     <div className="relative">
       <button
@@ -20,13 +67,19 @@ export default function UserDropdown() {
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <img
-            src="https://react-demo.tailadmin.com/images/user/owner.jpg"
-            alt="User"
+          <Avatar
+            name={profile?.username}
+            bgColor={profile?.avatarColor}
+            textColor="#ffffff"
+            size={40}
+            avatarSrc={profile?.profilePicture}
+            onClick={() => {}}
           />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
+        <span className="block mr-1 font-medium text-theme-sm">
+          {profile?.username}
+        </span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -54,10 +107,10 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Musharof Chowdhury
+            {profile?.username}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            randomuser@pimjo.com
+            {profile?.email}
           </span>
         </div>
 
@@ -66,7 +119,7 @@ export default function UserDropdown() {
             <DropdownItem
               onItemClick={closeDropdown}
               tag="a"
-              to="/profile"
+              to="/admin/profile"
               className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
               <svg
@@ -91,7 +144,7 @@ export default function UserDropdown() {
             <DropdownItem
               onItemClick={closeDropdown}
               tag="a"
-              to="/profile"
+              to="/admin/profile"
               className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
               <svg
@@ -138,27 +191,33 @@ export default function UserDropdown() {
             </DropdownItem>
           </li>
         </ul>
-        <Link
-          to="/signin"
-          className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-        >
-          <svg
-            className="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+        <li>
+          <DropdownItem
+            onItemClick={() => {
+              closeDropdown(); // đóng dropdown trước
+              onLogout(); // sau đó xử lý đăng xuất
+            }}
+            tag="button"
+            className="flex items-center gap-3 px-3 py-2 font-medium text-red-600 rounded-lg group text-theme-sm hover:bg-red-100 hover:text-red-700 dark:text-red-400 dark:hover:bg-white/5 dark:hover:text-red-300"
           >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M15.1007 19.247C14.6865 19.247 14.3507 18.9112 14.3507 18.497L14.3507 14.245H12.8507V18.497C12.8507 19.7396 13.8581 20.747 15.1007 20.747H18.5007C19.7434 20.747 20.7507 19.7396 20.7507 18.497L20.7507 5.49609C20.7507 4.25345 19.7433 3.24609 18.5007 3.24609H15.1007C13.8581 3.24609 12.8507 4.25345 12.8507 5.49609V9.74501L14.3507 9.74501V5.49609C14.3507 5.08188 14.6865 4.74609 15.1007 4.74609L18.5007 4.74609C18.9149 4.74609 19.2507 5.08188 19.2507 5.49609L19.2507 18.497C19.2507 18.9112 18.9149 19.247 18.5007 19.247H15.1007ZM3.25073 11.9984C3.25073 12.2144 3.34204 12.4091 3.48817 12.546L8.09483 17.1556C8.38763 17.4485 8.86251 17.4487 9.15549 17.1559C9.44848 16.8631 9.44863 16.3882 9.15583 16.0952L5.81116 12.7484L16.0007 12.7484C16.4149 12.7484 16.7507 12.4127 16.7507 11.9984C16.7507 11.5842 16.4149 11.2484 16.0007 11.2484L5.81528 11.2484L9.15585 7.90554C9.44864 7.61255 9.44847 7.13767 9.15547 6.84488C8.86248 6.55209 8.3876 6.55226 8.09481 6.84525L3.52309 11.4202C3.35673 11.5577 3.25073 11.7657 3.25073 11.9984Z"
-              fill=""
-            />
-          </svg>
-          Sign out
-        </Link>
+            <svg
+              className="fill-red-500 group-hover:fill-red-700 dark:fill-red-400 dark:group-hover:fill-red-300"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M15.707 14.707L14.293 13.293L15.586 12H8V10H15.586L14.293 8.707L15.707 7.293L19.414 11L15.707 14.707ZM5 5H12V3H5C3.895 3 3 3.895 3 5V19C3 20.105 3.895 21 5 21H12V19H5V5Z"
+                fill="currentColor"
+              />
+            </svg>
+            Đăng xuất
+          </DropdownItem>
+        </li>
       </Dropdown>
     </div>
   );
