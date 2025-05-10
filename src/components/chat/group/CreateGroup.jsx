@@ -21,6 +21,7 @@ import LoadingSpinner from "@/components/state/LoadingSpinner";
 import ProcessSpinner from "@/components/state/ProcessSpinner";
 import { ChatUtils } from "@/services/utils/chat-utils.service";
 import { useNavigate } from "react-router-dom";
+import GroupChatUtils from "@/services/utils/group-chat-utils.service";
 
 const CreateGroup = ({ onClickBack }) => {
     const { profile } = useSelector((state) => state.user);
@@ -167,6 +168,12 @@ const CreateGroup = ({ onClickBack }) => {
                 "success",
                 dispatch
             );
+            GroupChatUtils.emitGroupAction("CREATE_GROUP", {
+                groupId: response?.data.group._id,
+                groupName: response?.data.group.name,
+                groupPicture: response?.data.group.groupPicture,
+                members: response?.data.group.members,
+            });
             setTimeout(() => {
                 onClickBack();
                 ChatUtils.navigateToChat(

@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { icons } from "@assets/assets";
 import loadable from "@loadable/component";
 import "@components/chat/window/message-input/MessageInput.scss";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback, memo } from "react";
 import { ImageUtils } from "@services/utils/image-utils.service";
 import Input from "@components/input/Input";
 import { DynamicSVG } from "@components/sidebar/components/SidebarItems";
@@ -22,8 +22,8 @@ const EmojiPickerComponent = loadable(() => import("./EmojiPicker"), {
     ),
 });
 
-const MessageInput = ({ setChatMessage }) => {
-    let [message, setMessage] = useState("");
+const MessageInput = memo(({ setChatMessage }) => {
+    const [message, setMessage] = useState("");
 
     //handle container click outside
     const fileInputRef = useRef();
@@ -47,29 +47,36 @@ const MessageInput = ({ setChatMessage }) => {
     const [file, setFile] = useState();
     const [base64File, setBase64File] = useState("");
 
-    const handleClick = () => {
+    const reset = useCallback(() => {
+        setBase64File("");
+        setShowImagePreview(false);
+        setShowEmojiContainer(false);
+        setShowGifContainer(false);
+        setFile("");
+    }, []);
+
+    const handleClick = useCallback(() => {
         if (message.trim() === "" && base64File === "") {
             return;
         }
-        message = message || "Sent an Image";
-        setChatMessage(message.replace(/ +(?= )/g, ""), "", base64File);
+        const finalMessage = message || "Sent an Image";
+        setChatMessage(finalMessage.replace(/ +(?= )/g, ""), "", base64File);
         setMessage("");
         reset();
-    };
+    }, [message, base64File, setChatMessage, reset]);
 
-    const handleGiphyClick = (url) => {
+    const handleGiphyClick = useCallback((url) => {
         setChatMessage("Sent a GIF", url, "");
         reset();
-    };
+    }, [setChatMessage, reset]);
 
-    const addToPreview = async (file) => {
+    const addToPreview = useCallback(async (file) => {
         let type;
         if (file.type.startsWith("image/")) {
             type = "image";
         } else if (file.type.startsWith("video/")) {
             type = "video";
         } else {
-            // Nếu không phải là hình ảnh hoặc video, có thể xử lý lỗi ở đây
             window.alert(`File ${file.name} is not a valid image or video.`);
             return;
         }
@@ -77,22 +84,14 @@ const MessageInput = ({ setChatMessage }) => {
         setFile(URL.createObjectURL(file));
         const result = await ImageUtils.readAsBase64(file);
         setBase64File(result);
-        setShowImagePreview(!showImagePreview);
+        setShowImagePreview(true);
         setShowEmojiContainer(false);
         setShowGifContainer(false);
-    };
+    }, []);
 
-    const fileInputClicked = () => {
+    const fileInputClicked = useCallback(() => {
         fileInputRef.current.click();
-    };
-
-    const reset = () => {
-        setBase64File("");
-        setShowImagePreview(false);
-        setShowEmojiContainer(false);
-        setShowGifContainer(false);
-        setFile("");
-    };
+    }, []);
 
     useEffect(() => {
         if (file === "" || base64File === "") {
@@ -106,11 +105,17 @@ const MessageInput = ({ setChatMessage }) => {
         if (messageInputRef?.current) {
             messageInputRef.current.focus();
         }
+    }, []);
 
-        return () => {
-            setMessage("");
-        };
-    }, [setChatMessage]);
+    const handleAddEmoji = useCallback((emojiObject) => {
+        setMessage((text) => text + ` ${emojiObject.emoji}`);
+    }, []);
+
+    const handleRemoveImage = useCallback(() => {
+        setFile("");
+        setBase64File("");
+        setShowImagePreview(false);
+    }, []);
 
     return (
         <>
@@ -118,16 +123,10 @@ const MessageInput = ({ setChatMessage }) => {
                 <div
                     ref={emojiRef}
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute flex justify-end items-end bottom-0  sm:left-5 z-50"
+                    className="absolute flex justify-end items-end bottom-0 sm:left-5 z-50"
                     style={{ width: "352px", height: "447px" }}
                 >
-                    <EmojiPickerComponent
-                        onEmojiClick={(emojiObject) => {
-                            setMessage(
-                                (text) => text + ` ${emojiObject.emoji}`
-                            );
-                        }}
-                    />
+                    <EmojiPickerComponent onEmojiClick={handleAddEmoji} />
                 </div>
             )}
 
@@ -135,18 +134,14 @@ const MessageInput = ({ setChatMessage }) => {
                 <GiphyContainer handleGiphyClick={handleGiphyClick} />
             )}
             <div
-                className={`chat-inputarea size-full`}
+                className="chat-inputarea size-full"
                 data-testid="chat-inputarea"
                 ref={inputContainerRef}
             >
                 {showImagePreview && (
                     <ImagePreview
                         image={file}
-                        onRemoveImage={() => {
-                            setFile("");
-                            setBase64File("");
-                            setShowImagePreview(!showImagePreview);
-                        }}
+                        onRemoveImage={handleRemoveImage}
                     />
                 )}
 
@@ -161,7 +156,7 @@ const MessageInput = ({ setChatMessage }) => {
                     onBlur={() => setHasFocus(false)}
                 >
                     <div
-                        className={`size-full flex rounded-[30px] items-center justify-between py-4 gap-4   ${
+                        className={`size-full flex rounded-[30px] items-center justify-between py-4 gap-4 ${
                             hasFocus || message.length > 0 || showImagePreview
                                 ? "bg-background-blur border-4 border-primary-white transition-all duration-300 px-4 "
                                 : ""
@@ -209,7 +204,7 @@ const MessageInput = ({ setChatMessage }) => {
                                 />
                                 <DynamicSVG
                                     svgData={icons.picture}
-                                    className={"size-6"}
+                                    className="size-6"
                                 />
                             </div>
                             <div
@@ -227,7 +222,7 @@ const MessageInput = ({ setChatMessage }) => {
                             >
                                 <DynamicSVG
                                     svgData={icons.gif}
-                                    className={"size-6"}
+                                    className="size-6"
                                 />
                             </div>
                             <div
@@ -244,7 +239,7 @@ const MessageInput = ({ setChatMessage }) => {
                             >
                                 <DynamicSVG
                                     svgData={icons.feeling}
-                                    className={"size-6"}
+                                    className="size-6"
                                 />
                             </div>
                         </div>
@@ -258,7 +253,7 @@ const MessageInput = ({ setChatMessage }) => {
                         >
                             <DynamicSVG
                                 svgData={icons.send}
-                                className={"size-6 pointer-events-none"}
+                                className="size-6 pointer-events-none"
                             />
                         </button>
                     </div>
@@ -266,10 +261,12 @@ const MessageInput = ({ setChatMessage }) => {
             </div>
         </>
     );
-};
+});
 
 MessageInput.propTypes = {
     setChatMessage: PropTypes.func,
 };
+
+MessageInput.displayName = "MessageInput";
 
 export default MessageInput;

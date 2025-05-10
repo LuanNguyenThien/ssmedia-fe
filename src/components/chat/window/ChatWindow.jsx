@@ -45,11 +45,14 @@ const ChatWindow = () => {
     const [isShowInfoGroup, setIsShowInfoGroup] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const [membershipCheckComplete, setMembershipCheckComplete] =
-        useState(false);
+    const MEMBERSHIP_CHECK_COMPLETE = "membershipCheckComplete";
+    const [_, setMembershipCheckComplete] = useState(false);
     const [showNonMemberWarning, setShowNonMemberWarning] = useState(false);
 
     const groupInfoRef = useRef(null);
+    const latestMessagesRef = useRef([]);
+    const latestReceiverRef = useRef(null);
+
     useHandleOutsideClick(groupInfoRef, setIsShowInfoGroup, {
         eventType: "click",
     });
@@ -132,6 +135,41 @@ const ChatWindow = () => {
         }
     };
 
+    const silentRefreshMessages = useCallback(
+        async (receiverId, isGroup) => {
+            try {
+                const response = await chatService.getChatMessages(
+                    receiverId,
+                    isGroup
+                );
+                // Store in ref first
+                const messages = [...response.data.messages];
+                latestMessagesRef.current = messages;
+
+                // Update global data
+                ChatUtils.privateChatMessages = messages;
+
+                if (isGroup) {
+                    ChatUtils.conversationId = receiverId;
+                } else if (messages.length > 0) {
+                    ChatUtils.conversationId = messages[0]?.conversationId;
+                }
+
+                // Only update state (and trigger re-render) if content has changed
+                const currentMessagesJson = JSON.stringify(chatMessages);
+                const newMessagesJson = JSON.stringify(messages);
+
+                if (currentMessagesJson !== newMessagesJson) {
+                    setChatMessages(messages);
+                }
+            } catch (error) {
+                // Silent failure - log but don't notify user
+                console.log("Silent refresh error:", error);
+            }
+        },
+        [chatMessages]
+    );
+
     const getChatMessages = useCallback(
         async (receiverId, isGroup) => {
             setIsLoading(true);
@@ -152,6 +190,8 @@ const ChatWindow = () => {
                     setConversationId(newConversationId);
                     ChatUtils.conversationId = newConversationId;
                 }
+                // Also update the ref
+                latestMessagesRef.current = [...ChatUtils.privateChatMessages];
                 setChatMessages([...ChatUtils.privateChatMessages]);
             } catch (error) {
                 console.log("Error fetching chat messages:", error);
@@ -388,6 +428,9 @@ const ChatWindow = () => {
     // Listen for group updates with better handling
     useEffect(() => {
         if (isGroup && rendered && receiver) {
+            // Update the ref whenever receiver changes
+            latestReceiverRef.current = receiver;
+
             const handleGroupUpdate = (data) => {
                 if (
                     data.groupId === searchParamsId ||
@@ -423,11 +466,18 @@ const ChatWindow = () => {
                 }
             };
 
+            socketService?.socket?.on("system-group-chat", (data) => {
+                if (data.groupId === searchParamsId) {
+                    // Use silent refresh instead of full reload
+                    silentRefreshMessages(searchParamsId, isGroup);
+                }
+            });
+
             // Add socket listeners with specific handlers
             socketService.socket?.on("group action", (action) => {
                 if (
-                    action?.data.groupId === receiver?._id ||
-                    action?.data._id === receiver?._id
+                    action?.data.groupId === latestReceiverRef.current?._id ||
+                    action?.data._id === latestReceiverRef.current?._id
                 ) {
                     switch (action.type) {
                         case "promote":
@@ -449,6 +499,7 @@ const ChatWindow = () => {
             });
 
             return () => {
+                socketService.socket?.off("system-group-chat");
                 socketService.socket?.off("group action");
             };
         }
@@ -461,6 +512,8 @@ const ChatWindow = () => {
         navigate,
         dispatch,
         getUserProfileByUserId,
+        silentRefreshMessages,
+        isGroup,
     ]);
 
     // Clean up all socket listeners
