@@ -150,7 +150,6 @@ const Header = () => {
     };
     const onMarkAsRead = async ({ notification, isMarkAsReadAll = false }) => {
         try {
-            console.log("notification", notification);
             if (isMarkAsReadAll) {
                 NotificationUtils.markMessageAsRead(
                     notification?._id,

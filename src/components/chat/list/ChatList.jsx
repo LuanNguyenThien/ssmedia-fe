@@ -187,7 +187,6 @@ const ChatList = () => {
 
     // Fetch group chat invitations count
     const fetchGroupChatInvitations = async () => {
-        console.log("fetchGroupChatInvitations");
         try {
             const response = await GroupChatUtils.getInvitationsCount();
             setInvitationCount(response);
@@ -283,7 +282,6 @@ const ChatList = () => {
             };
 
             socketService.socket?.on("group action", (action) => {
-                console.log("action", action);
                 if (action?.data) {
                     switch (action.type) {
                         case "update":

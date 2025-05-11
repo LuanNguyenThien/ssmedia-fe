@@ -117,7 +117,6 @@ const CreateGroup = ({ onClickBack }) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = async (event) => {
-                    console.log("Uploading image:", event.target.result);
                     try {
                         const response = await imageService.addImage(
                             "/images/group-avatar",

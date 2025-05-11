@@ -77,7 +77,6 @@ export default class GroupChatUtils {
         socketService?.socket?.off("group deleted");
 
         socketService?.socket?.on("group chat list", (data) => {
-            console.log("Group chat list received:", data);
             // Check if user is a member of this group
             if (
                 data.members &&
@@ -99,7 +98,6 @@ export default class GroupChatUtils {
 
         // Handle group updates with improved error checking
         socketService?.socket?.on("group updated", (data) => {
-            console.log("Group updated received:", data);
             if (!data || !data._id) return;
 
             if (
@@ -127,7 +125,6 @@ export default class GroupChatUtils {
 
         // Handle group deletion with improved error handling
         socketService?.socket?.on("group deleted", (groupId) => {
-            console.log("Group deleted received:", groupId);
             if (!groupId) return;
 
             let updatedGroupList = cloneDeep(groupList);
@@ -206,7 +203,6 @@ export default class GroupChatUtils {
             groupID,
             userID
         );
-        console.log("Response from checkGroupMember:", response);
         if (response) {
             return true;
         }

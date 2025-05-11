@@ -152,7 +152,6 @@ export class ChatUtils {
 
         socketService?.socket?.off("chat list");
         socketService?.socket?.on("chat list", async (data) => {
-            console.log("chat list", data);
             try {
                 let isValidMessageToDisplay = true;
                 // Only check group membership for group chats

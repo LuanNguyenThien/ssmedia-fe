@@ -24,7 +24,6 @@ const SearchPage = () => {
     }, [searchQuery]);
 
     async function fetchSearchResults() {
-        console.log("Fetching search results for:", searchQuery);
         setLoading(true);
         try {
             const response = await postService.searchPosts(searchQuery);

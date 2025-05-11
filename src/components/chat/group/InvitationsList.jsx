@@ -23,7 +23,6 @@ const InvitationsList = ({ onClickBack }) => {
     const fetchInvitations = async () => {
         try {
             const response = await groupChatService.getUserPendingInvitations();
-            console.log("Pending invitations:", response.data.pendingGroups);
             setInvitations(response.data.pendingGroups);
             setIsLoading(false);
         } catch (error) {

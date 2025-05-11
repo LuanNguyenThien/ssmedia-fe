@@ -10,7 +10,6 @@ const useDetectOutsideClick = (ref, initialState) => {
                 !event.target.closest(".header-nav-item")
             ) {
                 // Only set to false if currently true
-                console.log("Setting isActive to false");
                 if (isActive) {
                     setIsActive(false);
                 }

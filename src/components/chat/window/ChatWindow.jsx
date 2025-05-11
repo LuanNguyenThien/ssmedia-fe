@@ -137,37 +137,158 @@ const ChatWindow = () => {
 
     const silentRefreshMessages = useCallback(
         async (receiverId, isGroup) => {
-            try {
-                const response = await chatService.getChatMessages(
-                    receiverId,
-                    isGroup
-                );
-                // Store in ref first
-                const messages = [...response.data.messages];
-                latestMessagesRef.current = messages;
+            if (!receiverId) {
+                console.log("Silent refresh canceled: No receiverId provided");
+                return;
+            }
 
-                // Update global data
-                ChatUtils.privateChatMessages = messages;
+            // Add retry logic
+            const maxRetries = 2;
+            let retryCount = 0;
+            let success = false;
 
-                if (isGroup) {
-                    ChatUtils.conversationId = receiverId;
-                } else if (messages.length > 0) {
-                    ChatUtils.conversationId = messages[0]?.conversationId;
+            while (retryCount <= maxRetries && !success) {
+                try {
+                    const response = await chatService.getChatMessages(
+                        receiverId,
+                        isGroup
+                    );
+
+                    if (
+                        !response ||
+                        !response.data ||
+                        !Array.isArray(response.data.messages)
+                    ) {
+                        throw new Error("Invalid response format");
+                    }
+
+                    // Store in ref first
+                    const messages = [...response.data.messages];
+                    latestMessagesRef.current = messages;
+
+                    // Update global data
+                    ChatUtils.privateChatMessages = messages;
+
+                    // Handle conversation ID updates
+                    if (isGroup) {
+                        ChatUtils.conversationId = receiverId;
+                    } else if (messages.length > 0) {
+                        const newConversationId = messages[0]?.conversationId;
+                        if (
+                            newConversationId &&
+                            newConversationId !== ChatUtils.conversationId
+                        ) {
+                            ChatUtils.conversationId = newConversationId;
+                            // Only update the conversationId state if it has changed
+                            if (conversationId !== newConversationId) {
+                                setConversationId(newConversationId);
+                            }
+                        }
+                    }
+
+                    // More robust comparison to determine if we need to update
+                    let needsUpdate = false;
+
+                    // Quick check for length difference
+                    if (chatMessages.length !== messages.length) {
+                        needsUpdate = true;
+                    } else {
+                        // Deeper check using _id comparison of first and last few messages
+                        // This is more efficient than comparing the entire arrays
+                        try {
+                            // Check first and last message for quick comparison
+                            if (
+                                messages.length > 0 &&
+                                chatMessages.length > 0
+                            ) {
+                                const firstNewMsg = messages[0]?._id;
+                                const firstOldMsg = chatMessages[0]?._id;
+                                const lastNewMsg =
+                                    messages[messages.length - 1]?._id;
+                                const lastOldMsg =
+                                    chatMessages[chatMessages.length - 1]?._id;
+
+                                if (
+                                    firstNewMsg !== firstOldMsg ||
+                                    lastNewMsg !== lastOldMsg
+                                ) {
+                                    needsUpdate = true;
+                                } else {
+                                    // If those match, check if any messages have changes in reactions
+                                    for (let i = 0; i < messages.length; i++) {
+                                        if (
+                                            JSON.stringify(
+                                                messages[i]?.reaction
+                                            ) !==
+                                                JSON.stringify(
+                                                    chatMessages[i]?.reaction
+                                                ) ||
+                                            messages[i]?.isRead !==
+                                                chatMessages[i]?.isRead ||
+                                            messages[i]?.deleteForMe !==
+                                                chatMessages[i]?.deleteForMe ||
+                                            messages[i]?.deleteForEveryone !==
+                                                chatMessages[i]
+                                                    ?.deleteForEveryone
+                                        ) {
+                                            needsUpdate = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (err) {
+                            console.log(
+                                "Error during message comparison:",
+                                err
+                            );
+                            // Fall back to full comparison if our optimized approach fails
+                            const currentMessagesJson =
+                                JSON.stringify(chatMessages);
+                            const newMessagesJson = JSON.stringify(messages);
+                            needsUpdate =
+                                currentMessagesJson !== newMessagesJson;
+                        }
+                    }
+
+                    if (needsUpdate) {
+                        setChatMessages(messages);
+
+                        // Scroll to bottom if new messages were added
+                        setTimeout(() => {
+                            const chatContainer =
+                                document.querySelector(".message-page");
+                            if (chatContainer) {
+                                chatContainer.scrollTop =
+                                    chatContainer.scrollHeight;
+                            }
+                        }, 100);
+                    }
+                    success = true;
+                } catch (error) {
+                    retryCount++;
+                    console.log(
+                        `Silent refresh error (try ${retryCount}/${
+                            maxRetries + 1
+                        }):`,
+                        error
+                    );
+
+                    if (retryCount <= maxRetries) {
+                        // Wait before retrying with exponential backoff
+                        await new Promise((resolve) =>
+                            setTimeout(resolve, retryCount * 1000)
+                        );
+                    } else {
+                        console.error(
+                            "Silent refresh failed after retries:",
+                            error
+                        );
+                    }
                 }
-
-                // Only update state (and trigger re-render) if content has changed
-                const currentMessagesJson = JSON.stringify(chatMessages);
-                const newMessagesJson = JSON.stringify(messages);
-
-                if (currentMessagesJson !== newMessagesJson) {
-                    setChatMessages(messages);
-                }
-            } catch (error) {
-                // Silent failure - log but don't notify user
-                console.log("Silent refresh error:", error);
             }
         },
-        [chatMessages]
+        [chatMessages, conversationId, setConversationId]
     );
 
     const getChatMessages = useCallback(
