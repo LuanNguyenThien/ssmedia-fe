@@ -23,7 +23,9 @@ class AuthService {
   }
 
   async CheckUser(authId) {
-    const response = await axios.post("/checkUser", { authId });
+    console.log("hello");
+    const response = await axios.post(`/checkUser/${authId}`);
+    // const response = await axios.post("/checkUser", {body});
     return response;
   }
 

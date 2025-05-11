@@ -26,11 +26,12 @@ const ProtectedAdminRoute = ({ children }) => {
     try {
       const response = await userService.checkCurrentUser();
 
-      // console.log("userdata", response.data.token);
+      console.log("userdata", response.data.token);
       const decodedToken = jwtDecode(response.data.token);
       console.log(decodedToken, "decode");
       const role = decodedToken?.role;
       setRole(role);
+      console.log(role, "role");
       dispatch(getConversationList());
       setUserData(response.data.user);
       setTokenIsValid(true);
@@ -47,7 +48,7 @@ const ProtectedAdminRoute = ({ children }) => {
           setLoggedIn,
         });
         await userService.logoutUser();
-        navigate("/");
+        navigate("/admin/signin");
       }, 1000);
     }
   }, [
@@ -69,7 +70,7 @@ const ProtectedAdminRoute = ({ children }) => {
     pageReload
   ) {
     if (!tokenIsValid) {
-      return <></>; // Đợi xác thực
+      return <></>; 
     }
 
     if (role !== "ADMIN") {
@@ -78,6 +79,7 @@ const ProtectedAdminRoute = ({ children }) => {
 
     return <>{children}</>;
   } else {
+    
     return <Navigate to="/admin/signin" />;
   }
 };

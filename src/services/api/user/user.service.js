@@ -8,6 +8,7 @@ class UserService {
 
   async logoutUser() {
     const response = await axios.get("/signout");
+    localStorage.setItem("authToken", "");
     return response;
   }
 

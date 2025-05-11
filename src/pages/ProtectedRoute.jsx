@@ -25,10 +25,21 @@ const ProtectedRoute = ({ children }) => {
 
   const checkUser = useCallback(async () => {
     try {
+      console.log(profile, "profile");
+      console.log(token, "token");
       const response = await userService.checkCurrentUser();
+      console.log(response);
       
-      const ban = await authService.CheckUser(response.data.user.authId);
-      setIsBan(ban.data.isBanned);
+      if (response.data.user.isBanned) {
+        Utils.dispatchNotification(
+          "Your account has been banned. Please contact support.",
+          "error",
+          dispatch
+        );
+        navigate("/");
+        return;
+      }
+      setIsBan(response.data.user.isBanned);
       dispatch(getConversationList());
       setUserData(response.data.user);
       setTokenIsValid(true);
@@ -47,7 +58,7 @@ const ProtectedRoute = ({ children }) => {
     checkUser();
   });
   if (isBan) {
-    return <Navigate to="/" />;
+    return <>{<Navigate to="/" />}</>;
   }
   
   if (keepLoggedIn || (!keepLoggedIn && userData) || (profile && token) || pageReload) {

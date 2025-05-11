@@ -22,7 +22,7 @@ interface UserData {
   team: {
     images: string[];
   };
-  status: string;
+  status: boolean;
   budget: string;
   email: string;
 
@@ -40,7 +40,8 @@ export default function BasicTableOne() {
       setLoading(true);
       const response = await userService.getAllUsersAdminRole(currentPage);
       const rawUsers = response.data.users;
-     
+      console.log("rawUsers", rawUsers);
+      // Chuyển đổi dữ liệu từ API thành định dạng mong muốn
 
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
         _id: u._id,
@@ -54,7 +55,8 @@ export default function BasicTableOne() {
           images: [u.profilePicture || "/default-avatar.jpg"],
         },
         email : u.email,
-        status: "Active", // có thể random hoặc từ API nếu có trường này
+        status: u.isBanned,
+
         budget: new Date(u.createdAt).toLocaleDateString(
           "vi-VN",) // có thể gán mặc định
       }));
@@ -120,8 +122,8 @@ export default function BasicTableOne() {
               </TableCell>
             </TableRow>
           </TableHeader>
-
-          <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+        
+          <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05] ">
             {users.map((order) => (
               <TableRow key={order._id}>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
@@ -153,15 +155,9 @@ export default function BasicTableOne() {
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
-                    color={
-                      order.status === "Active"
-                        ? "success"
-                        : order.status === "Pending"
-                        ? "warning"
-                        : "error"
-                    }
+                    color={order.status === true ? "error" : "success"}
                   >
-                    {order.status}
+                    {order.status === true ? "Banned" : "Active"}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
