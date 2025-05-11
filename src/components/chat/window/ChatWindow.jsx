@@ -64,13 +64,18 @@ const ChatWindow = () => {
     const initiateCall = async (callType, receiverId) => {
         const callId = new ObjectId().toString();
         const callData = {
+          callerAvatarColor: profile.avatarColor,
+          callerAvatarSrc: profile.profilePicture,
           callerName: profile.username,
-          callerId: profile.userId,
+          callerId: profile._id,
           callType,
           isReceivingCall: false,
-          receiverId,
+          receiverId: receiver?._id,
           receiverName: receiver?.username || receiver?.name,
-          callId
+          receiverAvatarColor: receiver?.avatarColor,
+          receiverAvatarSrc: receiver?.profilePicture,
+          callId,
+          conversationId: ChatUtils.conversationId,
         };
 
         // Kiểm tra xem cửa sổ popup đã được mở hay chưa

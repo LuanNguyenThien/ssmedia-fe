@@ -1,0 +1,168 @@
+.call-log-container-left,
+.call-log-container-right {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-radius: 14px;
+  width: 200px; /* Kích thước cố định */
+  min-width: 200px;
+  max-width: 220px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.call-log-container-left {
+  margin-right: auto;
+  background-color: rgba(240, 242, 245, 0.95); /* Tăng độ đậm của nền */
+  border-left: 3px solid #9ca3af;
+  border-bottom-left-radius: 4px;
+  
+  &.call-missed {
+    background-color: rgba(254, 226, 226, 0.95);
+    border-color: #ef4444;
+  }
+  
+  &.call-success {
+    background-color: rgba(209, 250, 229, 0.95);
+    border-color: #10b981;
+  }
+}
+
+.call-log-container-right {
+  margin-left: auto;
+  background-color: rgba(219, 234, 254, 0.95); /* Tăng độ đậm của nền */
+  border-right: 3px solid #3b82f6;
+  border-bottom-right-radius: 4px;
+  
+  &.call-missed {
+    background-color: rgba(254, 226, 226, 0.95);
+    border-color: #ef4444;
+  }
+  
+  &.call-success {
+    background-color: rgba(209, 250, 229, 0.95);
+    border-color: #10b981;
+  }
+}
+
+.call-log-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.call-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  font-size: 18px;
+  transition: transform 0.2s ease;
+  
+  &.missed {
+    background-color: #ef4444;
+    animation: shake 0.5s ease-in-out;
+  }
+  
+  &.success {
+    background-color: #10b981;
+  }
+  
+  &:not(.missed):not(.success) {
+    background-color: #3b82f6;
+  }
+  
+  .call-icon-svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.call-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  // Bỏ các thuộc tính sau:
+  // white-space: nowrap;
+  // overflow: hidden;
+  // text-overflow: ellipsis;
+  
+  // Thêm các thuộc tính mới:
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.call-message {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827; /* Tăng độ đậm của chữ */
+  margin-bottom: 2px;
+  
+  // Bỏ các thuộc tính sau:
+  // white-space: nowrap;
+  // overflow: hidden;
+  // text-overflow: ellipsis;
+  
+  // Thêm các thuộc tính mới:
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.call-duration {
+  font-size: 12px;
+  color: #4b5563; /* Tăng độ đậm của chữ */
+  font-weight: 400;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-3px); }
+  40%, 80% { transform: translateX(3px); }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .call-log-container-left {
+    background-color: rgba(31, 41, 55, 0.95);
+    border-color: #4b5563;
+    
+    &.call-missed {
+      background-color: rgba(127, 29, 29, 0.6);
+    }
+    
+    &.call-success {
+      background-color: rgba(6, 78, 59, 0.6);
+    }
+  }
+  
+  .call-log-container-right {
+    background-color: rgba(30, 58, 138, 0.6);
+    
+    &.call-missed {
+      background-color: rgba(127, 29, 29, 0.6);
+    }
+    
+    &.call-success {
+      background-color: rgba(6, 78, 59, 0.6);
+    }
+  }
+  
+  .call-message {
+    color: #f3f4f6; /* Màu sáng hơn cho dark mode */
+  }
+  
+  .call-duration {
+    color: #d1d5db; /* Màu sáng hơn cho dark mode */
+  }
+}
