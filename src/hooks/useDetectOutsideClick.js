@@ -2,24 +2,25 @@ import { useEffect, useState } from "react";
 
 const useDetectOutsideClick = (ref, initialState) => {
     const [isActive, setIsActive] = useState(initialState);
-
-    useEffect(() => {
+    useEffect(() => {initialState
         const onClick = (event) => {
             if (
                 ref.current !== null &&
                 !ref.current.contains(event.target) &&
                 !event.target.closest(".header-nav-item")
             ) {
-                setIsActive(!isActive);
+                // Only set to false if currently true
+                if (isActive) {
+                    setIsActive(false);
+                }
             }
         };
 
-        if (isActive) {
-            window.addEventListener("mousedown", onClick);
-        }
+        // Always add the event listener, not conditional on isActive
+        window.addEventListener("click", onClick);
 
         return () => {
-            window.removeEventListener("mousedown", onClick);
+            window.removeEventListener("click", onClick);
         };
     }, [isActive, ref]);
 

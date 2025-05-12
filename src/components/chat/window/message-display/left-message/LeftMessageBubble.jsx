@@ -3,7 +3,6 @@ import CallLogBubble from "@components/chat/window/message-display/callLog/CallL
 
 const LeftMessageBubble = ({
     chat,
-    showImageModal,
     setImageUrl,
     setShowImageModal,
 }) => {
@@ -33,7 +32,7 @@ const LeftMessageBubble = ({
                         src={chat?.selectedImage}
                         onClick={() => {
                             setImageUrl(chat?.selectedImage);
-                            setShowImageModal(!showImageModal);
+                            setShowImageModal(true);
                         }}
                         alt=""
                     />
@@ -45,7 +44,7 @@ const LeftMessageBubble = ({
                         src={chat?.gifUrl}
                         onClick={() => {
                             setImageUrl(chat?.gifUrl);
-                            setShowImageModal(!showImageModal);
+                            setShowImageModal(true);
                         }}
                         alt=""
                     />

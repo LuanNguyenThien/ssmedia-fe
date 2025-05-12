@@ -44,9 +44,7 @@ const ModalBoxContent = () => {
 
   const displayPostPrivacy = useCallback(() => {
     if (privacy) {
-      console.log("privacy", privacyList);
       const postPrivacy = find(privacyList, (data) => data.topText === privacy);
-      console.log("postPrivacy", postPrivacy);
       setSelectedItem(postPrivacy);
     }
   }, [privacy]);

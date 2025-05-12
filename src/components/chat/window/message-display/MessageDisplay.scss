@@ -125,7 +125,7 @@
                     cursor: pointer;
                     grid-area: chatBubble;
                     .left-message-bubble {
-                        justify-self: flex-end;
+                        justify-self: flex-start;
                         background: var(--white-5);
                         color: var(--black-1);
                         border-radius: 16px;

@@ -21,22 +21,33 @@ import { chatService } from "@services/api/chat/chat.service";
 import { timeAgo } from "@services/utils/timeago.utils";
 import SearchList from "./search-list/SearchList";
 import ChatListBody from "./ChatListBody";
+import { socketService } from "@services/socket/socket.service";
+import CreateGroup from "../group/CreateGroup";
+import InvitationsList from "../group/InvitationsList";
+import ChatOptionsSelector from "../selector/ChatOptionsSelector";
+import GroupChatUtils from "@/services/utils/group-chat-utils.service";
 
 const ChatList = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { profile } = useSelector((state) => state.user);
     const { chatList } = useSelector((state) => state.chat);
+    const [searchParams] = useSearchParams();
+
     const [search, setSearch] = useState("");
     const [searchResult, setSearchResult] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [componentType, setComponentType] = useState("chatList");
     let [chatMessageList, setChatMessageList] = useState([]);
-    const [rendered, setRendered] = useState(false);
+    const [invitationCount, setInvitationCount] = useState(0);
+
     const debouncedValue = useDebounce(search, 1000);
-    const dispatch = useDispatch();
-    const location = useLocation();
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+
+    const [rendered, setRendered] = useState(false);
+    const [isOpenCreateGroup, setIsOpenCreateGroup] = useState(false);
+    const [isOpenInvitationList, setIsOpenInvitationList] = useState(false);
 
     const searchUsers = useCallback(
         async (query) => {
@@ -74,7 +85,6 @@ const ChatList = () => {
                 body: "",
             };
             ChatUtils.joinRoomEvent(user, profile);
-            // ChatUtils.privateChatMessages = [];
             const findUser = find(
                 chatMessageList,
                 (chat) =>
@@ -132,11 +142,9 @@ const ChatList = () => {
         setSelectedUser(user);
         const params = ChatUtils.chatUrlParams(user, profile);
         ChatUtils.joinRoomEvent(user, profile);
-        // ChatUtils.privateChatMessages = [];
         return params;
     };
 
-    // this is for when a user already exist in the chat list
     const addUsernameToUrlQuery = async (user) => {
         try {
             const sender = find(
@@ -176,6 +184,21 @@ const ChatList = () => {
             );
         }
     };
+
+    // Fetch group chat invitations count
+    const fetchGroupChatInvitations = async () => {
+        try {
+            const response = await GroupChatUtils.getInvitationsCount();
+            setInvitationCount(response);
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
+        }
+    };
+
     useEffect(() => {
         if (debouncedValue) {
             searchUsers(debouncedValue);
@@ -201,6 +224,7 @@ const ChatList = () => {
 
     useEffect(() => {
         setChatMessageList(chatList);
+        fetchGroupChatInvitations();
     }, [chatList]);
 
     useEffect(() => {
@@ -214,11 +238,102 @@ const ChatList = () => {
         if (!rendered) setRendered(true);
     }, [chatMessageList, profile, rendered, location]);
 
+    useEffect(() => {
+        if (rendered && profile) {
+            const handleGroupUpdate = (data) => {
+                fetchGroupChatInvitations();
+                setChatMessageList((prev) => {
+                    const updatedList = cloneDeep(prev);
+                    const groupIndex = findIndex(
+                        updatedList,
+                        (chat) =>
+                            chat.isGroupChat &&
+                            (chat.groupId === data.groupId ||
+                                chat._id === data._id)
+                    );
+
+                    if (groupIndex > -1) {
+                        updatedList[groupIndex] = {
+                            ...updatedList[groupIndex],
+                            groupName:
+                                data.name || updatedList[groupIndex].groupName,
+                            groupImage:
+                                data.image ||
+                                updatedList[groupIndex].groupImage,
+                        };
+                    }
+                    return updatedList;
+                });
+            };
+
+            const handleGroupDeleted = (groupId) => {
+                setChatMessageList((prev) => {
+                    const updatedList = cloneDeep(prev);
+                    const groupIndex = findIndex(
+                        updatedList,
+                        (chat) => chat.isGroupChat && chat.groupId === groupId
+                    );
+
+                    if (groupIndex > -1) {
+                        updatedList.splice(groupIndex, 1);
+                    }
+                    return updatedList;
+                });
+            };
+
+            socketService.socket?.on("group action", (action) => {
+                if (action?.data) {
+                    switch (action.type) {
+                        case "update":
+                        case "leave":
+                        case "accept":
+                            handleGroupUpdate(action.data);
+                            break;
+                        case "delete":
+                            handleGroupDeleted(action.data.groupId);
+                            fetchGroupChatInvitations();
+                            break;
+                        case "create":
+                            {
+                                const isMember = action.data.members.find(
+                                    (member) => member.userId === profile?._id
+                                );
+                                if (isMember) {
+                                    fetchGroupChatInvitations();
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+
+            return () => {
+                socketService.socket?.off("group action");
+            };
+        }
+    }, [rendered, profile, searchParams]);
+
     return (
         <div data-testid="chatList" className="h-full">
+            {isOpenCreateGroup && (
+                <CreateGroup onClickBack={() => setIsOpenCreateGroup(false)} />
+            )}
+            {isOpenInvitationList && (
+                <InvitationsList
+                    onClickBack={() => setIsOpenInvitationList(false)}
+                />
+            )}
+
             <div className="conversation-container h-full">
                 <div className="flex justify-between items-center py-3">
                     <div className="font-extrabold text-xl">Your chats</div>
+                    <ChatOptionsSelector
+                        isHasInvitation={invitationCount}
+                        onCreateGroup={() => setIsOpenCreateGroup(true)}
+                        onViewInvitations={() => setIsOpenInvitationList(true)}
+                    />
                 </div>
 
                 <div
@@ -231,7 +346,7 @@ const ChatList = () => {
                         name="message"
                         type="text"
                         value={search}
-                        className="search-input"
+                        className="search-input border !max-w-full"
                         labelText=""
                         placeholder="Search"
                         handleChange={(event) => {
@@ -251,7 +366,7 @@ const ChatList = () => {
                     )}
                 </div>
 
-                <div className="conversation-container-body h-4/5 overflow-y-scroll scroll-smooth">
+                <div className="conversation-container-body h-4/5 overflow-y-scroll scroll-smooth pt-2">
                     {!search && (
                         <div className="conversation size-full flex flex-col gap-1">
                             {chatMessageList.map((data) => {

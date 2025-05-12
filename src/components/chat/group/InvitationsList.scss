@@ -1,0 +1,21 @@
+.back-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #1264ab;
+    transition: color 0.2s;
+    margin-right: 20px;
+
+    &:hover {
+        color: #0a4d85;
+    }
+
+    .back-icon {
+        font-size: 20px;
+        margin-right: 5px;
+    }
+
+    span {
+        font-weight: 500;
+    }
+}
