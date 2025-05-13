@@ -122,7 +122,7 @@ const CommentInputBox = ({ post, parentId = null, onCommentAdded, placeholder = 
     <>
       <div className="w-full max-w-full mx-auto mt-2">
         {showEmojiContainer && (
-          <div className="static w-2xl z-10">
+          <div className=" w-2xl max-w-1/2 z-10">
             <EmojiPickerComponent
               onEmojiClick={(emoji) => {
                 setComment((prev) => prev + emoji.emoji);

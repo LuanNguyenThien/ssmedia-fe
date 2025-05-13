@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import CommentInputBox from "@components/posts/comments/comment-input/CommentInputBox";
 import Avatar from "@components/avatar/Avatar";
 import { useSelector } from "react-redux";
+import { Utils } from "@/services/utils/utils.service";
 
 const CommentInput = ({ post, onCommentAdded }) => {
     const { profile } = useSelector((state) => state.user);
@@ -16,15 +17,18 @@ const CommentInput = ({ post, onCommentAdded }) => {
                 </div>
 
                 <div className="flex items-center gap-3 px-2 mx-auto max-w-3xl w-full ">
-                    <div className="flex-shrink-0 transition-transform hover:scale-105">
-                        <Avatar
-                            name={profile?.username}
-                            bgColor={profile?.avatarColor}
-                            textColor="#ffffff"
-                            size={38}
-                            avatarSrc={profile?.profilePicture}
-                        />
-                    </div>
+                    {!Utils.isMobileDevice() && (
+                        <div className="flex-shrink-0 transition-transform hover:scale-105">
+                            <Avatar
+                                name={profile?.username}
+                                bgColor={profile?.avatarColor}
+                                textColor="#ffffff"
+                                size={38}
+                                avatarSrc={profile?.profilePicture}
+                            />
+                        </div>
+                    )}
+
                     <div className="flex-1  rounded-full hover:shadow-md transition-shadow duration-300">
                         <CommentInputBox
                             post={post}
