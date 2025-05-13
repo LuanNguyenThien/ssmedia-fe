@@ -16,14 +16,14 @@ const ChartTab: React.FC<ChartTabProps> = ({ onSelect }) => {
 
   const getButtonClass = (option: "optionOne" | "optionTwo" | "optionThree") =>
     selected === option
-      ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-      : "text-gray-500 dark:text-gray-400";
+      ? "shadow-theme-xs text-gray-900 "
+      : "text-gray-500 ";
 
   return (
-    <div className="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5 dark:bg-gray-900">
+    <div className="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5 ">
       <button
         onClick={() => handleClick("optionOne")}
-        className={`px-3 py-2 font-medium w-full rounded-md text-theme-sm hover:text-gray-900 dark:hover:text-white ${getButtonClass(
+        className={`px-3 py-2 font-medium w-full rounded-md text-theme-sm hover:text-gray-900  ${getButtonClass(
           "optionOne"
         )}`}
       >
@@ -31,7 +31,7 @@ const ChartTab: React.FC<ChartTabProps> = ({ onSelect }) => {
       </button>
       <button
         onClick={() => handleClick("optionTwo")}
-        className={`px-3 py-2 font-medium w-full rounded-md text-theme-sm hover:text-gray-900 dark:hover:text-white ${getButtonClass(
+        className={`px-3 py-2 font-medium w-full rounded-md text-theme-sm hover:text-gray-900  ${getButtonClass(
           "optionTwo"
         )}`}
       >

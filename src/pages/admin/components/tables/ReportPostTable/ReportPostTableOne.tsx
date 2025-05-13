@@ -100,56 +100,62 @@ export default function BasicTableOne() {
   const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full h-[350px] max-sm:max-h-[calc(100vh-350px)] overflow-x-auto">
-        <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white ">
+      {/* Table Header */}
+      <div className="overflow-x-auto">
+        <Table className="table-fixed min-w-full">
+          <TableHeader className="border-b border-gray-100 ">
             <TableRow>
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="w-[180px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
               >
                 User
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="w-[150px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
               >
                 Post
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="w-[200px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
               >
                 Reasion
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="w-[120px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
               >
                 Status
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="w-[150px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
               >
                 Report Date
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="w-[200px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
               >
                 Actions
               </TableCell>
             </TableRow>
           </TableHeader>
+        </Table>
+      </div>
 
-          <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+      {/* Scrollable Table Body */}
+      <div className="max-h-[350px] overflow-y-auto overflow-x-auto">
+        <Table className="table-fixed min-w-full">
+          <TableBody className="divide-y divide-gray-100 ">
             {reports.map((report) => (
               <TableRow
                 key={report.reportId}
                 onClick={() => setSelectedReport(report)}
-                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.05]"
+                className="cursor-pointer hover:bg-gray-50 "
               >
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
@@ -162,24 +168,17 @@ export default function BasicTableOne() {
                       />
                     </div>
                     <div>
-                      <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                      <span className="block font-medium text-gray-800 text-theme-sm ">
                         {report.user.name}
                       </span>
-                      <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                      <span className="block text-gray-500 text-theme-xs ">
                         {report.user.role}
                       </span>
                     </div>
                   </div>
                 </TableCell>
 
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {/* <Link
-                    to={`/app/social/post/${report.postId}`}
-                    className="text-blue-600 hover:underline dark:text-blue-400"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {report.post}
-                  </Link> */}
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm ">
                   <a
                     href={`/app/social/post/${report.postId}`}
                     target="_blank"
@@ -191,11 +190,11 @@ export default function BasicTableOne() {
                   </a>
                 </TableCell>
 
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm ">
                   {report.content}
                 </TableCell>
 
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm ">
                   <Badge
                     size="sm"
                     color={
@@ -210,7 +209,7 @@ export default function BasicTableOne() {
                   </Badge>
                 </TableCell>
 
-                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm ">
                   {report.reportDate}
                 </TableCell>
 
@@ -246,6 +245,7 @@ export default function BasicTableOne() {
         </Table>
       </div>
 
+      {/* Pagination */}
       <div className="flex justify-end p-4 gap-2">
         {Array.from({ length: totalPages }, (_, index) => (
           <button
@@ -263,4 +263,5 @@ export default function BasicTableOne() {
       </div>
     </div>
   );
+  
 }

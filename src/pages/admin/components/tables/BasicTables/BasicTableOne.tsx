@@ -86,47 +86,38 @@ export default function BasicTableOne() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full h-[350px] max-sm:max-h-[calc(100vh-350px)] overflow-x-auto ">
-        <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-            <TableRow>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
+      <div className="w-full">
+        {/* Table header cố định */}
+        <table className="w-full table-fixed">
+          <thead className="border-b border-gray-100 dark:border-white/[0.05] bg-white dark:bg-white/[0.03]">
+            <tr>
+              <th className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs dark:text-gray-400">
                 User
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
+              </th>
+              <th className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs dark:text-gray-400">
                 Work
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
+              </th>
+              <th className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs dark:text-gray-400">
                 Email
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
+              </th>
+              <th className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs dark:text-gray-400">
                 Status
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Creat At
-              </TableCell>
-            </TableRow>
-          </TableHeader>
-        
-          <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05] ">
+              </th>
+              <th className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs dark:text-gray-400">
+                Created At
+              </th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+
+      {/* Scrollable body */}
+      <div className="h-[350px] overflow-y-auto w-full">
+        <table className="w-full table-fixed">
+          <tbody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {users.map((order) => (
-              <TableRow key={order._id}>
-                <TableCell className="px-5 py-4 sm:px-6 text-start">
+              <tr key={order._id}>
+                <td className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
                       <img
@@ -145,28 +136,28 @@ export default function BasicTableOne() {
                       </span>
                     </div>
                   </div>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                </td>
+                <td className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {order.projectName}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                </td>
+                <td className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {order.email}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                </td>
+                <td className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={order.status === true ? "error" : "success"}
                   >
                     {order.status === true ? "Banned" : "Active"}
                   </Badge>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                </td>
+                <td className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   {order.budget}
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
 
       {/* Pagination */}
@@ -187,4 +178,5 @@ export default function BasicTableOne() {
       </div>
     </div>
   );
+  
 }

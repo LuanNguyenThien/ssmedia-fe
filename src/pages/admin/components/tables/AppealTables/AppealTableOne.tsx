@@ -124,44 +124,47 @@ export default function BanUserTableOne() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full h-[350px] max-sm:max-h-[calc(100vh-350px)] overflow-x-auto">
+      {/* Table Header cố định */}
+      <Table>
+        <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+          <TableRow>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+            >
+              User
+            </TableCell>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+            >
+              Reason
+            </TableCell>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+            >
+              Status
+            </TableCell>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+            >
+              Appeal Date
+            </TableCell>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+            >
+              Actions
+            </TableCell>
+          </TableRow>
+        </TableHeader>
+      </Table>
+
+      {/* Chỉ phần TableBody được scroll */}
+      <div className="max-w-full h-[350px] overflow-y-auto overflow-x-auto">
         <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-            <TableRow>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                User
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Reason
-              </TableCell>
-
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Status
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Appeal Date
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHeader>
-
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {users.map((order) => (
               <TableRow key={order.appealId}>
@@ -188,7 +191,6 @@ export default function BanUserTableOne() {
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {order.projectName}
                 </TableCell>
-
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
@@ -210,7 +212,7 @@ export default function BanUserTableOne() {
                   <button
                     className="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600 transition"
                     onClick={(e) => {
-                      e.stopPropagation(); // không trigger click vào row
+                      e.stopPropagation();
                       UnbanUser(
                         order.appealId,
                         order._id,
@@ -245,4 +247,5 @@ export default function BanUserTableOne() {
       </div>
     </div>
   );
+  
 }
