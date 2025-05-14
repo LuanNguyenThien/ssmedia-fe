@@ -4,7 +4,7 @@ const SocialEntities = ({
     shortenedPosts,
 }) => {
     return (
-        <div className="w-full grid grid-cols-3 gap-2 text-[10px] lg:text-sm">
+        <div className="w-full h-max grid grid-cols-3 gap-2 text-[10px] lg:text-sm">
             <div className="size-full text-center col-span-1 border-r">
                 <span className="" data-testid="info">
                     {shortenedFollowers}

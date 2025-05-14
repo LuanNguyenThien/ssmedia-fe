@@ -1,11 +1,15 @@
 import PropTypes from "prop-types";
+import CallLogBubble from "@components/chat/window/message-display/callLog/CallLogBubble";
 
 const LeftMessageBubble = ({
     chat,
-    showImageModal,
     setImageUrl,
     setShowImageModal,
 }) => {
+    if (chat?.messageType === "call_log") {
+        return <CallLogBubble chat={chat} isRight={false} />;
+    }
+    
     return (
         <>
             {chat?.body !== "Sent a GIF" && chat?.body !== "Sent an Image" && (
@@ -28,7 +32,7 @@ const LeftMessageBubble = ({
                         src={chat?.selectedImage}
                         onClick={() => {
                             setImageUrl(chat?.selectedImage);
-                            setShowImageModal(!showImageModal);
+                            setShowImageModal(true);
                         }}
                         alt=""
                     />
@@ -40,7 +44,7 @@ const LeftMessageBubble = ({
                         src={chat?.gifUrl}
                         onClick={() => {
                             setImageUrl(chat?.gifUrl);
-                            setShowImageModal(!showImageModal);
+                            setShowImageModal(true);
                         }}
                         alt=""
                     />

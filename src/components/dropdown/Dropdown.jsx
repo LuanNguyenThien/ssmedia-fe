@@ -133,7 +133,6 @@ const Dropdown = ({
                                 displayNotification.map((item) => (
                                     <div
                                         onClick={(e) => {
-                                            console.log("item", item);
                                             e.stopPropagation();
                                             onMarkAsRead({
                                                 notification: item,

@@ -378,12 +378,18 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
 
   const sendCallSignal = (signalData) => {
     socketService.socket.emit("call-user", {
-      userToCall: callData.receiverName?.toLowerCase(),
-      signal: signalData,
-      from: callData.callerId,
-      callType: callData.callType,
+      receiverId: callData.receiverId,
+      receiverAvatarColor: callData?.receiverAvatarColor,
+      receiverAvatarSrc: callData?.receiverAvatarSrc,
+      userToCall: callData.receiverName,
+      callerId: callData.callerId,
       callerName: callData.callerName,
+      callerAvatarColor: callData?.callerAvatarColor,
+      callerAvatarSrc: callData?.callerAvatarSrc,
+      callType: callData.callType,
+      signal: signalData,
       callId: callData.callId,
+      conversationId: callData.conversationId,
     })
 
     console.log(`Đang gọi cho ${callData.receiverName}... (lần ${retryCount + 1})`)

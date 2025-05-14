@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import CallLogBubble from "@components/chat/window/message-display/callLog/CallLogBubble";
 
 const RightMessageBubble = ({
     chat,
@@ -6,6 +7,10 @@ const RightMessageBubble = ({
     setImageUrl,
     setShowImageModal,
 }) => {
+    if (chat?.messageType === "call_log") {
+        return <CallLogBubble chat={chat} isRight={true} />;
+    }
+    
     return (
         <>
             {chat?.body !== "Sent a GIF" && chat?.body !== "Sent an Image" && (

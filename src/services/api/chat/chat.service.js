@@ -11,7 +11,7 @@ class ChatService {
             params: {
                 isGroupChat: isGroupChat
             }
-        });
+        }); 
         return response;
     }
 
