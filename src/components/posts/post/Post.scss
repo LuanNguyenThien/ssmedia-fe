@@ -1,198 +1,226 @@
-@use '../../../assets/colors/variables.scss' as *;
+@use "../../../assets/colors/variables.scss" as *;
+
+.bn-editor {
+    padding: 0px !important;
+}
+
+// Styling for the vote bar on desktop and mobile
+.vote-bar {
+    @media (min-width: 768px) {
+        // Desktop styles
+        flex-direction: column;
+        padding: 0;
+        width: 3.5rem;
+    }
+
+    @media (max-width: 767px) {
+        // Mobile styles
+        flex-direction: row;
+        padding-left: 0.25rem;
+    }
+}
+
+// Mobile vote bar specific styles
+.mobile-vote-bar {
+    .vote-bar {
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+}
+
+// Added margin to the desktop vote bar container
+.post-card {
+    > .hidden.md\:block {
+        margin-right: 1rem;
+    }
+}
 
 .post-body {
-  padding: 15px;
-  margin-top: 15px;
-  margin-bottom: 25px;
-  background-color: $component-color;
-  height: auto;
-  border-radius: 16px;
-  box-shadow: 0 0 2px 0 var(--gray-16), 0 2px 14px -4px var(--gray-12);
-  border: 0.5px solid var(--gray-16);
-  .user-post-data-wrap {
-    background-color: $component-color;
-    flex-wrap: wrap;
-    display: flex;
-    width: 100%;
-
-    .view-comments {
-      width: 100%;
-      margin-bottom: -25px;
-      color: var(--primary-1);
-      cursor: pointer;
-      text-align: right;
-    }
-
-    .user-post-image {
-      .post-rounded-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-      }
-    }
-
-    .user-post-info {
-      height: 45px;
-      color: var(--gray-3);
-      flex: 1;
-      margin: auto;
-      margin-left: 10px;
-
-      .inline-title-display {
-        display: grid;
-        grid-template-areas: 'name . . icons';
-        grid-template-columns: auto 1fr 1fr 100px;
-        grid-template-rows: 1fr;
-
-        h5 {
-          grid-area: name;
-          margin-bottom: 0;
-          display: inline-block;
-          font-size: 16px;
-          font-family: Poppins, sans-serif;
-          font-weight: 700;
-          margin-right: 5px;
-          line-height: 1.5;
-          color: var(--gray-7);
-          width: 100%;
-        }
-
-        .post-icons {
-          grid-area: icons;
-          text-align: right;
-          cursor: pointer;
-
-          .trash {
-            color: var(--red-1);
-          }
-
-          .pencil {
-            color: var(--primary-1);
-            margin-right: 15px;
-          }
-        }
-      }
-
-      .inline-display {
-        margin-bottom: 0;
-        display: inline-block;
-        height: 18px;
-        margin-left: 4px;
-        font-weight: 400;
-
-        .feeling-icon {
-          object-fit: cover;
-          height: 18px;
-          vertical-align: middle;
-        }
-
-        div {
-          display: contents;
-          font-weight: bolder;
-        }
-      }
-
-      .time-text-display {
-        font-size: 14px;
+    height: auto;
+    .user-post-data-wrap {
+        background-color: $component-color;
+        flex-wrap: wrap;
         display: flex;
-
-        .globe {
-          margin-top: 2px;
-          margin-left: 4px;
-        }
-
-        .time-link {
-          color: inherit; /* Giữ nguyên màu sắc cũ */
-          text-decoration: none; /* Loại bỏ gạch chân */
-        }
-
-        .time-link:hover {
-          cursor: pointer; /* Thay đổi con trỏ chuột thành biểu tượng bàn tay */
-        }
-      }
-    }
-
-    .user-post {
-      width: 100%;
-      margin-top: 1rem;
-      border-bottom: 1px solid var(--white-4);
-
-      .post {
-        margin-top: 0;
-        color: var(--black-5);
-        text-align: left;
-        margin-bottom: 0px;
-        line-height: 25px;
-        font-size: 18px;
-        word-break: break-word;
-
-        a {
-          color: var(--primary-1);
-          text-decoration: none;
-
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-        
-        .my-blocknote {
-          .bn-content {
-            background: #f0f0f0;
-          }
-          .bn-editor {
-            padding: 0px;
-          }
-          .bn-visual-media {
-            max-height: 400px;
-            object-fit: contain;
-          }
-          .bn-inline-content .ProseMirror-trailingBreak {
-            display: none;
-          }
-          .bn-block-content.ProseMirror-selectednode>*, .ProseMirror-selectednode>.bn-block-content>*  {
-            outline: none; /* Loại bỏ outline (thường là nguyên nhân của viền xanh) */
-            border: none;   /* Đảm bảo không có border nào được áp dụng */
-            box-shadow: none; /* Đảm bảo không có box-shadow nào gây hiệu ứng tương tự */
-          }
-        }
-      }
-
-      .user-post-with-bg {
         width: 100%;
-        max-height: 400px;
-        height: 400px;
-        color: var(--white-1);
-        font-size: 40px;
-        font-weight: bolder;
-        text-align: center;
-        align-items: center;
-        justify-content: center;
-        padding: 25px;
-        overflow-y: scroll;
-        display: flex;
-        overflow-x: hidden;
-        word-break: break-word;
 
-        a {
-          color: var(--white-1);
-          text-decoration: none;
-
-          &:hover {
-            text-decoration: underline;
-          }
+        .view-comments {
+            width: 100%;
+            margin-bottom: -25px;
+            color: var(--primary-1);
+            cursor: pointer;
+            text-align: right;
         }
-      }
 
-      .image-display-flex {
-        display: flex;
-        max-height: 400px;
-
-        .post-image {
-          border-radius: 5px;
-          width: 100%;
-          object-fit: cover;
+        .user-post-image {
+            .post-rounded-circle {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+            }
         }
-      }
+
+        .user-post-info {
+            height: 45px;
+            color: var(--gray-3);
+            flex: 1;
+            margin: auto;
+            margin-left: 10px;
+
+            .inline-title-display {
+                display: grid;
+                grid-template-areas: "name . . icons";
+                grid-template-columns: auto 1fr 1fr 100px;
+                grid-template-rows: 1fr;
+
+                h5 {
+                    grid-area: name;
+                    margin-bottom: 0;
+                    display: inline-block;
+                    font-size: 16px;
+                    font-family: Poppins, sans-serif;
+                    font-weight: 700;
+                    margin-right: 5px;
+                    line-height: 1.5;
+                    color: var(--gray-7);
+                    width: 100%;
+                }
+
+                .post-icons {
+                    grid-area: icons;
+                    text-align: right;
+                    cursor: pointer;
+
+                    .trash {
+                        color: var(--red-1);
+                    }
+
+                    .pencil {
+                        color: var(--primary-1);
+                        margin-right: 15px;
+                    }
+                }
+            }
+
+            .inline-display {
+                margin-bottom: 0;
+                display: inline-block;
+                height: 18px;
+                margin-left: 4px;
+                font-weight: 400;
+
+                .feeling-icon {
+                    object-fit: cover;
+                    height: 18px;
+                    vertical-align: middle;
+                }
+
+                div {
+                    display: contents;
+                    font-weight: bolder;
+                }
+            }
+
+            .time-text-display {
+                font-size: 14px;
+                display: flex;
+
+                .globe {
+                    margin-top: 2px;
+                    margin-left: 4px;
+                }
+
+                .time-link {
+                    color: inherit; /* Giữ nguyên màu sắc cũ */
+                    text-decoration: none; /* Loại bỏ gạch chân */
+                }
+
+                .time-link:hover {
+                    cursor: pointer; /* Thay đổi con trỏ chuột thành biểu tượng bàn tay */
+                }
+            }
+        }
+
+        .user-post {
+            width: 100%;
+            margin-top: 1rem;
+
+            .post {
+                margin-top: 0;
+                color: var(--black-5);
+                text-align: left;
+                margin-bottom: 0px;
+                line-height: 25px;
+                font-size: 18px;
+                word-break: break-word;
+
+                a {
+                    color: var(--primary-1);
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+
+                .my-blocknote {
+                    .bn-content {
+                        background: #f0f0f0;
+                    }
+                    .bn-editor {
+                        padding: 0px;
+                    }
+                    .bn-visual-media {
+                        max-height: 400px;
+                        object-fit: contain;
+                    }
+                    .bn-inline-content .ProseMirror-trailingBreak {
+                        display: none;
+                    }
+                    .bn-block-content.ProseMirror-selectednode > *,
+                    .ProseMirror-selectednode > .bn-block-content > * {
+                        outline: none; /* Loại bỏ outline (thường là nguyên nhân của viền xanh) */
+                        border: none; /* Đảm bảo không có border nào được áp dụng */
+                        box-shadow: none; /* Đảm bảo không có box-shadow nào gây hiệu ứng tương tự */
+                    }
+                }
+            }
+
+            .user-post-with-bg {
+                width: 100%;
+                max-height: 400px;
+                height: 400px;
+                color: var(--white-1);
+                font-size: 40px;
+                font-weight: bolder;
+                text-align: center;
+                align-items: center;
+                justify-content: center;
+                padding: 25px;
+                overflow-y: scroll;
+                display: flex;
+                overflow-x: hidden;
+                word-break: break-word;
+
+                a {
+                    color: var(--white-1);
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+
+            .image-display-flex {
+                display: flex;
+                max-height: 400px;
+
+                .post-image {
+                    border-radius: 5px;
+                    width: 100%;
+                    object-fit: cover;
+                }
+            }
+        }
     }
-  }
 }

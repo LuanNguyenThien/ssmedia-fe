@@ -11,7 +11,6 @@
     grid-template-rows: 1fr;
     overflow-x: hidden;
     overflow-y: scroll;
-    grid-column-gap: 20px;
 
     .streams-post {
       grid-area: post;
@@ -20,7 +19,6 @@
       height: 88vh;
       width: 100%;
       scroll-behavior: smooth;
-      padding-top: 20px;
 
       @media screen and (max-width: 1200px) {
         padding: 0;

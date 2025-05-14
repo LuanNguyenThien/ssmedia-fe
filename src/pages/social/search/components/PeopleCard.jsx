@@ -24,19 +24,24 @@ const PeopleCard = ({ item, setRendered, followings }) => {
         setRendered,
         profile,
     });
+
     const isCurrentUser = useCallback(() => {
         if (!profile) return false;
         return item.username === profile?.username;
     }, [item, profile]);
+
+    if (isCurrentUser()) {
+        return null; 
+    }
     return (
         <div
             onClick={() => {
                 ProfileUtils.navigateToProfile(item, navigate);
             }}
-            className="cursor-pointer w-full flex items-center justify-between rounded-[10px] hover:bg-background-blur px-4 py-2"
+            className="cursor-pointer w-full flex  items-center justify-between rounded-[10px] hover:bg-background-blur px-2 sm:px-4 py-2"
         >
             <div className="flex items-center justify-start gap-4">
-                <div className="size-14 rounded-full overflow-hidden bg-red-400">
+                <div className="size-12 sm:size-14 rounded-full overflow-hidden bg-red-400">
                     <img
                         src={item.profilePicture}
                         alt="avatar"
@@ -44,7 +49,7 @@ const PeopleCard = ({ item, setRendered, followings }) => {
                     />
                 </div>
                 <div className="flex flex-col">
-                    <span>{item.username}</span>
+                    <span className="max-w-full truncate">{item.username}</span>
                     {item.followersCount >= 1 && (
                         <span className="text-sm font-light">
                             {item.followersCount} follower
@@ -55,7 +60,7 @@ const PeopleCard = ({ item, setRendered, followings }) => {
 
             {/* message and follow/unfollow section */}
             {!isCurrentUser() && (
-                <div className="flex items-center gap-2 pt-3">
+                <div className="flex items-center gap-2 sm:pt-3 flex-col sm:flex-row">
                     <InformationButton
                         title={"Message"}
                         icon={<TbMessageCircle />}

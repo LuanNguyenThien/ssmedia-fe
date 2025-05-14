@@ -1,7 +1,7 @@
 import PostForm from "@components/posts/post-form/PostForm";
 import PostFormSkeleton from "@components/posts/post-form/PostFormSkeleton";
-import Post from "@components/posts/post/Post1";
-import PostSkeleton from "@components/posts/post/PostSkeleton";
+import Post from "@/components/posts/post/Post";
+import PostSkeleton from "@/components/posts/post/components/PostSkeleton/PostSkeleton";
 import useEffectOnce from "@hooks/useEffectOnce";
 import { followerService } from "@services/api/followers/follower.service";
 import { PostUtils } from "@services/utils/post-utils.service";
@@ -119,7 +119,7 @@ const Timeline = ({ userProfileData, loading }) => {
 
             {/* posts section */}
             {!loading && posts.length > 0 && (
-                <div className="size-full">
+                <div className="size-full flex flex-col gap-2 ">
                     {username === profile?.username && <PostForm />}
                     {posts.map((post) => (
                         <div key={post?._id}>

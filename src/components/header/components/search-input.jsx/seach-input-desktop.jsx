@@ -2,7 +2,12 @@ import { useRef, useState } from "react";
 import { icons } from "@assets/assets";
 import { Image, X } from "lucide-react";
 
-const SearchInputDesktop = ({ onClick, searchTerm, setSearchTerm, onImageSelect }) => {
+const SearchInputDesktop = ({
+    onClick,
+    searchTerm,
+    setSearchTerm,
+    onImageSelect,
+}) => {
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [showImagePreview, setShowImagePreview] = useState(false);
@@ -11,7 +16,7 @@ const SearchInputDesktop = ({ onClick, searchTerm, setSearchTerm, onImageSelect 
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
-        if (file && file.type.startsWith('image/')) {
+        if (file && file.type.startsWith("image/")) {
             setImageFile(file);
             const reader = new FileReader();
             reader.onload = () => {
@@ -41,7 +46,7 @@ const SearchInputDesktop = ({ onClick, searchTerm, setSearchTerm, onImageSelect 
     const onClickSearch = () => {
         removeImage(); // Xóa hình ảnh đã chọn
         onClick();
-    }
+    };
 
     return (
         <div className="relative">
@@ -58,25 +63,26 @@ const SearchInputDesktop = ({ onClick, searchTerm, setSearchTerm, onImageSelect 
                     name="search"
                     type="search"
                 />
-                
+
                 {/* Thêm icon tìm kiếm bằng hình ảnh */}
                 <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
-                    <button
-                        type="button"
+                    <div
                         onClick={fileInputClicked}
-                        className="flex items-center justify-center text-blue-600 h-8 w-8 rounded-full hover:bg-slate-200"
-                        title="Search by image"
+                        className="size-6 flex place-content-center cursor-pointer transition-all duration-300 hover:scale-105"
                     >
-                        <Image className="h-5 w-5" />
-                        <span className="sr-only">Search by image</span>
-                    </button>
-                    
+                        <img
+                            src={icons.search_image}
+                            alt=""
+                            className="size-full object-cover"
+                        />
+                    </div>
+
                     {imageFile && !showImagePreview && (
                         <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
                             <span className="text-xs text-blue-600">1</span>
                         </div>
                     )}
-                    
+
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -96,9 +102,9 @@ const SearchInputDesktop = ({ onClick, searchTerm, setSearchTerm, onImageSelect 
             {showImagePreview && imagePreview && (
                 <div className="absolute top-12 right-0 z-50 bg-white rounded-lg shadow-lg p-3 mt-2 w-64 max-h-96 overflow-y-auto">
                     <div className="relative">
-                        <img 
-                            src={imagePreview} 
-                            alt="Search preview" 
+                        <img
+                            src={imagePreview}
+                            alt="Search preview"
                             className="w-full h-auto object-cover rounded-md cursor-pointer"
                             onClick={() => setIsZoomed(true)} // Optional: Open image in a new tab or modal
                         />
@@ -125,15 +131,15 @@ const SearchInputDesktop = ({ onClick, searchTerm, setSearchTerm, onImageSelect 
 
             {isZoomed && (
                 <div
-                className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-                onClick={() => setIsZoomed(false)}
+                    className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+                    onClick={() => setIsZoomed(false)}
                 >
-                <img
-                    src={imagePreview}
-                    alt="zoomed"
-                    className="max-w-6xl max-h-full rounded-lg shadow-lg transition-transform duration-300 scale-100"
-                    onClick={(e) => e.stopPropagation()}
-                />
+                    <img
+                        src={imagePreview}
+                        alt="zoomed"
+                        className="max-w-6xl max-h-full rounded-lg shadow-lg transition-transform duration-300 scale-100"
+                        onClick={(e) => e.stopPropagation()}
+                    />
                 </div>
             )}
         </div>

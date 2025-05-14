@@ -6,7 +6,7 @@ const useInfiniteScroll = (bodyRef, bottomLineRef, callback) => {
     debounce(() => {
       const containerHeight = bodyRef?.current?.getBoundingClientRect().height;
       const { top: bottomLineTop } = bottomLineRef?.current?.getBoundingClientRect();
-      if (bottomLineTop - 40 <= containerHeight) {
+      if (bottomLineTop - 60 <= containerHeight) {
         callback();
       }
     }, 300), // Giới hạn gọi callback mỗi 300ms
@@ -16,7 +16,11 @@ const useInfiniteScroll = (bodyRef, bottomLineRef, callback) => {
   useEffect(() => {
     const bodyRefCurrent = bodyRef?.current;
     bodyRefCurrent?.addEventListener('scroll', handleScroll, true);
-    return () => bodyRefCurrent.removeEventListener('scroll', handleScroll, true);
+    return () => {
+      if (bodyRefCurrent) {
+        bodyRefCurrent.removeEventListener('scroll', handleScroll, true);
+      }
+    };
   }, [bodyRef, handleScroll]);
 };
 

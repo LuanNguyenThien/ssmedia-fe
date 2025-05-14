@@ -22,7 +22,6 @@ const Information = ({
     const profile = useSelector((state) => state.user.profile);
 
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
     // Changed from useRef to useState for the editable inputs
@@ -97,7 +96,6 @@ const Information = ({
                     followings={following}
                     followersCount={user?.followersCount}
                     followingCount={user?.followingCount}
-                    loading={loading}
                     isCurrentUser={isCurrentUserValue()}
                     setRendered={setRendered}
                 />
@@ -108,7 +106,6 @@ const Information = ({
                     editableInputs={editableInputs}
                     username={username}
                     profile={profile}
-                    loading={loading}
                     setIsEditing={handleSetIsEditing}
                 />
             </div>
@@ -118,7 +115,6 @@ const Information = ({
                     editableSocialInputs={editableSocialInputs}
                     username={username}
                     profile={profile}
-                    loading={loading}
                     setIsEditing={handleSetIsEditing}
                 />
             </div>

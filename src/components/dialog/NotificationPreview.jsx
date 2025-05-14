@@ -77,7 +77,7 @@ const NotificationPreview = ({
                         )}
                         {htmlPost && (
                             <div
-                                className="dialog-body-html-post text-primary-black text-xl h-full overflow-scroll"
+                                className="dialog-body-html-post text-primary-black text-xl h-full overflow-auto"
                                 dangerouslySetInnerHTML={{ __html: enhancedHtmlPost }}
                             />
                         )}

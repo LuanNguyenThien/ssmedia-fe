@@ -5,15 +5,12 @@ import { useRoutes } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import StreamsSkeleton from "@pages/social/streams/StreamsSkeleton";
 import NotificationSkeleton from "@pages/social/notifications/NotificationSkeleton";
-import CardSkeleton from "@components/card-element/CardSkeleton";
 import PhotoSkeleton from "@pages/social/photos/PhotoSkeleton";
 import ProfileSkeleton from "@pages/social/profile/ProfileSkeleton";
 import ChatSkeleton from "@pages/social/chat/ChatSkeleton";
 import VideoSkeleton from "@pages/social/videos/VideoSkeleton";
-import PostSkeleton from "@components/posts/post/PostSkeleton";
+import PostSkeleton from "@/components/posts/post/components/PostSkeleton/PostSkeleton";
 import { ChakraProvider } from "@chakra-ui/react";
-import Group from "@pages/social/groups/group";
-
 const Social = lazy(() => import("@pages/social/Social"));
 const Chat = lazy(() => import("@pages/social/chat/Chat"));
 // const Followers = lazy(() => import("@pages/social/followers/Followers"));
@@ -30,6 +27,9 @@ const PostDetail = lazy(() => import("@pages/social/streams/PostDetail"));
 const SavePage = lazy(() => import("@pages/social/saves/SavePage"));
 const SearchPage = lazy(() => import("@pages/social/search/SearchPage"));
 const DashBoard = lazy(() => import("@pages/admin/dashboard/dashboard"));
+const GroupPage = lazy(() => import("@pages/social/groups/group"));
+const SettingPage = lazy(() => import("@pages/social/setting/Setting"));
+
 export const AppRouter = () => {
     const elements = useRoutes([
         {
@@ -63,7 +63,7 @@ export const AppRouter = () => {
                 {
                     path: "streams",
                     element: (
-                        <Suspense fallback={<StreamsSkeleton />}>
+                        <Suspense>
                             <Streams />
                         </Suspense>
                     ),
@@ -152,7 +152,7 @@ export const AppRouter = () => {
                     path: "groups",
                     element: (
                         <Suspense>
-                            <Group />
+                            <GroupPage />
                         </Suspense>
                     ),
                 },
@@ -161,6 +161,14 @@ export const AppRouter = () => {
                     element: (
                         <Suspense fallback={<ProfileSkeleton />}>
                             <Profile />
+                        </Suspense>
+                    ),
+                },
+                {
+                    path: "setting/:username",
+                    element: (
+                        <Suspense>
+                            <SettingPage />
                         </Suspense>
                     ),
                 },

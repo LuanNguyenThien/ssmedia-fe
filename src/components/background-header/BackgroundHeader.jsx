@@ -21,10 +21,8 @@ import useEffectOnce from "@hooks/useEffectOnce";
 const BackgroundHeader = ({
     user,
     isCurrentUser,
-    loading,
     url,
     hasImage,
-    tabItems,
     hasError,
     hideSettings,
     selectedFileImage,
@@ -144,195 +142,188 @@ const BackgroundHeader = ({
                     }}
                 />
             )}
-            {loading ? (
-                <BackgroundHeaderSkeleton tabItems={tabItems} />
-            ) : (
-                <div
-                    className="profile-banner w-full h-[40vh] sm:h-[14vh] sm:max-h-[14vh]"
-                    data-testid="profile-banner"
-                >
-                    {/*edit popup images section  */}
-                    {hasImage && (
-                        <div
-                            className="save-changes-container size-full absolute top-0 left-0"
-                            data-testid="save-changes-container"
-                        >
-                            <div className="save-changes-box size-full relative">
-                                <div className="size-full flex justify-center items-center">
-                                    {showSpinner && !hasError && (
-                                        <Spinner bgColor="white" />
-                                    )}
-                                </div>
-                                <div className="save-changes-buttons absolute top-3 sm:bottom-3 right-3 z-50">
-                                    <div className="flex justify-between items-center px-4 gap-2">
-                                        <Button
-                                            label="Cancel"
-                                            className="bg-primary-black/90 text-primary-white hover:bg-primary-black/60 transition-all rounded-xl py-2 px-4 text-sm"
-                                            disabled={false}
-                                            handleClick={() => {
-                                                setShowSpinner(false);
-                                                cancelFileSelection();
-                                                hideSaveChangesContainer();
-                                            }}
-                                        />
-                                        <Button
-                                            label="Save Changes"
-                                            className="bg-primary/90 text-primary-white hover:bg-primary/60 transition-all rounded-xl py-2 px-4 text-sm"
-                                            disabled={false}
-                                            handleClick={() => {
-                                                setShowSpinner(true);
-                                                const type = selectedBackground
-                                                    ? "background"
-                                                    : "profile";
-                                                saveImage(type);
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {/* background */}
+
+            <div
+                className="profile-banner w-full h-[40vh] sm:h-[14vh] sm:max-h-[14vh]"
+                data-testid="profile-banner"
+            >
+                {/*edit popup images section  */}
+                {hasImage && (
                     <div
-                        data-testid="profile-banner-image"
-                        className="profile-banner-image sm:overflow-y-scroll size-full "
-                        style={{
-                            background: `${
-                                !selectedBackground ? user?.avatarColor : ""
-                            }`,
-                        }}
+                        className="save-changes-container size-full absolute top-0 left-0"
+                        data-testid="save-changes-container"
                     >
-                        {selectedBackground ? (
-                            <img
-                                src={`${selectedBackground}`}
-                                className="object-cover sm:object-cover w-full h-full sm:h-auto"
-                            />
-                        ) : (
-                            <img
-                                onClick={() => {
-                                    selectedImage(url);
-                                    showImageModal(true);
-                                }}
-                                src={url}
-                                className="object-cover sm:object-cover w-full h-full sm:h-auto"
-                            />
-                        )}
-
-                        {!hasImage && isCurrentUser() && (
-                            <div
-                                ref={editToggleRef}
-                                onClick={onAddProfileClick}
-                                className="absolute z-[50] bottom-3 right-3 text-2xl text-background-blur hover:text-background-blur/80 transition-all duration-200"
-                            >
-                                <FaRegEdit />
-                                {isActive && <BackgroundSelectDropdown />}
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="profile-banner-data w-full lg:w-1/3 flex flex-col bottom-0 translate-y-1/2 sm:top-1/2">
-                        <div
-                            data-testid="profile-pic"
-                            className="profile-pic size-full flex justify-center items-center"
-                        >
-                            <div
-                                onMouseEnter={() => setIsHoverAvatar(true)}
-                                onMouseLeave={() => setIsHoverAvatar(false)}
-                                className="size-max flex justify-center items-center "
-                            >
-                                <Avatar
-                                    isHover={setIsHoverAvatar}
-                                    name={user?.username}
-                                    bgColor={user?.avatarColor}
-                                    textColor="#ffffff"
-                                    size={140}
-                                    avatarSrc={
-                                        selectedProfileImage ||
-                                        user?.profilePicture
-                                    }
-                                    onClick={() => {
-                                        selectedImage(user?.profilePicture);
-                                        showImageModal(true);
-                                    }}
-                                />
-                                {hideSettings && isHoverAvatar && (
-                                    <div className="size-max absolute bg-primary-white p-2 rounded-full">
-                                        <div
-                                            className="profile-pic-select"
-                                            data-testid="profile-pic-select"
-                                        >
-                                            <input
-                                                ref={profileImageRef}
-                                                name="profile"
-                                                type="file"
-                                                accept="image/*" // optional, limits to images
-                                                className="hidden"
-                                                onClick={() => {
-                                                    if (
-                                                        profileImageRef.current
-                                                    ) {
-                                                        profileImageRef.current.value =
-                                                            null;
-                                                    }
-                                                }}
-                                                onChange={(event) => {
-                                                    const file =
-                                                        event.target.files?.[0];
-                                                    if (file) {
-                                                        setSelectedProfileImage(
-                                                            URL.createObjectURL(
-                                                                file
-                                                            )
-                                                        );
-                                                        selectedFileImage(
-                                                            file,
-                                                            "profile"
-                                                        );
-                                                    }
-                                                }}
-                                            />
-                                        </div>
-                                        <label
-                                            onClick={() =>
-                                                profileFileInputClicked()
-                                            }
-                                        >
-                                            <FaCamera className="cameraa " />
-                                        </label>
-                                    </div>
+                        <div className="save-changes-box size-full relative">
+                            <div className="size-full flex justify-center items-center">
+                                {showSpinner && !hasError && (
+                                    <Spinner bgColor="white" />
                                 )}
                             </div>
-                        </div>
-                        {hideSettings && (
-                            <div className="profile-select-image">
-                                <Input
-                                    ref={backgroundFileRef}
-                                    name="background"
-                                    type="file"
-                                    className="inputFile"
-                                    onClick={() => {
-                                        if (backgroundFileRef.current) {
-                                            backgroundFileRef.current.value =
-                                                null;
-                                        }
-                                    }}
-                                    handleChange={(event) => {
-                                        setSelectedBackground(
-                                            URL.createObjectURL(
-                                                event.target.files[0]
-                                            )
-                                        );
-                                        selectedFileImage(
-                                            event.target.files[0],
-                                            "background"
-                                        );
-                                    }}
-                                />
+                            <div className="save-changes-buttons absolute top-3 sm:bottom-3 right-3 z-50">
+                                <div className="flex justify-between items-center px-4 gap-2">
+                                    <Button
+                                        label="Cancel"
+                                        className="bg-primary-black/90 text-primary-white hover:bg-primary-black/60 transition-all rounded-xl py-2 px-4 text-sm"
+                                        disabled={false}
+                                        handleClick={() => {
+                                            setShowSpinner(false);
+                                            cancelFileSelection();
+                                            hideSaveChangesContainer();
+                                        }}
+                                    />
+                                    <Button
+                                        label="Save Changes"
+                                        className="bg-primary/90 text-primary-white hover:bg-primary/60 transition-all rounded-xl py-2 px-4 text-sm"
+                                        disabled={false}
+                                        handleClick={() => {
+                                            setShowSpinner(true);
+                                            const type = selectedBackground
+                                                ? "background"
+                                                : "profile";
+                                            saveImage(type);
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        )}
+                        </div>
                     </div>
+                )}
+                {/* background */}
+                <div
+                    data-testid="profile-banner-image"
+                    className="profile-banner-image sm:overflow-y-scroll size-full "
+                    style={{
+                        background: `${
+                            !selectedBackground ? user?.avatarColor : ""
+                        }`,
+                    }}
+                >
+                    {selectedBackground ? (
+                        <img
+                            src={`${selectedBackground}`}
+                            className="object-cover sm:object-cover w-full h-full sm:h-auto"
+                        />
+                    ) : (
+                        <img
+                            onClick={() => {
+                                selectedImage(url);
+                                showImageModal(true);
+                            }}
+                            src={url}
+                            className="object-cover sm:object-cover w-full h-full sm:h-auto"
+                        />
+                    )}
+
+                    {!hasImage && isCurrentUser() && (
+                        <div
+                            ref={editToggleRef}
+                            onClick={onAddProfileClick}
+                            className="absolute z-[50] bottom-3 right-3 text-2xl text-background-blur hover:text-background-blur/80 transition-all duration-200"
+                        >
+                            <FaRegEdit />
+                            {isActive && <BackgroundSelectDropdown />}
+                        </div>
+                    )}
                 </div>
-            )}
+
+                <div className="profile-banner-data w-full lg:w-1/3 flex flex-col bottom-0 translate-y-1/2 sm:top-1/2">
+                    <div
+                        data-testid="profile-pic"
+                        className="profile-pic size-full flex justify-center items-center"
+                    >
+                        <div
+                            onMouseEnter={() => setIsHoverAvatar(true)}
+                            onMouseLeave={() => setIsHoverAvatar(false)}
+                            className="size-max flex justify-center items-center "
+                        >
+                            <Avatar
+                                isHover={setIsHoverAvatar}
+                                name={user?.username}
+                                bgColor={user?.avatarColor}
+                                textColor="#ffffff"
+                                size={140}
+                                avatarSrc={
+                                    selectedProfileImage || user?.profilePicture
+                                }
+                                onClick={() => {
+                                    selectedImage(user?.profilePicture);
+                                    showImageModal(true);
+                                }}
+                            />
+                            {hideSettings && isHoverAvatar && (
+                                <div className="size-max absolute bg-primary-white p-2 rounded-full">
+                                    <div
+                                        className="profile-pic-select"
+                                        data-testid="profile-pic-select"
+                                    >
+                                        <input
+                                            ref={profileImageRef}
+                                            name="profile"
+                                            type="file"
+                                            accept="image/*" // optional, limits to images
+                                            className="hidden"
+                                            onClick={() => {
+                                                if (profileImageRef.current) {
+                                                    profileImageRef.current.value =
+                                                        null;
+                                                }
+                                            }}
+                                            onChange={(event) => {
+                                                const file =
+                                                    event.target.files?.[0];
+                                                if (file) {
+                                                    setSelectedProfileImage(
+                                                        URL.createObjectURL(
+                                                            file
+                                                        )
+                                                    );
+                                                    selectedFileImage(
+                                                        file,
+                                                        "profile"
+                                                    );
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                    <label
+                                        onClick={() =>
+                                            profileFileInputClicked()
+                                        }
+                                    >
+                                        <FaCamera className="cameraa " />
+                                    </label>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    {hideSettings && (
+                        <div className="profile-select-image">
+                            <Input
+                                ref={backgroundFileRef}
+                                name="background"
+                                type="file"
+                                className="inputFile"
+                                onClick={() => {
+                                    if (backgroundFileRef.current) {
+                                        backgroundFileRef.current.value = null;
+                                    }
+                                }}
+                                handleChange={(event) => {
+                                    setSelectedBackground(
+                                        URL.createObjectURL(
+                                            event.target.files[0]
+                                        )
+                                    );
+                                    selectedFileImage(
+                                        event.target.files[0],
+                                        "background"
+                                    );
+                                }}
+                            />
+                        </div>
+                    )}
+                </div>
+            </div>
         </>
     );
 };
