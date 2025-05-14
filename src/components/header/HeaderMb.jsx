@@ -68,7 +68,7 @@ const HeaderMb = () => {
     }, []);
 
     return (
-        <div className="h-auto min-h-[8vh] bg-secondary flex items-center justify-between px-4 z-[1000]">
+        <div className="h-auto min-h-[8vh] bg-secondary flex items-center justify-between px-4 z-[1000] header-mb">
             <NotificationPermissionPrompt />
             <CallNotificationManager />
             <Logo />

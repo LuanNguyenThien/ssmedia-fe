@@ -98,9 +98,9 @@ const Streams = () => {
   useEffect(() => {
     const viewportHeight = window.innerHeight;
     console.log('Viewport Height:', viewportHeight);
-    const headerDesktopElement = document.querySelector('div[class="header-navbar grid grid-cols-5"]');
-    const headerElement = document.querySelector('div[class="h-[8vh] bg-secondary flex items-center justify-between px-4"]');
-    const footerElement = document.querySelector('div.fixed.bottom-0.bg-background.z-50');
+    const headerDesktopElement = document.querySelector('div.header-desktop');
+    const headerElement = document.querySelector('div.header-mb');
+    const footerElement = document.querySelector('div.footer-mb');
 
     document.documentElement.style.setProperty('--root-height', `${viewportHeight}px`);
     if (headerElement && footerElement) {
@@ -108,7 +108,7 @@ const Streams = () => {
       const footerHeight = footerElement.offsetHeight;
       const totalHeight = headerHeight + footerHeight;
       document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
-    }else {
+    } else {
       const headerHeight = headerDesktopElement.offsetHeight;
       const footerHeight = 0; // Assuming no footer in this case
       const totalHeight = headerHeight + footerHeight;

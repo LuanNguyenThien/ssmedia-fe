@@ -315,7 +315,7 @@ const Header = () => {
                             />
                         )}
 
-                        <div className="header-navbar grid grid-cols-5">
+                        <div className="header-navbar grid grid-cols-5 header-desktop">
                             <div className="col-span-1">
                                 <Logo />
                             </div>
