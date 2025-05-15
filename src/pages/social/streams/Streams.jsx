@@ -18,9 +18,10 @@ import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
 import { followerService } from "@services/api/followers/follower.service";
 import StreamsSkeleton from "./StreamsSkeleton";
 import ModalContainer from "@components/modal/ModalContainer";
-
+import { socketService } from "@services/socket/socket.service";
 const Streams = () => {
     const { allPosts } = useSelector((state) => state);
+    const socket = socketService?.socket;
     const [posts, setPosts] = useState([]);
     const [following, setFollowing] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -38,6 +39,7 @@ const Streams = () => {
     const { profile } = useSelector((state) => state.user);
 
     function fetchPostData() {
+        // if (loadingMore || currentPage > Math.ceil(totalPostsCount / PAGE_SIZE))
         if (loadingMore) {
             return;
         }
@@ -76,6 +78,46 @@ const Streams = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        const handleHidePost = ({ postId }) => {
+            setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+        };
+
+        const handleUnhidePost = async ({ postId }) => {
+            try {
+                const response = await postService.getPost(postId);
+                const newPost = response.data.post;
+
+                setPosts((prevPosts) => {
+                const exists = prevPosts.find((p) => p._id === newPost._id);
+                if (exists) return prevPosts;
+                return [newPost, ...prevPosts];
+                });
+
+            
+                setFollowing((prev) => {
+                if (prev.length === 0) {
+                    followerService.getUserFollowing().then((res) => {
+                    setFollowing(res.data.following);
+                    });
+                }
+                return prev;
+                });
+            } catch (error) {
+                console.error("Failed to unhide post", error);
+            }
+        };
+
+        
+        socket?.on("hide post", handleHidePost);
+        socket?.on("unhide post", handleUnhidePost);
+
+        return () => {
+            socket?.off("hide post", handleHidePost);
+            socket?.off("unhide post", handleUnhidePost);
+        };
+    }, []);
 
     const getUserFollowing = async () => {
         try {

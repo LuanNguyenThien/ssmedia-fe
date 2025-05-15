@@ -1,11 +1,11 @@
-import axios from '@services/axios';
+import axios from "@services/axios";
 
 class PostService {
   async getPost(id) {
     const response = await axios.get(`/post/${id}`);
     return response;
   }
-  
+
   async getAllPosts(page) {
     const response = await axios.get(`/post/all/${page}`);
     return response;
@@ -16,18 +16,63 @@ class PostService {
     return response;
   }
 
+  async getAllReportPost(page) {
+    const response = await axios.get(`/reportpost/${page}`);
+    return response;
+  }
+
   async createPost(body) {
-    const response = await axios.post('/post', body);
+    const response = await axios.post("/post", body);
+    return response;
+  }
+
+  async GetHirePost(page) {
+    const response = await axios.get(`/admin/hirepost/${page}`);
+    return response;
+  }
+
+  async GetStatisticPost() {
+    const response = await axios.get(`/admin/statistic/post`);
+    return response;
+  }
+
+  async GetStatisticPostperyear() {
+    const response = await axios.get(`/admin/statistic/postperyear`);
+    return response;
+  }
+
+  async GetPostCount() {
+    const response = await axios.get(`/admin/getpostcount`);
+    return response;
+  }
+
+  async GetStatisticPostperMonth() {
+    const response = await axios.get(`/admin/statistic/postpermonth`);
+    return response;
+  }
+
+  async HirePost(body) {
+    const response = await axios.post(`/admin/hirepost`, body);
+    return response;
+  }
+
+  async UnHirePost(body) {
+    const response = await axios.post(`/admin/unhirepost`, body);
+    return response;
+  }
+
+  async ChangeStatus(body) {
+    const response = await axios.put(`/admin/reportpost/status`, body);
     return response;
   }
 
   async createPostWithImage(body) {
-    const response = await axios.post('/post/image/post', body);
+    const response = await axios.post("/post/image/post", body);
     return response;
   }
 
   async createPostWithVideo(body) {
-    const response = await axios.post('/post/video/post', body);
+    const response = await axios.post("/post/video/post", body);
     return response;
   }
 
@@ -57,7 +102,9 @@ class PostService {
   }
 
   async getSinglePostReactionByUsername(postId, username) {
-    const response = await axios.get(`/post/single/reaction/username/${username}/${postId}`);
+    const response = await axios.get(
+      `/post/single/reaction/username/${username}/${postId}`
+    );
     return response;
   }
 
@@ -82,19 +129,21 @@ class PostService {
   }
 
   async addReaction(body) {
-    const response = await axios.post('/post/reaction', body);
+    const response = await axios.post("/post/reaction", body);
     return response;
   }
 
   async removeReaction(postId, previousReaction, postReactions) {
     const response = await axios.delete(
-      `/post/reaction/${postId}/${previousReaction}/${JSON.stringify(postReactions)}`
+      `/post/reaction/${postId}/${previousReaction}/${JSON.stringify(
+        postReactions
+      )}`
     );
     return response;
   }
 
   async addComment(body) {
-    const response = await axios.post('/post/comment', body);
+    const response = await axios.post("/post/comment", body);
     return response;
   }
 
@@ -104,7 +153,7 @@ class PostService {
   }
 
   async addfavPost(body) {
-    const response = await axios.post('/favpost', body);
+    const response = await axios.post("/favpost", body);
     return response;
   }
 

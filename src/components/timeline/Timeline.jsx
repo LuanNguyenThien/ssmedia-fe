@@ -15,6 +15,7 @@ import useLocalStorage from "@hooks/useLocalStorage";
 import { postService } from "@services/api/post/post.service";
 import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
 
+import { socketService } from "@services/socket/socket.service";
 const Timeline = ({ userProfileData, loading }) => {
     const { profile } = useSelector((state) => state.user);
     const [posts, setPosts] = useState([]);
@@ -95,6 +96,48 @@ const Timeline = ({ userProfileData, loading }) => {
     useEffect(() => {
         getUserByUsername();
     }, [getUserByUsername]);
+
+    useEffect(() => {
+      const handleHidePost = ({ postId }) => {
+        setPosts((prevPosts) =>
+          prevPosts.filter((post) => post._id !== postId)
+        );
+      };
+
+      const handleUnhidePost = async ({ postId }) => {
+        try {
+          const response = await postService.getPost(postId);
+          const newPost = response.data.post;
+          console.log("newPost", newPost);
+
+          // Kiểm tra nếu đã tồn tại trong danh sách thì không thêm lại
+          setPosts((prevPosts) => {
+            const exists = prevPosts.find((p) => p._id === newPost._id);
+            if (exists) return prevPosts;
+            return [newPost, ...prevPosts];
+          });
+
+          // Cập nhật lại danh sách following nếu chưa có
+          if (!following.length) {
+            const followRes = await followerService.getUserFollowing();
+            setFollowing(followRes.data.following);
+          }
+        } catch (error) {
+          console.error("Failed to unhide post", error);
+        }
+      };
+
+      socketService?.socket?.on("hide post", handleHidePost);
+      socketService?.socket?.on("unhide post", handleUnhidePost);
+
+      return () => {
+        socketService?.socket?.off("hide post", handleHidePost);
+        socketService?.socket?.off("unhide post", handleUnhidePost);
+      };
+    }, [following]);
+
+
+
 
     useEffect(() => {
         PostUtils.socketIOPost(posts, setPosts, profile);

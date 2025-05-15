@@ -1,0 +1,76 @@
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  transition: background-color 0.3s, color 0.3s, border-radius 0.3s; /* Thêm hiệu ứng chuyển đổi cho border-radius */
+  border-radius: 8px; /* Bo tròn góc cho mỗi mục menu */
+}
+
+.menu-item-active {
+  background-color: #d1e7ff; /* Nền xanh dương nhạt khi submenu mở */
+  color: #007bff; /* Đổi màu chữ thành xanh dương */
+  border-radius: 8px; /* Bo tròn góc khi submenu mở */
+}
+
+.menu-item-active .menu-item-icon-size {
+  color: #007bff; /* Đổi màu icon thành xanh dương */
+}
+
+.menu-item-icon-size {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.menu-item-text {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hover effect chỉ áp dụng khi chưa active */
+.menu-item:not(.menu-item-active):hover {
+  background-color: #f0f0f0; /* Màu nền xám khi hover */
+}
+
+// Giữ màu nền khi hover đối với item đã được active
+.menu-item-active:hover {
+  background-color: #d1e7ff; /* Giữ màu nền khi hover */
+}
+
+/* Sub item khi được chọn */
+.menu-dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  text-align: left;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 6px;
+}
+
+.menu-dropdown-item-active {
+  background-color: #d1e7ff; /* Màu nền cho sub item đã được chọn */
+  color: #007bff; /* Đổi màu chữ thành xanh đậm khi chọn */
+  font-weight: 600; /* Làm đậm chữ khi sub item được chọn */
+}
+
+.menu-dropdown-item .menu-dropdown-item-icon-size {
+  font-size: 16px;
+}
+
+.menu-dropdown-item:hover {
+  background-color: #f1f5f9; /* Nền sáng hơn khi hover */
+}
+
+.menu-dropdown-item-active:hover {
+  background-color: #cfe2ff; /* Giữ màu nền khi hover */
+}
+
+/* Màu badge 'new' hoặc 'pro' cho sub item */
+.menu-dropdown-badge-active {
+  background-color: #007bff;
+  color: white;
+}

@@ -22,6 +22,13 @@ class AuthService {
         return response;
     }
 
+    async CheckUser(authId) {
+        console.log("hello");
+        const response = await axios.post(`/checkUser/${authId}`);
+        // const response = await axios.post("/checkUser", {body});
+        return response;
+    }
+
     async resetPassword(token, body) {
         const response = await axios.post(`/reset-password/${token}`, body);
         return response;

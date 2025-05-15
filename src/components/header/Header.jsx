@@ -25,6 +25,17 @@ import { chatService } from "@services/api/chat/chat.service";
 import { getConversationList } from "@redux/api/chat";
 import CallNotificationManager from "@components/call/CallNotificationManager";
 import NotificationPermissionPrompt from "@components/call-noti/NotificationPermissionPrompt";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+  Text,
+} from "@chakra-ui/react";
 
 // components
 import DropdownSetting from "@components/header/components/dropdown/DropdownSetting";
@@ -37,7 +48,8 @@ const Header = () => {
     const dispatch = useDispatch();
     const location = useLocation();
     const section = useLocation().pathname.split("/")[3];
-
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [banReason, setBanReason] = useState("");
     //selector
     const { profile } = useSelector((state) => state.user);
     const { chatList } = useSelector((state) => state.chat);
@@ -87,6 +99,27 @@ const Header = () => {
         settingsRef,
         false
     );
+
+      const handleCloseBanModal = () => {
+        onClose();
+        onLogout(); // Đăng xuất sau khi đóng modal
+      };
+
+      useEffect(() => {
+        const handleBanUser = ({ userId, reason }) => {
+          if (profile?._id === userId) {
+            setBanReason(reason);
+            onOpen(); // Mở modal khi bị ban
+          }
+        };
+
+        socketService?.socket?.on("ban user", handleBanUser);
+
+        return () => {
+          socketService?.socket?.off("ban user", handleBanUser);
+        };
+      }, [profile]);
+
 
     useEffectOnce(() => {
         ChatUtils.usersOnlines();
@@ -493,6 +526,30 @@ const Header = () => {
                     </div>
                 </>
             )}
+            <Modal isOpen={isOpen} onClose={handleCloseBanModal} isCentered>
+              <div className="fixed inset-0 bg-black bg-opacity-50 z-50 transition-all duration-300 ease-in-out" />
+              <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div className="bg-white p-10 rounded-xl shadow-2xl max-w-md w-full transform transition-all duration-300 ease-in-out scale-100 ">
+                  <ModalHeader className="text-xl font-semibold text-center text-red-600">
+                    Bạn đã bị cấm truy cập
+                  </ModalHeader>
+                  <ModalBody className="text-lg text-gray-700 text-center">
+                    <Text>Lý do: {banReason}</Text>
+                  </ModalBody>
+                  <ModalFooter className="justify-center mt-5">
+                    <Button
+                      colorScheme="red"
+                      onClick={handleCloseBanModal}
+                      size="lg"
+                      variant="solid"
+                      className="w-14 py-2 text-white font-semibold rounded-lg shadow-md transition-all duration-200 ease-in-out bg-blue-500"
+                    >
+                      Thoát
+                    </Button>
+                  </ModalFooter>
+                </div>
+              </div>
+            </Modal>
         </>
     );
 };
