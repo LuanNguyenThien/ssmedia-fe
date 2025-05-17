@@ -503,6 +503,7 @@ const ChatWindow = () => {
         if (rendered) {
             ChatUtils.removeSocketListeners();
             ChatUtils.socketIOMessageReceived(
+                dispatch,
                 chatMessages,
                 searchParamsUsername,
                 setConversationId,

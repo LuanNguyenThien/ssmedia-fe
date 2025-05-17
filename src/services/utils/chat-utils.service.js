@@ -3,6 +3,7 @@ import { socketService } from "@services/socket/socket.service";
 import { cloneDeep, find, findIndex, remove } from "lodash";
 import { createSearchParams } from "react-router-dom";
 import GroupChatUtils from "./group-chat-utils.service";
+import { getConversationList } from "@redux/api/chat";
 
 export class ChatUtils {
     static privateChatMessages = [];
@@ -212,6 +213,7 @@ export class ChatUtils {
     }
 
     static socketIOMessageReceived(
+        dispatch,
         chatMessages,
         username,
         setConversationId,
@@ -237,6 +239,7 @@ export class ChatUtils {
         });
 
         socketService?.socket?.on("message read", (data) => {
+            dispatch(getConversationList());
             if (
                 data.senderUsername.toLowerCase() === username ||
                 data.receiverUsername.toLowerCase() === username

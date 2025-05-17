@@ -18,8 +18,15 @@ const MessageSidebar = ({
         >
             <div className="message-card">
                 <div className="message-card-body">
-                    <div className="w-full text-center text-xl font-bold px-4 pt-4">
-                        Chats
+                    <div className="flex justify-between items-center px-5 py-4 ">
+                        <div className="text-xl font-bold text-primary-black">
+                            Chats
+                        </div>
+                        {messageCount > 0 && (
+                            <div className="flex items-center justify-center bg-primary text-white text-sm font-medium rounded-full h-6 min-w-[24px] px-1.5">
+                            {messageCount > 99 ? "99+" : messageCount}
+                            </div>
+                        )}
                     </div>
 
                     <div className="w-full flex justify-center items-center py-1">

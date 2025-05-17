@@ -237,10 +237,11 @@ export class NotificationUtils {
                 }
 
                 const count = sumBy(messageNotifications, (notification) => {
-                    return !notification.isRead ? 1 : 0;
+                     return !notification?.isRead &&
+                        (notification?.receiverUsername === profile?.username || (notification?.isGroupChat && notification?.senderId !== profile?._id) ? 1 : 0);
                 });
 
-                if (!Utils.checkUrl(location.pathname, "chat")) {
+                if (!Utils.checkUrl(location.pathname, "chat") && notificationData?.senderId !== profile?._id) {
                     Utils.dispatchNotification(
                         "You have a new message",
                         "success",
