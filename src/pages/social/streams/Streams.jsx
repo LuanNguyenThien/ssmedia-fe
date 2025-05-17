@@ -195,7 +195,7 @@ const Streams = () => {
             ) : (
                 <div className="streams-content col-span-full">
                     <div
-                        className="streams-post pt-6 px-6 bg-background-blur rounded-3xl gap-4"
+                        className="streams-post sm:pt-6 sm:px-6 bg-background-blur rounded-3xl gap-4"
                         ref={bodyRef}
                     >
                         <PostForm />

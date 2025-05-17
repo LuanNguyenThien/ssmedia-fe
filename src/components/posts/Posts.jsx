@@ -20,7 +20,7 @@ const Posts = ({ allPosts, userFollowing, postsLoading }) => {
     }, [allPosts, userFollowing, postsLoading]);
 
     return (
-        <div className="posts-container flex flex-col gap-4 px-2 sm:px-0" data-testid="posts">
+        <div className="posts-container flex flex-col gap-4 px-0 sm:px-0" data-testid="posts">
             {!loading &&
                 posts.length > 0 &&
                 posts.map((post) => (

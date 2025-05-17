@@ -71,7 +71,7 @@ const PostContent = ({
                         }}
                     >
                         <img
-                            className="post-image w-max h-[400px] max-h-[400px]"
+                            className="post-image w-max h-auto max-h-[400px]"
                             style={{ objectFit: "contain" }}
                             src={`${Utils.getImage(
                                 post.imgId,
@@ -87,8 +87,7 @@ const PostContent = ({
                         className="image-display-flex bg-primary-white max-h-max"
                     >
                         <video
-                            width="100%"
-                            height="600px"
+                            className="post-image w-full h-auto max-h-[400px]"
                             controls
                             src={`${Utils.getVideo(
                                 post.videoId,
@@ -99,9 +98,9 @@ const PostContent = ({
                 )}
                 {post?.gifUrl && post.bgColor === "#ffffff" && (
                     <div
-                        className="image-display-flex"
+                        className="image-display-flex bg-primary-white max-h-max"
                         style={{
-                            height: "600px",
+                            // height: "600px",
                             backgroundColor: `${backgroundImageColor}`,
                         }}
                         onClick={() => {
@@ -110,7 +109,7 @@ const PostContent = ({
                         }}
                     >
                         <img
-                            className="post-image"
+                            className="post-image w-full h-auto max-h-[400px]"
                             style={{ objectFit: "contain" }}
                             src={`${post?.gifUrl}`}
                             alt=""

@@ -307,6 +307,28 @@ const Profile = () => {
             isCurrentUser() ? currentUserOptions : otherUserOptions
         );
     }, [isCurrentUser]);
+
+    useEffect(() => {
+        const viewportHeight = window.innerHeight;
+        console.log('Viewport Height:', viewportHeight);
+        const headerDesktopElement = document.querySelector('div.header-desktop');
+        const headerElement = document.querySelector('div.header-mb');
+        const footerElement = document.querySelector('div.footer-mb');
+    
+        document.documentElement.style.setProperty('--root-height', `${viewportHeight}px`);
+        if (headerElement && footerElement) {
+          const headerHeight = headerElement.offsetHeight;
+          const footerHeight = footerElement.offsetHeight;
+          const totalHeight = headerHeight + footerHeight;
+          document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
+        } else {
+          const headerHeight = headerDesktopElement.offsetHeight;
+          const footerHeight = 0; // Assuming no footer in this case
+          const totalHeight = headerHeight + footerHeight;
+          document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
+        }
+    }, []);
+
     return (
         <>
             <ModalContainer />
@@ -336,8 +358,8 @@ const Profile = () => {
             {loading ? (
                 <ProfileSkeleton />
             ) : (
-                <div className="profile-wrapper col-span-10 h-[88vh] max-h-[88vh] grid grid-cols-3 rounded-t-[30px] overflow-y-scroll lg:overflow-hidden bg-background-blur">
-                    <div className="profile-header w-full lg:h-[14vh] col-span-3 relative">
+                <div className="profile-wrapper col-span-10 grid grid-cols-3 rounded-t-[30px] overflow-y-scroll lg:overflow-auto bg-background-blur">
+                    <div className="profile-header w-full lg:h-[60vh] col-span-3 relative">
                         <BackgroundHeader
                             user={user}
                             isCurrentUser={isCurrentUser}
@@ -375,7 +397,7 @@ const Profile = () => {
                                     setRendered={getUserProfileByUsername}
                                 />
                             </div>
-                            <div className="col-span-2 h-full flex flex-col justify-start bg-primary-white rounded-t-[10px]">
+                            <div className="profile-user-content col-span-2 h-full flex flex-col justify-start bg-primary-white rounded-t-[10px]">
                                 <div className="w-full h-max flex items-center justify-between">
                                     {titleOptions.map((item, index) => (
                                         <div
@@ -392,7 +414,7 @@ const Profile = () => {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="size-full min-h-[500px] max-h-[500px] flex flex-col overflow-y-scroll bg-primary-white p-4">
+                                <div className="size-full flex flex-col overflow-y-scroll bg-primary-white p-4 profile-content-posts">
                                     {renderContent()}
                                 </div>
                             </div>

@@ -75,7 +75,11 @@ export default function AddQuestion() {
       trimmed === "<br>" ||
       trimmed === "<br/>" ||
       trimmed === "<br></br>" ||
-      trimmed === "<p></p><p></p>"
+      trimmed === "<p></p><p></p>" ||
+      trimmed === "<p></p>" ||
+      trimmed === "<p class=\"none\"></p>" ||
+      trimmed === "<p></p><p class=\"none\"></p>" ||
+      trimmed === "<p class=\"none\"></p><p class=\"none\"></p>"
     );
   }, [postData]);
 

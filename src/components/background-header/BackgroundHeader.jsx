@@ -144,7 +144,7 @@ const BackgroundHeader = ({
             )}
 
             <div
-                className="profile-banner w-full h-[40vh] sm:h-[14vh] sm:max-h-[14vh]"
+                className="profile-banner w-full h-[40vh] sm:h-[60vh] sm:max-h-[60vh]"
                 data-testid="profile-banner"
             >
                 {/*edit popup images section  */}

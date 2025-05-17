@@ -92,65 +92,66 @@ const PostForm = () => {
 
     return (
         <>
-            <div className="w-full max-w-full bg-white rounded-3xl shadow-sm px-[25px] py-4 mb-4 ">
-                <div
-                    className="flex gap-3 mb-4 cursor-pointer"
-                    onClick={() => openPostModal()}
-                >
-                    <Avatar
-                        name={profile?.username}
-                        bgColor={profile?.avatarColor}
-                        textColor="#ffffff"
-                        size={50}
-                        avatarSrc={profile?.profilePicture}
-                    />
-                    <div className="flex-grow">
-                        <div className="w-full bg-gray-100 rounded-full px-4 py-3 text-gray-500">
-                            What&apos;s on your mind?
+            <div className="w-full max-w-full px-0 sm:px-0">
+                <div className="w-full max-w-full bg-white rounded-3xl shadow-sm px-2 sm:px-[25px] py-4 mb-4 ">
+                    <div
+                        className="flex gap-3 mb-4 cursor-pointer"
+                        onClick={() => openPostModal()}
+                    >
+                        <Avatar
+                            name={profile?.username}
+                            bgColor={profile?.avatarColor}
+                            textColor="#ffffff"
+                            size={50}
+                            avatarSrc={profile?.profilePicture}
+                        />
+                        <div className="flex-grow">
+                            <div className="w-full bg-gray-100 rounded-full px-4 py-3 text-gray-500">
+                                What&apos;s on your mind?
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <div className="border-t border-gray-200 pt-3 mt-2">
+                        <div className="flex justify-start gap-6">
+                            <div className="relative">
+                                <button
+                                    type="button"
+                                    className="flex items-center gap-2 text-gray-600 text-sm font-medium px-2 py-1 rounded"
+                                    onClick={() => {
+                                        if (fileInputRef.current)
+                                            fileInputRef.current.click();
+                                        dispatch(openModal({ type: "add" }));
+                                        dispatch(toggleImageModal(!openFileDialog));
+                                    }}
+                                >
+                                    <Camera className="w-5 h-5 text-blue-600" />
+                                    <span>Image/Video</span>
+                                </button>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleFileChange}
+                                    hidden
+                                />
+                            </div>
 
-                <div className="border-t border-gray-200 pt-3 mt-2">
-                    <div className="flex justify-start gap-6">
-                        <div className="relative">
                             <button
-                                type="button"
-                                className="flex items-center gap-2 text-gray-600 text-sm font-medium px-2 py-1 rounded"
-                                onClick={() => {
-                                    if (fileInputRef.current)
-                                        fileInputRef.current.click();
-                                    dispatch(openModal({ type: "add" }));
-                                    dispatch(toggleImageModal(!openFileDialog));
-                                }}
+                                className="flex items-center gap-2 text-gray-600 text-sm font-medium bg-yellow-100 px-2 py-1 rounded"
+                                onClick={openGifModal}
                             >
-                                <Camera className="w-5 h-5 text-blue-600" />
-                                <span>Image/Video</span>
+                                <span className="text-yellow-500 font-bold">
+                                    GIF
+                                </span>
                             </button>
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                hidden
-                            />
+
+                            <button
+                                className="flex items-center gap-2 text-gray-600 text-sm font-medium"
+                                onClick={openFeelingsComponent}
+                            >
+                                <SmilePlus className="w-5 h-5 text-pink-500" />
+                                <span>Feeling</span>
+                            </button>
                         </div>
-
-                        <button
-                            className="flex items-center gap-2 text-gray-600 text-sm font-medium bg-yellow-100 px-2 py-1 rounded"
-                            onClick={openGifModal}
-                        >
-                            <span className="text-yellow-500 font-bold">
-                                GIF
-                            </span>
-                        </button>
-
-                        <button
-                            className="flex items-center gap-2 text-gray-600 text-sm font-medium"
-                            onClick={openFeelingsComponent}
-                        >
-                            <SmilePlus className="w-5 h-5 text-pink-500" />
-                            <span>Feeling</span>
-                        </button>
                     </div>
                 </div>
             </div>

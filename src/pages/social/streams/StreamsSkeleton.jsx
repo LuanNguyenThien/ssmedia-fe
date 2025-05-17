@@ -6,7 +6,7 @@ import PostSkeleton from "@/components/posts/post/components/PostSkeleton/PostSk
 const StreamsSkeleton = () => {
     return (
         <div className="streams-content col-span-full ">
-            <div className="streams-post px-6 bg-background-blur rounded-3xl pt-6">
+            <div className="streams-post px-2 sm:px-6 bg-background-blur rounded-3xl sm:pt-6">
                 <PostFormSkeleton />
                 {[1, 2, 3, 4, 5, 6].map((index) => (
                     <div key={index}>

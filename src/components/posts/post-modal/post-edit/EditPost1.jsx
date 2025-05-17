@@ -353,6 +353,7 @@ const EditPost = () => {
                       onChange={() => {
                         handleEditorDataChange();
                       }}
+                      theme="light"
                     />
                   </div>
                 </div>

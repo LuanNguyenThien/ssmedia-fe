@@ -315,7 +315,7 @@ export const AppRouter = () => {
         {
           path: "streams",
           element: (
-            <Suspense>
+            <Suspense fallback={<StreamsSkeleton />}>
               <Streams />
             </Suspense>
           ),

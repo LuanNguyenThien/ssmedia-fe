@@ -1,8 +1,8 @@
 @use "../../../assets/colors/variables.scss" as *;
 
-.bn-editor {
-    padding: 0px !important;
-}
+// .bn-editor {
+//     padding: 0px !important;
+// }
 
 // Styling for the vote bar on desktop and mobile
 .vote-bar {
@@ -221,6 +221,28 @@
                     object-fit: cover;
                 }
             }
+        }
+    }
+    .my-blocknote {
+        .bn-content {
+            background: #f0f0f0;
+        }
+        .bn-editor {
+            padding: 0px;
+        }
+        .bn-visual-media {
+            max-height: 400px;
+            object-fit: contain;
+        }
+        .bn-block-content .bn-inline-content .ProseMirror-trailingBreak {
+            display: none;
+            padding: 0;
+        }
+        .bn-block-content.ProseMirror-selectednode > *,
+        .ProseMirror-selectednode > .bn-block-content > * {
+            outline: none; /* Loại bỏ outline (thường là nguyên nhân của viền xanh) */
+            border: none; /* Đảm bảo không có border nào được áp dụng */
+            box-shadow: none; /* Đảm bảo không có box-shadow nào gây hiệu ứng tương tự */
         }
     }
 }
