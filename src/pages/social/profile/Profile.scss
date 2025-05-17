@@ -1,3 +1,26 @@
-.profile-wrapper {
+.profile-wrapper
+{
+    height: calc(var(--root-height) - var(--header-footer-height));
+    @media screen and (max-width: 1200px) {
+        // padding: 0;
+        height: calc(var(--root-height) - var(--header-footer-height));
+        -webkit-overflow-scrolling: touch; /* Thêm để cuộn mượt trên iOS */
+    }
 
+    .profile-content-posts {
+        height: calc(var(--root-height) - var(--header-footer-height) - 50px);
+        @media screen and (max-width: 1200px) {
+        // padding: 0;
+        height: calc(var(--root-height) - var(--header-footer-height));
+        -webkit-overflow-scrolling: touch; /* Thêm để cuộn mượt trên iOS */
+        }
+    }
+
+    .profile-user-content {
+        @media screen and (max-width: 1200px) {
+        // padding: 0;
+        height: calc(var(--root-height) - var(--header-footer-height));
+        -webkit-overflow-scrolling: touch; /* Thêm để cuộn mượt trên iOS */
+        }
+    }
 }

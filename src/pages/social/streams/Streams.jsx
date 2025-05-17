@@ -1,131 +1,231 @@
-import { useRef, useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Spinner from '@components/spinner/Spinner';
-import '@pages/social/streams/Streams.scss';
-import Suggestions from '@components/suggestions/Suggestions1';
-import { getUserSuggestions } from '@redux/api/suggestion';
-import useEffectOnce from '@hooks/useEffectOnce';
-import PostForm from '@components/posts/post-form/PostForm';
-import Posts from '@components/posts/Posts';
-import { Utils } from '@services/utils/utils.service';
-import { postService } from '@services/api/post/post.service';
-import { getPosts } from '@redux/api/posts';
-import { uniqBy } from 'lodash';
-import useInfiniteScroll from '@hooks/useInfiniteScroll';
-import { PostUtils } from '@services/utils/post-utils.service';
-import useLocalStorage from '@hooks/useLocalStorage';
-import { addReactions } from '@redux/reducers/post/user-post-reaction.reducer';
-import { followerService } from '@services/api/followers/follower.service';
-
+import { useRef, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Spinner from "@components/spinner/Spinner";
+import "@pages/social/streams/Streams.scss";
+import Suggestions from "@components/suggestions/Suggestions1";
+import { getUserSuggestions } from "@redux/api/suggestion";
+import useEffectOnce from "@hooks/useEffectOnce";
+import PostForm from "@components/posts/post-form/PostForm";
+import Posts from "@components/posts/Posts";
+import { Utils } from "@services/utils/utils.service";
+import { postService } from "@services/api/post/post.service";
+import { getPosts } from "@redux/api/posts";
+import { uniqBy } from "lodash";
+import useInfiniteScroll from "@hooks/useInfiniteScroll";
+import { PostUtils } from "@services/utils/post-utils.service";
+import useLocalStorage from "@hooks/useLocalStorage";
+import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
+import { followerService } from "@services/api/followers/follower.service";
+import StreamsSkeleton from "./StreamsSkeleton";
+import ModalContainer from "@components/modal/ModalContainer";
+import { socketService } from "@services/socket/socket.service";
 const Streams = () => {
-  const { allPosts } = useSelector((state) => state);
-  const [posts, setPosts] = useState([]);
-  const [following, setFollowing] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(2);
-  const [totalPostsCount, setTotalPostsCount] = useState(0);
-  const bodyRef = useRef(null);
-  const bottomLineRef = useRef();
-  const appPosts = useRef([]);
-  const dispatch = useDispatch();
-  const storedUsername = useLocalStorage('username', 'get');
-  const [deleteSelectedPostId] = useLocalStorage('selectedPostId', 'delete');
-  useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
-  const PAGE_SIZE = 10;
-  const [loadingMore, setLoadingMore] = useState(false);
-  const { profile } = useSelector((state) => state.user);
+    const { allPosts } = useSelector((state) => state);
+    const socket = socketService?.socket;
+    const [posts, setPosts] = useState([]);
+    const [following, setFollowing] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(2);
+    const [totalPostsCount, setTotalPostsCount] = useState(0);
+    const bodyRef = useRef(null);
+    const bottomLineRef = useRef();
+    const appPosts = useRef([]);
+    const dispatch = useDispatch();
+    const storedUsername = useLocalStorage("username", "get");
+    const [deleteSelectedPostId] = useLocalStorage("selectedPostId", "delete");
+    useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
+    const PAGE_SIZE = 10;
+    const [loadingMore, setLoadingMore] = useState(false);
+    const { profile } = useSelector((state) => state.user);
 
-  function fetchPostData() {
-    if (loadingMore || currentPage > Math.ceil(totalPostsCount / PAGE_SIZE)) return;
-
-    setLoadingMore(true);
-    getAllPosts().finally(() => setLoadingMore(false));
-  }
-
-  const getAllPosts = async () => {
-    try {
-      const response = await postService.getAllPosts(currentPage);
-      if (response.data.posts.length > 0) {
-        appPosts.current = [...posts, ...response.data.posts];
-        const allPosts = uniqBy(appPosts.current, '_id');
-        // const orderedPosts = orderBy(allPosts, ['createdAt'], ['desc']);
-        setPosts(allPosts);
-        setCurrentPage((prevPage) => prevPage + 1); // Increment page only when data is valid
-      }
-      setLoading(false);
-    } catch (error) {
-      Utils.dispatchNotification(error.response?.data?.message || 'Failed to load posts.', 'error', dispatch);
+    function fetchPostData() {
+        // if (loadingMore || currentPage > Math.ceil(totalPostsCount / PAGE_SIZE))
+        if (loadingMore) {
+            return;
+        }
+        
+        console.log("fetching posts");
+        setLoadingMore(true);
+        getAllPosts().finally(() => setLoadingMore(false));
     }
-  };
 
-  const getUserFollowing = async () => {
-    try {
-      const response = await followerService.getUserFollowing();
-      setFollowing(response.data.following);
-    } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
-    }
-  };
+    const getAllPosts = async () => {
+        try {
+            const response = await postService.getAllPosts(currentPage);
+            if (response.data.posts && response.data.posts.length > 0) {
+                appPosts.current = [...posts, ...response.data.posts];
+                const allPosts = uniqBy(appPosts.current, "_id");
+                setPosts(allPosts);
+                setCurrentPage((prevPage) => prevPage + 1); // Increment page only when data is valid
+                
+                if (response.data.totalPosts) {
+                    setTotalPostsCount(response.data.totalPosts);
+                }
+                
+                return true; // Indicate posts were returned
+            } else {
+                // No more posts to load
+                return false;
+            }
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response?.data?.message || "Failed to load posts.",
+                "error",
+                dispatch
+            );
+            return false;
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const getReactionsByUsername = async () => {
-    try {
-      const response = await postService.getReactionsByUsername(storedUsername);
-      dispatch(addReactions(response.data.reactions));
-    } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
-    }
-  };
+    useEffect(() => {
+        const handleHidePost = ({ postId }) => {
+            setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+        };
 
-  useEffectOnce(() => {
-    getUserFollowing();
-    getReactionsByUsername();
-    deleteSelectedPostId();
-    dispatch(getPosts());
-    dispatch(getUserSuggestions());
-  });
+        const handleUnhidePost = async ({ postId }) => {
+            try {
+                const response = await postService.getPost(postId);
+                const newPost = response.data.post;
+
+                setPosts((prevPosts) => {
+                const exists = prevPosts.find((p) => p._id === newPost._id);
+                if (exists) return prevPosts;
+                return [newPost, ...prevPosts];
+                });
+
+            
+                setFollowing((prev) => {
+                if (prev.length === 0) {
+                    followerService.getUserFollowing().then((res) => {
+                    setFollowing(res.data.following);
+                    });
+                }
+                return prev;
+                });
+            } catch (error) {
+                console.error("Failed to unhide post", error);
+            }
+        };
+
+        
+        socket?.on("hide post", handleHidePost);
+        socket?.on("unhide post", handleUnhidePost);
+
+        return () => {
+            socket?.off("hide post", handleHidePost);
+            socket?.off("unhide post", handleUnhidePost);
+        };
+    }, []);
+
+    const getUserFollowing = async () => {
+        try {
+            const response = await followerService.getUserFollowing();
+            setFollowing(response.data.following);
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
+        }
+    };
+
+    const getReactionsByUsername = async () => {
+        try {
+            const response = await postService.getReactionsByUsername(
+                storedUsername
+            );
+            dispatch(addReactions(response.data.reactions));
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
+        }
+    };
+
+    useEffectOnce(() => {
+        getUserFollowing();
+        getReactionsByUsername();
+        deleteSelectedPostId();
+        dispatch(getPosts());
+        dispatch(getUserSuggestions());
+    });
+
+    useEffect(() => {
+        setLoading(allPosts?.isLoading);
+        // const orderedPosts = orderBy(allPosts?.posts, ['createdAt'], ['desc']);
+        setPosts(allPosts?.posts);
+        setTotalPostsCount(allPosts?.totalPostsCount);
+    }, [allPosts]);
+
+    useEffect(() => {
+        PostUtils.socketIOPost(posts, setPosts, profile);
+    }, [posts, profile]);
 
   useEffect(() => {
-    setLoading(allPosts?.isLoading);
-    // const orderedPosts = orderBy(allPosts?.posts, ['createdAt'], ['desc']);
-    setPosts(allPosts?.posts);
-    setTotalPostsCount(allPosts?.totalPostsCount);
-  }, [allPosts]);
+    const viewportHeight = window.innerHeight;
+    console.log('Viewport Height:', viewportHeight);
+    const headerDesktopElement = document.querySelector('div.header-desktop');
+    const headerElement = document.querySelector('div.header-mb');
+    const footerElement = document.querySelector('div.footer-mb');
 
-  useEffect(() => {
-    PostUtils.socketIOPost(posts, setPosts, profile);
-  }, [posts, profile]);
+    document.documentElement.style.setProperty('--root-height', `${viewportHeight}px`);
+    if (headerElement && footerElement) {
+      const headerHeight = headerElement.offsetHeight;
+      const footerHeight = footerElement.offsetHeight;
+      const totalHeight = headerHeight + footerHeight;
+      document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
+    } else {
+      const headerHeight = headerDesktopElement.offsetHeight;
+      const footerHeight = 0; // Assuming no footer in this case
+      const totalHeight = headerHeight + footerHeight;
+      document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
+    }
+  }, []);
 
-  return (
-    <div className="streams-content col-span-full">
-      <div
-        className="streams-post px-10 bg-background-blur rounded-3xl"
-        ref={bodyRef}
-      >
-        <PostForm />
-        <Posts
-          allPosts={posts}
-          postsLoading={loading}
-          userFollowing={following}
-        />
-        <div>
-          {currentPage > Math.ceil(totalPostsCount / PAGE_SIZE) && (
-            <div className="no-chat" data-testid="no-chat">
-              You have read all posts.
-            </div>
-          )}
-        </div>
-        <div
-          ref={bottomLineRef}
-          style={{ marginBottom: "30px", height: "30px" }}
-        >
-          {loadingMore && <Spinner />}
-        </div>
-      </div>
-      <div className="streams-suggestions">
-        <Suggestions />
-      </div>
-    </div>
-  );
+    return (
+        <>
+            <ModalContainer />
+            {loading ? (
+                <StreamsSkeleton />
+            ) : (
+                <div className="streams-content col-span-full">
+                    <div
+                        className="streams-post sm:pt-6 sm:px-6 bg-background-blur rounded-3xl gap-4"
+                        ref={bodyRef}
+                    >
+                        <PostForm />
+                        <Posts
+                            allPosts={posts}
+                            postsLoading={loading}
+                            userFollowing={following}
+                        />
+                        <div>
+                            {currentPage >
+                                Math.ceil(totalPostsCount / PAGE_SIZE) && (
+                                <div className="no-chat" data-testid="no-chat">
+                                    You have read all posts.
+                                </div>
+                            )}
+                        </div>
+                        <div
+                            ref={bottomLineRef}
+                            style={{ marginBottom: "20px", height: "30px" }}
+                        >
+                            {loadingMore && <Spinner />}
+                        </div>
+                    </div>
+                    <div className="streams-suggestions pl-4">
+                        <Suggestions />
+                    </div>
+                </div>
+            )}
+        </>
+    );
 };
 
 export default Streams;

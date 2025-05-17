@@ -5,6 +5,15 @@ import waitingRingtone from "@assets/sounds/waiting-ring.mp3"
 import { Utils } from "@services/utils/utils.service"
 
 const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
+  const closingDueToRemoteEnd = useRef(false)
+  const [retryCount, setRetryCount] = useState(0)
+  const MAX_RETRIES = 5 // Tăng số lần thử để phủ hết 30 giây
+  const callAcceptedRef = useRef(false)
+  const callEndedRef = useRef(false)
+  const signalDataRef = useRef(null)
+  const retryTimeoutsRef = useRef([])
+  const [callTimeout, setCallTimeout] = useState(null)
+  const [timeRemaining, setTimeRemaining] = useState(30)
   const [callAccepted, setCallAccepted] = useState(false)
   const [callEnded, setCallEnded] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
@@ -16,16 +25,16 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
     typeof window !== "undefined" && window.visualViewport ? window.visualViewport.height : 0,
   )
 
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
-  const [screenStream, setScreenStream] = useState(null);
-  const originalStreamRef = useRef(null);
-  const waitingRingtoneRef = useRef(null);
+  const [isScreenSharing, setIsScreenSharing] = useState(false)
+  const [screenStream, setScreenStream] = useState(null)
+  const originalStreamRef = useRef(null)
+  const waitingRingtoneRef = useRef(null)
 
   const myVideo = useRef()
   const userVideo = useRef()
   const connectionRef = useRef()
   const containerRef = useRef()
-  const isConnectedRef = useRef(false);
+  const isConnectedRef = useRef(false)
 
   // Sử dụng tham chiếu cửa sổ popup được truyền vào
   const popupWindow = popupWindowRef || window
@@ -145,43 +154,43 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
   //     if (!isScreenSharing) {
   //       // Lưu stream camera ban đầu để có thể khôi phục sau
   //       originalStreamRef.current = stream;
-        
+
   //       // Yêu cầu quyền chia sẻ màn hình
   //       const displayStream = await popupWindow.navigator.mediaDevices.getDisplayMedia({
   //         video: true,
   //         audio: true // Đa số trình duyệt chưa hỗ trợ audio khi share screen
   //       });
-        
+
   //       // Lưu screen stream để dọn dẹp sau này
   //       setScreenStream(displayStream);
-        
+
   //       // Thay thế video track trong kết nối peer
   //       if (connectionRef.current && connectionRef.current.connected) {
   //         // Lấy video track từ màn hình
   //         const screenTrack = displayStream.getVideoTracks()[0];
-          
-  //         // Lấy sender video hiện tại từ peer connection 
+
+  //         // Lấy sender video hiện tại từ peer connection
   //         const senders = connectionRef.current._pc.getSenders();
-  //         const videoSender = senders.find(sender => 
+  //         const videoSender = senders.find(sender =>
   //           sender.track && sender.track.kind === 'video'
   //         );
-          
+
   //         // Thay thế video track
   //         if (videoSender) {
   //           videoSender.replaceTrack(screenTrack);
   //         }
-          
+
   //         // Cập nhật video local để hiển thị màn hình đang chia sẻ
   //         if (myVideo.current) {
   //           myVideo.current.srcObject = displayStream;
   //         }
   //       }
-        
+
   //       // Xử lý khi người dùng dừng chia sẻ màn hình qua trình duyệt
   //       displayStream.getVideoTracks()[0].onended = () => {
   //         stopScreenSharing();
   //       };
-        
+
   //       setIsScreenSharing(true);
   //     } else {
   //       stopScreenSharing();
@@ -194,114 +203,110 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
     try {
       if (!isScreenSharing) {
         // Lưu stream camera ban đầu để có thể khôi phục sau
-        originalStreamRef.current = stream;
-        
+        originalStreamRef.current = stream
+
         // Yêu cầu quyền chia sẻ màn hình với audio
         const displayStream = await popupWindow.navigator.mediaDevices.getDisplayMedia({
           video: true,
-          audio: true // Yêu cầu audio từ chia sẻ màn hình
-        });
-        
+          audio: true, // Yêu cầu audio từ chia sẻ màn hình
+        })
+
         // Tạo audio context để mix audio
-        const audioContext = new AudioContext();
-        
+        const audioContext = new AudioContext()
+
         // Tạo destination cho audio đã mix
-        const destination = audioContext.createMediaStreamDestination();
-        
+        const destination = audioContext.createMediaStreamDestination()
+
         // Thêm audio từ microphone (stream ban đầu)
         if (stream.getAudioTracks().length > 0) {
-          const micSource = audioContext.createMediaStreamSource(stream);
-          micSource.connect(destination);
+          const micSource = audioContext.createMediaStreamSource(stream)
+          micSource.connect(destination)
         }
-        
+
         // Thêm audio từ screen sharing nếu có
         if (displayStream.getAudioTracks().length > 0) {
-          const screenSource = audioContext.createMediaStreamSource(displayStream);
-          screenSource.connect(destination);
+          const screenSource = audioContext.createMediaStreamSource(displayStream)
+          screenSource.connect(destination)
         }
-        
+
         // Tạo stream kết hợp:
         // - Video từ screen sharing
         // - Audio đã kết hợp
-        const combinedStream = new MediaStream();
-        
+        const combinedStream = new MediaStream()
+
         // Thêm video track từ screen share
-        displayStream.getVideoTracks().forEach(track => {
-          combinedStream.addTrack(track);
-        });
-        
+        displayStream.getVideoTracks().forEach((track) => {
+          combinedStream.addTrack(track)
+        })
+
         // Thêm combined audio track
-        destination.stream.getAudioTracks().forEach(track => {
-          combinedStream.addTrack(track);
-        });
-        
+        destination.stream.getAudioTracks().forEach((track) => {
+          combinedStream.addTrack(track)
+        })
+
         // Lưu screen stream để dọn dẹp sau này
-        setScreenStream(displayStream);
-        
+        setScreenStream(displayStream)
+
         // Thay thế video track trong kết nối peer
         if (connectionRef.current && connectionRef.current._pc) {
-          const senders = connectionRef.current._pc.getSenders();
-          
+          const senders = connectionRef.current._pc.getSenders()
+
           // Thay video track
-          const videoSender = senders.find(sender => 
-            sender.track && sender.track.kind === 'video'
-          );
+          const videoSender = senders.find((sender) => sender.track && sender.track.kind === "video")
           if (videoSender) {
-            videoSender.replaceTrack(combinedStream.getVideoTracks()[0]);
+            videoSender.replaceTrack(combinedStream.getVideoTracks()[0])
           }
-          
+
           // Thay audio track bằng bản đã mix
-          const audioSender = senders.find(sender => 
-            sender.track && sender.track.kind === 'audio'
-          );
+          const audioSender = senders.find((sender) => sender.track && sender.track.kind === "audio")
           if (audioSender && combinedStream.getAudioTracks().length > 0) {
-            audioSender.replaceTrack(combinedStream.getAudioTracks()[0]);
+            audioSender.replaceTrack(combinedStream.getAudioTracks()[0])
           }
-          
+
           // Cập nhật video local để hiển thị màn hình đang chia sẻ
           if (myVideo.current) {
-            myVideo.current.srcObject = combinedStream;
+            myVideo.current.srcObject = combinedStream
           }
         }
-        
+
         // Xử lý khi người dùng dừng chia sẻ màn hình qua trình duyệt
         displayStream.getVideoTracks()[0].onended = () => {
-          stopScreenSharing();
-        };
-        
-        setIsScreenSharing(true);
+          stopScreenSharing()
+        }
+
+        setIsScreenSharing(true)
       } else {
-        stopScreenSharing();
+        stopScreenSharing()
       }
     } catch (err) {
-      console.error("Error sharing screen:", err);
+      console.error("Error sharing screen:", err)
     }
-  };
-  
+  }
+
   // const stopScreenSharing = () => {
   //   try {
   //     if (screenStream) {
   //       // Dừng tất cả tracks trong screen stream
   //       screenStream.getTracks().forEach(track => track.stop());
-        
+
   //       // Khôi phục video track ban đầu trong kết nối peer
   //       if (connectionRef.current && connectionRef.current.connected && originalStreamRef.current) {
   //         const senders = connectionRef.current._pc.getSenders();
-  //         const videoSender = senders.find(sender => 
+  //         const videoSender = senders.find(sender =>
   //           sender.track && sender.track.kind === 'video'
   //         );
-          
+
   //         if (videoSender && originalStreamRef.current.getVideoTracks().length > 0) {
   //           videoSender.replaceTrack(originalStreamRef.current.getVideoTracks()[0]);
   //         }
-          
+
   //         // Khôi phục video local để hiển thị camera
   //         if (myVideo.current) {
   //           myVideo.current.srcObject = originalStreamRef.current;
   //         }
   //       }
   //     }
-      
+
   //     setScreenStream(null);
   //     setIsScreenSharing(false);
   //   } catch (err) {
@@ -313,42 +318,38 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
     try {
       if (screenStream) {
         // Dừng tất cả tracks trong screen stream
-        screenStream.getTracks().forEach(track => track.stop());
-        
+        screenStream.getTracks().forEach((track) => track.stop())
+
         // Khôi phục video và audio track ban đầu trong kết nối peer
         if (connectionRef.current && connectionRef.current.connected && originalStreamRef.current) {
-          const senders = connectionRef.current._pc.getSenders();
-          
+          const senders = connectionRef.current._pc.getSenders()
+
           // Khôi phục video track
-          const videoSender = senders.find(sender => 
-            sender.track && sender.track.kind === 'video'
-          );
+          const videoSender = senders.find((sender) => sender.track && sender.track.kind === "video")
           if (videoSender && originalStreamRef.current.getVideoTracks().length > 0) {
-            videoSender.replaceTrack(originalStreamRef.current.getVideoTracks()[0]);
+            videoSender.replaceTrack(originalStreamRef.current.getVideoTracks()[0])
           }
-          
+
           // Khôi phục audio track
-          const audioSender = senders.find(sender => 
-            sender.track && sender.track.kind === 'audio'
-          );
+          const audioSender = senders.find((sender) => sender.track && sender.track.kind === "audio")
           if (audioSender && originalStreamRef.current.getAudioTracks().length > 0) {
-            audioSender.replaceTrack(originalStreamRef.current.getAudioTracks()[0]);
+            audioSender.replaceTrack(originalStreamRef.current.getAudioTracks()[0])
           }
-          
+
           // Khôi phục video local để hiển thị camera
           if (myVideo.current) {
-            myVideo.current.srcObject = originalStreamRef.current;
+            myVideo.current.srcObject = originalStreamRef.current
           }
         }
       }
-      
-      setScreenStream(null);
-      setIsScreenSharing(false);
+
+      setScreenStream(null)
+      setIsScreenSharing(false)
     } catch (err) {
-      console.error("Error stopping screen share:", err);
+      console.error("Error stopping screen share:", err)
     }
-  };
-  
+  }
+
   // Toggle fullscreen with improved popup window handling
   const toggleFullscreen = async () => {
     // Use a direct check of the DOM element styles as a fallback
@@ -375,37 +376,144 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
     }
   }
 
+  const sendCallSignal = (signalData) => {
+    socketService.socket.emit("call-user", {
+      receiverId: callData.receiverId,
+      receiverAvatarColor: callData?.receiverAvatarColor,
+      receiverAvatarSrc: callData?.receiverAvatarSrc,
+      userToCall: callData.receiverName,
+      callerId: callData.callerId,
+      callerName: callData.callerName,
+      callerAvatarColor: callData?.callerAvatarColor,
+      callerAvatarSrc: callData?.callerAvatarSrc,
+      callType: callData.callType,
+      signal: signalData,
+      callId: callData.callId,
+      conversationId: callData.conversationId,
+    })
+
+    console.log(`Đang gọi cho ${callData.receiverName}... (lần ${retryCount + 1})`)
+  }
+
+  const scheduleRetries = (signalData) => {
+    // Xóa các timeout cũ nếu có
+    retryTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId))
+    retryTimeoutsRef.current = []
+
+    // Tính toán thời gian giữa các lần thử
+    // Ví dụ với MAX_RETRIES = 5, sẽ có các lần thử tại giây thứ: 5, 10, 15, 20, 25
+    const interval = Math.floor(25000 / MAX_RETRIES) // 25000ms = 25 giây (để kết thúc trước timeout 30s)
+
+    for (let i = 0; i < MAX_RETRIES; i++) {
+      const timeoutId = setTimeout(
+        () => {
+          if (!callAccepted.current || !callEnded.current) {
+            setRetryCount(i + 1)
+            sendCallSignal(signalData);
+            console.log(`Đang thử lại lần ${i + 1}/${MAX_RETRIES} (${(i + 1) * (interval / 1000)} giây)`)
+          } else {
+            // Nếu cuộc gọi đã được chấp nhận hoặc đã kết thúc, xóa các timeout còn lại
+            retryTimeoutsRef.current.forEach((id) => clearTimeout(id))
+          }
+        },
+        interval * (i + 1),
+      )
+
+      retryTimeoutsRef.current.push(timeoutId)
+    }
+  }
+
+  useEffect(() => {
+    callAcceptedRef.current = callAccepted
+    callEndedRef.current = callEnded
+
+    // Hủy tất cả timeout khi cuộc gọi được chấp nhận
+    if ((callAccepted && retryTimeoutsRef.current.length > 0) || (callEnded && retryTimeoutsRef.current.length > 0)) {
+      console.log("Call accepted or ended, clearing all retry timeouts")
+      retryTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId))
+      retryTimeoutsRef.current = []
+    }
+  }, [callAccepted, callEnded])
+
+  // Thiết lập timeout khi component mount nếu là người gọi
+  useEffect(() => {
+    // Chỉ thiết lập timeout nếu là người gọi, không phải người nhận
+    if (!callData.isReceivingCall) {
+      const timeout = setTimeout(() => {
+        if (!callAccepted.current && !callEnded.current) {
+          console.log("Call not answered after 30 seconds, closing window...")
+          retryTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId))
+          endCall()
+        }
+      }, 30000) // 30 giây
+
+      setCallTimeout(timeout)
+
+      // Cleanup function
+      return () => {
+        if (timeout) {
+          clearTimeout(timeout)
+        }
+        retryTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId))
+      }
+    }
+  }, [])
+
+  // Hủy timeout khi cuộc gọi được chấp nhận
+  useEffect(() => {
+    if ((callAccepted && callTimeout) || (callEnded && callTimeout)) {
+      clearTimeout(callTimeout)
+      setCallTimeout(null)
+    }
+  }, [callAccepted, callTimeout, callEnded])
+
+  useEffect(() => {
+    if (!callData.isReceivingCall && !callAccepted) {
+      const interval = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000) // 1 giây
+
+      return () => clearInterval(interval)
+    }
+  }, [callAccepted, callData.isReceivingCall])
+
   // Thêm useEffect để quản lý ringtone
   useEffect(() => {
     // Phát nhạc chờ nếu chưa kết nối và chưa kết thúc cuộc gọi
     if (!callAccepted && !callEnded) {
       if (waitingRingtoneRef.current) {
-        waitingRingtoneRef.current.volume = 0.5; // Điều chỉnh âm lượng phù hợp
-        waitingRingtoneRef.current.loop = true;
-        
-        const playPromise = waitingRingtoneRef.current.play();
+        waitingRingtoneRef.current.volume = 0.5 // Điều chỉnh âm lượng phù hợp
+        waitingRingtoneRef.current.loop = true
+
+        const playPromise = waitingRingtoneRef.current.play()
         if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.error("Không thể phát âm thanh chờ:", error);
-          });
+          playPromise.catch((error) => {
+            console.error("Không thể phát âm thanh chờ:", error)
+          })
         }
       }
     } else {
       // Dừng âm thanh nếu cuộc gọi đã được kết nối hoặc kết thúc
       if (waitingRingtoneRef.current) {
-        waitingRingtoneRef.current.pause();
-        waitingRingtoneRef.current.currentTime = 0;
+        waitingRingtoneRef.current.pause()
+        waitingRingtoneRef.current.currentTime = 0
       }
     }
-    
+
     // Dọn dẹp khi component unmount
     return () => {
       if (waitingRingtoneRef.current) {
-        waitingRingtoneRef.current.pause();
-        waitingRingtoneRef.current.currentTime = 0;
+        waitingRingtoneRef.current.pause()
+        waitingRingtoneRef.current.currentTime = 0
       }
-    };
-  }, [callAccepted, callEnded]);
+    }
+  }, [callAccepted, callEnded])
 
   // Listen for fullscreen changes from browser (e.g., Esc key)
   useEffect(() => {
@@ -481,8 +589,9 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
   }, [])
 
   useEffect(() => {
-    socketService.socket.off("call-accepted");
-    socketService.socket.off("call-ended", remoteCallEnd);
+    socketService.socket.off("call-busy")
+    socketService.socket.off("call-accepted")
+    socketService.socket.off("call-ended", remoteCallEnd)
     if (myVideo.current && stream) {
       myVideo.current.srcObject = stream
     }
@@ -494,6 +603,58 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
     } else {
       callUser()
     }
+
+    socketService.socket.on("call-busy", (data) => {
+
+      // Create a modal div for the busy notification
+      const busyModal = document.createElement("div")
+      busyModal.id = "busy-notification-modal"
+      busyModal.style.position = "fixed"
+      busyModal.style.top = "0"
+      busyModal.style.left = "0"
+      busyModal.style.width = "100%"
+      busyModal.style.height = "100%"
+      busyModal.style.backgroundColor = "rgba(0, 0, 0, 0.7)"
+      busyModal.style.zIndex = "1000"
+      busyModal.style.display = "flex"
+      busyModal.style.alignItems = "center"
+      busyModal.style.justifyContent = "center"
+
+      // Create the notification content
+      const notificationContent = document.createElement("div")
+      notificationContent.style.backgroundColor = "#1e293b"
+      notificationContent.style.color = "white"
+      notificationContent.style.padding = "20px"
+      notificationContent.style.borderRadius = "10px"
+      notificationContent.style.maxWidth = "300px"
+      notificationContent.style.textAlign = "center"
+      notificationContent.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.5)"
+
+      // Add notification content
+      notificationContent.innerHTML = `
+        <div style="font-size: 18px; margin-bottom: 10px; font-weight: bold;">User is busy</div>
+        <div style="font-size: 14px; margin-bottom: 20px;">${callData.receiverName || "The recipient"} is currently on another call</div>
+        <button id="close-busy-notification" style="background-color: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;">Close</button>
+      `
+
+      busyModal.appendChild(notificationContent)
+      document.body.appendChild(busyModal)
+
+      
+      // Add event listener to close button
+      document.getElementById("close-busy-notification").addEventListener("click", () => {
+        document.body.removeChild(busyModal)
+        // endCall()
+      })
+      endCall()
+
+      // Auto close after 5 seconds
+      setTimeout(() => {
+        if (document.body.contains(busyModal)) {
+          document.body.removeChild(busyModal)
+        }
+      }, 5000)
+    })
 
     socketService.socket.on("call-accepted", (data) => {
       isConnectedRef.current = true
@@ -539,6 +700,7 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
     updateDimensions()
 
     return () => {
+      socketService.socket.off("call-busy")
       socketService.socket.off("call-accepted")
       socketService.socket.off("call-ended", remoteCallEnd)
 
@@ -556,6 +718,58 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
       }
     }
   }, [stream, callData, popupWindow])
+
+  useEffect(() => {
+    // Xử lý khi cửa sổ sắp bị đóng
+    const handleBeforeUnload = (e) => {
+      // Gọi endCall trước khi trang đóng
+      setCallEnded(true)
+      if (!callEnded && !closingDueToRemoteEnd.current) {
+        if (connectionRef.current) {
+          try {
+            connectionRef.current.destroy()
+          } catch (err) {
+            console.error("Lỗi khi hủy kết nối:", err)
+          }
+        }
+
+        // Kiểm tra xem có phải trạng thái busy không
+        // Nếu không phải busy thì mới gửi socket event để báo cho phía bên kia
+        const isBusyState = document.getElementById("close-busy-notification") !== null
+
+        if (!isBusyState && (signalDataRef.current || callData.isReceivingCall)) {
+          // Gửi socket event để báo cho phía bên kia
+          if (callData.isReceivingCall) {
+            socketService.socket.emit("call-ended", {
+              to: callData.callerName?.toLowerCase(),
+              callId: callData.callId,
+            })
+          } else {
+            socketService.socket.emit("call-ended", {
+              to: callData.receiverName?.toLowerCase(),
+              callId: callData.callId,
+            })
+          }
+        }
+
+        // Hiển thị hộp thoại xác nhận (tùy chọn)
+        // e.preventDefault();
+        // e.returnValue = ""; // Chrome yêu cầu gán giá trị để hiện dialog
+      }
+    }
+
+    // Thêm event listener vào cửa sổ popup
+    if (popupWindow) {
+      popupWindow.addEventListener("beforeunload", handleBeforeUnload)
+    }
+
+    // Cleanup
+    return () => {
+      if (popupWindow) {
+        popupWindow.removeEventListener("beforeunload", handleBeforeUnload)
+      }
+    }
+  }, [])
 
   // Animation keyframes as a string to be added to the document
   const animationKeyframes = `
@@ -586,28 +800,36 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
       initiator: true,
       trickle: false,
       stream,
+      config: {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          // { urls: 'turn:<PUBLIC_IP>:3478', username: 'test', credential: 'test123' }
+        ],
+      },
     })
 
     peer.on("signal", (data) => {
-      socketService.socket.emit("call-user", {
-        userToCall: callData.receiverName?.toLowerCase(),
-        signal: data,
-        from: callData.callerId,
-        callType: callData.callType,
-        callerName: callData.callerName,
-      })
+      signalDataRef.current = data // Lưu dữ liệu tín hiệu vào ref
+      // socketService.socket.emit("call-user", {
+      //   userToCall: callData.receiverName?.toLowerCase(),
+      //   signal: data,
+      //   from: callData.callerId,
+      //   callType: callData.callType,
+      //   callerName: callData.callerName,
+      // })
+      sendCallSignal(data) // Gọi hàm gửi tín hiệu
+      scheduleRetries(data) // Lên lịch thử lại nếu cần
     })
 
     peer.on("stream", (remoteStream) => {
       if (userVideo.current) {
-        userVideo.current.srcObject = remoteStream;
-        userVideo.current.muted = false;
-        
+        userVideo.current.srcObject = remoteStream
+        userVideo.current.muted = false
+
         // Ensure audio is actually playing
-        userVideo.current.play()
-          .catch((err) => console.error("Error playing remote media:", err));
+        userVideo.current.play().catch((err) => console.error("Error playing remote media:", err))
       }
-    });
+    })
 
     connectionRef.current = peer
   }
@@ -617,6 +839,12 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
       initiator: false,
       trickle: false,
       stream,
+      config: {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          // { urls: 'turn:<PUBLIC_IP>:3478', username: 'test', credential: 'test123' }
+        ],
+      },
     })
 
     peer.on("signal", (data) => {
@@ -624,11 +852,12 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
         signal: data,
         to: callData.callerName?.toLowerCase(),
         callType: callData.callType,
+        callId: callData.callId,
       })
     })
 
     peer.on("stream", (remoteStream) => {
-      isConnectedRef.current = true;
+      isConnectedRef.current = true
       // Tạo audio element riêng để đảm bảo âm thanh được xử lý
       // const audioElement = popupDocument.createElement('audio');
       // audioElement.id = 'caller-audio';
@@ -640,8 +869,7 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
       if (userVideo.current) {
         userVideo.current.srcObject = remoteStream
         userVideo.current.muted = false // Ensure not muted
-        userVideo.current.play()
-          .catch((err) => console.error("Error playing remote video:", err))
+        userVideo.current.play().catch((err) => console.error("Error playing remote video:", err))
       }
     })
 
@@ -670,31 +898,34 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
   }
 
   const remoteCallEnd = () => {
+    closingDueToRemoteEnd.current = true
     setCallEnded(true)
     if (connectionRef.current) {
       connectionRef.current.destroy()
     }
     socketService.socket.off("call-ended", remoteCallEnd)
-    onClose()
+    setTimeout(() => {
+      onClose()
+    }, 10)
   }
 
   const endCall = () => {
-    setCallEnded(true)
-    if (connectionRef.current) {
-      try {
-        connectionRef.current.destroy();
-      } catch (err) {
-          console.error("Lỗi khi hủy kết nối:", err);
-      } finally {
-          connectionRef.current = null;  // Luôn reset reference
-      }
-    }
-    if(callData.isReceivingCall) {
-      socketService.socket.emit("call-ended", { to: callData.callerName?.toLowerCase() })
-    } else {
-      socketService.socket.emit("call-ended", { to: callData.receiverName?.toLowerCase() })
-    }
+    closingDueToRemoteEnd.current = false
     onClose()
+    // if (connectionRef.current) {
+    //   try {
+    //     connectionRef.current.destroy();
+    //   } catch (err) {
+    //       console.error("Lỗi khi hủy kết nối:", err);
+    //   } finally {
+    //       connectionRef.current = null;  // Luôn reset reference
+    //   }
+    // }
+    // if(callData.isReceivingCall) {
+    //   socketService.socket.emit("call-ended", { to: callData.callerName?.toLowerCase(), callId: callData.callId })
+    // } else {
+    //   socketService.socket.emit("call-ended", { to: callData.receiverName?.toLowerCase(), callId: callData.callId })
+    // }
   }
 
   // Styles object with responsive adjustments
@@ -881,16 +1112,36 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
 
   return (
     <div style={styles.container} ref={containerRef}>
+      {!callAccepted && !callData.isReceivingCall && (
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            color: "white",
+            padding: "8px 16px",
+            borderRadius: "20px",
+            fontSize: "14px",
+            zIndex: 100,
+          }}
+        >
+          {retryCount > 0
+            ? `Retry attempt ${retryCount}/${MAX_RETRIES}... Call ends in ${timeRemaining}s`
+            : `Call will end in ${timeRemaining}s if not answered`}
+        </div>
+      )}
       <audio ref={waitingRingtoneRef} src={waitingRingtone} />
       <div style={styles.videoWrapper}>
-        <video 
-          playsInline 
-          ref={userVideo} 
-          autoPlay 
+        <video
+          playsInline
+          ref={userVideo}
+          autoPlay
           style={{
             ...styles.remoteVideo,
-            display: isConnectedRef.current ? "block" : "none"
-          }} 
+            display: isConnectedRef.current ? "block" : "none",
+          }}
         />
         {/* {callAccepted && !callEnded ? (
           <video playsInline ref={userVideo} autoPlay style={styles.remoteVideo} />
@@ -985,7 +1236,7 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
           </svg>
           <span style={styles.buttonText}>{isScreenSharing ? "Stop" : "Share"}</span>
         </button>
-        
+
         <button
           style={styles.controlButton}
           onClick={toggleMute}

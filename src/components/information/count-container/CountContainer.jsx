@@ -17,7 +17,6 @@ const CountContainer = ({
     followings,
     isCurrentUser,
     setRendered,
-    loading,
 }) => {
     const {
         isFollow,
@@ -49,58 +48,52 @@ const CountContainer = ({
     );
 
     return (
-        <>
-            {loading && !user ? (
-                <CountContainerSkeleton />
-            ) : (
-                <div className="w-full h-auto z-50 flex flex-col justify-start items-center gap-2 px-4">
-                    {/* username and bio */}
-                    {user && (
-                        <>
-                            <span className="font-extrabold text-xl text-primary-black">
-                                {user?.username}
-                            </span>
+        <div className="w-full h-auto z-50 flex flex-col justify-start items-center gap-2 px-4">
+            {/* username and bio */}
+            {user && (
+                <>
+                    <span className="font-extrabold text-xl text-primary-black">
+                        {user?.username}
+                    </span>
 
-                            {user?.quote.length > 0 && (
-                                <div className="w-full bg-primary-white text-sm font-normal text-center truncate whitespace-pre-wrap">
-                                    {user?.quote}
-                                </div>
-                            )}
-                        </>
-                    )}
-
-                    {/* user information section */}
-
-                    <SocialEntities
-                        shortenedFollowers={shortenedFollowers}
-                        shortenedFollowing={shortenedFollowing}
-                        shortenedPosts={shortenedPosts}
-                    />
-
-                    {/* message and follow/unfollow section */}
-                    {!isCurrentUser && (
-                        <div className="flex items-center gap-2 pt-3">
-                            <InformationButton
-                                title={"Message"}
-                                icon={<TbMessageCircle />}
-                                onClick={handleClickMessageButton}
-                                className={"!bg-primary !text-primary-white"}
-                            />
-
-                            <ActionSelector
-                                isFollow={isFollow}
-                                isBlocked={isBlocked}
-                                onClickFollow={followUser}
-                                onClickUnfollow={unFollowUser}
-                                onClickBlock={blockUser}
-                                onClickUnblock={unblockUser}
-                                user={user}
-                            />
+                    {user?.quote.length > 0 && (
+                        <div className="w-full bg-primary-white text-sm font-normal text-center truncate whitespace-pre-wrap">
+                            {user?.quote}
                         </div>
                     )}
+                </>
+            )}
+
+            {/* user information section */}
+
+            <SocialEntities
+                shortenedFollowers={shortenedFollowers}
+                shortenedFollowing={shortenedFollowing}
+                shortenedPosts={shortenedPosts}
+            />
+
+            {/* message and follow/unfollow section */}
+            {!isCurrentUser && (
+                <div className="flex items-center gap-2 pt-3">
+                    <InformationButton
+                        title={"Message"}
+                        icon={<TbMessageCircle />}
+                        onClick={handleClickMessageButton}
+                        className={"!bg-primary !text-primary-white"}
+                    />
+
+                    <ActionSelector
+                        isFollow={isFollow}
+                        isBlocked={isBlocked}
+                        onClickFollow={followUser}
+                        onClickUnfollow={unFollowUser}
+                        onClickBlock={blockUser}
+                        onClickUnblock={unblockUser}
+                        user={user}
+                    />
                 </div>
             )}
-        </>
+        </div>
     );
 };
 export default memo(CountContainer);

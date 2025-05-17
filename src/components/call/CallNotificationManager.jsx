@@ -11,8 +11,16 @@ const CallNotificationManager = () => {
         setCallData(data);
     }, []);
 
-    const handleCallEnded = useCallback(() => {
-        setCallData(null);
+    const handleCallEnded = useCallback(async () => {
+        await new Promise((resolve) => {
+          socketService.socket.off("call-incoming", handleCallIncoming);
+          setCallData(null);
+      
+          setTimeout(() => {
+            socketService.socket.on("call-incoming", handleCallIncoming);
+            resolve(); // Đánh dấu rằng quá trình đã hoàn thành
+          }, 1500);
+        });
     }, []);
 
     useEffect(() => {
@@ -92,6 +100,7 @@ const CallNotificationManager = () => {
                     if (stream) {
                         stream.getTracks().forEach(track => track.stop());
                     }
+                    socketService.socket.on("call-incoming", handleCallIncoming);
                     socketService.socket.emit("end-call", { to: callData.from });
                 };
                 
@@ -111,17 +120,20 @@ const CallNotificationManager = () => {
         }
     };
 
-    const handleReject = () => {
+    const handleReject = async() => {
         if (callData) {
             // Gửi sự kiện reject-call đến người gọi
-            socketService.socket.emit("reject-call", { 
-                to: callData.from,
-                reason: "Call rejected by user"
+            await socketService.socket.emit("call-rejected", { 
+                to: callData.callerName?.toLowerCase(),
+                callId: callData.callId,
             });
             
             // Ẩn thông báo
             setCallData(null);
         }
+        setTimeout(() => {
+            socketService.socket.on("call-incoming", handleCallIncoming);
+        }, 2000); // Đợi 2 giây trước khi đăng ký lại listener
     };
 
     return (

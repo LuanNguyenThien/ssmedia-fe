@@ -10,6 +10,10 @@ import gif from "./icons/common/gif.svg";
 import feeling from "./icons/common/emoji.svg";
 import send from "./icons/common/send.svg";
 import remove from "./icons/common/delete.svg";
+import search_image from "./icons/common/search-image.png";
+// import setting from "./icons/common/setting.svg";
+import chevron from "./icons/common/chevron-up.svg";
+import comment from "./icons/common/comment.svg";
 
 //messages
 import check from "./icons/messages/checked.png";
@@ -48,6 +52,17 @@ import chats from "./icons/sidebar/chat.svg";
 import saves from "./icons/sidebar/save.svg";
 import notifications from "./icons/sidebar/notification.svg";
 import add from "./icons/sidebar/add.svg";
+import info from "./icons/sidebar/info.svg";
+import user from "./icons/sidebar/user.svg";
+import leave from "./icons/sidebar/leave.svg";
+import addmember from "./icons/sidebar/add-member.svg";
+import setting from "./icons/sidebar/setting.svg";
+import arrowUpCircle from "./icons/sidebar/arrow-up-circle.svg";
+import removeMember from "./icons/sidebar/remove-member.svg";
+import edit from "./icons/sidebar/edit.svg";
+import envelope from "./icons/sidebar/envelope.svg";
+import block from "./icons/sidebar/block-closed.svg";
+
 
 export const assets = {
     logo,
@@ -80,6 +95,7 @@ export const profileInfo = {
     social_twitter,
 };
 export const icons = {
+    user,
     video,
     picture,
     gif,
@@ -100,5 +116,17 @@ export const icons = {
     uncheck,
     remove,
     options,
-    say_hi
+    say_hi,
+    search_image,
+    chevron,
+    comment,
+    info,
+    leave,
+    addmember,
+    setting,
+    arrowUpCircle,
+    removeMember,
+    edit,
+    envelope,
+    block
 };

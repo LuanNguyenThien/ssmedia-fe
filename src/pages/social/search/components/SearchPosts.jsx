@@ -1,20 +1,29 @@
-import Post from "@/components/posts/post/Post";
+import Posts from "@components/posts/Posts";
 import PeopleCard from "./PeopleCard";
 import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+import useEffectOnce from "@hooks/useEffectOnce";
+import { followerService } from "@/services/api/followers/follower.service";
+import { Utils } from "@/services/utils/utils.service";
+import { useDispatch } from "react-redux";
 
-const PostCards = ({ posts }) => {
+const PostCards = ({ posts, postsLoading, userFollowing }) => {
     return (
         <div className="rounded-md">
             <div className="flex flex-col">
-                {posts.map((post) => (
+                <Posts
+                    allPosts={posts}
+                    postsLoading={postsLoading}
+                    userFollowing={userFollowing}
+                />
+                {/* {posts.map((post) => (
                     <Post
                         key={post.id}
                         post={post}
                         showIcons={false}
                         className="search-page__posts"
                     />
-                ))}
+                ))} */}
             </div>
         </div>
     );
@@ -22,11 +31,11 @@ const PostCards = ({ posts }) => {
 const PeopleCards = ({ users, setRendered, handleShowMore, hasMoreUsers }) => {
     return (
         <>
-            <div className=" rounded-[10px]  flex flex-col gap-2 bg-primary-white p-6 ">
-                <span className="text-xl font-extrabold">
+            <div className=" rounded-[10px]  flex flex-col gap-2 bg-primary-white">
+                <span className="text-xl font-bold px-4 pt-4">
                     Look Who We Found
                 </span>
-                <div className="flex flex-col gap-2 ">
+                <div className="flex flex-col gap-2 p-2">
                     {users &&
                         users.map((user) => (
                             <PeopleCard
@@ -47,7 +56,7 @@ const PeopleCards = ({ users, setRendered, handleShowMore, hasMoreUsers }) => {
                 )}
 
                 {users.length === 0 && (
-                    <div className="flex items-center justify-center h-full">
+                    <div className="flex items-center justify-center h-full pb-4">
                         <span className="text-gray-500">No users found</span>
                     </div>
                 )}
@@ -66,12 +75,38 @@ const SearchPosts = ({
     handleShowMore,
     hasMoreUsers,
 }) => {
+    const dispatch = useDispatch();
     const [rendered, setRendered] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [following, setFollowing] = useState([]);
+
+    const getUserFollowing = async () => {
+        try {
+            const response = await followerService.getUserFollowing();
+            setFollowing(response.data.following);
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response.data.message,
+                "error",
+                dispatch
+            );
+        }
+    };
+
+    useEffectOnce(() => {
+        getUserFollowing();
+    }, []);
 
     const renderContent = () => {
         switch (state) {
             case "Posts":
-                return <PostCards posts={searchResults?.posts} />;
+                return (
+                    <PostCards
+                        posts={searchResults?.posts}
+                        postsLoading={loading}
+                        userFollowing={following}
+                    />
+                );
 
             case "People":
                 return (
@@ -93,7 +128,11 @@ const SearchPosts = ({
                             />
                         )}
                         {searchResults.posts && (
-                            <PostCards posts={searchResults?.posts} />
+                            <PostCards
+                                posts={searchResults?.posts}
+                                postsLoading={loading}
+                                userFollowing={following}
+                            />
                         )}
                         {!searchResults?.users && !searchResults?.posts && (
                             <div className="flex items-center justify-center h-full">
@@ -107,7 +146,7 @@ const SearchPosts = ({
         }
     };
     return (
-        <div className="size-full max-h-full overflow-y-scroll scroll-smooth flex flex-col gap-4 px-4">
+        <div className="size-full max-h-full overflow-y-scroll scroll-smooth flex flex-col gap-4 sm:px-4">
             {renderContent()}
         </div>
     );

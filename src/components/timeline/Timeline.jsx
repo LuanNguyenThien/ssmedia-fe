@@ -1,7 +1,7 @@
 import PostForm from "@components/posts/post-form/PostForm";
 import PostFormSkeleton from "@components/posts/post-form/PostFormSkeleton";
-import Post from "@components/posts/post/Post1";
-import PostSkeleton from "@components/posts/post/PostSkeleton";
+import Post from "@/components/posts/post/Post";
+import PostSkeleton from "@/components/posts/post/components/PostSkeleton/PostSkeleton";
 import useEffectOnce from "@hooks/useEffectOnce";
 import { followerService } from "@services/api/followers/follower.service";
 import { PostUtils } from "@services/utils/post-utils.service";
@@ -15,6 +15,7 @@ import useLocalStorage from "@hooks/useLocalStorage";
 import { postService } from "@services/api/post/post.service";
 import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
 
+import { socketService } from "@services/socket/socket.service";
 const Timeline = ({ userProfileData, loading }) => {
     const { profile } = useSelector((state) => state.user);
     const [posts, setPosts] = useState([]);
@@ -97,6 +98,48 @@ const Timeline = ({ userProfileData, loading }) => {
     }, [getUserByUsername]);
 
     useEffect(() => {
+      const handleHidePost = ({ postId }) => {
+        setPosts((prevPosts) =>
+          prevPosts.filter((post) => post._id !== postId)
+        );
+      };
+
+      const handleUnhidePost = async ({ postId }) => {
+        try {
+          const response = await postService.getPost(postId);
+          const newPost = response.data.post;
+          console.log("newPost", newPost);
+
+          // Kiểm tra nếu đã tồn tại trong danh sách thì không thêm lại
+          setPosts((prevPosts) => {
+            const exists = prevPosts.find((p) => p._id === newPost._id);
+            if (exists) return prevPosts;
+            return [newPost, ...prevPosts];
+          });
+
+          // Cập nhật lại danh sách following nếu chưa có
+          if (!following.length) {
+            const followRes = await followerService.getUserFollowing();
+            setFollowing(followRes.data.following);
+          }
+        } catch (error) {
+          console.error("Failed to unhide post", error);
+        }
+      };
+
+      socketService?.socket?.on("hide post", handleHidePost);
+      socketService?.socket?.on("unhide post", handleUnhidePost);
+
+      return () => {
+        socketService?.socket?.off("hide post", handleHidePost);
+        socketService?.socket?.off("unhide post", handleUnhidePost);
+      };
+    }, [following]);
+
+
+
+
+    useEffect(() => {
         PostUtils.socketIOPost(posts, setPosts, profile);
     }, [posts, profile]);
 
@@ -119,7 +162,7 @@ const Timeline = ({ userProfileData, loading }) => {
 
             {/* posts section */}
             {!loading && posts.length > 0 && (
-                <div className="size-full">
+                <div className="size-full flex flex-col gap-2 ">
                     {username === profile?.username && <PostForm />}
                     {posts.map((post) => (
                         <div key={post?._id}>

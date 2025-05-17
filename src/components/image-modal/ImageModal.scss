@@ -67,3 +67,26 @@
     }
   }
 }
+
+.rotate-container-landscape {
+  width: auto;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rotate-container-portrait {
+  width: auto;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .rotate-container-portrait {
+    max-width: 95vw !important;
+    max-height: 70vh !important;
+  }
+}

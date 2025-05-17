@@ -26,7 +26,8 @@ export default defineConfig({
         port: 3000,      // Port server local của bạn
         allowedHosts: [
         'localhost',
-        '192.168.1.8',                              // IP local của bạn
+        '192.168.1.8',            
+        `9bd7-2402-800-6398-493d-54a2-5807-8fa7-f5c5.ngrok-free.app`,                  // IP local của bạn
         '0416-2001-ee0-5201-5e20-59b9-553a-6a8d-4ab8.ngrok-free.app',
         '40ba-2001-ee0-5201-5e20-cc4c-d8d4-2703-1165.ngrok-free.app', // Host ngrok hiện tại
         '*.ngrok-free.app'                          // Cho phép tất cả subdomains của ngrok

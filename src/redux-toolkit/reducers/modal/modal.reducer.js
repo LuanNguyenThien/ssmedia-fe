@@ -13,6 +13,7 @@ const initialState = {
   reactionsModalIsOpen: false,
   commentsModalIsOpen: false,
   deleteDialogIsOpen: false,
+  deleteDialogType: "",
   modalType: "createpost",
 };
 
@@ -39,6 +40,7 @@ const modalSlice = createSlice({
       state.openFileDialog = false;
       state.openVideoDialog = false;
       state.deleteDialogIsOpen = false;
+      state.deleteDialogType = "";
       state.modalType = "createpost"
     },
     setModalType: (state, action) => {
@@ -67,8 +69,9 @@ const modalSlice = createSlice({
       state.commentsModalIsOpen = action.payload;
     },
     toggleDeleteDialog: (state, action) => {
-      const { data, toggle } = action.payload;
+      const { data, toggle, dialogType = "" } = action.payload;
       state.deleteDialogIsOpen = toggle;
+      state.deleteDialogType = dialogType;
       state.data = data;
     },
   },

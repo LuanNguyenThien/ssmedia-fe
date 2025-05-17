@@ -19,7 +19,7 @@ const Input = forwardRef((props, ref) => (
             onClick={props.onClick}
             onFocus={props.onFocus}
             onBlur={props.onBlur}
-            className={`form-input ${props.className}`}
+            className={`form-input px-4 py-2 text-base !w-full ${props.className}`}
             style={props.style}
             autoComplete="off"
         />

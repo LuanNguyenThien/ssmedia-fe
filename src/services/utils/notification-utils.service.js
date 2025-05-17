@@ -3,6 +3,7 @@ import { socketService } from "@services/socket/socket.service";
 import { Utils } from "@services/utils/utils.service";
 import { cloneDeep, find, findIndex, remove, sumBy } from "lodash";
 import { timeAgo } from "@services/utils/timeago.utils";
+import GroupChatUtils from "./group-chat-utils.service";
 
 export class NotificationUtils {
     static socketIOAnalyzeNotifications(profile, dispatch) {
@@ -82,7 +83,6 @@ export class NotificationUtils {
         notificationData,
         setNotificationsCount
     ) {
-
         const items = [];
         for (const notification of notificationData) {
             const item = {
@@ -103,6 +103,7 @@ export class NotificationUtils {
                     : notification?.profilePicture,
                 read: notification?.read,
                 post: notification?.post,
+                htmlPost: notification?.htmlPost,
                 imgUrl: notification?.imgId
                     ? Utils.appImageUrl(
                           notification?.imgVersion,
@@ -113,12 +114,12 @@ export class NotificationUtils {
                     : notification?.imgUrl,
                 comment: notification?.comment,
                 reaction: notification?.reaction,
+                post_analysis: notification?.post_analysis,
                 senderName: notification?.userFrom
                     ? notification?.userFrom.username
                     : notification?.username,
                 notificationType: notification?.notificationType,
                 entityId: notification?.entityId,
-
             };
             items.push(item);
         }
@@ -139,6 +140,7 @@ export class NotificationUtils {
             const notificationDialog = {
                 createdAt: notification?.createdAt,
                 post: notification?.post,
+                htmlPost: notification?.htmlPost,
                 imgUrl: notification?.imgId
                     ? Utils.appImageUrl(
                           notification?.imgVersion,
@@ -149,6 +151,7 @@ export class NotificationUtils {
                     : notification?.imgUrl,
                 comment: notification?.comment,
                 reaction: notification?.reaction,
+                post_analysis: notification?.post_analysis,
                 senderName: notification?.userFrom
                     ? notification?.userFrom.username
                     : notification?.username,
@@ -170,78 +173,84 @@ export class NotificationUtils {
         dispatch,
         location
     ) {
-        await socketService?.socket?.off("chat list");
-        await socketService?.socket?.on("chat list", (data) => {
+        socketService?.socket?.off("chat list-notification");
+        socketService?.socket?.on("chat list-notification", async (data) => {
             messageNotifications = cloneDeep(messageNotifications);
-            if (
-                data?.receiverUsername === profile?.username ||
-                data?.senderUsername === profile?.username ||
-                data?.isGroupChat
-            ) {
-                let chatListData = null;
-                if (data.isGroupChat) {
-                    chatListData = find(
-                        chatList,
-                        (chat) => chat.groupId === data.groupId
+
+            let isValidMessageToDisplay = true;
+            // Only check group membership for group chats
+            if (data.isGroupChat) {
+                isValidMessageToDisplay =
+                    await GroupChatUtils.isValidMessageDisplay(
+                        data?.groupId,
+                        profile._id
                     );
-                }
-                if (!data.isGroupChat || chatListData) {
-                    const notificationData = {
-                        isGroupChat: data.isGroupChat,
-                        groupName: data.groupName,
-                        groupImage: data.groupImage,
-                        groupId: data.groupId,
-                        senderId: data.senderId,
-                        senderUsername: data.senderUsername,
-                        senderAvatarColor: data.senderAvatarColor,
-                        senderProfilePicture: data.senderProfilePicture,
-                        receiverId: data.receiverId,
-                        receiverUsername: data.receiverUsername,
-                        receiverAvatarColor: data.receiverAvatarColor,
-                        receiverProfilePicture: data.receiverProfilePicture,
-                        messageId: data._id,
-                        conversationId: data.conversationId,
-                        body: data.body,
-                        isRead: data.isRead,
-                    };
-                    const messageIndex = findIndex(
+            }
+
+            if (
+                (data.isGroupChat && isValidMessageToDisplay) ||
+                (!data.isGroupChat &&
+                    (data?.receiverUsername === profile?.username ||
+                        data?.senderUsername === profile?.username))
+            ) {
+                // Process notification for valid messages
+                const notificationData = {
+                    isGroupChat: data.isGroupChat,
+                    groupName: data.groupName,
+                    groupImage: data.groupImage,
+                    groupId: data.groupId,
+                    senderId: data.senderId,
+                    senderUsername: data.senderUsername,
+                    senderAvatarColor: data.senderAvatarColor,
+                    senderProfilePicture: data.senderProfilePicture,
+                    receiverId: data.receiverId,
+                    receiverUsername: data.receiverUsername,
+                    receiverAvatarColor: data.receiverAvatarColor,
+                    receiverProfilePicture: data.receiverProfilePicture,
+                    messageId: data._id,
+                    conversationId: data.conversationId,
+                    body: data.body,
+                    isRead: data.isRead,
+                };
+
+                const messageIndex = findIndex(
+                    messageNotifications,
+                    (notification) =>
+                        notification.conversationId === data.conversationId
+                );
+
+                if (messageIndex > -1) {
+                    remove(
                         messageNotifications,
                         (notification) =>
                             notification.conversationId === data.conversationId
                     );
-                    if (messageIndex > -1) {
-                        remove(
-                            messageNotifications,
-                            (notification) =>
-                                notification.conversationId ===
-                                data.conversationId
-                        );
-                        messageNotifications = [
-                            notificationData,
-                            ...messageNotifications,
-                        ];
-                    } else {
-                        messageNotifications = [
-                            notificationData,
-                            ...messageNotifications,
-                        ];
-                    }
-                    const count = sumBy(
-                        messageNotifications,
-                        (notification) => {
-                            return !notification.isRead ? 1 : 0;
-                        }
-                    );
-                    if (!Utils.checkUrl(location.pathname, "chat")) {
-                        Utils.dispatchNotification(
-                            "You have a new message",
-                            "success",
-                            dispatch
-                        );
-                    }
-                    setMessageCount(count);
-                    setMessageNotifications(messageNotifications);
+                    messageNotifications = [
+                        notificationData,
+                        ...messageNotifications,
+                    ];
+                } else {
+                    messageNotifications = [
+                        notificationData,
+                        ...messageNotifications,
+                    ];
                 }
+
+                const count = sumBy(messageNotifications, (notification) => {
+                     return !notification?.isRead &&
+                        (notification?.receiverUsername === profile?.username || (notification?.isGroupChat && notification?.senderId !== profile?._id) ? 1 : 0);
+                });
+
+                if (!Utils.checkUrl(location.pathname, "chat") && notificationData?.senderId !== profile?._id) {
+                    Utils.dispatchNotification(
+                        "You have a new message",
+                        "success",
+                        dispatch
+                    );
+                }
+
+                setMessageCount(count);
+                setMessageNotifications(messageNotifications);
             }
         });
     }

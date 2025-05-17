@@ -192,7 +192,6 @@ const handleEditorDataChange = async () => {
 
     if (value === "createquestion") {
       // closePostModal(); // đóng modal hiện tại
-      console.log();
       dispatch(setModalType("createquestion")); // mở modal loại khác, ví dụ sẽ render AddQuestion
       // closePostModal();
     }
