@@ -119,25 +119,26 @@ const MessageInput = memo(({ setChatMessage }) => {
 
     return (
         <>
-            {showEmojiContainer && (
-                <div
-                    ref={emojiRef}
-                    onClick={(e) => e.stopPropagation()}
-                    className="absolute flex justify-end items-end bottom-0 sm:left-5 z-50"
-                    style={{ width: "352px", height: "447px" }}
-                >
-                    <EmojiPickerComponent onEmojiClick={handleAddEmoji} />
-                </div>
-            )}
+            
 
             {showGifContainer && (
                 <GiphyContainer handleGiphyClick={handleGiphyClick} />
             )}
             <div
-                className="chat-inputarea size-full"
+                className={`chat-inputarea size-full`}
                 data-testid="chat-inputarea"
                 ref={inputContainerRef}
             >
+                {showEmojiContainer && (
+                <div
+                    ref={emojiRef}
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute bottom-0 z-50 mb-16"
+                    style={{ width: "fit-content", height: "400px", maxWidth: "100%" }}
+                >
+                    <EmojiPickerComponent onEmojiClick={handleAddEmoji} />
+                </div>
+            )}
                 {showImagePreview && (
                     <ImagePreview
                         image={file}

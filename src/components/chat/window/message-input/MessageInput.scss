@@ -71,11 +71,22 @@
     }
 }
 
+// .emoji-picker {
+//     position: absolute;
+//     bottom: 55px;
+//     left: 10px;
+//     z-index: 2;
+// }
+
 .emoji-picker {
-    position: absolute;
-    bottom: 55px;
-    left: 10px;
-    z-index: 2;
+    aside.epr-main.EmojiPickerReact {
+        bottom: 0px;
+        left: 0px;
+        max-height: 400px !important; /* Thay đổi chiều cao */
+        max-width: 100% !important;   /* Thay đổi chiều rộng */
+        overflow: hidden !important; /* Tắt scroll */
+        width: auto !important; /* Thay đổi chiều rộng */
+    }
 }
 
 #loading {
