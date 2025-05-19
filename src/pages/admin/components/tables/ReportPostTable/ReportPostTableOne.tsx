@@ -10,7 +10,6 @@ import Badge from "../../ui/badge/Badge";
 import React, { useState, useCallback, useEffect } from "react";
 import { postService } from "@services/api/post/post.service";
 import useEffectOnce from "@hooks/useEffectOnce";
-import { Link } from "react-router-dom";
 
 interface ReportData {
   reportId: string;
@@ -34,46 +33,46 @@ export default function BasicTableOne() {
   const [itemsPerPage] = useState(5);
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
 
-  const getAllReports = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await postService.getAllReportPost(currentPage);
-      const rawReports = response.data.reportposts.reportposts;
-      ;
-      console.log("rawReports", rawReports);
-      const mappedReports: ReportData[] = rawReports.map((r: any) => ({
-        reportId: r.report._id,
-        postId: r.report.postId,
-        user: {
-          image: r.post.profilePicture ? r.post.profilePicture : "/default-avatar.jpg",
-          name: r.post.username,
-          role: "Member",
-        },
-        content: r.report.content,
-        post: r.post.post,
-        status: r.report.status,
-        reportDate: new Date(r.report.createdAt).toLocaleDateString("vi-VN"),
-      }));
+    const getAllReports = useCallback(async () => {
+      try {
+        setLoading(true);
+        const response = await postService.getAllReportPost(currentPage);
+        const rawReports = response.data.reportposts.reportposts;
+        console.log("Raw", rawReports);
+        const mappedReports: ReportData[] = rawReports.map((r: any) => ({
+          reportId: r.report._id,
+          postId: r.report.postId,
+          user: {
+            image: r.post?.profilePicture || "/default-avatar.jpg",
+            name: r.post?.username,
+            role: "Member",
+          },
+          content: r.report.content,
+          post: r.post?.post ?? "Bài viết không tồn tại",
+          status: r.report.status,
+          reportDate: new Date(r.report.createdAt).toLocaleDateString("vi-VN"),
+        }));
 
-      setReports(mappedReports);
-      setTotal(response.data.reportposts.total);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching reports:", error);
-      setLoading(false);
-    }
-  }, [currentPage]);
+        setReports(mappedReports);
+        setTotal(response.data.reportposts.total);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching reports:", error);
+        setLoading(false);
+      }
+    }, [currentPage]);
 
-  useEffectOnce(() => {
-    getAllReports();
-  });
+    useEffectOnce(() => {
+      getAllReports();
+    });
 
-  useEffect(() => {
-    getAllReports();
-  }, [getAllReports]);
+    useEffect(() => {
+      getAllReports();
+    }, [getAllReports]);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
+    console.log("Response:", reports);
   };
 
   const hirePost = async (reportId: string, postId: string, reason: string) => {
@@ -100,62 +99,56 @@ export default function BasicTableOne() {
   const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white ">
-      {/* Table Header */}
-      <div className="overflow-x-auto">
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div className="max-h-[450px] overflow-y-auto overflow-x-auto">
         <Table className="table-fixed min-w-full">
-          <TableHeader className="border-b border-gray-100 ">
+          <TableHeader className="border-b border-gray-100">
             <TableRow>
               <TableCell
                 isHeader
-                className="w-[180px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
+                className="w-[180px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
               >
                 User
               </TableCell>
               <TableCell
                 isHeader
-                className="w-[150px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
+                className="w-[300px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
               >
                 Post
               </TableCell>
               <TableCell
                 isHeader
-                className="w-[200px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
+                className="w-[200px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
               >
-                Reasion
+                Reason
               </TableCell>
               <TableCell
                 isHeader
-                className="w-[120px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
+                className="w-[120px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
               >
                 Status
               </TableCell>
               <TableCell
                 isHeader
-                className="w-[150px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
+                className="w-[150px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
               >
                 Report Date
               </TableCell>
               <TableCell
                 isHeader
-                className="w-[200px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs "
+                className="w-[200px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
               >
                 Actions
               </TableCell>
             </TableRow>
           </TableHeader>
-        </Table>
-      </div>
 
-      {/* Scrollable Table Body */}
-      <div className="max-h-[350px] overflow-y-auto overflow-x-auto">
-        <Table className="table-fixed min-w-full">
-          <TableBody className="divide-y divide-gray-100 ">
+          <TableBody className="divide-y divide-gray-100">
             {reports.map((report) => (
               <TableRow
                 key={report.reportId}
                 onClick={() => setSelectedReport(report)}
-                className="cursor-pointer hover:bg-gray-50 "
+                className="cursor-pointer hover:bg-gray-50"
               >
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
@@ -168,33 +161,33 @@ export default function BasicTableOne() {
                       />
                     </div>
                     <div>
-                      <span className="block font-medium text-gray-800 text-theme-sm ">
+                      <span className="block font-medium text-gray-800 text-theme-sm">
                         {report.user.name}
                       </span>
-                      <span className="block text-gray-500 text-theme-xs ">
+                      <span className="block text-gray-500 text-theme-xs">
                         {report.user.role}
                       </span>
                     </div>
                   </div>
                 </TableCell>
 
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm ">
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm">
                   <a
                     href={`/app/social/post/${report.postId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline dark:text-blue-400"
+                    className="text-blue-600 hover:underline"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {report.post}
                   </a>
                 </TableCell>
 
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm ">
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm">
                   {report.content}
                 </TableCell>
 
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm ">
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm">
                   <Badge
                     size="sm"
                     color={
@@ -209,7 +202,7 @@ export default function BasicTableOne() {
                   </Badge>
                 </TableCell>
 
-                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm ">
+                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm">
                   {report.reportDate}
                 </TableCell>
 
@@ -263,5 +256,4 @@ export default function BasicTableOne() {
       </div>
     </div>
   );
-  
 }

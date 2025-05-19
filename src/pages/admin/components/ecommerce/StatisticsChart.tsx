@@ -17,7 +17,7 @@ export default function StatisticsChart() {
       
       setLoading(true);
       try {
-        if (selectedTab === "optionOne") {
+        if (selectedTab === "optionTwo") {
           const response = await postService.GetStatisticPost();
           const data = response.data.data; // gọi API theo ngày
           // const data = response.data; // Gọi API theo ngày
@@ -31,7 +31,7 @@ export default function StatisticsChart() {
             { name: "TotalPosts", data: postCounts },
             { name: "HirePosts", data: commentCounts },
           ]);
-        } else if (selectedTab === "optionTwo") {
+        } else if (selectedTab === "optionOne") {
           
           const response = await postService.GetStatisticPostperMonth();
           const data = response.data.data; // gọi API theo tháng
@@ -116,18 +116,18 @@ export default function StatisticsChart() {
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
         <div className="w-full">
           <h3 className="text-lg font-semibold text-gray-800 ">
-            {selectedTab === "optionOne" && "Posts & Comments per Day"}
-            {selectedTab === "optionTwo" && "Posts & Comments per Month"}
+            {selectedTab === "optionOne" && "Posts per Year"}
+            {selectedTab === "optionTwo" && "Posts per Month"}
             {selectedTab === "optionThree" && "Posts & Comments per Year"}
           </h3>
-          <p className="mt-1 text-gray-500 text-theme-sm ">
+          {/* <p className="mt-1 text-gray-500 text-theme-sm ">
             Statistical view by{" "}
             {selectedTab === "optionOne"
               ? "day"
               : selectedTab === "optionTwo"
               ? "month"
               : "year"}
-          </p>
+          </p> */}
         </div>
         <div className="flex items-start w-full gap-3 sm:justify-end">
           <ChartTab onSelect={setSelectedTab} />

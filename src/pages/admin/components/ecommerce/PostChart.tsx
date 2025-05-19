@@ -100,8 +100,8 @@ export default function StatisticsChart() {
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
         <div className="w-full">
           <h3 className="text-lg font-semibold text-gray-800 ">
-            {selectedTab === "optionOne" && "Posts & Comments per Month"}
-            {selectedTab === "optionTwo" && "Posts & Comments per Year"}
+            {selectedTab === "optionOne" && "Posts per Month"}
+            {selectedTab === "optionTwo" && "Total Posts "}
             {selectedTab === "optionThree" && "Posts & Comments per Year"}
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm ">

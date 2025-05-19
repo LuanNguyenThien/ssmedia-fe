@@ -124,47 +124,42 @@ export default function BanUserTableOne() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      {/* Table Header cố định */}
-      <Table>
-        <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-          <TableRow>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-            >
-              User
-            </TableCell>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-            >
-              Reason
-            </TableCell>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-            >
-              Status
-            </TableCell>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-            >
-              Appeal Date
-            </TableCell>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-            >
-              Actions
-            </TableCell>
-          </TableRow>
-        </TableHeader>
-      </Table>
-
-      {/* Chỉ phần TableBody được scroll */}
-      <div className="max-w-full h-[350px] overflow-y-auto overflow-x-auto">
-        <Table>
+      <div className="max-h-[420px] overflow-y-auto">
+        <Table className="w-full">
+          <TableHeader className="sticky top-0 z-10 bg-white dark:bg-white/[0.03] border-b border-gray-100 dark:border-white/[0.05]">
+            <TableRow>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-start text-theme-xs text-gray-500 dark:text-gray-400"
+              >
+                User
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-start text-theme-xs text-gray-500 dark:text-gray-400"
+              >
+                Reason
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 w-[150px] py-3 font-medium text-start text-theme-xs text-gray-500 dark:text-gray-400"
+              >
+                Status
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 w-[150px] font-medium text-start text-theme-xs text-gray-500 dark:text-gray-400"
+              >
+                Appeal Date
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-start text-theme-xs text-gray-500 dark:text-gray-400"
+              >
+                Actions
+              </TableCell>
+            </TableRow>
+          </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {users.map((order) => (
               <TableRow key={order.appealId}>
@@ -188,10 +183,10 @@ export default function BanUserTableOne() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
                   {order.projectName}
                 </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
@@ -205,7 +200,7 @@ export default function BanUserTableOne() {
                     {order.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                <TableCell className="px-4 py-3 text-theme-sm text-gray-500 dark:text-gray-400">
                   {order.banAt}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start">

@@ -56,7 +56,7 @@ const navItems: NavItem[] = [
 const othersItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
-    name: "Charts",
+    name: "Statistics",
     subItems: [
       { name: "Post", path: "/admin/Posts", pro: false },
       { name: "User", path: "/admin/Users", pro: false },

@@ -36,6 +36,7 @@ import {
   useDisclosure,
   Text,
 } from "@chakra-ui/react";
+import { AlertCircle } from "lucide-react";
 
 // components
 import DropdownSetting from "@components/header/components/dropdown/DropdownSetting";
