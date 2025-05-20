@@ -14,7 +14,7 @@ const layout_0_5_list = ["chat", "groups", "meeting", "search"];
 
 const Social = () => {
   // const isMobile = Utils.isMobileDevice()
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 390);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 490);
   const section = useLocation().pathname.split("/")[3];
 
   useEffect(() => {

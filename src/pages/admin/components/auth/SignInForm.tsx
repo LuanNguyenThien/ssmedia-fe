@@ -50,6 +50,7 @@ export default function SignInForm() {
         const result = await authService.signIn({
           username,
           password,
+          provider: "local",
         });
         console.log(result, "log");
         // Và thay thế dòng gây lỗi:
