@@ -32,11 +32,11 @@ export default function AccountLocked() {
 
     const formatBanDate = (dateString) => {
       const date = new Date(dateString);
-      const month = date.toLocaleString("default", { month: "long" });
       const day = date.getDate();
+      const month = date.toLocaleString("vi-VN", { month: "long" }); 
       const year = date.getFullYear();
-
-      return `Ngày ${day} ${month} , ${year}`;
+      
+      return `Ngày ${day} ${month} Năm ${year}`;
     };
 
 
@@ -60,8 +60,7 @@ export default function AccountLocked() {
             {profile.username}, tài khoản của bạn đã bị khóa
           </h1>
           <p className="text-gray-600 mb-6">
-            Chúng tôi phát hiện hoạt động bất thường trên tài khoản của bạn. Như
-            vậy nghĩa là ai đó đã sử dụng tài khoản này mà bạn không biết.
+            Chúng tôi phát hiện hoạt động bất thường trên tài khoản của bạn. 
           </p>
         </div>
 

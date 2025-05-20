@@ -127,9 +127,9 @@ const HeaderMb = () => {
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 text-center">
-                    <h2 className="text-xl font-semibold text-red-600 mb-4">Tài khoản bị khóa</h2>
+                    <h2 className="text-xl font-semibold text-red-600 mb-4">Tài khoản của bạn đã bị khóa</h2>
                     <p className="text-gray-700 mb-6">
-                        {banReason || "Tài khoản của bạn đã bị cấm. Vui lòng liên hệ quản trị viên để biết thêm chi tiết."}
+                      lí do:   {banReason || "Tài khoản của bạn đã bị cấm. Vui lòng liên hệ quản trị viên để biết thêm chi tiết."}
                     </p>
                     <button
                         onClick={handleCloseBanModal}
