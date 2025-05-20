@@ -112,5 +112,9 @@
     max-height: 500px !important; /* Thay đổi chiều cao */
     max-width: 100% !important;   /* Thay đổi chiều rộng */
     overflow: hidden !important; /* Tắt scroll */
+    
+    @media screen and (max-width: 768px) {
+      width: auto !important; /* Thay đổi chiều rộng */ 
+    }
   }
 }
