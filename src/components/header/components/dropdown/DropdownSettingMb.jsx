@@ -6,7 +6,7 @@ import { BsBookmarkFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { SettingUtils } from "@/services/utils/setting-utils.service";
 
-const DropdownSettingMb = ({ id, name, onLogout }) => {
+const DropdownSettingMb = ({ id, name, onLogout, ref }) => {
     const navigate = useNavigate();
 
     const navigateToPage = (pageName, url) => {
@@ -66,7 +66,10 @@ const DropdownSettingMb = ({ id, name, onLogout }) => {
     );
 
     return (
-        <div className="absolute z-[50] text-base top-5 right-0 w-max h-auto bg-background backdrop-blur-sm rounded-lg shadow-xl p-2 border border-gray-100">
+        <div
+            ref={ref}
+            className="absolute z-[50] text-base top-5 right-0 w-max h-auto bg-background backdrop-blur-sm rounded-[15px] shadow-xl p-2 border border-gray-100"
+        >
             <div className="w-full text-center bg-transparent px-2 py-2 text-2xl font-bold border-b border-gray-200">
                 <span className="text-center ">Menu</span>
             </div>

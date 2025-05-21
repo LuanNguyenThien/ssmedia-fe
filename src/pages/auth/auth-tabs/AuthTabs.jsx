@@ -25,28 +25,24 @@ export default function AuthTabs() {
                 position: isMobile ? "top-[15%] left-[15%]" : "top-[12%] left-[12%]",
                 animation: "animate-float-slow",
                 size: isMobile ? "w-[120px] h-[120px]" : "w-[180px] h-[180px]",
-                color: "text-blue-400",
             },
             {
                 icon: threeD[1],
                 position: isMobile ? "top-[10%] -right-[20%]" : "top-[8%] -right-[2%]",
                 animation: "animate-float-medium",
                 size: isMobile ? "w-[130px] h-[130px]" : "w-[190px] h-[190px]",
-                color: "text-gray-400",
             },
             {
                 icon: threeD[2],
                 position: isMobile ? "bottom-[10%] left-[10%]" : "bottom-[15%] left-[8%]",
                 animation: "animate-float-fast",
                 size: isMobile ? "w-[140px] h-[140px]" : "w-[200px] h-[200px]",
-                color: "text-yellow-300",
             },
             {
                 icon: threeD[3],
                 position: isMobile ? "bottom-[8%] -right-[5%]" : "bottom-[12%] -right-[3%]",
                 animation: "animate-float-slow",
                 size: isMobile ? "w-[125px] h-[125px]" : "w-[185px] h-[185px]",
-                color: "text-black/50",
             },
         ];
 
@@ -58,28 +54,24 @@ export default function AuthTabs() {
                     position: "top-[28%] left-[28%]",
                     animation: "animate-float-medium",
                     size: "w-[195px] h-[195px]",
-                    color: "text-yellow-300",
                 },
                 {
                     icon: threeD[5],
                     position: "-bottom-[5%] right-[12%]",
                     animation: "animate-float-fast",
                     size: "w-[205px] h-[205px]",
-                    color: "text-blue-400",
                 },
                 {
                     icon: threeD[6],
                     position: "top-[38%] right-[8%]",
                     animation: "animate-float-slow",
                     size: "w-[210px] h-[210px]",
-                    color: "text-[#FF5F5F]",
                 },
                 {
                     icon: threeD[7],
                     position: "-bottom-[2%] left-[22%]",
                     animation: "animate-float-medium",
                     size: "w-[190px] h-[190px]",
-                    color: "text-background-blur",
                 }
             );
         }

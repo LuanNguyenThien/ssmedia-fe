@@ -238,6 +238,7 @@ const ChatList = () => {
         if (!rendered) setRendered(true);
     }, [chatMessageList, profile, rendered, location]);
 
+    console.log(chatMessageList);
     useEffect(() => {
         if (rendered && profile) {
             const handleGroupUpdate = (data) => {

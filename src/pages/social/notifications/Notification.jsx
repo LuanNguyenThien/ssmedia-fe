@@ -64,8 +64,7 @@ const Notification = () => {
         }
     };
 
-    const deleteNotification = async (event, messageId) => {
-        event.stopPropagation();
+    const deleteNotification = async (messageId) => {
         try {
             const response = await notificationService.deleteNotification(
                 messageId
@@ -139,7 +138,9 @@ const Notification = () => {
                         <div className="w-1/2 h-[0.1px] bg-primary-black/20 mt-2"></div>
                     </div>
                     <div className="flex items-center justify-between py-4">
-                        <span className="text-2xl font-bold">Notifications</span>
+                        <span className="text-2xl font-bold">
+                            Notifications
+                        </span>
                         <FilterNotifications
                             isChosenFilter={isChosenFilter}
                             setIsChosenFilter={setIsChosenFilter}
@@ -162,9 +163,12 @@ const Notification = () => {
                                     {/* avatar */}
                                     <div className="notification-box-sub-card-media-image-icon w-max">
                                         <Avatar
-                                            name={notification?.userFrom?.username}
+                                            name={
+                                                notification?.userFrom?.username
+                                            }
                                             bgColor={
-                                                notification?.userFrom?.avatarColor
+                                                notification?.userFrom
+                                                    ?.avatarColor
                                             }
                                             textColor="#ffffff"
                                             size={40}
@@ -219,15 +223,13 @@ const Notification = () => {
                                     classNameButtonConfirm={
                                         "bg-red-500 hover:bg-red-300"
                                     }
-                                    handleConfirm={(event) => {
+                                    handleConfirm={() => {
                                         deleteNotification(
-                                            event,
                                             chosenNotification?._id
                                         );
                                         setShowConfirmModal(false);
                                     }}
-                                    handleCancel={(event) => {
-                                        event.stopPropagation();
+                                    handleCancel={() => {
                                         setShowConfirmModal(false);
                                     }}
                                 />
@@ -242,9 +244,7 @@ const Notification = () => {
                 </div>
             )}
             {/* Loading skeleton */}
-            {loading && (
-                <NotificationSkeleton />
-            )}
+            {loading && <NotificationSkeleton />}
         </>
     );
 };

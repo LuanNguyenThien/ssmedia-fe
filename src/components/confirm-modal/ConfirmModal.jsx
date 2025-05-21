@@ -1,6 +1,8 @@
 import { MdFolderDelete } from "react-icons/md";
 import { RxInfoCircled } from "react-icons/rx";
 import { PiWarning } from "react-icons/pi";
+import { useEffect } from "react";
+import { Utils } from "@services/utils/utils.service";
 
 const ConfirmModal = ({
     title,
@@ -13,22 +15,36 @@ const ConfirmModal = ({
     classNameButtonConfirm,
     icon,
 }) => {
+    const isMobile = Utils.isMobileDevice();
+
+    // Add escape key handler
+    useEffect(() => {
+        const handleEscapeKey = (e) => {
+            if (e.key === "Escape") {
+                handleCancel();
+            }
+        };
+        
+        document.addEventListener("keydown", handleEscapeKey);
+        return () => {
+            document.removeEventListener("keydown", handleEscapeKey);
+        };
+    }, [handleCancel]);
+
     const renderIcon = () => {
         switch (icon) {
             case "delete":
-                return <MdFolderDelete className="text-[75px] text-red-500" />;
+                return <MdFolderDelete className="text-[70px] text-red-500" />;
             case "info":
-                return <RxInfoCircled className="text-[75px] text-blue-500" />;
+                return <RxInfoCircled className="text-[70px] text-blue-500" />;
             case "warning":
-                return <PiWarning className="text-[75px] text-yellow-500" />;
+                return <PiWarning className="text-[70px] text-yellow-500" />;
             default:
                 return null;
         }
     };
 
-    const handleClickConfirm = (e) => {
-        e.stopPropagation();
-
+    const handleClickConfirm = () => {
         try {
             if (typeof handleConfirm === "function") {
                 handleConfirm();
@@ -42,49 +58,64 @@ const ConfirmModal = ({
             console.error("Error in handleConfirm:", error);
         }
     };
-    const handleClickCancel = (e) => {
-        e.stopPropagation();
+    const handleClickCancel = () => {
         handleCancel();
     };
 
     return (
         <div
-            className="fixed inset-0 w-screen h-screen flex items-center
-            justify-center z-30"
+            className="fixed inset-0 z-50 overflow-x-hidden flex items-start justify-center p-4"
         >
-            <div className="absolute top-5 p-6 w-[90vw] max-w-md flex flex-col h-auto gap-2 bg-primary-white shadow-md border backdrop-blur-sm border-gray-100 rounded-lg animate-fadeInTop">
-                <div className="flex items-center gap-2">
-                    <div className="h-full ">{renderIcon()}</div>
-                    <div className="flex flex-col gap-2">
-                        <span className="text-xl font-bold text-primary-black w-max">
-                            {title || "Do you want to process this action?"}
-                        </span>
-                        <span className="mb-2">
-                            {subTitle || "Make sure you want to do it"}
-                        </span>
-                    </div>
-                </div>
+            {/* Dialog backdrop - handles outside click */}
+            <div 
+                className="fixed inset-0" 
+                aria-hidden="true" 
+                onClick={handleCancel}
+            ></div>
 
-                <div className="flex justify-center space-x-2">
-                    <div
-                        onClick={handleClickCancel}
-                        className={` text-primary-black px-4 py-2 rounded-md cursor-pointer  ${
-                            classNameButtonCancel
-                                ? classNameButtonCancel
-                                : "bg-background-blur hover:bg-background-blur/70"
-                        }`}
-                    >
-                        {labelButtonCancel || "Cancel"}
+            <div className={`relative bg-white ${isMobile ? 'w-full max-w-[90%]' : 'w-full max-w-md'} rounded-[30px] border border-gray-200 shadow-lg transform transition-all animate-fadeInTop`}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="p-6">
+                    <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0">{renderIcon()}</div>
+                        <div className="flex flex-col gap-2">
+                            <h3 className="text-xl font-bold text-primary-black">
+                                {title || "Do you want to process this action?"}
+                            </h3>
+                            <p className="text-gray-600">
+                                {subTitle || "Make sure you want to do it"}
+                            </p>
+                        </div>
                     </div>
-                    <div
-                        onClick={handleClickConfirm}
-                        className={` text-primary-white px-4 py-2 rounded-md cursor-pointer  ${
-                            classNameButtonConfirm
-                                ? classNameButtonConfirm
-                                : "bg-primary hover:bg-primary/70"
-                        }`}
-                    >
-                        {labelButtonConfirm || "Confirm"}
+
+                    <div className="flex justify-end gap-3 mt-6">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleClickCancel();
+                            }}
+                            className={`px-4 py-2 border uppercase text-sm rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors ${
+                                classNameButtonCancel
+                                    ? classNameButtonCancel
+                                    : "border-gray-300"
+                            }`}
+                        >
+                            {labelButtonCancel || "Cancel"}
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleClickConfirm();
+                            }}
+                            className={`px-4 py-2 rounded-lg uppercase text-sm text-white transition-colors ${
+                                classNameButtonConfirm
+                                    ? classNameButtonConfirm
+                                    : "bg-red-500 hover:bg-red-600"
+                            }`}
+                        >
+                            {labelButtonConfirm || "Confirm"}
+                        </button>
                     </div>
                 </div>
             </div>

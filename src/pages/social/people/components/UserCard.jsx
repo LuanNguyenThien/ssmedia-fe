@@ -1,6 +1,5 @@
 import InformationButton from "@/components/information/count-container/InformationButton";
 import SocialEntities from "@/components/information/count-container/SocialEntities";
-import { ChatUtils } from "@/services/utils/chat-utils.service";
 import { ProfileUtils } from "@/services/utils/profile-utils.service";
 import { Utils } from "@/services/utils/utils.service";
 import { useCallback } from "react";
@@ -13,7 +12,6 @@ const UserCard = ({ user, following, navigate, follow, unFollow }) => {
         }
     }, [user, navigate]);
     const isFollowed = Utils.checkIfUserIsFollowed(following, user?._id);
-
     return (
         <div
             onClick={handleClickMessageButton}

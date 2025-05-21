@@ -17,7 +17,7 @@ const PostVoteBar = ({ post }) => {
     const [upvotePop, setUpvotePop] = useState(false);
     const [downvotePop, setDownvotePop] = useState(false);
     const debounceRef = useRef({ upvote: false, downvote: false });
-   
+
     const selectedUserReaction = useCallback(
         (postReactions) => {
             const userReaction = find(
@@ -102,6 +102,8 @@ const PostVoteBar = ({ post }) => {
                     post?._id,
                     profile?.username
                 );
+
+            console.log(reactionResponse.data);
             const updatedPost = updatePostReactions(
                 reaction,
                 Object.keys(reactionResponse.data.reactions).length,
@@ -146,6 +148,7 @@ const PostVoteBar = ({ post }) => {
                     await postService.addReaction(reactionsData);
                 }
             }
+            console.log(reactionsData);
         } catch (error) {
             Utils.dispatchNotification(
                 error?.response?.data?.message,
@@ -192,7 +195,10 @@ const PostVoteBar = ({ post }) => {
                 type="button"
             >
                 <span className="sr-only">Upvote</span>
-                <DynamicSVG svgData={icons.chevron} className="size-5 md:size-6" />
+                <DynamicSVG
+                    svgData={icons.chevron}
+                    className="size-5 md:size-6"
+                />
             </button>
             <span className="text-center font-medium text-primary-black select-none text-sm md:text-lg md:my-1">
                 {post.reactions["upvote"] - post.reactions["downvote"]}

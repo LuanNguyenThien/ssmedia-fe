@@ -44,8 +44,6 @@ const ChatWindow = () => {
     const [isMessagesLoading, setIsMessagesLoading] = useState(true);
     const [isShowInfoGroup, setIsShowInfoGroup] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
-    const MEMBERSHIP_CHECK_COMPLETE = "membershipCheckComplete";
     const [_, setMembershipCheckComplete] = useState(false);
     const [showNonMemberWarning, setShowNonMemberWarning] = useState(false);
 
@@ -643,7 +641,6 @@ const ChatWindow = () => {
         dispatch,
         getUserProfileByUserId,
         silentRefreshMessages,
-        isGroup,
     ]);
 
     // Clean up all socket listeners
@@ -702,7 +699,7 @@ const ChatWindow = () => {
         } else {
             setContentVisible(false);
         }
-    }, [isLoading, searchParamsId, isGroupMember]);
+    }, [isLoading, searchParamsId, isGroupMember, isGroup]);
 
     return (
         <div
