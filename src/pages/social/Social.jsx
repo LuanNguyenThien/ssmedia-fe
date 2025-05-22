@@ -53,8 +53,6 @@ const Social = () => {
             </>
         );
     };
-    console.log(isMobile);
-
     return (
         <div className={`!bg-secondary sm:px-12`}>
             {isMobile ? <HeaderMb /> : <Header />}
