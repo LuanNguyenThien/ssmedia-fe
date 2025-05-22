@@ -1,10 +1,10 @@
 import { reactionsMap } from "@/services/utils/static.data";
-import { Utils } from "@/services/utils/utils.service";
 import Avatar from "@components/avatar/Avatar";
 import { useMemo, useEffect, useRef } from "react";
 import { FaTimes } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import useDetectOutsideClick from "@/hooks/useDetectOutsideClick";
+import useIsMobile from "@hooks/useIsMobile";
 
 const ReactionsTab = ({
     reactions = [],
@@ -13,7 +13,7 @@ const ReactionsTab = ({
     onCloseReactionTab,
 }) => {
     const { profile } = useSelector((state) => state.user);
-    const isMobile = Utils.isMobileDevice();
+    const isMobile = useIsMobile();
     const reactionsRef = useRef(null);
     const [isActive, setIsActive] = useDetectOutsideClick(reactionsRef, true);
 

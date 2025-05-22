@@ -2,7 +2,7 @@ import { MdFolderDelete } from "react-icons/md";
 import { RxInfoCircled } from "react-icons/rx";
 import { PiWarning } from "react-icons/pi";
 import { useEffect } from "react";
-import { Utils } from "@services/utils/utils.service";
+import useIsMobile from "@hooks/useIsMobile";
 
 const ConfirmModal = ({
     title,
@@ -15,7 +15,7 @@ const ConfirmModal = ({
     classNameButtonConfirm,
     icon,
 }) => {
-    const isMobile = Utils.isMobileDevice();
+    const isMobile = useIsMobile();
 
     // Add escape key handler
     useEffect(() => {

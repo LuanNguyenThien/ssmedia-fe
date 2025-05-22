@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import "./NotificationPermissionPrompt.scss";
 import logo from "@assets/logo.png"; // Thay đổi đường dẫn theo cấu trúc dự án của bạn
 import { FaBell } from "react-icons/fa";
-import { Utils } from "@services/utils/utils.service";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useIsMobile from "@hooks/useIsMobile";
 
 const NotificationPermissionPrompt = () => {
     const [showPrompt, setShowPrompt] = useState(false);
-    const isNotificationPromptDismissed = useLocalStorage("notificationPromptDismissed", "get");
+    const isMobile = useIsMobile();
     useEffect(() => {
-        if (isNotificationPromptDismissed) {
+        if ("Notification" in window) {
             const timer = setTimeout(() => {
                 setShowPrompt(true);
             }, 2000);
+
             localStorage.setItem("notificationPromptDismissed", "true");
             return () => clearTimeout(timer);
         }
@@ -20,7 +20,7 @@ const NotificationPermissionPrompt = () => {
 
     const handleRequestPermission = () => {
         Notification.requestPermission().then((permission) => {
-            if (permission === "granted" && !Utils.isMobileDevice()) {
+            if (permission === "granted" && !isMobile) {
                 // Có thể hiện thông báo test
                 new Notification("Đã bật thông báo thành công!", {
                     body: "Bạn sẽ nhận được thông báo khi có cuộc gọi đến",

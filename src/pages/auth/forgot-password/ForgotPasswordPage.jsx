@@ -1,15 +1,9 @@
 import { assets, threeD } from "@/assets/assets";
 import ForgotPassword from "./ForgotPassword";
-import { useState, useEffect } from "react";
-import { Utils } from "@services/utils/utils.service";
+import useIsMobile from "@hooks/useIsMobile";
 
 const ForgotPasswordPage = () => {
-    const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-        setIsMobile(Utils.isMobileDevice());
-    }, []);
-
+    const isMobile = useIsMobile();
     // Filter icons for mobile - show fewer on mobile devices
     const getFilteredIcons = () => {
         const icons = [

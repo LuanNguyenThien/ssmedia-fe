@@ -54,7 +54,8 @@
     background-color: #f5f7fb;
     grid-template-areas: 'post';
     grid-template-columns: 1fr;
-    padding-top: 10px;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
     padding-bottom: 10px;
     .streams-suggestions {
       display: none;

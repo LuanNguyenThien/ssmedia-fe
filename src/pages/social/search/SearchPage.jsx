@@ -5,15 +5,15 @@ import "@pages/social/search/SearchPage.scss";
 import SearchSidebar from "./components/SearchSidebar";
 import SearchSkeleton from "./SearchSkeleton";
 import SearchPosts from "./components/SearchPosts";
-import { Utils } from "@/services/utils/utils.service";
 import SearchImageTab from "./components/SearchImageMb";
 import { icons } from "@/assets/assets";
 import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
+import useIsMobile from "@hooks/useIsMobile";
 
 const PAGE_SIZE = 5;
 
 const SearchPage = () => {
-    const isMobile = Utils.isMobileDevice();
+    const isMobile = useIsMobile();
     const [allUsers, setAllUsers] = useState([]);
     const [displayedUsers, setDisplayedUsers] = useState([]);
     const [allPosts, setAllPosts] = useState([]);

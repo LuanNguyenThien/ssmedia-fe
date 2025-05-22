@@ -1,6 +1,6 @@
 import { icons } from "@assets/assets";
 import { DynamicSVG } from "./components/SidebarItems";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import { createSearchParams, useLocation, useNavigate } from "react-router-dom";
 import "@components/sidebar/Sidebar.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { getPosts } from "@redux/api/posts";
@@ -8,10 +8,14 @@ import { Utils } from "@services/utils/utils.service";
 import { ChatUtils } from "@services/utils/chat-utils.service";
 import { chatService } from "@services/api/chat/chat.service";
 import { socketService } from "@services/socket/socket.service";
-
+import {
+    openModal,
+} from "@redux/reducers/modal/modal.reducer";
 const SidebarMb = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const location = useLocation();
+    const activePage = location.pathname.split("/")[3];
 
     const { profile } = useSelector((state) => state.user);
     const { chatList } = useSelector((state) => state.chat);
@@ -64,6 +68,9 @@ const SidebarMb = () => {
                     onClick={() =>
                         navigateToPage("Streams", "/app/social/streams")
                     }
+                    className={`${
+                        activePage === "streams" ? "text-primary" : ""
+                    }`}
                 >
                     <DynamicSVG svgData={icons.home} className={"size-8"} />
                 </div>
@@ -71,15 +78,19 @@ const SidebarMb = () => {
                     onClick={() =>
                         navigateToPage("Chat", "/app/social/chat/messages")
                     }
+                    className={`${activePage === "chat" ? "text-primary" : ""}`}
                 >
                     <DynamicSVG svgData={icons.chats} className={"size-8"} />
                 </div>
             </div>
             <div className="flex justify-center items-start col-span-1  relative">
-                <div className="absolute bottom-0 bg-white rounded-t-full p-1">
+                <div
+                    className="absolute bottom-0 bg-white rounded-t-full p-1"
+                    onClick={() => dispatch(openModal({ type: "add" }))}
+                >
                     <DynamicSVG
                         svgData={icons.add}
-                        className={"size-12 text-primary/50"}
+                        className={"size-10 text-primary/50"}
                     />
                 </div>
             </div>
@@ -92,6 +103,9 @@ const SidebarMb = () => {
                             "/app/social/notifications"
                         )
                     }
+                    className={`${
+                        activePage === "notifications" ? "text-primary" : ""
+                    }`}
                 >
                     <DynamicSVG
                         svgData={icons.notifications}
@@ -102,6 +116,9 @@ const SidebarMb = () => {
                     onClick={() =>
                         navigateToPage("Profile", "/app/social/profile")
                     }
+                    className={`${
+                        activePage === "profile" ? "text-primary" : ""
+                    }`}
                 >
                     <DynamicSVG svgData={icons.profile} className={"size-8"} />
                 </div>

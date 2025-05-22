@@ -3,7 +3,6 @@ import Peer from "simple-peer"
 import { socketService } from "@services/socket/socket.service"
 import waitingRingtone from "@assets/sounds/waiting-ring.mp3"
 import { Utils } from "@services/utils/utils.service"
-
 const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
   const closingDueToRemoteEnd = useRef(false)
   const [retryCount, setRetryCount] = useState(0)

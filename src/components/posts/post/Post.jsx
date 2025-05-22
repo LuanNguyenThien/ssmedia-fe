@@ -140,12 +140,12 @@ const Post = ({ post }) => {
             <div
                 className={`post-card flex bg-white shadow p-4 md:p-6 md:gap-6 flex-col md:flex-row ${
                     commentsModalIsOpen && selectedPostCommentId === post?._id
-                        ? "rounded-t-xl"
-                        : "rounded-xl"
+                        ? "sm:rounded-t-xl"
+                        : "sm:rounded-xl"
                 }`}
             >
                 {/* Desktop only: Vote bar on the left */}
-                <div className="hidden md:block md:flex-shrink-0">
+                <div className="hidden md:block md:flex-shrink-0 ">
                     <PostVoteBar post={post} />
                 </div>
 
@@ -170,8 +170,8 @@ const Post = ({ post }) => {
                         />
 
                         {/* Mobile only: Vote bar above meta row */}
-                        <div className="flex md:hidden w-full items-center mt-3 mb-1 pl-2">
-                            <div className="mobile-vote-bar">
+                        <div className="flex md:hidden w-full items-center mt-3 mb-1">
+                            <div className="mobile-vote-bar border rounded-full py-1 px-1">
                                 <PostVoteBar post={post} />
                             </div>
                         </div>

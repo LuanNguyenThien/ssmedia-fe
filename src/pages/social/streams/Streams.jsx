@@ -43,7 +43,7 @@ const Streams = () => {
         if (loadingMore) {
             return;
         }
-        
+
         console.log("fetching posts");
         setLoadingMore(true);
         getAllPosts().finally(() => setLoadingMore(false));
@@ -57,11 +57,11 @@ const Streams = () => {
                 const allPosts = uniqBy(appPosts.current, "_id");
                 setPosts(allPosts);
                 setCurrentPage((prevPage) => prevPage + 1); // Increment page only when data is valid
-                
+
                 if (response.data.totalPosts) {
                     setTotalPostsCount(response.data.totalPosts);
                 }
-                
+
                 return true; // Indicate posts were returned
             } else {
                 // No more posts to load
@@ -81,7 +81,9 @@ const Streams = () => {
 
     useEffect(() => {
         const handleHidePost = ({ postId }) => {
-            setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+            setPosts((prevPosts) =>
+                prevPosts.filter((post) => post._id !== postId)
+            );
         };
 
         const handleUnhidePost = async ({ postId }) => {
@@ -90,26 +92,24 @@ const Streams = () => {
                 const newPost = response.data.post;
 
                 setPosts((prevPosts) => {
-                const exists = prevPosts.find((p) => p._id === newPost._id);
-                if (exists) return prevPosts;
-                return [newPost, ...prevPosts];
+                    const exists = prevPosts.find((p) => p._id === newPost._id);
+                    if (exists) return prevPosts;
+                    return [newPost, ...prevPosts];
                 });
 
-            
                 setFollowing((prev) => {
-                if (prev.length === 0) {
-                    followerService.getUserFollowing().then((res) => {
-                    setFollowing(res.data.following);
-                    });
-                }
-                return prev;
+                    if (prev.length === 0) {
+                        followerService.getUserFollowing().then((res) => {
+                            setFollowing(res.data.following);
+                        });
+                    }
+                    return prev;
                 });
             } catch (error) {
                 console.error("Failed to unhide post", error);
             }
         };
 
-        
         socket?.on("hide post", handleHidePost);
         socket?.on("unhide post", handleUnhidePost);
 
@@ -166,26 +166,36 @@ const Streams = () => {
         PostUtils.socketIOPost(posts, setPosts, profile);
     }, [posts, profile]);
 
-  useEffect(() => {
-    const viewportHeight = window.innerHeight;
-    console.log('Viewport Height:', viewportHeight);
-    const headerDesktopElement = document.querySelector('div.header-desktop');
-    const headerElement = document.querySelector('div.header-mb');
-    const footerElement = document.querySelector('div.footer-mb');
+    useEffect(() => {
+        const viewportHeight = window.innerHeight;
+        console.log("Viewport Height:", viewportHeight);
+        const headerDesktopElement =
+            document.querySelector("div.header-desktop");
+        const headerElement = document.querySelector("div.header-mb");
+        const footerElement = document.querySelector("div.footer-mb");
 
-    document.documentElement.style.setProperty('--root-height', `${viewportHeight}px`);
-    if (headerElement && footerElement) {
-      const headerHeight = headerElement.offsetHeight;
-      const footerHeight = footerElement.offsetHeight;
-      const totalHeight = headerHeight + footerHeight;
-      document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
-    } else {
-      const headerHeight = headerDesktopElement.offsetHeight;
-      const footerHeight = 0; // Assuming no footer in this case
-      const totalHeight = headerHeight + footerHeight;
-      document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
-    }
-  }, []);
+        document.documentElement.style.setProperty(
+            "--root-height",
+            `${viewportHeight}px`
+        );
+        if (headerElement && footerElement) {
+            const headerHeight = headerElement.offsetHeight;
+            const footerHeight = footerElement.offsetHeight;
+            const totalHeight = headerHeight + footerHeight;
+            document.documentElement.style.setProperty(
+                "--header-footer-height",
+                `${totalHeight}px`
+            );
+        } else {
+            const headerHeight = headerDesktopElement.offsetHeight;
+            const footerHeight = 0; // Assuming no footer in this case
+            const totalHeight = headerHeight + footerHeight;
+            document.documentElement.style.setProperty(
+                "--header-footer-height",
+                `${totalHeight}px`
+            );
+        }
+    }, []);
 
     return (
         <>
@@ -195,7 +205,7 @@ const Streams = () => {
             ) : (
                 <div className="streams-content col-span-full">
                     <div
-                        className="streams-post sm:pt-6 sm:px-6 bg-background-blur rounded-3xl gap-4"
+                        className="streams-post relative sm:pt-6 sm:px-6 bg-background-blur rounded-3xl gap-1 sm:gap-4"
                         ref={bodyRef}
                     >
                         <PostForm />
@@ -214,9 +224,13 @@ const Streams = () => {
                         </div>
                         <div
                             ref={bottomLineRef}
-                            style={{ marginBottom: "20px", height: "30px" }}
+                            style={{ marginBottom: "20px", height: "20px" }}
                         >
-                            {loadingMore && <Spinner />}
+                            {loadingMore && (
+                                <div className="absolute w-full h-max bottom-15 left-0 right-0 flex justify-center items-center">
+                                    <Spinner />
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="streams-suggestions pl-4">

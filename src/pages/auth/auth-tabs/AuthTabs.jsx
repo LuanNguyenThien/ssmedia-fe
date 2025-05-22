@@ -4,16 +4,13 @@ import Login from "@pages/auth/login/Login";
 import Register from "@pages/auth/register/Register";
 import useLocalStorage from "@hooks/useLocalStorage";
 import { assets, threeD } from "@/assets/assets";
-import { Utils } from "@services/utils/utils.service";
-
+import useIsMobile from "@hooks/useIsMobile";
 export default function AuthTabs() {
     const [activeTab, setActiveTab] = useState("login");
     const keepLoggedIn = useLocalStorage("keepLoggedIn", "get");
     const navigate = useNavigate();
-    const [isMobile, setIsMobile] = useState(false);
-
+    const isMobile = useIsMobile();
     useEffect(() => {
-        setIsMobile(Utils.isMobileDevice());
         if (keepLoggedIn) navigate("/app/social/streams");
     }, [keepLoggedIn, navigate]);
 

@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect } from "react";
-import { Utils } from "@services/utils/utils.service";
+import useIsMobile from "@hooks/useIsMobile";
 
 const Dialog = ({
     title,
@@ -10,7 +10,7 @@ const Dialog = ({
     secondBtnHandler,
     children,
 }) => {
-    const isMobile = Utils.isMobileDevice();
+    const isMobile = useIsMobile();
 
     // Add escape key handler
     useEffect(() => {

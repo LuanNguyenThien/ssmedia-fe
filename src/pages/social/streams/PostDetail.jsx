@@ -42,7 +42,7 @@ const PostDetail = () => {
 
   return (
     <>
-      <div className="saves col-span-full size-full flex justify-center items-center pt-4" data-testid="post-detail">
+      <div className="saves col-span-full sm:rounded-t-3xl size-full flex justify-center items-center pt-4" data-testid="post-detail">
         <div className="saves-content" style={{ height: '100%', width: '100%' }}>
           <div className="saves-post w-full" style={{ height: '85vh' }}>
             <div className="posts-container w-full" data-testid="posts">

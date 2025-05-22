@@ -27,8 +27,6 @@ import CallNotificationManager from "@components/call/CallNotificationManager";
 import NotificationPermissionPrompt from "@components/call-noti/NotificationPermissionPrompt";
 import {
   Modal,
-  ModalOverlay,
-  ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,

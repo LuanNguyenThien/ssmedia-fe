@@ -9,9 +9,11 @@ import { authService } from "@services/api/auth/auth.service";
 import useLocalStorage from "@hooks/useLocalStorage";
 import useSessionStorage from "@hooks/useSessionStorage";
 import { FcGoogle } from "react-icons/fc";
+import useIsMobile from "@hooks/useIsMobile";
+
 
 export default function Register({ onSwitchToLogin }) {
-    const isMobile = Utils.isMobileDevice();
+    const isMobile = useIsMobile();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

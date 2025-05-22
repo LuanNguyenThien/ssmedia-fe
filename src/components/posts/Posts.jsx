@@ -20,44 +20,42 @@ const Posts = ({ allPosts, userFollowing, postsLoading }) => {
     }, [allPosts, userFollowing, postsLoading]);
 
     return (
-        <div className="posts-container flex flex-col gap-4 px-0 sm:px-0" data-testid="posts">
-            {!loading &&
-                posts.length > 0 &&
-                posts.map((post) => (
-                    <div key={post?._id} data-testid="posts-item">
-                        {(!Utils.checkIfUserIsBlocked(
-                            profile?.blockedBy,
-                            post?.userId
-                        ) ||
-                            post?.userId === profile?._id) && (
-                            <>
-                                {PostUtils.checkPrivacy(
-                                    post,
-                                    profile,
-                                    following
-                                ) && (
-                                    <>
-                                        <Post post={post} showIcons={false} />
-                                    </>
-                                )}
-                            </>
-                        )}
-                    </div>
-                ))}
+        <div
+            className="posts-container flex flex-col gap-1 sm:gap-4 px-0 sm:px-0"
+            data-testid="posts"
+        >
+            {!loading && posts.length > 0 && posts.map((post) => {
+                const isBlocked = Utils.checkIfUserIsBlocked(profile?.blockedBy, post?.userId);
+                const isOwnPost = post?.userId === profile?._id;
+                const meetsPrivacyRequirements = PostUtils.checkPrivacy(post, profile, following);
+                
+                if ((isBlocked && !isOwnPost) || !meetsPrivacyRequirements) {
+                    return null;
+                }
 
-            {loading &&
-                !posts.length &&
-                [1, 2, 3, 4, 5, 6].map((index) => (
-                    <div key={index}>
-                        <PostSkeleton />
+                return (
+                    <div
+                        key={post?._id}
+                        data-testid="posts-item"
+                    >
+                        <Post post={post} showIcons={false} />
                     </div>
-                ))}
+                );
+            })}
+
+            {loading && !posts.length && 
+                Array.from({ length: 6 }, (_, index) => (
+                    <PostSkeleton key={index} />
+                ))
+            }
         </div>
     );
 };
+
 Posts.propTypes = {
     allPosts: PropTypes.array.isRequired,
     userFollowing: PropTypes.array.isRequired,
     postsLoading: PropTypes.bool,
 };
+
 export default Posts;
