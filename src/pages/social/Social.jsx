@@ -9,7 +9,7 @@ import { includes } from "lodash";
 import useIsMobile from "@hooks/useIsMobile";
 
 const layout_1_4_list = ["streams", "profile", "save", "people", "post"];
-const layout_0_5_list = ["chat", "groups", "meeting", "search"];
+const layout_0_5_list = ["chat", "groups","group", "meeting", "search"];
 
 const Social = () => {
     const isMobile = useIsMobile();
