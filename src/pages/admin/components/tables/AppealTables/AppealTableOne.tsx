@@ -5,12 +5,11 @@ import {
   TableHeader,
   TableRow,
 } from "../../ui/table";
-
+import { ProfileUtils } from "@services/utils/profile-utils.service";
 import Badge from "../../ui/badge/Badge";
 import React, { useState, useCallback, useEffect } from "react";
 import { userService } from "@services/api/user/user.service";
 import useEffectOnce from "@hooks/useEffectOnce";
-import { ap } from "react-router/dist/development/fog-of-war-D4x86-Xc";
 import reducer, {
   addNotification,
   clearNotification,
@@ -40,6 +39,11 @@ export default function BanUserTableOne() {
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(5);
   const dispatch = useDispatch();
+
+  // Modal state
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const getAllUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -64,7 +68,7 @@ export default function BanUserTableOne() {
       }));
 
       setUsers(mappedUsers);
-      
+
       setTotal(response.data.pagination.totalUsers);
       setLoading(false);
     } catch (error) {
@@ -122,6 +126,18 @@ export default function BanUserTableOne() {
 
   const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
+  // Mở modal hiển thị chi tiết user
+  const openUserModal = (user: UserData) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  // Đóng modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-h-[420px] overflow-y-auto">
@@ -162,7 +178,11 @@ export default function BanUserTableOne() {
           </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {users.map((order) => (
-              <TableRow key={order.appealId}>
+              <TableRow
+                key={order.appealId}
+                onClick={() => openUserModal(order)}
+                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
@@ -240,7 +260,78 @@ export default function BanUserTableOne() {
           </button>
         ))}
       </div>
+
+      {/* Modal */}
+
+      {isModalOpen && selectedUser && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-md relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Nút đóng modal */}
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-2xl"
+            >
+              ×
+            </button>
+
+            {/* Phần header: avatar + tên + role */}
+            <div className="flex items-center gap-4 mb-4">
+              <img
+                src={selectedUser.user.image}
+                alt={selectedUser.user.name}
+                className="w-14 h-14 rounded-full object-cover"
+              />
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  {selectedUser.user.name}
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {selectedUser.user.role}
+                </p>
+              </div>
+            </div>
+
+            
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Lý do báo cáo
+              </label>
+              <textarea
+                value={selectedUser.projectName || ""}
+                rows={4} 
+                className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:text-white resize-none"
+                disabled
+              />
+            </div>
+
+            
+            <div className="mt-4 flex justify-end gap-3">
+              {/* <button
+                onClick={() => {
+                  // Giả sử có hàm ProfileUtils.navigateToProfileAdmin
+                  ProfileUtils.navigateToProfileAdmin(selectedUser.user);
+                }}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Profile
+              </button> */}
+
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-  
 }
