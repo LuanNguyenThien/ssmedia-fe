@@ -10,9 +10,14 @@ import Badge from "../../ui/badge/Badge";
 import React, { useState, useCallback, useEffect } from "react";
 import { postService } from "@services/api/post/post.service";
 import useEffectOnce from "@hooks/useEffectOnce";
-
+import { useDispatch } from "react-redux";
+import reducer, {
+  addNotification,
+  
+} from "@redux/reducers/notifications/notification.reducer";
 interface ReportData {
   reportId: string;
+
   postId: string;
   user: {
     image: string;
@@ -32,7 +37,7 @@ export default function BasicTableOne() {
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(5);
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
-
+  const dispatch = useDispatch();
     const getAllReports = useCallback(async () => {
       try {
         setLoading(true);
@@ -79,10 +84,22 @@ export default function BasicTableOne() {
     try {
       await postService.ChangeStatus({ reportId, status: "reviewed" });
       await postService.HirePost({ postId, reason });
+      dispatch(
+                    addNotification({
+                      message: "ban success",
+                      type: "success",
+                    })
+                  );
       getAllReports();
     } catch (error) {
-      console.error("Ban user thất bại:", error);
-      alert("Ban user thất bại");
+      console.error("Ban user thất bại:", error.response?.data.message);
+      dispatch(
+        addNotification({
+          message: error.response?.data.message || "Ban failed",
+          type: "error",
+        })
+      );
+   
     }
   };
 
