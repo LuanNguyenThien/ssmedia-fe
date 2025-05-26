@@ -455,7 +455,7 @@ export const AppRouter = () => {
           element: withSuspense(<ReportUserTable />),
         },
         {
-          path: "hideuser",
+          path: "banuser",
           element: withSuspense(<BanUserTable />),
         },
         {
@@ -467,7 +467,7 @@ export const AppRouter = () => {
           element: withSuspense(<ReportPostTable />),
         },
         {
-          path: "hirepost",
+          path: "hidepost",
           element: withSuspense(<HirePostTable />),
         },
         {

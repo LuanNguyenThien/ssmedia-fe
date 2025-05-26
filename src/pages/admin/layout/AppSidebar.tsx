@@ -32,7 +32,7 @@ const navItems: NavItem[] = [
     name: "Post Manager",
     subItems: [
       { name: "ReportPost", path: "/admin/reportpost", pro: false },
-      { name: "HirePost", path: "/admin/hirepost", pro: false },
+      { name: "HidePost", path: "/admin/hidepost", pro: false },
     ],
   },
   {
@@ -41,7 +41,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "AllUser", path: "/admin/user", pro: false },
       { name: "ReportUser", path: "/admin/reportuser", pro: false },
-      { name: "HideUser", path: "/admin/hideuser", pro: false },
+      { name: "BanUser", path: "/admin/banuser", pro: false },
       { name: "Appeal", path: "/admin/appeal", pro: false },
     ],
   },

@@ -17,10 +17,11 @@ import reducer, {
 import { useDispatch } from "react-redux";
 
 interface UserData {
-  _id: string;
   user: {
+    _id: string;
+    uId?: string;
     image: string;
-    name: string;
+    username: string;
     role: string;
   };
   projectName: string;
@@ -52,10 +53,11 @@ export default function BanUserTableOne() {
       const rawUsers = response.data.data;
 
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
-        _id: u._id,
         user: {
+          _id: u._id,
+          uId: u.uId,
           image: u.profilePicture || "/default-avatar.jpg",
-          name: u.username,
+          username: u.username,
           role: "Member",
         },
         appealId: u.appeal._id,
@@ -129,6 +131,7 @@ export default function BanUserTableOne() {
   // Mở modal hiển thị chi tiết user
   const openUserModal = (user: UserData) => {
     setSelectedUser(user);
+    console.log("Selected user:", user);
     setIsModalOpen(true);
   };
 
@@ -190,12 +193,12 @@ export default function BanUserTableOne() {
                         width={40}
                         height={40}
                         src={order.user.image}
-                        alt={order.user.name}
+                        alt={order.user.username}
                       />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {order.user.name}
+                        {order.user.username}
                       </span>
                       <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
                         {order.user.role}
@@ -230,7 +233,7 @@ export default function BanUserTableOne() {
                       e.stopPropagation();
                       UnbanUser(
                         order.appealId,
-                        order._id,
+                        order.user._id,
                         order.projectName || "Vi phạm nội quy"
                       );
                     }}
@@ -284,12 +287,12 @@ export default function BanUserTableOne() {
             <div className="flex items-center gap-4 mb-4">
               <img
                 src={selectedUser.user.image}
-                alt={selectedUser.user.name}
+                alt={selectedUser.user.username}
                 className="w-14 h-14 rounded-full object-cover"
               />
               <div>
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-                  {selectedUser.user.name}
+                  {selectedUser.user.username}
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {selectedUser.user.role}
@@ -312,7 +315,7 @@ export default function BanUserTableOne() {
 
             
             <div className="mt-4 flex justify-end gap-3">
-              {/* <button
+              <button
                 onClick={() => {
                   // Giả sử có hàm ProfileUtils.navigateToProfileAdmin
                   ProfileUtils.navigateToProfileAdmin(selectedUser.user);
@@ -320,7 +323,7 @@ export default function BanUserTableOne() {
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
               >
                 Profile
-              </button> */}
+              </button>
 
               <button
                 onClick={closeModal}
