@@ -2,14 +2,12 @@ import React, { useEffect, useRef } from "react";
 import "./IncomingCallNotification.scss";
 import logo from "@assets/logo.png";
 import ringtoneSound from "@assets/sounds/ringtone.mp3";
-import useSessionStorage from "@/hooks/useSessionStorage";
-import { Utils } from "@services/utils/utils.service";
 import { socketService } from "@services/socket/socket.service";
 import useIsMobile from "@hooks/useIsMobile";
 
 const IncomingCallNotification = ({ callData, onAccept, onReject }) => {
     const audioRef = useRef(null);
-    const notificationPromptDismissed = useSessionStorage("notificationPromptDismissed", "get");
+    const notificationPromptDismissed = localStorage.getItem("notificationPromptDismissed");
     const isMobile = useIsMobile();
     // Xử lý âm thanh
     useEffect(() => {
@@ -17,7 +15,7 @@ const IncomingCallNotification = ({ callData, onAccept, onReject }) => {
         if (audioRef.current) {
             audioRef.current.volume = 1.0; 
             audioRef.current.loop = true;
-            if(!notificationPromptDismissed) {
+            if(notificationPromptDismissed === "true") {
                 const playPromise = audioRef.current.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {

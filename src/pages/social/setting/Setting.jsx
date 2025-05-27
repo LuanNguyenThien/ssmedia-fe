@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import PasswordSetting from "./components/PasswordSetting";
-import PrivacySetting from "./components/PrivacySetting";
 import NotificationSetting from "./components/NotificationSetting";
 import AccountSetting from "./components/AccountSetting";
 import { useSelector } from "react-redux";
+import PersonalizeSetting from "./components/PersonalizeSetting";
 
 const Setting = () => {
     const { profile } = useSelector((state) => state.user);
     const [activeTab, setActiveTab] = useState("account");
     const [userData, setUserData] = useState(() => ({
-        uId: profile?.uId || "",    
+        uId: profile?.uId || "",
         email: profile?.email || "",
         work: profile?.work || "",
         school: profile?.school || "",
@@ -52,11 +52,7 @@ const Setting = () => {
                                         setActiveTab("personalization")
                                     }
                                 />
-                                <SidebarOption
-                                    title="Privacy"
-                                    active={activeTab === "privacy"}
-                                    onClick={() => setActiveTab("privacy")}
-                                />
+
                                 <SidebarOption
                                     title="Notification"
                                     active={activeTab === "notification"}
@@ -78,12 +74,7 @@ const Setting = () => {
                         )}
                         {activeTab === "password" && <PasswordSetting />}
                         {activeTab === "personalization" && (
-                            <div>
-                                <h2 className="text-xl font-semibold mb-6">
-                                    Personalization
-                                </h2>
-                                <p>Personalization settings coming soon.</p>
-                            </div>
+                            <PersonalizeSetting />
                         )}
                         {activeTab === "privacy" && <PrivacySetting />}
                         {activeTab === "notification" && (

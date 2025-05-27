@@ -176,4 +176,12 @@ export class Utils {
     const newFile = new File([blob], `${fileName}.png`, { type: '/image/png' });
     return newFile;
   }
+
+  static convertArrayToString(array) {
+    return array.join(' ');
+  }
+
+  static convertStringToArray(string) {
+    return string.split(' ');
+  }
 }

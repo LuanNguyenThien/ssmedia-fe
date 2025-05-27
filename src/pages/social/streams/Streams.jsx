@@ -1,27 +1,38 @@
 import { useRef, useState, useEffect } from "react";
+import { uniqBy } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import Spinner from "@components/spinner/Spinner";
 import "@pages/social/streams/Streams.scss";
-import Suggestions from "@components/suggestions/Suggestions1";
-import { getUserSuggestions } from "@redux/api/suggestion";
+
 import useEffectOnce from "@hooks/useEffectOnce";
-import PostForm from "@components/posts/post-form/PostForm";
-import Posts from "@components/posts/Posts";
+import useLocalStorage from "@hooks/useLocalStorage";
+import useInfiniteScroll from "@hooks/useInfiniteScroll";
+import { getPosts } from "@redux/api/posts";
+import { getUserSuggestions } from "@redux/api/suggestion";
+import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
+
 import { Utils } from "@services/utils/utils.service";
 import { postService } from "@services/api/post/post.service";
-import { getPosts } from "@redux/api/posts";
-import { uniqBy } from "lodash";
-import useInfiniteScroll from "@hooks/useInfiniteScroll";
 import { PostUtils } from "@services/utils/post-utils.service";
-import useLocalStorage from "@hooks/useLocalStorage";
-import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
 import { followerService } from "@services/api/followers/follower.service";
+import { socketService } from "@services/socket/socket.service";
+import { userService } from "@/services/api/user/user.service";
+
 import StreamsSkeleton from "./StreamsSkeleton";
 import ModalContainer from "@components/modal/ModalContainer";
-import { socketService } from "@services/socket/socket.service";
+import PersonalizeModal from "@/components/personalize/PersonalizeModal";
+import ThanksScreen from "@/components/personalize/ThanksScreen";
+import PostForm from "@components/posts/post-form/PostForm";
+import Spinner from "@components/spinner/Spinner";
+import Suggestions from "@components/suggestions/Suggestions1";
+import Posts from "@components/posts/Posts";
+import { INTERESTS } from "@/components/personalize/constant";
+
 const Streams = () => {
+    const { profile } = useSelector((state) => state.user);
     const { allPosts } = useSelector((state) => state);
     const socket = socketService?.socket;
+    const dispatch = useDispatch();
+
     const [posts, setPosts] = useState([]);
     const [following, setFollowing] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -30,21 +41,20 @@ const Streams = () => {
     const bodyRef = useRef(null);
     const bottomLineRef = useRef();
     const appPosts = useRef([]);
-    const dispatch = useDispatch();
     const storedUsername = useLocalStorage("username", "get");
     const [deleteSelectedPostId] = useLocalStorage("selectedPostId", "delete");
     useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
     const PAGE_SIZE = 10;
     const [loadingMore, setLoadingMore] = useState(false);
-    const { profile } = useSelector((state) => state.user);
+
+    const [isShowPersonalizeModal, setIsShowPersonalizeModal] = useState(false);
+    const [isShowThanksScreen, setIsShowThanksScreen] = useState(false);
 
     function fetchPostData() {
         // if (loadingMore || currentPage > Math.ceil(totalPostsCount / PAGE_SIZE))
         if (loadingMore) {
             return;
         }
-
-        console.log("fetching posts");
         setLoadingMore(true);
         getAllPosts().finally(() => setLoadingMore(false));
     }
@@ -78,6 +88,15 @@ const Streams = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (
+            profile?.user_hobbies?.subject?.length === 0 ||
+            !profile?.user_hobbies?.subject
+        ) {
+            setIsShowPersonalizeModal(true);
+        }
+    }, [profile]);
 
     useEffect(() => {
         const handleHidePost = ({ postId }) => {
@@ -197,8 +216,45 @@ const Streams = () => {
         }
     }, []);
 
+    const handleUpdateUserHobbies = async (selected) => {
+        const updateData = {
+            subject: INTERESTS.filter((interest) =>
+                selected.includes(interest.label.toLowerCase())
+            ).map((interest) => interest.value),
+        };
+        const stringifiedSubject = Utils.convertArrayToString(
+            updateData.subject
+        );
+
+        console.log(stringifiedSubject);
+        const response = await userService.updatePersonalHobby({
+            subject: stringifiedSubject,
+        });
+        if (response) {
+            setIsShowPersonalizeModal(false);
+            setIsShowThanksScreen(true);
+        }
+    };
+
     return (
         <>
+            {isShowPersonalizeModal && (
+                <PersonalizeModal
+                    onClose={() => setIsShowPersonalizeModal(false)}
+                    onContinue={(selected) => {
+                        handleUpdateUserHobbies(selected);
+                        setIsShowPersonalizeModal(false);
+                    }}
+                />
+            )}
+            {isShowThanksScreen && (
+                <ThanksScreen
+                    onClose={() => {
+                        setIsShowThanksScreen(false);
+                        window.location.reload();
+                    }}
+                />
+            )}
             <ModalContainer />
             {loading ? (
                 <StreamsSkeleton />

@@ -13,7 +13,7 @@ const NotificationPermissionPrompt = () => {
                 setShowPrompt(true);
             }, 2000);
 
-            localStorage.setItem("notificationPromptDismissed", "true");
+            localStorage.setItem("notificationPromptDismissed", false);
             return () => clearTimeout(timer);
         }
     }, []);
@@ -27,7 +27,7 @@ const NotificationPermissionPrompt = () => {
                     icon: logo, // Thay đổi theo logo của bạn
                 });
             }
-            localStorage.setItem("notificationPromptDismissed", "false");
+            localStorage.setItem("notificationPromptDismissed", true);
             setShowPrompt(false);
         });
     };
@@ -35,7 +35,7 @@ const NotificationPermissionPrompt = () => {
     const handleDismiss = () => {
         setShowPrompt(false);
         // Lưu trạng thái đã từ chối vào localStorage để không hiện lại trong phiên
-        localStorage.setItem("notificationPromptDismissed", "true");
+        localStorage.setItem("notificationPromptDismissed", false);
     };
 
     if (!showPrompt) return null;

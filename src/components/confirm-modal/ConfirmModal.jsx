@@ -64,7 +64,7 @@ const ConfirmModal = ({
 
     return (
         <div
-            className="fixed inset-0 z-50 overflow-x-hidden flex items-start justify-center p-4"
+            className="fixed inset-0 z-50 overflow-x-hidden flex items-start justify-center py-4 px-6"
         >
             {/* Dialog backdrop - handles outside click */}
             <div 
@@ -76,7 +76,7 @@ const ConfirmModal = ({
             <div className={`relative bg-white ${isMobile ? 'w-full max-w-[90%]' : 'w-full max-w-md'} rounded-[30px] border border-gray-200 shadow-lg transform transition-all animate-fadeInTop`}
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="p-6">
+                <div className="py-6 px-10">
                     <div className="flex items-start gap-4">
                         <div className="flex-shrink-0">{renderIcon()}</div>
                         <div className="flex flex-col gap-2">
