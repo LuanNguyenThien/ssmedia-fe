@@ -185,8 +185,7 @@ export default function BasicTableOne() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
                       <img
-                        width={40}
-                        height={40}
+                        className="w-full h-full rounded-full object-cover"
                         src={order.user.image}
                         alt={order.user.username}
                       />

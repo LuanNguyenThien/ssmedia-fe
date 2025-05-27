@@ -41,7 +41,7 @@ export default function UserInfoCard() {
               </p>
             </div>
 
-            <div>
+            {/* <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 ">
                 Phone
               </p>
@@ -57,7 +57,7 @@ export default function UserInfoCard() {
               <p className="text-sm font-medium text-gray-800 ">
                 Team Manager
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
 

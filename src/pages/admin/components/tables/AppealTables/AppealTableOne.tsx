@@ -190,8 +190,7 @@ export default function BanUserTableOne() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
                       <img
-                        width={40}
-                        height={40}
+                        className="w-full h-full rounded-full object-cover"
                         src={order.user.image}
                         alt={order.user.username}
                       />
@@ -300,20 +299,18 @@ export default function BanUserTableOne() {
               </div>
             </div>
 
-            
             <div className="mb-3">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Lý do báo cáo
               </label>
               <textarea
                 value={selectedUser.projectName || ""}
-                rows={4} 
+                rows={4}
                 className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:text-white resize-none"
                 disabled
               />
             </div>
 
-            
             <div className="mt-4 flex justify-end gap-3">
               <button
                 onClick={() => {
