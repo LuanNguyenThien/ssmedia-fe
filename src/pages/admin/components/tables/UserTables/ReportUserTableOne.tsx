@@ -17,12 +17,20 @@ import reducer, {
   clearNotification,
 } from "@redux/reducers/notifications/notification.reducer";
 import { useDispatch } from "react-redux";
-
+import { useNavigate } from "react-router-dom";
+import { ProfileUtils } from "@services/utils/profile-utils.service";
 interface UserData {
   reportId: string;
   _id: string;
   uId: string;
   user: {
+    _id: string;
+    uId: string;
+    image: string;
+    username: string;
+    role: string;
+  };
+  userreport: {
     _id: string;
     uId: string;
     image: string;
@@ -46,6 +54,7 @@ export default function BasicTableOne() {
   const [itemsPerPage] = useState(5);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const getAllUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -54,27 +63,32 @@ export default function BasicTableOne() {
       );
 
       const rawUsers = response.data.reportusers;
-
+      console.log("rawUsers", rawUsers);
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
-        reportId: u.reportProfileInfo._id,
-        _id: u._id,
-        uId: u.uId,
+        reportId: u._id,
+
         user: {
-          _id: u._id,
-          uId: u.uId,
-          image: u.profilePicture || "/default-avatar.jpg",
-          username: u.username,
+          _id: u.reporter._id,
+          uId: u.reporter.uId,
+          image: u.reporter.profilePicture || "/default-avatar.jpg",
+          username: u.reporter.username,
           role: "Member",
         },
-        projectName: u.reportProfileInfo.reason || "No project",
+        userreport: {
+          _id: u.reportedUser._id,
+          uId: u.reportedUser.uId,
+          image: u.reportedUser.profilePicture || "/default-avatar.jpg",
+          username: u.reportedUser.username,
+          role: "Member",
+        },
+
+        projectName: u.reason || "No project",
         team: {
           images: [u.profilePicture || "/default-avatar.jpg"],
         },
-        description: u.reportProfileInfo.description || "No description",
-        status: u.reportProfileInfo.status,
-        budget: new Date(u.reportProfileInfo.createdAt).toLocaleDateString(
-          "vi-VN"
-        ),
+        description: u.description || "No description",
+        status: u.status,
+        budget: new Date(u.createdAt).toLocaleDateString("vi-VN"),
       }));
 
       setUsers(mappedUsers);
@@ -93,11 +107,11 @@ export default function BasicTableOne() {
 
       getAllUsers();
       dispatch(
-              addNotification({
-                message: "ban success",
-                type: "success",
-              })
-            );
+        addNotification({
+          message: "ban success",
+          type: "success",
+        })
+      );
     } catch (error) {
       console.error("Ban user thất bại:", error);
       alert("Ban user thất bại");
@@ -110,11 +124,11 @@ export default function BasicTableOne() {
 
       getAllUsers();
       dispatch(
-              addNotification({
-                message: "Accept success",
-                type: "success",
-              })
-            );
+        addNotification({
+          message: "Accept success",
+          type: "success",
+        })
+      );
     } catch (error) {
       console.error("Ban user thất bại:", error);
       alert("Ban user thất bại");
@@ -145,7 +159,13 @@ export default function BasicTableOne() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                User
+                Reporter User
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Reported User
               </TableCell>
               <TableCell
                 isHeader
@@ -182,7 +202,13 @@ export default function BasicTableOne() {
                 className="cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.05]"
               >
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
-                  <div className="flex items-center gap-3">
+                  <div
+                    className="flex items-center gap-3"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      ProfileUtils.navigateToProfileAdmin(order.user);
+                    }}
+                  >
                     <div className="w-10 h-10 overflow-hidden rounded-full">
                       <img
                         className="w-full h-full rounded-full object-cover"
@@ -196,6 +222,31 @@ export default function BasicTableOne() {
                       </span>
                       <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
                         {order.user.role}
+                      </span>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="px-5 py-4 sm:px-6 text-start">
+                  <div
+                    className="flex items-center gap-3"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      ProfileUtils.navigateToProfileAdmin(order.userreport);
+                    }}
+                  >
+                    <div className="w-10 h-10 overflow-hidden rounded-full">
+                      <img
+                        className="w-full h-full rounded-full object-cover"
+                        src={order.userreport.image}
+                        alt={order.userreport.username}
+                      />
+                    </div>
+                    <div>
+                      <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                        {order.userreport.username}
+                      </span>
+                      <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                        {order.userreport.role}
                       </span>
                     </div>
                   </div>

@@ -15,14 +15,18 @@ import reducer, {
   addNotification,
   
 } from "@redux/reducers/notifications/notification.reducer";
+import { useNavigate } from "react-router-dom";
+import { ProfileUtils } from "@services/utils/profile-utils.service";
 interface ReportData {
   reportId: string;
 
   postId: string;
   user: {
     image: string;
-    name: string;
+    username: string;
     role: string;
+    _id: string; // Assuming user has an _id field
+    uId: string; // Assuming user has a uid field
   };
   content: string;
   status: string;
@@ -33,6 +37,7 @@ interface ReportData {
 export default function BasicTableOne() {
   const [currentPage, setCurrentPage] = useState(1);
   const [reports, setReports] = useState<ReportData[]>([]);
+  const navigate = useNavigate();
   const [total, setTotal] = useState(1);
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(5);
@@ -48,9 +53,11 @@ export default function BasicTableOne() {
           reportId: r.report._id,
           postId: r.report.postId,
           user: {
-            image: r.post?.profilePicture || "/default-avatar.jpg",
-            name: r.post?.username,
+            image: r.user?.profilePicture || "/default-avatar.jpg",
+            username: r.user?.username,
             role: "Member",
+            _id: r.user?._id || "", 
+            uId: r.user?.uId || "", 
           },
           content: r.report.content,
           post: r.post?.post ?? "Bài viết không tồn tại",
@@ -168,17 +175,23 @@ export default function BasicTableOne() {
                 className="cursor-pointer hover:bg-gray-50"
               >
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
-                  <div className="flex items-center gap-3">
+                  <div
+                    className="flex items-center gap-3"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      ProfileUtils.navigateToProfileAdmin(report.user)
+                    }}
+                  >
                     <div className="w-10 h-10 overflow-hidden rounded-full">
                       <img
                         className="w-full h-full rounded-full object-cover"
                         src={report.user.image}
-                        alt={report.user.name}
+                        alt={report.user.username}
                       />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm">
-                        {report.user.name}
+                        {report.user.username}
                       </span>
                       <span className="block text-gray-500 text-theme-xs">
                         {report.user.role}
