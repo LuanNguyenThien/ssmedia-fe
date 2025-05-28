@@ -18,6 +18,9 @@ export const bgColors = [
     "#673ab7",
     "#3f51b5",
     "#2196f3",
+    "#00bcd4",
+    "#cddc39",
+    "#ffffff"
 ];
 
 export const avatarColors = [

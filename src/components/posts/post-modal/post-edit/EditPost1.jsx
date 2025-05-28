@@ -22,6 +22,8 @@ import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 
 const EditPost = () => {
+    const editedTextRef = useRef("");
+    const [isTextEdited, setIsTextEdited] = useState(false);
     const { gifModalIsOpen, feeling } = useSelector((state) => state.modal);
     const { post } = useSelector((state) => state);
     const { profile } = useSelector((state) => state.user);
@@ -74,6 +76,8 @@ const EditPost = () => {
         counterRef.current.textContent = `${counter}/100`;
         setDisable(currentTextLength <= 0 && !postImage);
         blocks = "";
+        editedTextRef.current = textContent;
+        setIsTextEdited(true);
         PostUtils.postInputHtml(blocks, postData, setPostData);
         PostUtils.postInputEditable(textContent, postData, setPostData);
     };
@@ -105,11 +109,12 @@ const EditPost = () => {
         );
     }
     const clearImage = () => {
+        const currentText = inputRef.current ? inputRef.current.textContent : (imageInputRef.current ? imageInputRef.current.textContent : "");
         setSelectedVideo(null);
         setHasVideo(false);
         PostUtils.clearImage(
             postData,
-            post?.post,
+            currentText,
             inputRef,
             dispatch,
             setSelectedPostImage,
@@ -154,7 +159,7 @@ const EditPost = () => {
             getFeeling(post?.feelings);
         }
 
-        if (post?.bgColor) {
+        if (post?.bgColor && !isTextEdited) {
             postData.bgColor = post?.bgColor;
             setPostData(postData);
             setTextAreaBackground(post?.bgColor);
@@ -167,7 +172,7 @@ const EditPost = () => {
             });
         }
 
-        if (post?.gifUrl && !post?.imgId && post.videoId) {
+        if (post?.gifUrl && !post?.imgId && !post?.videoId && !isTextEdited) {
             postData.gifUrl = post?.gifUrl;
             postData.videoId = "";
             postData.videoVersion = "";
@@ -180,7 +185,7 @@ const EditPost = () => {
             postInputData();
         }
 
-        if (post?.imgId && !post?.gifUrl) {
+        if (post?.imgId && !post?.gifUrl && !isTextEdited) {
             postData.imgId = post?.imgId;
             postData.imgVersion = post?.imgVersion;
             postData.videoId = "";
@@ -192,7 +197,7 @@ const EditPost = () => {
             postInputData();
         }
 
-        if (post?.videoId && !post?.imgId && !post?.gifUrl) {
+        if (post?.videoId && !post?.imgId && !post?.gifUrl && !isTextEdited) {
             postData.videoId = post?.videoId;
             postData.videoVersion = post?.videoVersion;
             postData.imgId = "";
@@ -339,6 +344,22 @@ const EditPost = () => {
         }
         editableFields();
     }, [editableFields, post, postData]);
+
+    useEffect(() => {
+        if (isTextEdited && editedTextRef.current) {
+            setTimeout(() => {
+                if (imageInputRef?.current) {
+                    imageInputRef.current.textContent = editedTextRef.current;
+                    postData.post = editedTextRef.current;
+                    setPostData({...postData});
+                } else if (inputRef?.current) {
+                    inputRef.current.textContent = editedTextRef.current;
+                    postData.post = editedTextRef.current;
+                    setPostData({...postData});
+                }
+            }, 0);
+        }
+    }, [selectedPostImage, selectedVideo]);
 
     return (
         <>

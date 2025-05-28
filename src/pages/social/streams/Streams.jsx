@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { uniqBy } from "lodash";
+import { uniqBy, shuffle } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import "@pages/social/streams/Streams.scss";
 
@@ -63,7 +63,8 @@ const Streams = () => {
         try {
             const response = await postService.getAllPosts(currentPage);
             if (response.data.posts && response.data.posts.length > 0) {
-                appPosts.current = [...posts, ...response.data.posts];
+                const shuffledPosts = shuffle(response.data.posts || []);
+                appPosts.current = [...posts, ...shuffledPosts];
                 const allPosts = uniqBy(appPosts.current, "_id");
                 setPosts(allPosts);
                 setCurrentPage((prevPage) => prevPage + 1); // Increment page only when data is valid
@@ -177,7 +178,8 @@ const Streams = () => {
     useEffect(() => {
         setLoading(allPosts?.isLoading);
         // const orderedPosts = orderBy(allPosts?.posts, ['createdAt'], ['desc']);
-        setPosts(allPosts?.posts);
+        const orderedPosts = shuffle(allPosts?.posts || []);
+        setPosts(orderedPosts);
         setTotalPostsCount(allPosts?.totalPostsCount);
     }, [allPosts]);
 

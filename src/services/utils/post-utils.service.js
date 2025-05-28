@@ -45,6 +45,10 @@ export class PostUtils {
     postData.gifUrl = "";
     postData.image = "";
     postData.video = "";
+    postData.imgId = "";
+    postData.imgVersion = "";
+    postData.videoId = "";
+    postData.videoVersion = "";
     setSelectedPostImage(null);
     setPostImage("");
     setTimeout(() => {

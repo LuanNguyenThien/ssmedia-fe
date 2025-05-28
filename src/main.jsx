@@ -9,15 +9,16 @@ import { AppWrapper } from "@pages/admin/components/common/PageMeta.tsx";
 import { ThemeProvider } from "@pages/admin/context/ThemeContext.tsx";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ThemeProvider>
-        <AppWrapper>
-          {/* <ChakraProvider> */}
-          <App />
-          {/* </ChakraProvider> */}
-        </AppWrapper>
-      </ThemeProvider>
-    </Provider>
-  </React.StrictMode>
+  // <React.StrictMode>
+    
+  // </React.StrictMode>
+  <Provider store={store}>
+    <ThemeProvider>
+      <AppWrapper>
+        {/* <ChakraProvider> */}
+        <App />
+        {/* </ChakraProvider> */}
+      </AppWrapper>
+    </ThemeProvider>
+  </Provider>
 );
