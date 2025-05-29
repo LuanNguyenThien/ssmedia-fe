@@ -1,86 +1,75 @@
 import { useRef, useState, useEffect } from "react";
-import { uniqBy, shuffle } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import "@pages/social/streams/Streams.scss";
-
-import useEffectOnce from "@hooks/useEffectOnce";
-import useLocalStorage from "@hooks/useLocalStorage";
-import useInfiniteScroll from "@hooks/useInfiniteScroll";
-import { getPosts } from "@redux/api/posts";
+import Spinner from "@components/spinner/Spinner";
+import "@pages/social/streams/Streams.scss"; // Có thể tạo stylesheet riêng nếu cần
+import Suggestions from "@components/suggestions/Suggestions1";
 import { getUserSuggestions } from "@redux/api/suggestion";
-import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
-
+import useEffectOnce from "@hooks/useEffectOnce";
+import PostForm from "@components/posts/post-form/PostForm";
+import Posts from "@components/posts/Posts";
 import { Utils } from "@services/utils/utils.service";
 import { postService } from "@services/api/post/post.service";
+import { getQuestions } from "@redux/api/posts"; // Thay đổi từ getPosts sang getQuestions
+import { uniqBy, shuffle } from "lodash";
+import useInfiniteScroll from "@hooks/useInfiniteScroll";
 import { PostUtils } from "@services/utils/post-utils.service";
+import useLocalStorage from "@hooks/useLocalStorage";
+import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
 import { followerService } from "@services/api/followers/follower.service";
-import { socketService } from "@services/socket/socket.service";
-import { userService } from "@/services/api/user/user.service";
-
-import StreamsSkeleton from "./StreamsSkeleton";
+import StreamsSkeleton from "../streams/StreamsSkeleton";
 import ModalContainer from "@components/modal/ModalContainer";
-import PersonalizeModal from "@/components/personalize/PersonalizeModal";
-import ThanksScreen from "@/components/personalize/ThanksScreen";
-import PostForm from "@components/posts/post-form/PostForm";
-import Spinner from "@components/spinner/Spinner";
-import Suggestions from "@components/suggestions/Suggestions1";
-import Posts from "@components/posts/Posts";
-import { INTERESTS } from "@/components/personalize/constant";
+import { socketService } from "@services/socket/socket.service";
 
-const Streams = () => {
-    const { profile } = useSelector((state) => state.user);
-    const { allPosts } = useSelector((state) => state);
+const Questions = () => {
+    const { allQuestions } = useSelector((state) => state); // Thay đổi từ allPosts sang allQuestions
     const socket = socketService?.socket;
-    const dispatch = useDispatch();
-
-    const [posts, setPosts] = useState([]);
+    const [questions, setQuestions] = useState([]); // Thay đổi tên biến
     const [following, setFollowing] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(2);
-    const [totalPostsCount, setTotalPostsCount] = useState(0);
+    const [totalQuestionsCount, setTotalQuestionsCount] = useState(0); // Thay đổi tên biến
     const bodyRef = useRef(null);
     const bottomLineRef = useRef();
-    const appPosts = useRef([]);
+    const appQuestions = useRef([]); // Thay đổi tên biến
+    const dispatch = useDispatch();
     const storedUsername = useLocalStorage("username", "get");
     const [deleteSelectedPostId] = useLocalStorage("selectedPostId", "delete");
-    useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
+    useInfiniteScroll(bodyRef, bottomLineRef, fetchQuestionData); // Thay đổi tên hàm
     const PAGE_SIZE = 10;
     const [loadingMore, setLoadingMore] = useState(false);
+    const { profile } = useSelector((state) => state.user);
 
-    const [isShowPersonalizeModal, setIsShowPersonalizeModal] = useState(false);
-    const [isShowThanksScreen, setIsShowThanksScreen] = useState(false);
-
-    function fetchPostData() {
-        // if (loadingMore || currentPage > Math.ceil(totalPostsCount / PAGE_SIZE))
+    function fetchQuestionData() { // Đổi tên hàm
         if (loadingMore) {
             return;
         }
+
+        console.log("fetching questions");
         setLoadingMore(true);
-        getAllPosts().finally(() => setLoadingMore(false));
+        getAllQuestions().finally(() => setLoadingMore(false)); // Đổi tên hàm gọi
     }
 
-    const getAllPosts = async () => {
+    const getAllQuestions = async () => { // Đổi tên hàm và phương thức gọi API
         try {
-            const response = await postService.getAllPosts(currentPage);
-            if (response.data.posts && response.data.posts.length > 0) {
-                const shuffledPosts = shuffle(response.data.posts || []);
-                appPosts.current = [...posts, ...shuffledPosts];
-                const allPosts = uniqBy(appPosts.current, "_id");
-                setPosts(allPosts);
-                setCurrentPage((prevPage) => prevPage + 1); // Increment page only when data is valid
+            const response = await postService.getAllQuestions(currentPage);
+            if (response.data.questions && response.data.questions.length > 0) { // Thay đổi thuộc tính
+                const shuffledQuestions = shuffle(response.data.questions || []);
+                appQuestions.current = [...questions, ...shuffledQuestions];
+                const allQuestions = uniqBy(appQuestions.current, "_id");
+                setQuestions(allQuestions);
+                setCurrentPage((prevPage) => prevPage + 1);
 
-                if (response.data.totalPosts) {
-                    setTotalPostsCount(response.data.totalPosts);
+                if (response.data.totalQuestions) { // Thay đổi thuộc tính
+                    setTotalQuestionsCount(response.data.totalQuestions);
                 }
 
-                return true; // Indicate posts were returned
+                return true;
             } else {
-                // No more posts to load
                 return false;
             }
         } catch (error) {
             Utils.dispatchNotification(
-                error.response?.data?.message || "Failed to load posts.",
+                error.response?.data?.message || "Failed to load questions.",
                 "error",
                 dispatch
             );
@@ -91,31 +80,21 @@ const Streams = () => {
     };
 
     useEffect(() => {
-        if (
-            (profile?.user_hobbies?.subject?.length === 0 ||
-            !profile?.user_hobbies?.subject) && 
-            profile?.personalizeSettings?.allowPersonalize
-        ) {
-            setIsShowPersonalizeModal(true);
-        }
-    }, [profile]);
-
-    useEffect(() => {
         const handleHidePost = ({ postId }) => {
-            setPosts((prevPosts) =>
-                prevPosts.filter((post) => post._id !== postId)
+            setQuestions((prevQuestions) =>
+                prevQuestions.filter((question) => question._id !== postId)
             );
         };
 
         const handleUnhidePost = async ({ postId }) => {
             try {
                 const response = await postService.getPost(postId);
-                const newPost = response.data.post;
+                const newQuestion = response.data.post;
 
-                setPosts((prevPosts) => {
-                    const exists = prevPosts.find((p) => p._id === newPost._id);
-                    if (exists) return prevPosts;
-                    return [newPost, ...prevPosts];
+                setQuestions((prevQuestions) => {
+                    const exists = prevQuestions.find((q) => q._id === newQuestion._id);
+                    if (exists) return prevQuestions;
+                    return [newQuestion, ...prevQuestions];
                 });
 
                 setFollowing((prev) => {
@@ -127,7 +106,7 @@ const Streams = () => {
                     return prev;
                 });
             } catch (error) {
-                console.error("Failed to unhide post", error);
+                console.error("Failed to unhide question", error);
             }
         };
 
@@ -172,27 +151,24 @@ const Streams = () => {
         getUserFollowing();
         getReactionsByUsername();
         deleteSelectedPostId();
-        dispatch(getPosts());
+        dispatch(getQuestions()); // Thay đổi sang getQuestions
         dispatch(getUserSuggestions());
     });
 
     useEffect(() => {
-        setLoading(allPosts?.isLoading);
-        // const orderedPosts = orderBy(allPosts?.posts, ['createdAt'], ['desc']);
-        const orderedPosts = shuffle(allPosts?.posts || []);
-        setPosts(orderedPosts);
-        setTotalPostsCount(allPosts?.totalPostsCount);
-    }, [allPosts]);
+        setLoading(allQuestions?.isLoading);
+        const orderedQuestion = shuffle(allQuestions?.questions || []);
+        setQuestions(orderedQuestion);
+        setTotalQuestionsCount(allQuestions?.totalQuestionsCount);
+    }, [allQuestions]);
 
     useEffect(() => {
-        PostUtils.socketIOPost(posts, setPosts, profile);
-    }, [posts, profile]);
+        PostUtils.socketIOPost(questions, setQuestions, profile);
+    }, [questions, profile]);
 
     useEffect(() => {
         const viewportHeight = window.innerHeight;
-        console.log("Viewport Height:", viewportHeight);
-        const headerDesktopElement =
-            document.querySelector("div.header-desktop");
+        const headerDesktopElement = document.querySelector("div.header-desktop");
         const headerElement = document.querySelector("div.header-mb");
         const footerElement = document.querySelector("div.footer-mb");
 
@@ -209,9 +185,8 @@ const Streams = () => {
                 `${totalHeight}px`
             );
         } else {
-            const headerHeight = headerDesktopElement.offsetHeight;
-            const footerHeight = 0; // Assuming no footer in this case
-            const totalHeight = headerHeight + footerHeight;
+            const headerHeight = headerDesktopElement ? headerDesktopElement.offsetHeight : 0;
+            const totalHeight = headerHeight;
             document.documentElement.style.setProperty(
                 "--header-footer-height",
                 `${totalHeight}px`
@@ -219,65 +194,34 @@ const Streams = () => {
         }
     }, []);
 
-    const handleUpdateUserHobbies = async (selected) => {
-        const updateData = {
-            subject: INTERESTS.filter((interest) =>
-                selected.includes(interest.label.toLowerCase())
-            ).map((interest) => interest.value),
-        };
-        const stringifiedSubject = Utils.convertArrayToString(
-            updateData.subject
-        );
-
-        console.log(stringifiedSubject);
-        const response = await userService.updatePersonalHobby({
-            subject: stringifiedSubject,
-        });
-        if (response) {
-            setIsShowPersonalizeModal(false);
-            setIsShowThanksScreen(true);
-        }
-    };
-
     return (
         <>
-            {isShowPersonalizeModal && (
-                <PersonalizeModal
-                    onClose={() => setIsShowPersonalizeModal(false)}
-                    onContinue={(selected) => {
-                        handleUpdateUserHobbies(selected);
-                        setIsShowPersonalizeModal(false);
-                    }}
-                />
-            )}
-            {isShowThanksScreen && (
-                <ThanksScreen
-                    onClose={() => {
-                        setIsShowThanksScreen(false);
-                        window.location.reload();
-                    }}
-                />
-            )}
             <ModalContainer />
             {loading ? (
                 <StreamsSkeleton />
             ) : (
                 <div className="streams-content col-span-full">
+                    
                     <div
                         className="streams-post relative sm:pt-6 sm:px-6 bg-background-blur rounded-3xl gap-1 sm:gap-4"
                         ref={bodyRef}
                     >
+                        <div className="mb-4 px-4 md:px-6">
+                            <h1 className="text-2xl font-bold text-gray-800">Questions</h1>
+                            <p className="text-gray-500">Discover and answer questions from the community</p>
+                        </div>
                         <PostForm />
                         <Posts
-                            allPosts={posts}
+                            allPosts={questions}
                             postsLoading={loading}
                             userFollowing={following}
+                            isQuestionPage={true}
                         />
                         <div>
                             {currentPage >
-                                Math.ceil(totalPostsCount / PAGE_SIZE) && (
+                                Math.ceil(totalQuestionsCount / PAGE_SIZE) && (
                                 <div className="no-chat" data-testid="no-chat">
-                                    You have read all posts.
+                                    You have read all questions.
                                 </div>
                             )}
                         </div>
@@ -301,4 +245,4 @@ const Streams = () => {
     );
 };
 
-export default Streams;
+export default Questions;

@@ -11,6 +11,11 @@ class PostService {
     return response;
   }
 
+  async getAllQuestions(page) {
+    const response = await axios.get(`/question/all/${page}`);
+    return response;
+  }
+
   async getAllFavPosts(page) {
     const response = await axios.get(`/favpost/${page}`);
     return response;

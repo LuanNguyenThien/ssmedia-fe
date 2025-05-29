@@ -82,6 +82,12 @@ export const sideBarItems = [
         url: "/app/social/save",
         iconName: icons.saves,
     },
+    {
+        index: 7,
+        name: "Questions",
+        url: "/app/social/questions",
+        iconName: icons.home,
+    }
 ];
 
 export const feelingsList = [

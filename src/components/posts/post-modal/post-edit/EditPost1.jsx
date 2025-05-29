@@ -134,7 +134,7 @@ const EditPost = () => {
         blocks = await editor.blocksToHTMLLossy(editor.document);
         const doc = new DOMParser().parseFromString(blocks, "text/html");
 
-        const elements = doc.body.querySelectorAll("h1,h2,h3, p, div");
+        const elements = doc.body.querySelectorAll("h1,h2,h3, p, div, blockquote, li, span, strong");
 
         const plainText = Array.from(elements)
             .map((element) => element.textContent.trim())
@@ -219,6 +219,12 @@ const EditPost = () => {
             }
             postData.privacy = post?.privacy || "Public";
             postData.profilePicture = profile?.profilePicture;
+            if (typeof postData.htmlPost === "string") {
+                // Thêm class="none" vào <p></p> rỗng ở cuối
+                postData.htmlPost = postData.htmlPost
+                .replace(/(<br\s*\/?>|<br><\/br>)+$/gi, "")
+                .replace(/(<p>\s*<\/p>)+$/gi, '<p class="none"></p>');
+            }
             if (selectedPostImage || selectedVideo) {
                 let result = "";
                 if (selectedPostImage) {

@@ -27,6 +27,7 @@ const Photos = lazy(() => import("@pages/social/photos/Photos"));
 const Videos = lazy(() => import("@pages/social/videos/Videos"));
 const Profile = lazy(() => import("@pages/social/profile/Profile"));
 const Streams = lazy(() => import("@pages/social/streams/Streams"));
+const Questions = lazy(() => import("@pages/social/streams/Questions"));
 const PostDetail = lazy(() => import("@pages/social/streams/PostDetail"));
 const SavePage = lazy(() => import("@pages/social/saves/SavePage"));
 const SearchPage = lazy(() => import("@pages/social/search/SearchPage"));
@@ -120,6 +121,14 @@ export const AppRouter = () => {
                     element: (
                         <Suspense fallback={<StreamsSkeleton />}>
                             <Streams />
+                        </Suspense>
+                    ),
+                },
+                {
+                    path: "questions",
+                    element: (
+                        <Suspense fallback={<StreamsSkeleton />}>
+                            <Questions />
                         </Suspense>
                     ),
                 },
