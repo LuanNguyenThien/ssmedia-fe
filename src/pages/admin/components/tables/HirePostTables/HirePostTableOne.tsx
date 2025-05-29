@@ -115,7 +115,7 @@ export default function BasicTableOne() {
               >
                 Reason
               </TableCell>
-              
+
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
@@ -142,8 +142,7 @@ export default function BasicTableOne() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
                       <img
-                        width={40}
-                        height={40}
+                        className="w-full h-full rounded-full object-cover"
                         src={report.user.image}
                         alt={report.user.name}
                       />
@@ -159,12 +158,20 @@ export default function BasicTableOne() {
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {report.post}
+                  <a
+                    href={`/app/social/post/${report.postId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {report.post}
+                  </a>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {report.content}
                 </TableCell>
-                
+
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   {report.reportDate}
                 </TableCell>
@@ -177,9 +184,8 @@ export default function BasicTableOne() {
                         UnHire(report.postId); // Gọi hàm UnHire với postId
                       }}
                     >
-                      UnHire
+                      UnHide
                     </button>
-                   
                   </div>
                 </TableCell>
               </TableRow>

@@ -25,14 +25,15 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Dashboard", path: "/admin", pro: false }],
+    path: "/admin",
+    
   },
   {
     icon: <FaBars />,
     name: "Post Manager",
     subItems: [
       { name: "ReportPost", path: "/admin/reportpost", pro: false },
-      { name: "HirePost", path: "/admin/hirepost", pro: false },
+      { name: "HidePost", path: "/admin/hidepost", pro: false },
     ],
   },
   {
@@ -41,7 +42,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "AllUser", path: "/admin/user", pro: false },
       { name: "ReportUser", path: "/admin/reportuser", pro: false },
-      { name: "HideUser", path: "/admin/hideuser", pro: false },
+      { name: "BanUser", path: "/admin/banuser", pro: false },
       { name: "Appeal", path: "/admin/appeal", pro: false },
     ],
   },
@@ -56,7 +57,7 @@ const navItems: NavItem[] = [
 const othersItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
-    name: "Charts",
+    name: "Statistics",
     subItems: [
       { name: "Post", path: "/admin/Posts", pro: false },
       { name: "User", path: "/admin/Users", pro: false },

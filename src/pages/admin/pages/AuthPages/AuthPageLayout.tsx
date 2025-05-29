@@ -19,17 +19,19 @@ export default function AuthLayout({
           <div className="relative flex items-center justify-center z-1">
             {/* <!-- ===== Common Grid Shape Start ===== --> */}
             {/* <GridShape /> */}
-            <div className="flex flex-col items-center max-w-xs">
+
+            <div className="flex flex-col items-center max-w-sm text-center">
               <Link to="/" className="block mb-4">
-                <img
-                  width={231}
-                  height={48}
-                  src="http://localhost:4000/images/logo/auth-logo.svg"
-                  alt="Logo"
-                />
+                <div className="flex items-center space-x-2">
+                  <img src="/logo.svg" alt="Logo" width={40} height={40} />
+                  <span className="text-white text-xl font-semibold">
+                    BrainetAdmin
+                  </span>
+                </div>
               </Link>
-              <p className="text-center text-gray-400 dark:text-white/60">
-                Free and Open-Source Tailwind CSS Admin Dashboard Template
+
+              <p className="text-gray-400 dark:text-white/60">
+                A place to manage and track your website’s data.
               </p>
             </div>
           </div>

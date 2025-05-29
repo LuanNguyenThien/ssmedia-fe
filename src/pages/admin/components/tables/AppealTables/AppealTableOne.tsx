@@ -5,12 +5,11 @@ import {
   TableHeader,
   TableRow,
 } from "../../ui/table";
-
+import { ProfileUtils } from "@services/utils/profile-utils.service";
 import Badge from "../../ui/badge/Badge";
 import React, { useState, useCallback, useEffect } from "react";
 import { userService } from "@services/api/user/user.service";
 import useEffectOnce from "@hooks/useEffectOnce";
-import { ap } from "react-router/dist/development/fog-of-war-D4x86-Xc";
 import reducer, {
   addNotification,
   clearNotification,
@@ -18,10 +17,11 @@ import reducer, {
 import { useDispatch } from "react-redux";
 
 interface UserData {
-  _id: string;
   user: {
+    _id: string;
+    uId?: string;
     image: string;
-    name: string;
+    username: string;
     role: string;
   };
   projectName: string;
@@ -40,6 +40,11 @@ export default function BanUserTableOne() {
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(5);
   const dispatch = useDispatch();
+
+  // Modal state
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const getAllUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -48,10 +53,11 @@ export default function BanUserTableOne() {
       const rawUsers = response.data.data;
 
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
-        _id: u._id,
         user: {
+          _id: u._id,
+          uId: u.uId,
           image: u.profilePicture || "/default-avatar.jpg",
-          name: u.username,
+          username: u.username,
           role: "Member",
         },
         appealId: u.appeal._id,
@@ -64,7 +70,7 @@ export default function BanUserTableOne() {
       }));
 
       setUsers(mappedUsers);
-      
+
       setTotal(response.data.pagination.totalUsers);
       setLoading(false);
     } catch (error) {
@@ -122,65 +128,76 @@ export default function BanUserTableOne() {
 
   const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
+  // Mở modal hiển thị chi tiết user
+  const openUserModal = (user: UserData) => {
+    setSelectedUser(user);
+    console.log("Selected user:", user);
+    setIsModalOpen(true);
+  };
+
+  // Đóng modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      {/* Table Header cố định */}
-      <Table>
-        <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-          <TableRow>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-            >
-              User
-            </TableCell>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-            >
-              Reason
-            </TableCell>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-            >
-              Status
-            </TableCell>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-            >
-              Appeal Date
-            </TableCell>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-            >
-              Actions
-            </TableCell>
-          </TableRow>
-        </TableHeader>
-      </Table>
-
-      {/* Chỉ phần TableBody được scroll */}
-      <div className="max-w-full h-[350px] overflow-y-auto overflow-x-auto">
-        <Table>
+      <div className="max-h-[420px] overflow-y-auto">
+        <Table className="w-full">
+          <TableHeader className="sticky top-0 z-10 bg-white dark:bg-white/[0.03] border-b border-gray-100 dark:border-white/[0.05]">
+            <TableRow>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-start text-theme-xs text-gray-500 dark:text-gray-400"
+              >
+                User
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-start text-theme-xs text-gray-500 dark:text-gray-400"
+              >
+                Reason
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 w-[150px] py-3 font-medium text-start text-theme-xs text-gray-500 dark:text-gray-400"
+              >
+                Status
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 w-[150px] font-medium text-start text-theme-xs text-gray-500 dark:text-gray-400"
+              >
+                Appeal Date
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-start text-theme-xs text-gray-500 dark:text-gray-400"
+              >
+                Actions
+              </TableCell>
+            </TableRow>
+          </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {users.map((order) => (
-              <TableRow key={order.appealId}>
+              <TableRow
+                key={order.appealId}
+                onClick={() => openUserModal(order)}
+                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
                       <img
-                        width={40}
-                        height={40}
+                        className="w-full h-full rounded-full object-cover"
                         src={order.user.image}
-                        alt={order.user.name}
+                        alt={order.user.username}
                       />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {order.user.name}
+                        {order.user.username}
                       </span>
                       <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
                         {order.user.role}
@@ -188,10 +205,10 @@ export default function BanUserTableOne() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
                   {order.projectName}
                 </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
@@ -205,7 +222,7 @@ export default function BanUserTableOne() {
                     {order.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                <TableCell className="px-4 py-3 text-theme-sm text-gray-500 dark:text-gray-400">
                   {order.banAt}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start">
@@ -215,7 +232,7 @@ export default function BanUserTableOne() {
                       e.stopPropagation();
                       UnbanUser(
                         order.appealId,
-                        order._id,
+                        order.user._id,
                         order.projectName || "Vi phạm nội quy"
                       );
                     }}
@@ -245,7 +262,76 @@ export default function BanUserTableOne() {
           </button>
         ))}
       </div>
+
+      {/* Modal */}
+
+      {isModalOpen && selectedUser && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-md relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Nút đóng modal */}
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-2xl"
+            >
+              ×
+            </button>
+
+            {/* Phần header: avatar + tên + role */}
+            <div className="flex items-center gap-4 mb-4">
+              <img
+                src={selectedUser.user.image}
+                alt={selectedUser.user.username}
+                className="w-14 h-14 rounded-full object-cover"
+              />
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  {selectedUser.user.username}
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {selectedUser.user.role}
+                </p>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Lý do báo cáo
+              </label>
+              <textarea
+                value={selectedUser.projectName || ""}
+                rows={4}
+                className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:text-white resize-none"
+                disabled
+              />
+            </div>
+
+            <div className="mt-4 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  // Giả sử có hàm ProfileUtils.navigateToProfileAdmin
+                  ProfileUtils.navigateToProfileAdmin(selectedUser.user);
+                }}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Profile
+              </button>
+
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-  
 }
