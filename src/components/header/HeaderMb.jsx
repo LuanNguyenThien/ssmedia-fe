@@ -10,15 +10,15 @@ import { userService } from "@services/api/user/user.service";
 import useLocalStorage from "@hooks/useLocalStorage";
 import useSessionStorage from "@hooks/useSessionStorage";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  useDisclosure,
-  Text,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Button,
+    useDisclosure,
+    Text,
 } from "@chakra-ui/react";
 import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
 import Logo from "./components/logo/Logo";
@@ -28,21 +28,21 @@ import DropdownSettingMb from "./components/dropdown/DropdownSettingMb";
 import { Utils } from "@/services/utils/utils.service";
 
 const HeaderMb = () => {
-  const [isOpenMenu, setIsOpenMenu] = useState(false);
-  const containerRef = useRef(null);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [setLoggedIn] = useLocalStorage("keepLoggedIn", "set");
-  const storedUsername = useLocalStorage("username", "get");
-  const [deleteStorageUsername] = useLocalStorage("username", "delete");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [banReason, setBanReason] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [deleteSessionPageReload] = useSessionStorage("pageReload", "delete");
-  //selector
-  const { profile } = useSelector((state) => state.user);
+    const [isOpenMenu, setIsOpenMenu] = useState(false);
+    const containerRef = useRef(null);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [setLoggedIn] = useLocalStorage("keepLoggedIn", "set");
+    const storedUsername = useLocalStorage("username", "get");
+    const [deleteStorageUsername] = useLocalStorage("username", "delete");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [banReason, setBanReason] = useState("");
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [deleteSessionPageReload] = useSessionStorage("pageReload", "delete");
+    //selector
+    const { profile } = useSelector((state) => state.user);
 
-  useHandleOutsideClick(containerRef, setIsOpenMenu);
+    useHandleOutsideClick(containerRef, setIsOpenMenu);
 
     const handleSearchKeyPress = () => {
         navigate("/app/social/search", { state: { query: searchTerm } });
@@ -81,24 +81,24 @@ const HeaderMb = () => {
     }, []);
 
     const handleCloseBanModal = () => {
-    onClose();
-    onLogout(); // Đăng xuất sau khi đóng modal
-  };
-
-  useEffect(() => {
-    const handleBanUser = ({ userId, reason }) => {
-      if (profile?._id === userId) {
-        setBanReason(reason);
-        onOpen(); // Mở modal khi bị ban
-      }
+        onClose();
+        onLogout(); // Đăng xuất sau khi đóng modal
     };
 
-    socketService?.socket?.on("ban user", handleBanUser);
+    useEffect(() => {
+        const handleBanUser = ({ userId, reason }) => {
+            if (profile?._id === userId) {
+                setBanReason(reason);
+                onOpen(); // Mở modal khi bị ban
+            }
+        };
 
-    return () => {
-      socketService?.socket?.off("ban user", handleBanUser);
-    };
-  }, [profile]);
+        socketService?.socket?.on("ban user", handleBanUser);
+
+        return () => {
+            socketService?.socket?.off("ban user", handleBanUser);
+        };
+    }, [profile]);
 
     return (
         <>
@@ -112,11 +112,12 @@ const HeaderMb = () => {
                         searchTerm={searchTerm}
                         setSearchTerm={setSearchTerm}
                     />
-                    <div ref={containerRef} onClick={handleOpenMenu}>
+                    <div onClick={handleOpenMenu}>
                         <RxHamburgerMenu className="text-3xl text-primary-black" />
                     </div>
                     {isOpenMenu && (
                         <DropdownSettingMb
+                            ref={containerRef}
                             id={profile?._id}
                             name={profile?.username}
                             onLogout={onLogout}
@@ -127,9 +128,9 @@ const HeaderMb = () => {
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 text-center">
-                    <h2 className="text-xl font-semibold text-red-600 mb-4">Tài khoản bị khóa</h2>
+                    <h2 className="text-xl font-semibold text-red-600 mb-4">Tài khoản của bạn đã bị khóa</h2>
                     <p className="text-gray-700 mb-6">
-                        {banReason || "Tài khoản của bạn đã bị cấm. Vui lòng liên hệ quản trị viên để biết thêm chi tiết."}
+                        Lí do: {banReason || "Tài khoản của bạn đã bị cấm. Vui lòng liên hệ quản trị viên để biết thêm chi tiết."}
                     </p>
                     <button
                         onClick={handleCloseBanModal}

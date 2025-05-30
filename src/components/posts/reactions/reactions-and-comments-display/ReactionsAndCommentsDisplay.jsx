@@ -34,6 +34,7 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
         try {
             const response = await postService.getPostReactions(post?._id);
             setPostReactions(response.data.reactions);
+            console.log(response.data);
         } catch (error) {
             Utils.dispatchNotification(
                 error?.response?.data?.message,
@@ -42,6 +43,7 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
             );
         }
     };
+    
 
     const getPostCommentsNames = async () => {
         try {

@@ -29,11 +29,14 @@ import { IoIosVideocam } from "react-icons/io";
 import { PiPhoneFill } from "react-icons/pi";
 import { icons } from "@assets/assets";
 
+import useIsMobile from "@hooks/useIsMobile";
+
 const ChatWindow = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const isMobile = Utils.isMobileDevice();
+    const isMobile = useIsMobile();
     const { profile } = useSelector((state) => state.user);
+    
 
     const [receiver, setReceiver] = useState();
     const [conversationId, setConversationId] = useState("");
@@ -44,8 +47,6 @@ const ChatWindow = () => {
     const [isMessagesLoading, setIsMessagesLoading] = useState(true);
     const [isShowInfoGroup, setIsShowInfoGroup] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
-    const MEMBERSHIP_CHECK_COMPLETE = "membershipCheckComplete";
     const [_, setMembershipCheckComplete] = useState(false);
     const [showNonMemberWarning, setShowNonMemberWarning] = useState(false);
 
@@ -643,7 +644,6 @@ const ChatWindow = () => {
         dispatch,
         getUserProfileByUserId,
         silentRefreshMessages,
-        isGroup,
     ]);
 
     // Clean up all socket listeners
@@ -702,7 +702,7 @@ const ChatWindow = () => {
         } else {
             setContentVisible(false);
         }
-    }, [isLoading, searchParamsId, isGroupMember]);
+    }, [isLoading, searchParamsId, isGroupMember, isGroup]);
 
     return (
         <div
@@ -712,7 +712,7 @@ const ChatWindow = () => {
             {/* Replace the previous warning with this improved version */}
             {showNonMemberWarning && (
                 <div className="absolute inset-0 flex justify-center items-center bg-white/20 z-10 transition-all duration-300 ease-in-out animate-fadeIn">
-                    {Utils.isMobileDevice() && (
+                    {isMobile && (
                         <div
                             className="fixed gap-2 top-5 left-5 text-xl text-primary-black cursor-pointer pr-2 flex items-center"
                             onClick={handleBackClick}

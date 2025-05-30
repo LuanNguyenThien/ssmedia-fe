@@ -98,7 +98,7 @@ export class Utils {
   }
 
   static isMobileDevice = () => {
-    return (
+    const isMobile = 
       typeof window !== "undefined" &&
       (navigator.userAgent.match(/Android/i) ||
         navigator.userAgent.match(/webOS/i) ||
@@ -107,7 +107,8 @@ export class Utils {
         navigator.userAgent.match(/iPod/i) ||
         navigator.userAgent.match(/BlackBerry/i) ||
         navigator.userAgent.match(/Windows Phone/i))
-    )
+    
+    return Boolean(isMobile);
   }
 
   static checkIfUserIsBlocked(blocked, userId) {
@@ -174,5 +175,13 @@ export class Utils {
     const blob = element.slice(0, element.size, '/image/png');
     const newFile = new File([blob], `${fileName}.png`, { type: '/image/png' });
     return newFile;
+  }
+
+  static convertArrayToString(array) {
+    return array.join(' ');
+  }
+
+  static convertStringToArray(string) {
+    return string.split(' ');
   }
 }

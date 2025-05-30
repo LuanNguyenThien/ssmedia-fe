@@ -18,6 +18,16 @@
   scroll-behavior: smooth;
 }
 
+/* Global scrollbar hiding for all elements with overflow */
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+* {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 body {
   margin: 0;
   overflow: hidden;
@@ -114,5 +124,15 @@ p {
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
+  }
+
+  /* Nếu cần hiện lại scrollbar ở một số thành phần */
+  .scrollbar-show {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+  }
+  
+  .scrollbar-show::-webkit-scrollbar {
+    display: block;
   }
 }

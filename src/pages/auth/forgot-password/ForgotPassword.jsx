@@ -1,48 +1,8 @@
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaEnvelope } from "react-icons/fa";
 import "@pages/auth/forgot-password/ForgotPassword.scss";
 import { authService } from "@services/api/auth/auth.service";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import useLocalStorage from "@hooks/useLocalStorage";
-import {
-    Box,
-    Flex,
-    useBreakpointValue,
-    Icon,
-    Button,
-    FormControl,
-    Heading,
-    Input,
-    FormLabel,
-    Stack,
-    Text,
-    useColorModeValue,
-    Alert,
-    AlertIcon,
-    AlertTitle,
-    AlertDescription,
-} from "@chakra-ui/react";
-const Blur = (props) => {
-    return (
-        <Icon
-            width={useBreakpointValue({ base: "100%", md: "40vw", lg: "30vw" })}
-            zIndex={useBreakpointValue({ base: -1, md: -1, lg: -1 })}
-            height="560px"
-            viewBox="0 0 528 560"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            {...props}
-        >
-            <circle cx="71" cy="61" r="111" fill="#F56565" />
-            <circle cx="244" cy="106" r="139" fill="#ED64A6" />
-            <circle cy="291" r="139" fill="#ED64A6" />
-            <circle cx="80.5" cy="189.5" r="101.5" fill="#ED8936" />
-            <circle cx="196.5" cy="317.5" r="101.5" fill="#ECC94B" />
-            <circle cx="70.5" cy="458.5" r="101.5" fill="#48BB78" />
-            <circle cx="426.5" cy="-0.5" r="101.5" fill="#4299E1" />
-        </Icon>
-    );
-};
+import { useState } from "react";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
@@ -51,20 +11,20 @@ const ForgotPassword = () => {
     const [alertType, setAlertType] = useState("");
     const [responseMessage, setResponseMessage] = useState("");
 
-    const forgotPassword = async (event) => {
+    const forgotPassword = async () => {
         setLoading(true);
         try {
             const response = await authService.forgotPassword(email);
             setLoading(false);
             setEmail("");
-            setShowAlert(false);
-            setAlertType("alert-success");
-            setResponseMessage(response?.data?.message);
+            setShowAlert(true);
+            setAlertType("success");
+            setResponseMessage(response?.data?.message || "Reset link sent successfully!");
         } catch (error) {
-            setAlertType("alert-error");
+            setAlertType("error");
             setLoading(false);
             setShowAlert(true);
-            setResponseMessage(error?.response?.data?.message);
+            setResponseMessage(error?.response?.data?.message || "Failed to send reset link");
         }
     };
 
@@ -72,105 +32,70 @@ const ForgotPassword = () => {
         event.preventDefault();
         forgotPassword();
     };
+
     return (
-        <Box position={"relative"} className="forgot-password-container">
-            <Flex minH={"100vh"} align={"center"} justify={"center"}>
-                <Blur
-                    position="absolute"
-                    bottom={-10}
-                    right={-10}
-                    style={{ filter: "blur(120px)" }}
-                />
-                <form onSubmit={sendLinkEmail}>
-                    <Stack
-                        spacing={4}
-                        w={"full"}
-                        maxW={"md"}
-                        bg={useColorModeValue("white", "gray.700")}
-                        rounded={"xl"}
-                        boxShadow={"lg"}
-                        p={6}
-                        my={12}
-                    >
-                        <Heading
-                            lineHeight={1.1}
-                            fontSize={{ base: "2xl", md: "3xl" }}
-                        >
-                            Quên mật khẩu?
-                        </Heading>
-
-                        <Text
-                            fontSize={{ base: "sm", sm: "md" }}
-                            color={useColorModeValue("gray.800", "gray.400")}
-                        >
-                            Gửi liên kết để đặt lại mật khẩu qua email
-                        </Text>
-
-                        {showAlert && (
-                            <Alert status="error">
-                                <AlertIcon />
-                                <AlertTitle>{"Lỗi!"}</AlertTitle>
-                                <AlertDescription>
-                                    {responseMessage}
-                                </AlertDescription>
-                            </Alert>
-                        )}
-
-                        <Stack spacing={6}>
-                            <FormControl id="email" isRequired>
-                                <FormLabel>Email</FormLabel>
-                                <Input
-                                    placeholder="your-email@example.com"
-                                    _placeholder={{ color: "gray.500" }}
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                            </FormControl>
-
-                            <Button
-                                type="submit"
-                                fontFamily={"heading"}
-                                w={"full"}
-                                bgGradient="linear(to-r, red.400,pink.400)"
-                                color={"white"}
-                                _hover={{
-                                    bgGradient:
-                                        "linear(to-r, red.400,pink.400)",
-                                    boxShadow: "xl",
-                                }}
-                                disabled={!email}
-                            >
-                                {loading ? "Đang gửi liên kết..." : "Gửi mã"}
-                            </Button>
-
-                            <Link to={"/"}>
-                                <Button
-                                    leftIcon={<FaArrowLeft />}
-                                    fontFamily={"heading"}
-                                    w={"full"}
-                                    bgGradient="linear(to-r, blue.400,teal.400)"
-                                    color={"white"}
-                                    _hover={{
-                                        bgGradient:
-                                            "linear(to-r, blue.400,teal.400)",
-                                        boxShadow: "xl",
-                                    }}
-                                >
-                                    Quay lại đăng nhập
-                                </Button>
-                            </Link>
-                        </Stack>
-                    </Stack>
-                </form>
-            </Flex>
-            <Blur
-                position={"absolute"}
-                top={-10}
-                left={-10}
-                style={{ filter: "blur(80px)" }}
-            />
-        </Box>
+        <div className="w-full">
+            {showAlert && (
+                <div 
+                    className={`text-sm p-3 mb-6 rounded-lg ${
+                        alertType === "error" ? "bg-red-100 text-red-700 border border-red-200" : "bg-green-100 text-green-700 border border-green-200"
+                    }`} 
+                    role="alert"
+                >
+                    {responseMessage}
+                </div>
+            )}
+            
+            <form onSubmit={sendLinkEmail} className="space-y-1">
+                <div className="group">
+                    <label className="block text-xs font-medium text-primary mb-2 transition duration-300 group-focus-within:text-primary">
+                        Email Address
+                    </label>
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FaEnvelope className="h-5 w-5 text-primary" />
+                        </div>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="you@example.com"
+                            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white/50 transition duration-200 hover:bg-white shadow-sm"
+                            required
+                        />
+                    </div>
+                    <p className="mt-2 text-xs text-gray-600">We'll send a password reset link to this email address</p>
+                </div>
+                
+                <button
+                    type="submit"
+                    disabled={loading || !email}
+                    className="w-full mt-6 bg-gradient-to-r from-primary to-primary/80 text-white py-3 px-4 rounded-lg hover:from-primary hover:to-primary/80 transition duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium shadow-xl disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                    {loading ? (
+                        <div className="flex items-center justify-center">
+                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Sending link...</span>
+                        </div>
+                    ) : (
+                        "Send Reset Link"
+                    )}
+                </button>
+                
+                <Link 
+                    to="/" 
+                    className="flex items-center justify-center mt-8 text-sm text-primary hover:text-primary focus:outline-none px-4 py-2 rounded-full hover:bg-primary/5 transition-colors"
+                    tabIndex="0"
+                    aria-label="Return to login page"
+                >
+                    <FaArrowLeft className="mr-2" />
+                    <span>Back to login</span>
+                </Link>
+            </form>
+        </div>
     );
 };
 

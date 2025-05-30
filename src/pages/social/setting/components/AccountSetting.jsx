@@ -47,6 +47,7 @@ const AccountSetting = ({ userData, handleAccountChange }) => {
                             Username
                         </label>
                         <input
+                            disabled={true}
                             type="text"
                             name="username"
                             value={userData.username}

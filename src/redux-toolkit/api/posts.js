@@ -11,6 +11,15 @@ const getPosts = createAsyncThunk('post/getPosts', async (name, { dispatch }) =>
   }
 });
 
+const getQuestions = createAsyncThunk('post/getQuestions', async (name, { dispatch }) => {
+  try {
+    const response = await postService.getAllQuestions(1);
+    return response.data;
+  } catch (error) {
+    Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
+  }
+});
+
 const getFavPosts = createAsyncThunk('post/getFavPosts', async (name, { dispatch }) => {
   try {
     const response = await postService.getAllFavPosts(1);
@@ -20,4 +29,4 @@ const getFavPosts = createAsyncThunk('post/getFavPosts', async (name, { dispatch
   }
 });
 
-export { getPosts, getFavPosts };
+export { getPosts, getQuestions, getFavPosts };

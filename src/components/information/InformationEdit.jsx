@@ -15,8 +15,6 @@ const InformationEdit = ({
     setEditableSocialInputs,
 }) => {
     const dispatch = useDispatch();
-
-    console.warn(editableInputs)
     const [isEdit, setIsEdit] = useState({
         basic: false,
         social: false,

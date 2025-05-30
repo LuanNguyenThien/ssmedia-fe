@@ -1,4 +1,4 @@
-import { Utils } from "@/services/utils/utils.service";
+import useIsMobile from "@hooks/useIsMobile";
 
 const sideBarItems = [
     { id: 1, name: "All" },
@@ -7,7 +7,7 @@ const sideBarItems = [
 ];
 
 const SearchSidebar = ({ state, setState }) => {
-    const isMobile = Utils.isMobileDevice();
+    const isMobile = useIsMobile();
 
     if (isMobile) {
         return (
@@ -38,9 +38,7 @@ const SearchSidebar = ({ state, setState }) => {
 
     return (
         <div className="bg-primary-white rounded-[30px] p-6 mb-4 w-full sm:w-1/3 lg:w-1/4 flex flex-col">
-            <span className="text-2xl font-bold pb-2 ">
-                Search results
-            </span>
+            <span className="text-2xl font-bold pb-2 ">Search results</span>
 
             <div className="flex flex-col w-full gap-1">
                 {sideBarItems.map((item) => (

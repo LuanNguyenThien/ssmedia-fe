@@ -63,11 +63,42 @@ import edit from "./icons/sidebar/edit.svg";
 import envelope from "./icons/sidebar/envelope.svg";
 import block from "./icons/sidebar/block-closed.svg";
 
+//3d objects
+import threeD1 from "./3d/3d1.png";
+import threeD2 from "./3d/3d2.png";
+import threeD3 from "./3d/3d3.png";
+import threeD4 from "./3d/3d4.png";
+import threeD5 from "./3d/3d5.png";
+import threeD6 from "./3d/3d6.png";
+import threeD7 from "./3d/3d7.png";
+import threeD8 from "./3d/3d8.png";
+
+//post privacy
+import publicIcon from "./icons/post-privacy/public.png";
+import privateIcon from "./icons/post-privacy/private.png";
+import followersIcon from "./icons/post-privacy/followers.png";
+
+export const threeD = [
+    threeD1,
+    threeD2,
+    threeD3,
+    threeD4,
+    threeD5,
+    threeD6,
+    threeD7,
+    threeD8,
+];
 
 export const assets = {
     logo,
     notification,
     message,
+};
+
+export const postPrivacy = {
+    publicIcon,
+    privateIcon,
+    followersIcon,
 };
 
 export const feelings = {
@@ -128,5 +159,5 @@ export const icons = {
     removeMember,
     edit,
     envelope,
-    block
+    block,
 };

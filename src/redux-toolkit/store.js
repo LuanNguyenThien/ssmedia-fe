@@ -8,6 +8,7 @@ import postsReducer from '@redux/reducers/post/posts.reducer';
 import userPostReactionReducer from '@redux/reducers/post/user-post-reaction.reducer';
 import chatReducer from '@redux/reducers/chat/chat.reducer';
 import sidebarReducer from '@redux/reducers/navbar/navState.reducer';
+import questionsReducer from '@redux/reducers/post/questions.reducer';
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     modal: modalReducer,
     post: postReducer,
     allPosts: postsReducer,
+    allQuestions: questionsReducer,
     userPostReactions: userPostReactionReducer,
     chat: chatReducer,
     sidebarState: sidebarReducer

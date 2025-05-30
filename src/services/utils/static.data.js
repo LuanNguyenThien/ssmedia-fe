@@ -18,6 +18,9 @@ export const bgColors = [
     "#673ab7",
     "#3f51b5",
     "#2196f3",
+    "#00bcd4",
+    "#cddc39",
+    "#ffffff"
 ];
 
 export const avatarColors = [
@@ -79,6 +82,12 @@ export const sideBarItems = [
         url: "/app/social/save",
         iconName: icons.saves,
     },
+    {
+        index: 7,
+        name: "Questions",
+        url: "/app/social/questions",
+        iconName: icons.home,
+    }
 ];
 
 export const feelingsList = [

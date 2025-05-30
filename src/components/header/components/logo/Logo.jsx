@@ -1,9 +1,9 @@
-import { Utils } from "@/services/utils/utils.service";
 import { assets } from "@assets/assets";
 import { useNavigate } from "react-router-dom";
+import useIsMobile from "@hooks/useIsMobile";
 
 const Logo = () => {
-    const isMobile = Utils.isMobileDevice();
+    const isMobile = useIsMobile();
     const navigate = useNavigate();
     return (
         <div

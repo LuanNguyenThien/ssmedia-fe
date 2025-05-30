@@ -102,9 +102,7 @@ export default function YearlyPostsChart() {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5  sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-800 ">
-          Yearly Posts
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-800 ">Yearly Posts</h3>
         <div className="relative inline-block">
           <button
             className="dropdown-toggle"
@@ -134,9 +132,9 @@ export default function YearlyPostsChart() {
         </div>
       </div>
 
-      <div className="max-w-full overflow-x-auto custom-scrollbar">
-        <div className="-ml-5 min-w-[650px] xl:min-w-full pl-2">
-          <Chart options={options} series={series} type="bar" height={200} />
+      <div className="max-w-full overflow-x-auto custom-scrollbar relative">
+        <div className="relative z-0">
+          <Chart className="relative z-10" options={options} series={series} type="bar" height={200} />
         </div>
       </div>
     </div>

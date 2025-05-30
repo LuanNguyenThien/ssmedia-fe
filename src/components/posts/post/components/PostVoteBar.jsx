@@ -8,6 +8,9 @@ import { Utils } from "@services/utils/utils.service";
 import { cloneDeep, filter, find } from "lodash";
 import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 import { icons } from "@/assets/assets";
+import { FaSpinner } from "react-icons/fa";
+import { openModal } from "@redux/reducers/modal/modal.reducer";
+import VoteList from "./VoteList";
 
 const PostVoteBar = ({ post }) => {
     const { profile } = useSelector((state) => state.user);
@@ -17,7 +20,57 @@ const PostVoteBar = ({ post }) => {
     const [upvotePop, setUpvotePop] = useState(false);
     const [downvotePop, setDownvotePop] = useState(false);
     const debounceRef = useRef({ upvote: false, downvote: false });
-   
+    const [postReactions, setPostReactions] = useState([]);
+    const [isShowVoteList, setIsShowVoteList] = useState(false);
+    const [answerCount, setAnswerCount] = useState(post.answerCount || 0);
+
+    const openAnswerForm = () => {
+        dispatch(openModal({
+            type: 'add',
+            data: {
+                questionId: post._id,
+                question: post.post,
+                questionUserId: post.userId,
+                username: post.username
+            },
+            modalType: 'createpost',
+        }));
+    };
+
+    const navigateToQuestionDetail = () => {
+        navigate(`/app/social/question/${post._id}`);
+    };
+
+    const getAnswerCount = useCallback(async () => {
+        if (!post.htmlPost) { // Chỉ lấy answer count cho questions
+            try {
+                const response = await postService.getAnswersCount(post._id);
+                setAnswerCount(response.data.count);
+            } catch (error) {
+                console.error('Error fetching answer count:', error);
+            }
+        }
+    }, [post._id, post.htmlPost]);
+
+     useEffect(() => {
+        if (!post.htmlPost) { // Chỉ lấy số lượng câu trả lời cho questions
+            getAnswerCount();
+        }
+    }, [getAnswerCount, post.htmlPost]);
+
+    const getPostReactions = async () => {
+        try {
+            const response = await postService.getPostReactions(post?._id);
+            setPostReactions(response.data.reactions);
+        } catch (error) {
+            Utils.dispatchNotification(
+                error?.response?.data?.message,
+                "error",
+                dispatch
+            );
+        }
+    };
+
     const selectedUserReaction = useCallback(
         (postReactions) => {
             const userReaction = find(
@@ -102,6 +155,7 @@ const PostVoteBar = ({ post }) => {
                     post?._id,
                     profile?.username
                 );
+
             const updatedPost = updatePostReactions(
                 reaction,
                 Object.keys(reactionResponse.data.reactions).length,
@@ -178,44 +232,123 @@ const PostVoteBar = ({ post }) => {
     };
 
     return (
-        <div className="vote-bar flex flex-row md:flex-col items-center gap-1 md:w-14">
-            <button
-                aria-label="Upvote"
-                className={`flex flex-col transition-all duration-200 ease-linear items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full focus:outline-none
-                ${
-                    userSelectedReaction.toLowerCase() === "upvote"
-                        ? "text-green-600 bg-green-50"
-                        : "text-gray-700 hover:scale-110 hover:text-green-500"
-                }
-                ${upvotePop ? "scale-110" : ""}`}
-                onClick={handleUpvote}
-                type="button"
-            >
-                <span className="sr-only">Upvote</span>
-                <DynamicSVG svgData={icons.chevron} className="size-5 md:size-6" />
-            </button>
-            <span className="text-center font-medium text-primary-black select-none text-sm md:text-lg md:my-1">
-                {post.reactions["upvote"] - post.reactions["downvote"]}
-            </span>
-            <button
-                aria-label="Downvote"
-                className={`flex flex-col items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full focus:outline-none transition-all duration-200 ease-linear
-                ${
-                    userSelectedReaction.toLowerCase() === "downvote"
-                        ? "text-red-600 bg-red-50"
-                        : "text-gray-400 hover:scale-110 hover:text-red-500"
-                }
-                ${downvotePop ? "scale-110" : ""}`}
-                onClick={handleDownvote}
-                type="button"
-            >
-                <span className="sr-only">Downvote</span>
-                <DynamicSVG
-                    svgData={icons.chevron}
-                    className="size-5 md:size-6 rotate-180"
+        <>
+            {isShowVoteList && postReactions && (
+                <VoteList
+                    list={postReactions}
+                    maxHeight={400}
+                    onClose={() => setIsShowVoteList(false)}
                 />
-            </button>
-        </div>
+            )}
+            <div className="vote-bar flex flex-row md:flex-col md:justify-end items-center gap-1 md:w-14 h-full">
+                <button
+                    aria-label="Upvote"
+                    className={`flex flex-col transition-all duration-200 ease-linear items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full focus:outline-none
+            ${
+                userSelectedReaction.toLowerCase() === "upvote"
+                    ? "text-green-600 bg-green-50"
+                    : "text-gray-700 hover:scale-110 hover:text-green-500"
+            }
+            ${upvotePop ? "scale-110" : ""}`}
+                    onClick={handleUpvote}
+                    type="button"
+                >
+                    <span className="sr-only">Upvote</span>
+                    <DynamicSVG
+                        svgData={icons.chevron}
+                        className="size-5 md:size-6"
+                    />
+                </button>
+                {/* show upvote and downvote point */}
+                <div className="relative group">
+                    <span
+                        onClick={() => {
+                            setIsShowVoteList(!isShowVoteList);
+                        }}
+                        onMouseEnter={getPostReactions}
+                        className="text-center font-medium text-primary-black select-none text-sm md:text-lg md:my-1 cursor-pointer hover:underline block"
+                    >
+                        {post.reactions["upvote"] - post.reactions["downvote"]}
+                    </span>
+                    {postReactions.length > 0 && (
+                        <div
+                            className="invisible group-hover:visible absolute w-[200px] bg-[var(--gray-15)] rounded-md z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-600 p-[5px_8px] top-[115%] left-1/2 -translate-x-[45px]"
+                            data-testid="tooltip-container"
+                        >
+                            <div className="float-left max-h-[500px] mb-0 w-auto h-auto">
+                                {postReactions.length === 0 && (
+                                    <FaSpinner className="ml-[85px] text-[var(--white-1)] animate-spin" />
+                                )}
+                                {postReactions.length > 0 && (
+                                    <>
+                                        {postReactions
+                                            .slice(0, 19)
+                                            .map((reaction) => (
+                                                <span
+                                                    key={Utils.generateString(
+                                                        10
+                                                    )}
+                                                    className="text-[0.75rem] font-normal block text-[var(--white-1)]"
+                                                >
+                                                    {reaction?.username}
+                                                </span>
+                                            ))}
+                                        {postReactions.length > 20 && (
+                                            <span className="text-[0.75rem] font-normal block text-[var(--white-1)]">
+                                                and {postReactions.length - 20}{" "}
+                                                others...
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <button
+                    aria-label="Downvote"
+                    className={`flex flex-col items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full focus:outline-none transition-all duration-200 ease-linear
+            ${
+                userSelectedReaction.toLowerCase() === "downvote"
+                    ? "text-red-600 bg-red-50"
+                    : "text-gray-400 hover:scale-110 hover:text-red-500"
+            }
+            ${downvotePop ? "scale-110" : ""}`}
+                    onClick={handleDownvote}
+                    type="button"
+                >
+                    <span className="sr-only">Downvote</span>
+                    <DynamicSVG
+                        svgData={icons.chevron}
+                        className="size-5 md:size-6 rotate-180"
+                    />
+                </button>
+
+                {!post.htmlPost && (
+                    <>
+                        {/* Nút Answer */}
+                        <button
+                            aria-label="Answer"
+                            className="mt-2 flex flex-col items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full focus:outline-none transition-all duration-200 ease-linear text-primary hover:bg-primary-light hover:text-primary-dark"
+                            onClick={openAnswerForm}
+                            type="button"
+                        >
+                            <span className="">Answer</span>
+                        </button>
+                        
+                        {/* Số lượng answers và link */}
+                        {answerCount > 0 && (
+                            <div 
+                                className="mt-1 text-xs md:text-sm text-center font-medium text-primary cursor-pointer hover:underline"
+                                onClick={navigateToQuestionDetail}
+                            >
+                                {answerCount} {answerCount === 1 ? 'answer' : 'answers'}
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+        </>
     );
 };
 

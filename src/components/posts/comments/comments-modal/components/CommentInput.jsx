@@ -3,9 +3,11 @@ import CommentInputBox from "@components/posts/comments/comment-input/CommentInp
 import Avatar from "@components/avatar/Avatar";
 import { useSelector } from "react-redux";
 import { Utils } from "@/services/utils/utils.service";
+import useIsMobile from "@hooks/useIsMobile";
 
 const CommentInput = ({ post, onCommentAdded }) => {
     const { profile } = useSelector((state) => state.user);
+    const isMobile = useIsMobile();
 
     return (
         <div className="sticky bottom-0 left-0 right-0 bg-white pt-3 pb-3 border-t border-gray-100 mt-4 backdrop-blur-[2px] transition-all duration-300">
@@ -17,7 +19,7 @@ const CommentInput = ({ post, onCommentAdded }) => {
                 </div>
 
                 <div className="flex items-center gap-3 px-2 mx-auto max-w-3xl w-full ">
-                    {!Utils.isMobileDevice() && (
+                    {!isMobile && (
                         <div className="flex-shrink-0 transition-transform hover:scale-105">
                             <Avatar
                                 name={profile?.username}

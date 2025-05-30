@@ -18,4 +18,5 @@ const useSessionStorage = (key, type) => {
     console.log(error);
   }
 };
+
 export default useSessionStorage;

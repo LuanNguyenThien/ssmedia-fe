@@ -223,6 +223,32 @@
             }
         }
     }
+    .user-post-with-bg {
+        width: 100%;
+        max-height: 400px;
+        height: 400px;
+        color: var(--white-1);
+        font-size: 40px;
+        font-weight: bolder;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        padding: 25px;
+        overflow-y: scroll;
+        display: grid;
+        overflow-x: hidden;
+        word-break: break-word;
+        place-items: center;
+
+        a {
+            color: var(--white-1);
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
     .my-blocknote {
         .bn-content {
             background: #f0f0f0;

@@ -106,13 +106,11 @@ const Dropdown = ({
                                 classNameButtonConfirm={
                                     "bg-primary/90 hover:bg-primary/70"
                                 }
-                                handleConfirm={(event) => {
-                                    event.stopPropagation();
+                                handleConfirm={() => {
                                     handleMarkAllAsRead();
                                     setShowDeleteAllConfirmModal(false);
                                 }}
-                                handleCancel={(event) => {
-                                    event.stopPropagation();
+                                handleCancel={() => {
                                     setShowDeleteAllConfirmModal(false);
                                 }}
                             />
@@ -202,15 +200,13 @@ const Dropdown = ({
                                     classNameButtonConfirm={
                                         "bg-red-500 hover:bg-red-300"
                                     }
-                                    handleConfirm={(event) => {
-                                        event.stopPropagation();
+                                    handleConfirm={() => {
                                         onDeleteNotification(
                                             chosenNotification?._id
                                         );
                                         setShowDeleteConfirmModal(false);
                                     }}
-                                    handleCancel={(event) => {
-                                        event.stopPropagation();
+                                    handleCancel={() => {
                                         setShowDeleteConfirmModal(false);
                                     }}
                                 />

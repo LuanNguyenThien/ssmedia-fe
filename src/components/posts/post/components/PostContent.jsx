@@ -51,6 +51,7 @@ const PostContent = ({
                     <div
                         data-testid="user-post-with-bg"
                         className="user-post-with-bg"
+                        style={{ backgroundColor: `${post?.bgColor}` }}
                     >
                         {post?.post}
                     </div>

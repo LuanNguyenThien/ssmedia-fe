@@ -14,7 +14,7 @@ const initialState = {
   commentsModalIsOpen: false,
   deleteDialogIsOpen: false,
   deleteDialogType: "",
-  modalType: "createpost",
+  modalType: "createquestion",
 };
 
 const modalSlice = createSlice({
@@ -22,10 +22,11 @@ const modalSlice = createSlice({
   initialState,
   reducers: {
     openModal: (state, action) => {
-      const { type, data } = action.payload;
+      const { type, data, modalType } = action.payload;
       state.isOpen = true;
       state.type = type;
       state.data = data;
+      state.modalType = modalType || "createquestion"; // Default to "createquestion" if modalType is not provided
     },
     closeModal: (state) => {
       state.isOpen = false;
@@ -41,7 +42,7 @@ const modalSlice = createSlice({
       state.openVideoDialog = false;
       state.deleteDialogIsOpen = false;
       state.deleteDialogType = "";
-      state.modalType = "createpost"
+      state.modalType = "createquestion"
     },
     setModalType: (state, action) => {
       state.modalType = action.payload;

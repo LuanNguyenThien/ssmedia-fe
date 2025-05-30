@@ -10,9 +10,9 @@ export default function BasicTables() {
         title="React.js Hire Post Dashboard | TailAdmin - Next.js Admin Dashboard Template"
         description="This is React.js Hire Post Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
-      <PageBreadcrumb pageTitle="Hire Post" />
+      <PageBreadcrumb pageTitle="Hide Post" />
       <div className="space-y-6">
-        <ComponentCard title="Hire Post">
+        <ComponentCard title="Hide Post">
           <HiddenPostTable />
         </ComponentCard>
       </div>

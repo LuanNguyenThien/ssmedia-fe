@@ -102,7 +102,7 @@ const SavePage = () => {
         // <div className="saves" data-testid="saves">
 
         // </div>
-        <div className="saves col-span-full pt-4">
+        <div className="saves col-span-full w-full sm:rounded-t-3xl pt-1 sm:pt-4">
             {(loading || postSaves.length > 0) && (
                 <div className="saves-content">
                     <div
