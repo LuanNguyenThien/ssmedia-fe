@@ -288,7 +288,7 @@ export default function BasicTableOne() {
                         e.stopPropagation(); // không trigger click vào row
                         banUser(
                           order.reportId,
-                          order._id,
+                          order.userreport._id,
                           order.projectName || "Vi phạm nội quy"
                         );
                       }}

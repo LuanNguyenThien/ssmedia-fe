@@ -28,7 +28,7 @@ export default function SignInForm() {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [keepLoggedIn, setKeepLoggedIn] = useState(false);
+    const [keepLoggedIn, setKeepLoggedIn] = useState(true);
     const [loading, setLoading] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -150,7 +150,7 @@ export default function SignInForm() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  {/* <div className="flex items-center gap-3">
                     <Checkbox
                       checked={isChecked}
                       onChange={(value) => {
@@ -161,7 +161,7 @@ export default function SignInForm() {
                     <span className="block font-normal text-gray-700 text-theme-sm dark:text-gray-400">
                       Keep me logged in
                     </span>
-                  </div>
+                  </div> */}
                   <Link
                     to="/reset-password"
                     className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
