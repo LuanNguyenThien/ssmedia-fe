@@ -7,6 +7,7 @@ import ImageModal from "@components/image-modal/ImageModal";
 import Dialog from "@components/dialog/Dialog";
 import BackgroundHeader from "@components/background-header/BackgroundHeader";
 import Timeline from "@components/timeline/Timeline";
+import TimelineAnswers from "@components/timeline/TimelineAnswer";
 import Information from "@/components/information/Information";
 import ModalContainer from "@components/modal/ModalContainer";
 
@@ -29,8 +30,8 @@ import ProfileSkeleton from "./ProfileSkeleton";
 // Hooks
 // Removed useEffectOnce - we'll use useEffect with dependencies instead
 
-const currentUserOptions = ["Posts", "Replied", "Followers", "Following"];
-const otherUserOptions = ["Posts", "Followers"];
+const currentUserOptions = ["Posts", "Answers", "Followers", "Following"];
+const otherUserOptions = ["Posts", "Answers", "Followers"];
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -53,7 +54,7 @@ const Profile = () => {
     const [displayContent, setDisplayContent] = useState("Posts");
     const [titleOptions, setTitleOptions] = useState([
         "Posts",
-        "Replied",
+        "Answers",
         "Followers",
         "Following",
     ]);
@@ -269,8 +270,9 @@ const Profile = () => {
     const renderContent = useCallback(() => {
         switch (displayContent) {
             case "Posts":
-            case "Replied":
                 return <Timeline userProfileData={userProfileData} />;
+            case "Answers":
+                return <TimelineAnswers loading={loading} />;
             case "Followers":
                 return <Follower userData={user} />;
             case "Following":

@@ -11,10 +11,19 @@ import { icons } from "@/assets/assets";
 import { FaSpinner } from "react-icons/fa";
 import { openModal } from "@redux/reducers/modal/modal.reducer";
 import VoteList from "./VoteList";
+import { useNavigate } from "react-router-dom";
+import AddAnswer from "@components/posts/post-modal/post-add/AddAnswer";
 
 const PostVoteBar = ({ post }) => {
     const { profile } = useSelector((state) => state.user);
     let { reactions } = useSelector((state) => state.userPostReactions);
+    const isCurrentPostModal = useSelector((state) => 
+        state.modal.isOpen && 
+        state.modal.type === "add" && 
+        state.modal.modalType === "createanswer" &&
+        state.modal.data?.questionId === post._id
+    );
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [userSelectedReaction, setUserSelectedReaction] = useState("like");
     const [upvotePop, setUpvotePop] = useState(false);
@@ -31,9 +40,14 @@ const PostVoteBar = ({ post }) => {
                 questionId: post._id,
                 question: post.post,
                 questionUserId: post.userId,
-                username: post.username
+                username: post.username,
+                gifUrl: post.gifUrl,
+                imgId: post.imgId,
+                imgVersion: post.imgVersion,
+                videoId: post.videoId,
+                videoVersion: post.videoVersion,
             },
-            modalType: 'createpost',
+            modalType: 'createanswer',
         }));
     };
 
@@ -44,8 +58,7 @@ const PostVoteBar = ({ post }) => {
     const getAnswerCount = useCallback(async () => {
         if (!post.htmlPost) { // Chỉ lấy answer count cho questions
             try {
-                const response = await postService.getAnswersCount(post._id);
-                setAnswerCount(response.data.count);
+                setAnswerCount(post.answersCount || 0);
             } catch (error) {
                 console.error('Error fetching answer count:', error);
             }
@@ -348,6 +361,9 @@ const PostVoteBar = ({ post }) => {
                     </>
                 )}
             </div>
+            {isCurrentPostModal && (
+                <AddAnswer questionId={isCurrentPostModal.data?.questionId} />
+            )}
         </>
     );
 };
