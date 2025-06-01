@@ -6,7 +6,7 @@ import "@pages/social/streams/Streams.scss";
 import useEffectOnce from "@hooks/useEffectOnce";
 import useLocalStorage from "@hooks/useLocalStorage";
 import useInfiniteScroll from "@hooks/useInfiniteScroll";
-import { getPosts } from "@redux/api/posts";
+// import { getPosts } from "@redux/api/posts";
 import { getUserSuggestions } from "@redux/api/suggestion";
 import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
 
@@ -172,7 +172,7 @@ const Streams = () => {
         getUserFollowing();
         getReactionsByUsername();
         deleteSelectedPostId();
-        dispatch(getPosts());
+        // dispatch(getPosts());
         dispatch(getUserSuggestions());
     });
 

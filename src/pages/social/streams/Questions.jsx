@@ -9,7 +9,7 @@ import PostForm from "@components/posts/post-form/PostForm";
 import Posts from "@components/posts/Posts";
 import { Utils } from "@services/utils/utils.service";
 import { postService } from "@services/api/post/post.service";
-import { getQuestions } from "@redux/api/posts"; // Thay đổi từ getPosts sang getQuestions
+// import { getQuestions } from "@redux/api/posts"; // Thay đổi từ getPosts sang getQuestions
 import { uniqBy, shuffle } from "lodash";
 import useInfiniteScroll from "@hooks/useInfiniteScroll";
 import { PostUtils } from "@services/utils/post-utils.service";
@@ -151,7 +151,7 @@ const Questions = () => {
         getUserFollowing();
         getReactionsByUsername();
         deleteSelectedPostId();
-        dispatch(getQuestions()); // Thay đổi sang getQuestions
+        // dispatch(getQuestions()); // Thay đổi sang getQuestions
         dispatch(getUserSuggestions());
     });
 

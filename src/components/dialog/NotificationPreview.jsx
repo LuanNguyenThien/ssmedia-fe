@@ -7,12 +7,14 @@ import { RiLinksFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 
 const NotificationPreview = ({
+    notificationType,
     post,
     htmlPost,
     imgUrl,
     comment,
     reaction,
     post_analysis,
+    answer,
     senderName,
     entityId,
     secondButtonText,
@@ -25,6 +27,10 @@ const NotificationPreview = ({
 
     const handleGoToPost = () => {
         navigate(`/app/social/post/${entityId}`);
+        secondBtnHandler();
+    };
+    const handleGoToQuestion = () => {
+        navigate(`/app/social/question/${entityId}`);
         secondBtnHandler();
     };
     const responsiveModal = `
@@ -46,12 +52,22 @@ const NotificationPreview = ({
                     >
                         {/* <span className="w-max h-max">Review your post</span> */}
 
-                        <span
-                            onClick={handleGoToPost}
-                            className="text-sm font-normal cursor-pointer text-primary-black hover:text-primary/70 flex items-center gap-1"
-                        >
-                            <RiLinksFill /> Move to this post
-                        </span>
+                        {notificationType !== "post-answer" && (
+                            <span
+                                onClick={handleGoToPost}
+                                className="text-sm font-normal cursor-pointer text-primary-black hover:text-primary/70 flex items-center gap-1"
+                            >
+                                <RiLinksFill /> Move to this post
+                            </span>
+                        )}
+                        {notificationType === "post-answer" && (
+                            <span
+                                onClick={handleGoToQuestion}
+                                className="text-sm font-normal cursor-pointer text-primary-black hover:text-primary/70 flex items-center gap-1"
+                            >
+                                <RiLinksFill /> Move to this question
+                            </span>
+                        )}
 
                         <div
                             onClick={secondBtnHandler}
@@ -83,6 +99,11 @@ const NotificationPreview = ({
                         )}
                     </div>
                     <div className="flex flex-col justify-center items-center gap-2 w-full">
+                        {answer && notificationType === "post-answer" && (
+                            <span className="dialog-body-answer text-primary-black text-sm font-normal">
+                                {answer}
+                            </span>
+                        )}
                         {post_analysis && (
                             <span className="dialog-body-post-analysis text-primary-black text-sm font-normal max-h-[100px] overflow-scroll flex gap-2">
                                 <FaExclamationTriangle className="text-red-500 flex-shrink-0 text-lg animate-pulse" /> 

@@ -6,6 +6,7 @@ import "@components/header/Header.scss";
 import Avatar from "@components/avatar/Avatar";
 import { Utils } from "@services/utils/utils.service";
 import useDetectOutsideClick from "@hooks/useDetectOutsideClick";
+import { getPosts, getQuestions } from "@redux/api/posts";
 import { useDispatch, useSelector } from "react-redux";
 import useEffectOnce from "@hooks/useEffectOnce";
 import { ProfileUtils } from "@services/utils/profile-utils.service";
@@ -79,6 +80,9 @@ const Header = () => {
         post_analysis: "",
         senderName: "",
         entityId: "",
+        notificationType: "",
+        htmlPost: "",
+        answer: "",
     });
     const [isNotificationActive, setIsNotificationActive] =
         useDetectOutsideClick(notificationRef, false);
@@ -121,6 +125,10 @@ const Header = () => {
 
 
     useEffectOnce(() => {
+        if(location.pathname === "/app/social/streams")
+          dispatch(getPosts());
+        else
+          dispatch(getQuestions());
         ChatUtils.usersOnlines();
         // Utils.mapSettingsDropdownItems(setSettings);
         getUserNotifications();
@@ -144,7 +152,8 @@ const Header = () => {
             notifications,
             setNotifications,
             "header",
-            setNotificationCount
+            setNotificationCount,
+            dispatch,
         );
         NotificationUtils.socketIOMessageNotification(
             chatList,
@@ -315,6 +324,9 @@ const Header = () => {
             post_analysis: "",
             htmlPost: "",
             senderName: "",
+            notificationType: "",
+            entityId: "",
+            answer: "",
         });
     };
 
@@ -334,6 +346,9 @@ const Header = () => {
               {notificationDialogContent?.senderName && (
                 <NotificationPreview
                   title="Your post"
+                  notificationType={
+                    notificationDialogContent?.notificationType
+                  }
                   entityId={notificationDialogContent?.entityId}
                   post={notificationDialogContent?.post}
                   htmlPost={notificationDialogContent?.htmlPost}
@@ -341,6 +356,7 @@ const Header = () => {
                   comment={notificationDialogContent?.comment}
                   reaction={notificationDialogContent?.reaction}
                   post_analysis={notificationDialogContent?.post_analysis}
+                  answer={notificationDialogContent?.answer}
                   senderName={notificationDialogContent?.senderName}
                   secondButtonText="Close"
                   secondBtnHandler={handleSetNotificationDialogContentToNull}
