@@ -16,7 +16,7 @@ export const mockGroupsInformation  = {
         id: "1",
         name: "Mathematics Community",
         groupAvatar:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuPpT9XBckqEx3-YtzMjGOnLCgZcWKpuWuJQ&s",
+            "https://scontent.fsgn2-9.fna.fbcdn.net/v/t39.30808-6/492868762_1252655733533419_5223762859973227706_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=106&ccb=1-7&_nc_sid=2285d6&_nc_ohc=9RZ6wTp2bgsQ7kNvwFcjZ72&_nc_oc=Admzx9aL0hurw05S_EWbzeeiy5eZzJD3ACqVApnEMd8cqk9R8jSnbnSYGND2mMbrugY&_nc_zt=23&_nc_ht=scontent.fsgn2-9.fna&_nc_gid=seGSk5K88dNg1M-EOYD5lg&oh=00_AfLiuBOxZ5orqzknYvbZosxf_OvkRQAdV-OkQwJvz-QUPQ&oe=6840CCC8",
         description:
             "A place to share knowledge and discuss mathematics for all ages",
         shortDescription: "Mathematics learning community",

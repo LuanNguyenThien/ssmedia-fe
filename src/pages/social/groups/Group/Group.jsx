@@ -1,25 +1,34 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import GroupHeader from "./components/GroupHeader";
-import GroupTabs from "./components/GroupTabs";
-import GroupSidebar from "./components/GroupSidebar";
-import GroupContent from "./components/GroupContent";
-import AccessDenied from "./components/AccessDenied";
-import NotFound from "./components/NotFound";
+import GroupHeader from "./components/group-header/GroupHeader";
+import GroupTabs from "./components/group-header/GroupTabs";
+import GroupSidebar from "./components/group-header/GroupSidebar";
+import GroupContent from "./components/group-content/GroupContent";
+import AccessDenied from "./components/errors/AccessDenied";
+import NotFound from "./components/errors/NotFound";
 import { Utils } from "@services/utils/utils.service";
 import GroupSkeleton from "./GroupSkeleton";
-import { mockGroupsInformation, mockMembershipStatus } from "../mocks/mock.data";
+import {
+    mockGroupsInformation,
+} from "../mocks/mock.data";
+import GroupActionButtons from "./components/group-header/GroupActionButtons";
+import useIsMobile from "@hooks/useIsMobile";
+import GroupEditModal from "./components/GroupEditModal";
 
 const Group = () => {
     const { groupId } = useParams();
     const dispatch = useDispatch();
+    const isMobile = useIsMobile();
+
     const [group, setGroup] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [membershipStatus, setMembershipStatus] = useState("not_member"); // not_member, pending, member, admin, moderator, banned
+    const [membershipStatus, setMembershipStatus] = useState("admin"); // not_member, pending, member, admin, moderator, banned
     const [activeTab, setActiveTab] = useState("discussion");
     const [canViewContent, setCanViewContent] = useState(false);
     const [error, setError] = useState(null);
+    const [isShowEditGroup, setIsShowEditGroup] = useState(false);
+    const [pendingRequestsCount, setPendingRequestsCount] = useState(3); // Mock count - replace with API call
 
     useEffect(() => {
         fetchGroupData();
@@ -28,6 +37,20 @@ const Group = () => {
     useEffect(() => {
         determineContentAccess();
     }, [group, membershipStatus]);
+
+    useEffect(() => {
+        // Fetch pending requests count if user is admin
+        if (membershipStatus === "admin") {
+            // Simulate API call to get pending requests count
+            const fetchPendingCount = async () => {
+                // Mock API call - replace with actual API
+                setPendingRequestsCount(3);
+            };
+            fetchPendingCount();
+        } else {
+            setPendingRequestsCount(0);
+        }
+    }, [membershipStatus]);
 
     const fetchGroupData = async () => {
         try {
@@ -38,8 +61,8 @@ const Group = () => {
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             const groupData = mockGroupsInformation[groupId];
-            const userMembershipStatus =
-                mockMembershipStatus[groupId] || "not_member";
+            // const userMembershipStatus =
+            //     mockMembershipStatus[groupId] || "not_member";
 
             if (!groupData) {
                 setError("not_found");
@@ -49,14 +72,14 @@ const Group = () => {
             // Check if user can see this group
             if (
                 groupData.visibility === "secret" &&
-                userMembershipStatus === "not_member"
+                membershipStatus === "not_member"
             ) {
                 setError("not_found");
                 return;
             }
 
             setGroup(groupData);
-            setMembershipStatus(userMembershipStatus);
+            // setMembershipStatus(userMembershipStatus);
         } catch (err) {
             console.error("Error fetching group:", err);
             setError("server_error");
@@ -81,13 +104,6 @@ const Group = () => {
                 break;
             case "private":
                 // Private groups: only members can see content
-                canView =
-                    membershipStatus === "member" ||
-                    membershipStatus === "admin" ||
-                    membershipStatus === "moderator";
-                break;
-            case "secret":
-                // Secret groups: only members can see anything
                 canView =
                     membershipStatus === "member" ||
                     membershipStatus === "admin" ||
@@ -180,7 +196,8 @@ const Group = () => {
                         Server Error
                     </h2>
                     <p className="text-gray-600 mb-4">
-                        Unable to load group information. Please try again later.
+                        Unable to load group information. Please try again
+                        later.
                     </p>
                     <button
                         onClick={() => fetchGroupData()}
@@ -213,60 +230,90 @@ const Group = () => {
     }
 
     return (
-        <div className="bg-background-blur h-full w-full col-span-full rounded-t-3xl max-h-screen overflow-y-auto">
-            <div className="relative">
-                {/* Cover Image */}
-                <div className="h-48 bg-gradient-to-r from-blue-400 to-purple-500 relative">
-                    {group.coverImage ? (
-                        <img
-                            src={group.coverImage}
-                            alt="Group cover"
-                            className="w-full h-full object-cover"
-                        />
-                    ) : (
-                        <div className="w-full h-full bg-gray-300"></div>
-                    )}
-                </div>
-
-                {/* Group Header */}
-                <GroupHeader
+        <>
+            {isShowEditGroup && (
+                <GroupEditModal
+                    isOpen={isShowEditGroup}
+                    onClose={() => setIsShowEditGroup(false)}
                     group={group}
-                    groupId={groupId}
-                    membershipStatus={membershipStatus}
-                    onJoinGroup={handleJoinGroup}
-                    onLeaveGroup={handleLeaveGroup}
-                    onCancelRequest={handleCancelRequest}
+                    onSave={() => fetchGroupData()}
                 />
-
-                {/* Navigation Tabs */}
-                <GroupTabs
-                    activeTab={activeTab}
-                    onTabChange={setActiveTab}
-                    membershipStatus={membershipStatus}
-                />
-
-                {/* Main Content */}
-                <div className="grid grid-cols-10 gap-6 p-6">
-                    {/* Main Content Area */}
-                    <div className="col-span-7">
-                        <GroupContent
-                            group={group}
-                            activeTab={activeTab}
-                            canViewContent={canViewContent}
-                            onJoinGroup={handleJoinGroup}
-                        />
+            )}
+            <div className="bg-background-blur h-full w-full col-span-full rounded-t-3xl max-h-screen overflow-y-auto">
+                <div className="relative sm:px-4 lg:px-[10%]">
+                    {/* Cover Image */}
+                    <div className="h-72 bg-gradient-to-r from-blue-400 to-purple-500 relative">
+                        {group.groupAvatar ? (
+                            <img
+                                src={group.groupAvatar}
+                                alt="Group cover"
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gray-300"></div>
+                        )}
                     </div>
 
-                    {/* Sidebar */}
-                    <div className="col-span-3">
-                        <GroupSidebar
-                            group={group}
-                            canViewContent={canViewContent}
+                    {/* Group Header */}
+                    <GroupHeader
+                        group={group}
+                        groupId={groupId}
+                        membershipStatus={membershipStatus}
+                        onJoinGroup={handleJoinGroup}
+                        onLeaveGroup={handleLeaveGroup}
+                        onCancelRequest={handleCancelRequest}
+                        setIsShowEditGroup={setIsShowEditGroup}
+                    />
+
+                    <div className="flex justify-between items-center bg-primary-white px-4 rounded-b-3xl">
+                        {/* Navigation Tabs */}
+                        <GroupTabs
+                            activeTab={activeTab}
+                            onTabChange={setActiveTab}
+                            membershipStatus={membershipStatus}
+                            setIsShowEditGroup={setIsShowEditGroup}
+                            pendingRequestsCount={pendingRequestsCount}
                         />
+                        {!isMobile && (
+                            <GroupActionButtons
+                                group={group}
+                                groupId={groupId}
+                                membershipStatus={membershipStatus}
+                                onJoinGroup={handleJoinGroup}
+                                onLeaveGroup={handleLeaveGroup}
+                                setIsShowEditGroup={setIsShowEditGroup}
+                            />
+                        )}
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="grid grid-cols-10 gap-6 pt-2 pb-auto">
+                        {/* Main Content Area */}
+                        <div className="col-span-full sm:col-span-7">
+                            <GroupContent
+                                group={group}
+                                activeTab={activeTab}
+                                canViewContent={canViewContent}
+                                onJoinGroup={handleJoinGroup}
+                                membershipStatus={membershipStatus}
+                            />
+                        </div>
+
+                        {/* Sidebar */}
+                        {!isMobile && (
+                            <div className="col-span-full sm:col-span-3">
+                                <GroupSidebar
+                                    group={group}
+                                    canViewContent={canViewContent}
+                                />
+                            </div>
+                        )}
+
+                        <div className="col-span-full sm:col-span-3 h-[14dvh] sm:h-[5vh]"></div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

@@ -10,7 +10,6 @@ import {
 import { HiChevronDown } from "react-icons/hi";
 import { Utils } from "@services/utils/utils.service";
 import PrivacySettings from "./components/PrivacySettings";
-import ContentSettings from "./components/ContentSettings";
 import InviteMembers from "./components/InviteMembers";
 
 // Categories for groups
@@ -370,22 +369,6 @@ const CreateGroupPage = () => {
                                         </p>
                                     )}
                                 </div>
-
-                                <div>
-                                    <Input
-                                        type="text"
-                                        name="location"
-                                        labelText="Location (Optional)"
-                                        placeholder="City, Country"
-                                        value={groupData.location}
-                                        handleChange={handleInputChange}
-                                        className={
-                                            errors.location
-                                                ? "border-red-500"
-                                                : "border rounded-lg"
-                                        }
-                                    />
-                                </div>
                             </div>
                         </section>
 
@@ -523,67 +506,13 @@ const CreateGroupPage = () => {
                                 ))}
                             </div>
                         </section>
-
-                        {/* Group Rules */}
-                        <section>
-                            <h3 className="text-md font-semibold text-gray-800 mb-3">
-                                Group Rules
-                            </h3>
-                            <div className="flex gap-2 mb-3">
-                                <input
-                                    type="text"
-                                    placeholder="Add a rule..."
-                                    value={newRule}
-                                    onChange={(e) => setNewRule(e.target.value)}
-                                    onKeyDown={(e) =>
-                                        e.key === "Enter" &&
-                                        (e.preventDefault(), handleAddRule())
-                                    }
-                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={handleAddRule}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                                >
-                                    <FaPlus />
-                                </button>
-                            </div>
-                            <div className="space-y-2">
-                                {groupData.rules.map((rule, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                                    >
-                                        <span className="text-gray-700">
-                                            {rule}
-                                        </span>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleRemoveRule(index)
-                                            }
-                                            className="text-red-500 hover:text-red-700"
-                                        >
-                                            ×
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-
+ 
                         {/* Privacy Settings */}
                         <PrivacySettings
                             visibility={groupData.visibility}
                             privacy={groupData.privacy}
                             onVisibilityChange={handleVisibilityChange}
                             onPrivacyChange={handlePrivacyChange}
-                        />
-
-                        {/* Content Settings */}
-                        <ContentSettings
-                            contentSettings={groupData.contentSettings}
-                            onContentSettingChange={handleContentSettingChange}
                         />
 
                         {/* Invite Members */}

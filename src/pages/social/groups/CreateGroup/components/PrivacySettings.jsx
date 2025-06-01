@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
-import { FaGlobe, FaLock, FaEyeSlash, FaShieldAlt } from "react-icons/fa";
+import { FaGlobe, FaLock, FaShieldAlt } from "react-icons/fa";
 
-const PrivacySettings = ({ 
-    visibility, 
-    privacy, 
-    onVisibilityChange, 
-    onPrivacyChange 
+const PrivacySettings = ({
+    visibility,
+    privacy,
+    onVisibilityChange,
+    onPrivacyChange,
 }) => {
     const visibilityOptions = [
         {
@@ -20,29 +20,6 @@ const PrivacySettings = ({
             description: "Only members can see posts and member list",
             icon: FaLock,
         },
-        {
-            value: "secret",
-            label: "Secret",
-            description: "Only members can find and see this group",
-            icon: FaEyeSlash,
-        },
-    ];
-
-    const joinOptions = [
-        { value: "anyone", label: "Anyone can join" },
-        { value: "admin_approval", label: "Admin approval required" },
-        { value: "invite_only", label: "Invite only" },
-    ];
-
-    const postOptions = [
-        { value: "members", label: "All members" },
-        { value: "admins_only", label: "Admins only" },
-    ];
-
-    const visibilityViewOptions = [
-        { value: "everyone", label: "Everyone" },
-        { value: "members", label: "Members only" },
-        { value: "admins_only", label: "Admins only" },
     ];
 
     return (
@@ -74,13 +51,17 @@ const PrivacySettings = ({
                                     name="visibility"
                                     value={option.value}
                                     checked={visibility === option.value}
-                                    onChange={(e) => onVisibilityChange(e.target.value)}
+                                    onChange={(e) =>
+                                        onVisibilityChange(e.target.value)
+                                    }
                                     className="sr-only"
                                 />
-                                <IconComponent 
+                                <IconComponent
                                     className={`w-5 h-5 mt-0.5 mr-3 ${
-                                        visibility === option.value ? "text-blue-500" : "text-gray-400"
-                                    }`} 
+                                        visibility === option.value
+                                            ? "text-blue-500"
+                                            : "text-gray-400"
+                                    }`}
                                 />
                                 <div>
                                     <div className="font-medium text-gray-800">
@@ -95,77 +76,6 @@ const PrivacySettings = ({
                     })}
                 </div>
             </div>
-
-            {/* Detailed Privacy Settings */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Who can join this group?
-                    </label>
-                    <select
-                        value={privacy.whoCanJoin}
-                        onChange={(e) => onPrivacyChange("whoCanJoin", e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        {joinOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Who can post in this group?
-                    </label>
-                    <select
-                        value={privacy.whoCanPost}
-                        onChange={(e) => onPrivacyChange("whoCanPost", e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        {postOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Who can see members?
-                    </label>
-                    <select
-                        value={privacy.whoCanSeeMembers}
-                        onChange={(e) => onPrivacyChange("whoCanSeeMembers", e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        {visibilityViewOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Who can see posts?
-                    </label>
-                    <select
-                        value={privacy.whoCanSeePosts}
-                        onChange={(e) => onPrivacyChange("whoCanSeePosts", e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        {visibilityViewOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
         </section>
     );
 };
@@ -177,4 +87,4 @@ PrivacySettings.propTypes = {
     onPrivacyChange: PropTypes.func.isRequired,
 };
 
-export default PrivacySettings; 
+export default PrivacySettings;
