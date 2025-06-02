@@ -77,6 +77,11 @@ class UserService {
         return response;
     }
 
+    async getUserAnswers(userId, username, uId, page = 1) {
+        const response = await axios.get(`/user/profile/answers/${userId}/${username}/${uId}?page=${page}`);
+        return response;
+    }
+
     async GetBanInfo(userId) {
         const response = await axios.get(`/user/banuser/${userId}`);
         return response;

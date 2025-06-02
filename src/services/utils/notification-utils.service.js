@@ -19,10 +19,12 @@ export class NotificationUtils {
         notifications,
         setNotifications,
         type,
-        setNotificationsCount
+        setNotificationsCount,
+        dispatch
     ) {
         socketService?.socket?.on("insert notification", (data, userToData) => {
             if (profile?._id === userToData.userTo) {
+                Utils.dispatchNotification("You have new notification", "success", dispatch);
                 notifications = [...data];
                 if (type === "notificationPage") {
                     setNotifications(notifications);
@@ -115,6 +117,7 @@ export class NotificationUtils {
                 comment: notification?.comment,
                 reaction: notification?.reaction,
                 post_analysis: notification?.post_analysis,
+                answer: notification?.answer,
                 senderName: notification?.userFrom
                     ? notification?.userFrom.username
                     : notification?.username,
@@ -138,6 +141,7 @@ export class NotificationUtils {
     ) {
         if (notification?.notificationType !== "follows") {
             const notificationDialog = {
+                notificationType: notification?.notificationType,
                 createdAt: notification?.createdAt,
                 post: notification?.post,
                 htmlPost: notification?.htmlPost,
@@ -152,6 +156,7 @@ export class NotificationUtils {
                 comment: notification?.comment,
                 reaction: notification?.reaction,
                 post_analysis: notification?.post_analysis,
+                answer: notification?.answer,
                 senderName: notification?.userFrom
                     ? notification?.userFrom.username
                     : notification?.username,
