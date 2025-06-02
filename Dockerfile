@@ -1,4 +1,5 @@
 # Use Node.js as the base image
+# FROM node:18-alpine
 FROM node:18
 
 # Set working directory
@@ -12,6 +13,10 @@ RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application code
 COPY . .
+
+# Set environment variables to ignore ESLint
+# ENV CI=false
+# ENV DISABLE_ESLINT_PLUGIN=true
 
 # Build the app
 RUN npm run build
