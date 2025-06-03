@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router-dom";
+import { FaUserTimes } from "react-icons/fa";
 
 // Components
 import ImageModal from "@components/image-modal/ImageModal";
@@ -10,6 +11,7 @@ import Timeline from "@components/timeline/Timeline";
 import TimelineAnswers from "@components/timeline/TimelineAnswer";
 import Information from "@/components/information/Information";
 import ModalContainer from "@components/modal/ModalContainer";
+import ReportModal from "@/components/modal/ReportModal";
 
 // Styles
 import "@pages/social/profile/Profile.scss";
@@ -26,6 +28,7 @@ import { Utils } from "@services/utils/utils.service";
 import Follower from "../followers/Followers";
 import Following from "../following/Following";
 import ProfileSkeleton from "./ProfileSkeleton";
+import { postService } from "@/services/api/post/post.service";
 
 // Hooks
 // Removed useEffectOnce - we'll use useEffect with dependencies instead
@@ -36,7 +39,9 @@ const otherUserOptions = ["Posts", "Answers", "Followers"];
 const Profile = () => {
     const dispatch = useDispatch();
     const { profile } = useSelector((state) => state.user);
-    const { deleteDialogIsOpen, deleteDialogType, data } = useSelector((state) => state.modal);
+    const { deleteDialogIsOpen, deleteDialogType, data } = useSelector(
+        (state) => state.modal
+    );
     const { username } = useParams();
     const [searchParams] = useSearchParams();
 
@@ -63,6 +68,7 @@ const Profile = () => {
     const [hasImage, setHasImage] = useState(false);
     const [loading, setLoading] = useState(true);
     const [showImageModal, setShowImageModal] = useState(false);
+    const [showReportModal, setShowReportModal] = useState(false);
 
     // Check if current user is viewing their own profile - memoized to prevent unnecessary recalculations
     const isCurrentUser = useCallback(() => {
@@ -236,7 +242,13 @@ const Profile = () => {
     const removeImageFromGallery = useCallback(
         async (imageId) => {
             try {
-                dispatch(toggleDeleteDialog({ toggle: false, data: null, dialogType: '' }));
+                dispatch(
+                    toggleDeleteDialog({
+                        toggle: false,
+                        data: null,
+                        dialogType: "",
+                    })
+                );
                 setGalleryImages((prevImages) =>
                     prevImages.filter((image) => image._id !== imageId)
                 );
@@ -312,27 +324,80 @@ const Profile = () => {
 
     useEffect(() => {
         const viewportHeight = window.innerHeight;
-        console.log('Viewport Height:', viewportHeight);
-        const headerDesktopElement = document.querySelector('div.header-desktop');
-        const headerElement = document.querySelector('div.header-mb');
-        const footerElement = document.querySelector('div.footer-mb');
-    
-        document.documentElement.style.setProperty('--root-height', `${viewportHeight}px`);
+        console.log("Viewport Height:", viewportHeight);
+        const headerDesktopElement =
+            document.querySelector("div.header-desktop");
+        const headerElement = document.querySelector("div.header-mb");
+        const footerElement = document.querySelector("div.footer-mb");
+
+        document.documentElement.style.setProperty(
+            "--root-height",
+            `${viewportHeight}px`
+        );
         if (headerElement && footerElement) {
-          const headerHeight = headerElement.offsetHeight;
-          const footerHeight = footerElement.offsetHeight;
-          const totalHeight = headerHeight + footerHeight;
-          document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
+            const headerHeight = headerElement.offsetHeight;
+            const footerHeight = footerElement.offsetHeight;
+            const totalHeight = headerHeight + footerHeight;
+            document.documentElement.style.setProperty(
+                "--header-footer-height",
+                `${totalHeight}px`
+            );
         } else {
-          const headerHeight = headerDesktopElement.offsetHeight;
-          const footerHeight = 0; // Assuming no footer in this case
-          const totalHeight = headerHeight + footerHeight;
-          document.documentElement.style.setProperty('--header-footer-height', `${totalHeight}px`);
+            const headerHeight = headerDesktopElement.offsetHeight;
+            const footerHeight = 0; // Assuming no footer in this case
+            const totalHeight = headerHeight + footerHeight;
+            document.documentElement.style.setProperty(
+                "--header-footer-height",
+                `${totalHeight}px`
+            );
+        }
+    }, []);
+
+    const handleReport = useCallback(async (reason) => {
+        // const reportData = {
+        //     postId: searchParams.get("id") || "",
+        //     content: reason.reason,
+        //     details: reason.reasonDescription,
+        // };
+        const reportData = {
+            reportedUserId: searchParams.get("id") || "",
+            reason: reason.reason,
+            description: reason.reasonDescription,
+        };
+        try {
+            const response = await userService.reportUser(reportData);
+            console.log(response);
+            Utils.dispatchNotification(
+                response.data.message,
+                "success",
+                dispatch
+            );
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response?.data?.message || "Error reporting post",
+                "error",
+                dispatch
+            );
+        } finally {
+            setShowReportModal(false);
         }
     }, []);
 
     return (
         <>
+            {showReportModal && (
+                <ReportModal
+                    isOpen={showReportModal}
+                    onClose={() => setShowReportModal(false)}
+                    onSubmit={handleReport}
+                    type="user"
+                    title="Report User"
+                    subtitle="Report inappropriate user behavior"
+                    icon={FaUserTimes}
+                    iconColor="text-orange-500"
+                    iconBgColor="bg-orange-50"
+                />
+            )}
             <ModalContainer />
             {showImageModal && (
                 <ImageModal
@@ -342,7 +407,7 @@ const Profile = () => {
                 />
             )}
 
-            {deleteDialogIsOpen && deleteDialogType === 'image' && data && (
+            {deleteDialogIsOpen && deleteDialogType === "image" && data && (
                 <Dialog
                     title="Are you sure you want to delete this image?"
                     showButtons={true}
@@ -351,7 +416,11 @@ const Profile = () => {
                     firstBtnHandler={() => removeImageFromGallery(data)}
                     secondBtnHandler={() =>
                         dispatch(
-                            toggleDeleteDialog({ toggle: false, data: null, dialogType: '' })
+                            toggleDeleteDialog({
+                                toggle: false,
+                                data: null,
+                                dialogType: "",
+                            })
                         )
                     }
                 />
@@ -397,6 +466,9 @@ const Profile = () => {
                                     isCurrentUser={isCurrentUser}
                                     userProfileData={userProfileData}
                                     setRendered={getUserProfileByUsername}
+                                    setShowReportModal={() =>
+                                        setShowReportModal(true)
+                                    }
                                 />
                             </div>
                             <div className="profile-user-content col-span-2 h-full flex flex-col justify-start bg-primary-white rounded-t-[10px]">

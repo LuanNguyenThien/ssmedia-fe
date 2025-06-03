@@ -26,6 +26,11 @@ class PostService {
     return response;
   }
 
+  async reportPost(body) {
+    const response = await axios.post("/reportpost", body);
+    return response;
+  }
+
   async createPost(body) {
     const response = await axios.post("/post", body);
     return response;

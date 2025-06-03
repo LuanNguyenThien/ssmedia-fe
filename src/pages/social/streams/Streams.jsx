@@ -93,7 +93,7 @@ const Streams = () => {
     useEffect(() => {
         if (
             (profile?.user_hobbies?.subject?.length === 0 ||
-            !profile?.user_hobbies?.subject) && 
+                !profile?.user_hobbies?.subject) &&
             profile?.personalizeSettings?.allowPersonalize
         ) {
             setIsShowPersonalizeModal(true);
@@ -262,9 +262,9 @@ const Streams = () => {
             {loading ? (
                 <StreamsSkeleton />
             ) : (
-                <div className="streams-content col-span-full">
+                <div className="streams-content col-span-full !rounded-t-2xl">
                     <div
-                        className="streams-post relative sm:pt-6 sm:px-6 bg-background-blur rounded-3xl gap-1 sm:gap-4"
+                        className="streams-post relative sm:pt-6 sm:px-6 bg-background-blur  sm:rounded-3xl gap-1 sm:gap-4"
                         ref={bodyRef}
                     >
                         <PostForm />

@@ -62,7 +62,7 @@ import removeMember from "./icons/sidebar/remove-member.svg";
 import edit from "./icons/sidebar/edit.svg";
 import envelope from "./icons/sidebar/envelope.svg";
 import block from "./icons/sidebar/block-closed.svg";
-
+import question from "./icons/sidebar/question.svg";
 //3d objects
 import threeD1 from "./3d/3d1.png";
 import threeD2 from "./3d/3d2.png";
@@ -160,4 +160,5 @@ export const icons = {
     edit,
     envelope,
     block,
+    question
 };

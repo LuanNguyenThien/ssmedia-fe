@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import Avatar from "@components/avatar/Avatar";
 import { timeAgo } from "@services/utils/timeago.utils";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,7 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import { postService } from "@services/api/post/post.service";
 import { Utils } from "@services/utils/utils.service";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa6";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaFlag, FaTrash } from "react-icons/fa";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { updatePostItem } from "@redux/reducers/post/post.reducer";
 import {
@@ -17,22 +18,23 @@ import {
 import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 import { icons, postPrivacy } from "@/assets/assets";
 import { ProfileUtils } from "@/services/utils/profile-utils.service";
-import { useNavigate } from "react-router-dom";
+import ReportModal from "@/components/modal/ReportModal";
 
 const PostMetaRow = ({ post }) => {
     const navigate = useNavigate();
-    const { profile } = useSelector((state) => state.user);
     const dispatch = useDispatch();
+    const { profile } = useSelector((state) => state.user);
     const { commentsModalIsOpen } = useSelector((state) => state.modal);
-    const [isFavorite, setIsFavorite] = useState(false);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
     const dropdownRef = useRef(null);
     const [setSelectedPostCommentId] = useLocalStorage(
         "selectedPostCommentId",
         "set"
     );
-    console.log(post);
 
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const isPostOwner = profile?._id === post?.userId;
 
     useEffect(() => {
@@ -97,6 +99,31 @@ const PostMetaRow = ({ post }) => {
         setIsDropdownOpen(false);
     };
 
+    const handleReportPost = async (values) => {
+        const reportData = {
+            postId: post?._id,
+            content: values.reason,
+            details: values.reasonDescription,
+        };
+        try {
+            const response = await postService.reportPost(reportData);
+            Utils.dispatchNotification(
+                response.data.message,
+                "success",
+                dispatch
+            );
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response?.data?.message || "Error reporting post",
+                "error",
+                dispatch
+            );
+        } finally {
+            setIsReportModalOpen(false);
+            setIsDropdownOpen(false);
+        }
+    };
+
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
@@ -148,86 +175,103 @@ const PostMetaRow = ({ post }) => {
         }
     };
     return (
-        <div
-            className={`post-meta-row flex items-center justify-between w-full mt-1  border-t border-gray-200 pt-2 ${
-                post?.htmlPost ? "sm:mt-4" : "sm:mt-2"
-            }`}
-        >
-            <div className="flex items-center gap-4 sm:gap-2 min-w-0">
-                <Avatar
-                    name={post?.username}
-                    bgColor={post?.avatarColor}
-                    textColor="#ffffff"
-                    size={28}
-                    avatarSrc={post?.profilePicture}
+        <>
+            {isReportModalOpen && (
+                <ReportModal
+                    isOpen={isReportModalOpen}
+                    onClose={() => setIsReportModalOpen(false)}
+                    onSubmit={handleReportPost}
                 />
-                <div className="flex flex-col gap-1 sm:gap-2 sm:flex-row">
-                    <div className="flex items-center gap-1">
-                        <span className="text-xs text-gray-400">Posted by</span>
-                        <div
-                            onClick={() => {
-                                ProfileUtils.navigateToProfile(
-                                    {
-                                        username: post?.username,
-                                        _id: post?.userId,
-                                    },
-                                    navigate
-                                );
-                            }}
-                            className="text-xs font-medium text-blue-600 truncate hover:underline cursor-pointer"
-                        >
-                            {post?.username}
+            )}
+            <div
+                className={`post-meta-row flex items-center justify-between w-full mt-1  border-t border-gray-200 pt-2 ${
+                    post?.htmlPost ? "sm:mt-4" : "sm:mt-2"
+                }`}
+            >
+                <div className="flex items-center gap-4 sm:gap-2 min-w-0">
+                    <Avatar
+                        name={post?.username}
+                        bgColor={post?.avatarColor}
+                        textColor="#ffffff"
+                        size={28}
+                        avatarSrc={post?.profilePicture}
+                    />
+                    <div className="flex flex-col gap-1 sm:gap-2 sm:flex-row">
+                        <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-400">
+                                Posted by
+                            </span>
+                            <div
+                                onClick={() => {
+                                    ProfileUtils.navigateToProfile(
+                                        {
+                                            username: post?.username,
+                                            _id: post?.userId,
+                                        },
+                                        navigate
+                                    );
+                                }}
+                                className="text-xs font-medium text-blue-600 truncate hover:underline cursor-pointer"
+                            >
+                                {post?.username}
+                            </div>
                         </div>
+
+                        <span className="text-xs text-gray-400 flex items-center gap-1">
+                            {generatePrivacy(post?.privacy)}
+                            <span className="mx-2 h-4 border-r border-gray-200" />
+                            {timeAgo.transform(post?.createdAt)}
+                        </span>
                     </div>
-
-                    <span className="text-xs text-gray-400 flex items-center gap-1">
-                        {generatePrivacy(post?.privacy)}
-                        <span className="mx-2 h-4 border-r border-gray-200" />
-                        {timeAgo.transform(post?.createdAt)}
-                    </span>
                 </div>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-500 cursor-pointer">
-                <div
-                    className="flex items-center gap-1"
-                    onClick={openCommentsComponent}
-                >
-                    <DynamicSVG svgData={icons.comment} className="size-5" />
-                    <span className="font-medium">{post?.commentsCount}</span>
-                </div>
-                {/* Divider */}
-                <span className="mx-2 h-4 border-r border-gray-200" />
-                {/* Favorite*/}
-                <button
-                    aria-label={isFavorite ? "Unsave post" : "Save post"}
-                    className={`flex items-center gap-1 px-2 h-7 rounded-full hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition`}
-                    onClick={addFavoritePost}
-                    type="button"
-                >
-                    {isFavorite ? (
-                        <FaBookmark
-                            className={`w-4 h-4 transition-colors duration-150 ${
-                                isFavorite ? "text-blue-600" : "text-gray-400"
-                            }`}
-                        />
-                    ) : (
-                        <FaRegBookmark
-                            className={`w-4 h-4 transition-colors duration-150 ${
-                                isFavorite ? "text-blue-600" : "text-gray-400"
-                            }`}
-                        />
-                    )}
-                    <span
-                        className={`font-medium ${
-                            isFavorite ? "text-blue-700" : "text-gray-400 "
-                        }`}
+                <div className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-500 cursor-pointer">
+                    <div
+                        className="flex items-center gap-1"
+                        onClick={openCommentsComponent}
                     >
-                        {isFavorite ? "Saved" : "Save"}
-                    </span>
-                </button>
+                        <DynamicSVG
+                            svgData={icons.comment}
+                            className="size-5"
+                        />
+                        <span className="font-medium">
+                            {post?.commentsCount}
+                        </span>
+                    </div>
+                    {/* Divider */}
+                    <span className="mx-2 h-4 border-r border-gray-200" />
+                    {/* Favorite*/}
+                    <button
+                        aria-label={isFavorite ? "Unsave post" : "Save post"}
+                        className={`flex items-center gap-1 px-2 h-7 rounded-full hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition`}
+                        onClick={addFavoritePost}
+                        type="button"
+                    >
+                        {isFavorite ? (
+                            <FaBookmark
+                                className={`w-4 h-4 transition-colors duration-150 ${
+                                    isFavorite
+                                        ? "text-blue-600"
+                                        : "text-gray-400"
+                                }`}
+                            />
+                        ) : (
+                            <FaRegBookmark
+                                className={`w-4 h-4 transition-colors duration-150 ${
+                                    isFavorite
+                                        ? "text-blue-600"
+                                        : "text-gray-400"
+                                }`}
+                            />
+                        )}
+                        <span
+                            className={`font-medium ${
+                                isFavorite ? "text-blue-700" : "text-gray-400 "
+                            }`}
+                        >
+                            {isFavorite ? "Saved" : "Save"}
+                        </span>
+                    </button>
 
-                {/* Post Actions Dropdown - Only for post owner */}
-                {isPostOwner && (
                     <div className="relative" ref={dropdownRef}>
                         <button
                             aria-label="Post options"
@@ -243,27 +287,48 @@ const PostMetaRow = ({ post }) => {
                         </button>
 
                         {isDropdownOpen && (
-                            <div className="absolute right-0 bottom-0 mt-1 w-36 bg-white rounded-md shadow-lg z-10 border border-gray-100 py-1">
-                                <button
-                                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50"
-                                    onClick={handleEditPost}
-                                >
-                                    <FaEdit className="w-4 h-4 text-blue-500" />
-                                    <span>Edit post</span>
-                                </button>
-                                <button
-                                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50"
-                                    onClick={handleDeletePost}
-                                >
-                                    <FaTrash className="w-4 h-4 text-red-500" />
-                                    <span>Delete post</span>
-                                </button>
+                            <div className="absolute right-0 bottom-0 mt-1 w-max bg-white rounded-md shadow-lg z-10 border border-gray-100 ">
+                                {!isPostOwner && (
+                                    <button
+                                        className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50"
+                                        onClick={() =>
+                                            setIsReportModalOpen(true)
+                                        }
+                                    >
+                                        <div className="flex items-center gap-2 bg-gray-200 rounded-full p-2">
+                                            <FaFlag className="size-4" />
+                                        </div>
+                                        <span>Report post</span>
+                                    </button>
+                                )}
+                                {isPostOwner && (
+                                    <>
+                                        <button
+                                            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-blue-700 hover:bg-gray-50"
+                                            onClick={handleEditPost}
+                                        >
+                                            <div className="flex items-center gap-2 bg-gray-200 rounded-full p-2">
+                                                <FaEdit className="size-4" />
+                                            </div>
+                                            <span>Edit post</span>
+                                        </button>
+                                        <button
+                                            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-red-700 hover:bg-gray-50"
+                                            onClick={handleDeletePost}
+                                        >
+                                            <div className="flex items-center gap-2 bg-gray-200 rounded-full p-2">
+                                                <FaTrash className="size-4" />
+                                            </div>
+                                            <span>Delete post</span>
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>
-                )}
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

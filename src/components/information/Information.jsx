@@ -23,15 +23,15 @@ const Information = ({
     isCurrentUser,
     following,
     setRendered,
+    setShowReportModal,
 }) => {
     const { username } = useParams();
-    const profile = useSelector((state) => state.user.profile);  
-    
+    const profile = useSelector((state) => state.user.profile);
+
     const [user, setUser] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [isEditingPersonalize, setIsEditingPersonalize] = useState(false);
     const [isShowThanksScreen, setIsShowThanksScreen] = useState(false);
-
     const [selectedTopics, setSelectedTopics] = useState([]);
 
     // Changed from useRef to useState for the editable inputs
@@ -158,6 +158,7 @@ const Information = ({
                     followingCount={user?.followingCount}
                     isCurrentUser={isCurrentUserValue()}
                     setRendered={setRendered}
+                    handleReportUser={setShowReportModal}
                 />
             </div>
             <PersonalizeTabs
