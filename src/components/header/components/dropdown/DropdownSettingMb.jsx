@@ -55,7 +55,7 @@ const DropdownSettingMb = ({ id, name, onLogout, ref }) => {
 
     const MenuItem = ({ icon, label, onClick }) => (
         <li
-            className="flex items-center gap-3 px-3 py-3 rounded-md transition-colors duration-200 active:bg-primary/20 hover:bg-primary/10 cursor-pointer"
+            className="flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-300 active:bg-primary/20 hover:bg-primary/10   cursor-pointer"
             onClick={onClick}
         >
             {icon}
@@ -70,7 +70,7 @@ const DropdownSettingMb = ({ id, name, onLogout, ref }) => {
             ref={ref}
             className="absolute z-[50] text-base top-5 right-0 w-max h-auto bg-background backdrop-blur-sm rounded-[15px] shadow-xl p-2 border border-gray-100"
         >
-            <div className="w-full text-center bg-transparent px-2 py-2 text-2xl font-bold border-b border-gray-200">
+            <div className="w-full text-center bg-transparent px-4 py-1 text-2xl font-bold border-b border-gray-200">
                 <span className="text-center ">Menu</span>
             </div>
 

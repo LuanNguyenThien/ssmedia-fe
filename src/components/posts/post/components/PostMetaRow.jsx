@@ -31,6 +31,7 @@ const PostMetaRow = ({ post }) => {
         "selectedPostCommentId",
         "set"
     );
+    console.log(post);
 
     const isPostOwner = profile?._id === post?.userId;
 
@@ -147,7 +148,11 @@ const PostMetaRow = ({ post }) => {
         }
     };
     return (
-        <div className="post-meta-row flex items-center justify-between w-full mt-1 sm:mt-4 border-t border-gray-200 pt-2">
+        <div
+            className={`post-meta-row flex items-center justify-between w-full mt-1  border-t border-gray-200 pt-2 ${
+                post?.htmlPost ? "sm:mt-4" : "sm:mt-2"
+            }`}
+        >
             <div className="flex items-center gap-4 sm:gap-2 min-w-0">
                 <Avatar
                     name={post?.username}

@@ -25,7 +25,7 @@ const ProfileSection = () => {
                         />
                     </div>
                     <span className="text-gray-500 text-sm mb-4 truncate max-w-[140px]">
-                        @{profile?.username?.toLowerCase() || "username"}
+                        {profile?.email?.toLowerCase() || "username"}
                     </span>
                     <div className="flex w-full justify-between mt-2">
                         <div className="flex flex-col items-center flex-1">

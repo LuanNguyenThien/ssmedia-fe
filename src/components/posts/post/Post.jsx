@@ -20,14 +20,19 @@ import Dialog from "@components/dialog/Dialog";
 import PostVoteBar from "./components/PostVoteBar";
 import PostContent from "./components/PostContent";
 import PostMetaRow from "./components/PostMetaRow";
+import QuestionActions from "./components/QuestionActions";
 import { toggleDeleteDialog } from "@redux/reducers/modal/modal.reducer";
 
 const Post = ({ post }) => {
     const dispatch = useDispatch();
     const menuRef = useRef(null);
-    const { reactionsModalIsOpen, commentsModalIsOpen, deleteDialogIsOpen, deleteDialogType, data } = useSelector(
-        (state) => state.modal
-    );
+    const {
+        reactionsModalIsOpen,
+        commentsModalIsOpen,
+        deleteDialogIsOpen,
+        deleteDialogType,
+        data,
+    } = useSelector((state) => state.modal);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [currentImageSrc, setCurrentImageSrc] = useState("");
     const viewContainerRef = useRef(null);
@@ -46,8 +51,12 @@ const Post = ({ post }) => {
     const handleDeletePost = async () => {
         try {
             await postService.deletePost(post._id);
-            Utils.dispatchNotification("Post deleted successfully", "success", dispatch);
-            dispatch(toggleDeleteDialog({ toggle: false, dialogType: '' }));
+            Utils.dispatchNotification(
+                "Post deleted successfully",
+                "success",
+                dispatch
+            );
+            dispatch(toggleDeleteDialog({ toggle: false, dialogType: "" }));
         } catch (error) {
             Utils.dispatchNotification(
                 error.response?.data?.message || "Failed to delete post",
@@ -128,15 +137,20 @@ const Post = ({ post }) => {
                     showArrow={false}
                 />
             )}
-            {deleteDialogIsOpen && deleteDialogType === 'post' && data && data._id === post?._id && (
-                <Dialog
-                    title="Are you sure you want to delete this post?"
-                    firstButtonText="Delete"
-                    secondButtonText="Cancel"
-                    firstBtnHandler={handleDeletePost}
-                    secondBtnHandler={() => dispatch(toggleDeleteDialog({ toggle: false }))}
-                />
-            )}
+            {deleteDialogIsOpen &&
+                deleteDialogType === "post" &&
+                data &&
+                data._id === post?._id && (
+                    <Dialog
+                        title="Are you sure you want to delete this post?"
+                        firstButtonText="Delete"
+                        secondButtonText="Cancel"
+                        firstBtnHandler={handleDeletePost}
+                        secondBtnHandler={() =>
+                            dispatch(toggleDeleteDialog({ toggle: false }))
+                        }
+                    />
+                )}
             <div
                 className={`post-card flex bg-white shadow p-4 md:p-6 md:gap-6 flex-col md:flex-row ${
                     commentsModalIsOpen && selectedPostCommentId === post?._id
@@ -170,10 +184,19 @@ const Post = ({ post }) => {
                         />
 
                         {/* Mobile only: Vote bar above meta row */}
-                        <div className="flex md:hidden w-full items-center mt-3 mb-1">
+                        <div className="flex md:hidden w-full items-center justify-between mt-3 mb-1">
                             <div className="mobile-vote-bar border rounded-full py-1 px-1">
                                 <PostVoteBar post={post} />
                             </div>
+                            {/* Mobile QuestionActions */}
+                            <div className="ml-4">
+                                <QuestionActions post={post} />
+                            </div>
+                        </div>
+
+                        {/* Desktop QuestionActions - above PostMetaRow */}
+                        <div className="hidden md:flex flex-1 justify-end items-end">
+                            <QuestionActions post={post} />
                         </div>
 
                         <PostMetaRow post={post} />
