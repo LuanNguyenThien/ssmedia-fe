@@ -32,65 +32,66 @@ const GroupHeader = ({
                 return "Public Group";
         }
     };
-
+    const activeMembers =
+      group.members?.filter((member) => member.status === "active") || [];
     return (
-        <div className="bg-white px-4 py-4 shadow-sm sm:px-6">
-            {/* Mobile Layout */}
-            <div className="block md:hidden">
-                {/* Group Info */}
-                <div className="mb-4">
-                    <h1 className="text-xl font-bold text-gray-800 mb-2 leading-tight">
-                        {group.name}
-                        {group.isVerified && (
-                            <span className="ml-2 text-blue-500">✓</span>
-                        )}
-                    </h1>
-                    <div className="flex items-center text-gray-600 text-sm gap-2">
-                        {getVisibilityIcon()}
-                        <span>{getVisibilityText()}</span>
-                        <span>•</span>
-                        <FaUsers className="text-gray-500" />
-                        <span>
-                            {group.memberCount.toLocaleString()} members
-                        </span>
-                    </div>
-                </div>
-
-                <GroupActionButtons
-                    group={group}
-                    groupId={groupId}
-                    membershipStatus={membershipStatus}
-                    onJoinGroup={onJoinGroup}
-                    onLeaveGroup={onLeaveGroup}
-                    onCancelRequest={onCancelRequest}
-                    isMobile={true}
-                    setIsShowEditGroup={setIsShowEditGroup}
-                />
+      <div className="bg-white px-4 py-4 shadow-sm sm:px-6">
+        {/* Mobile Layout */}
+        <div className="block md:hidden">
+          {/* Group Info */}
+          <div className="mb-4">
+            <h1 className="text-xl font-bold text-gray-800 mb-2 leading-tight">
+              {group.name}
+              {group.isVerified && (
+                <span className="ml-2 text-blue-500">✓</span>
+              )}
+            </h1>
+            <div className="flex items-center text-gray-600 text-sm gap-2">
+              {getVisibilityIcon()}
+              <span>{getVisibilityText()}</span>
+              <span>•</span>
+              <FaUsers className="text-gray-500" />
+              <span>
+                {(activeMembers.length || 0).toLocaleString()} members
+              </span>
             </div>
+          </div>
 
-            {/* Desktop Layout */}
-            <div className="hidden md:flex justify-between items-center">
-                <div className="w-full flex items-center justify-center gap-6">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                            {group.name}
-                            {group.isVerified && (
-                                <span className="ml-2 text-blue-500">✓</span>
-                            )}
-                        </h1>
-                        <div className="flex items-center justify-center text-gray-600 text-sm gap-2 mb-2">
-                            {getVisibilityIcon()}
-                            <span>{getVisibilityText()}</span>
-                            <span>•</span>
-                            <FaUsers className="text-gray-500" />
-                            <span>
-                                {group.memberCount.toLocaleString()} members
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <GroupActionButtons
+            group={group}
+            groupId={groupId}
+            membershipStatus={membershipStatus}
+            onJoinGroup={onJoinGroup}
+            onLeaveGroup={onLeaveGroup}
+            onCancelRequest={onCancelRequest}
+            isMobile={true}
+            setIsShowEditGroup={setIsShowEditGroup}
+          />
         </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden md:flex justify-between items-center">
+          <div className="w-full flex items-center justify-center gap-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                {group.name}
+                {group.isVerified && (
+                  <span className="ml-2 text-blue-500">✓</span>
+                )}
+              </h1>
+              <div className="flex items-center justify-center text-gray-600 text-sm gap-2 mb-2">
+                {getVisibilityIcon()}
+                <span>{getVisibilityText()}</span>
+                <span>•</span>
+                <FaUsers className="text-gray-500" />
+                <span>
+                  {(activeMembers.length || 0).toLocaleString()} members
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     );
 };
 

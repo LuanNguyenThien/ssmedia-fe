@@ -2,21 +2,27 @@ import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { FaTimes, FaSearch, FaUserPlus, FaCheck } from "react-icons/fa";
 import Avatar from "@components/avatar/Avatar";
-
+import { userService } from "@services/api/user/user.service";
+import { groupService } from "@/services/api/group/group.service";
+import { useDispatch, useSelector } from "react-redux";
+import { Utils } from "@services/utils/utils.service";
 const InviteMembers = ({ isOpen, onClose, groupId, groupName }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResult, setSearchResult] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [invitedUsers, setInvitedUsers] = useState(new Set());
     const [isInviting, setIsInviting] = useState(false);
-
+    const dispatch = useDispatch();
     // Mock search function - replace with actual API call
     const searchUsers = async (term) => {
         if (!term.trim()) {
             setSearchResult([]);
             return;
         }
+         const response = await userService.searchUsers(term);
+         console.log("Search response:", response);
 
+         setSearchResult(response.data.search || []);
         setIsSearching(true);
         
         // Simulate API call delay
@@ -58,7 +64,7 @@ const InviteMembers = ({ isOpen, onClose, groupId, groupName }) => {
                 user.email.toLowerCase().includes(term.toLowerCase())
             );
 
-            setSearchResult(filteredUsers);
+           
             setIsSearching(false);
         }, 500);
     };
@@ -72,23 +78,29 @@ const InviteMembers = ({ isOpen, onClose, groupId, groupName }) => {
     }, [searchTerm]);
 
     const handleInviteUser = async (user) => {
-        setIsInviting(true);
+      setIsInviting(true);
+      console.log("Inviting user:", user);
+      const userId = user._id;
+      console.log("Group ID:", userId);
+      try {
+        const response = await groupService.inviteUserToGroup(groupId, [userId]);
+        setInvitedUsers((prev) => new Set([...prev, user._id]));
+        Utils.dispatchNotification(
+          response.data?.message || "Invitation sent successfully",
+          "success",
+          dispatch
+        );
+      } catch (err) {
+        console.error("Error inviting user:", err);
+        Utils.dispatchNotification(
+          err.response?.data?.message || "Failed to invite user",
+          "error",
+          dispatch
+        );
         
-        try {
-            // Simulate API call for inviting user
-            console.log(`Inviting user ${user.username} to group ${groupId}`);
-            
-            // Simulate delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // Add user to invited set
-            setInvitedUsers(prev => new Set([...prev, user._id]));
-            
-        } catch (error) {
-            console.error("Error inviting user:", error);
-        } finally {
-            setIsInviting(false);
-        }
+      } finally {
+        setIsInviting(false);
+      }
     };
 
     const handleSearchChange = (e) => {

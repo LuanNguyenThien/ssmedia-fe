@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaLock } from "react-icons/fa";
 import { uniqBy } from "lodash";
-import PostForm from "@components/posts/post-form/PostForm";
-import Posts from "@components/posts/Posts";
+import PostForm from "@components/posts/post-form/PostFormGroup";
+import Posts from "@components/posts/PostGroup";
 import useInfiniteScroll from "@hooks/useInfiniteScroll";
 import { postService } from "@services/api/post/post.service";
 import { Utils } from "@services/utils/utils.service";
@@ -11,7 +11,7 @@ import { PostUtils } from "@services/utils/post-utils.service";
 import { socketService } from "@services/socket/socket.service";
 import { followerService } from "@services/api/followers/follower.service";
 import Spinner from "@components/spinner/Spinner";
-
+import { useParams } from "react-router-dom";   
 export default function DiscussionTab({ group, canViewContent, onJoinGroup }) {
     const dispatch = useDispatch();
     const { profile } = useSelector((state) => state.user);
@@ -20,14 +20,14 @@ export default function DiscussionTab({ group, canViewContent, onJoinGroup }) {
     const [posts, setPosts] = useState([]);
     const [following, setFollowing] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(2);
+    const [currentPage, setCurrentPage] = useState(1);
     const [totalPostsCount, setTotalPostsCount] = useState(0);
     const [loadingMore, setLoadingMore] = useState(false);
 
     const bodyRef = useRef(null);
     const bottomLineRef = useRef();
     const appPosts = useRef([]);
-
+    const { groupId } = useParams();
     const PAGE_SIZE = 10;
 
     useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
@@ -45,7 +45,8 @@ export default function DiscussionTab({ group, canViewContent, onJoinGroup }) {
         try {
             // In real implementation, this would be a group-specific endpoint
             // For now, we'll use the general posts endpoint but filter for group
-            const response = await postService.getAllPosts(currentPage);
+            const response = await postService.getAllPostsGroup(groupId, currentPage);
+            console.log("Fetched group posts:", response.data);
             if (response.data.posts && response.data.posts.length > 0) {
                 // Filter posts that belong to this group (in real app, this would be done server-side)
                 const groupPosts = response.data.posts.filter(
