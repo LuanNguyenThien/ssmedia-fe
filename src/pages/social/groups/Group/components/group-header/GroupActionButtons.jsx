@@ -13,8 +13,10 @@ import {
 } from "react-icons/fa";
 import { HiDotsVertical } from "react-icons/hi";
 import InviteMembers from "../InviteMembers";
-
-const GroupActionButtons = ({
+import { groupService } from "@/services/api/group/group.service";
+import { Utils } from "@/services/utils/utils.service";
+import { useDispatch } from "react-redux";
+const   GroupActionButtons = ({
     group,
     groupId,
     membershipStatus,
@@ -27,16 +29,32 @@ const GroupActionButtons = ({
     const [showMembershipDropdown, setShowMembershipDropdown] = useState(false);
     const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
     const [showInviteModal, setShowInviteModal] = useState(false);
-
+    const dispatch = useDispatch(); 
     const handleEditGroup = () => {
         setIsShowEditGroup(true);
         setShowSettingsDropdown(false);
     };
 
-    const handleDeleteGroup = () => {
-        // Handle delete group logic here
-        console.log("Delete group:", groupId);
+    const handleDeleteGroup = async () => {
+      try {
+        const response = await groupService.deleteGroup(groupId);
+        console.log("Group deleted successfully:", response);
+        Utils.dispatchNotification(
+          response.data?.message || "Group deleted successfully",
+          "success",
+          dispatch
+        );
         setShowSettingsDropdown(false);
+        
+      } catch (err) {
+        console.error("Failed to delete group:", err);
+        Utils.dispatchNotification(
+          err.response?.data?.message || "Failed to delete group",
+          "error",
+          dispatch
+        );
+        setShowSettingsDropdown(false);
+      }
     };
 
     const handleInviteClick = () => {

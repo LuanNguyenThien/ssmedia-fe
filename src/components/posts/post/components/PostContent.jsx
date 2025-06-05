@@ -69,13 +69,13 @@ const PostContent = ({
                         }
                     }
                     
-                    console.log('HTML Content Height Check:', {
-                        containerHeight: contentHeight,
-                        blockNoteHeight: blockNoteContent?.scrollHeight,
-                        actualHeight,
-                        threshold: MAX_HEIGHT,
-                        willShow: actualHeight > MAX_HEIGHT
-                    });
+                    // console.log('HTML Content Height Check:', {
+                    //     containerHeight: contentHeight,
+                    //     blockNoteHeight: blockNoteContent?.scrollHeight,
+                    //     actualHeight,
+                    //     threshold: MAX_HEIGHT,
+                    //     willShow: actualHeight > MAX_HEIGHT
+                    // });
                     
                     setShowHtmlToggle(actualHeight > MAX_HEIGHT);
                 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+
 import { useNavigate } from "react-router-dom";
 import { postService } from "@services/api/post/post.service";
 import { Utils } from "@services/utils/utils.service";
@@ -19,7 +19,9 @@ import {
     FaChevronUp
 } from "react-icons/fa";
 import { HiDotsVertical } from "react-icons/hi";
-
+import { useDispatch, useSelector } from "react-redux";
+import { groupService } from "@services/api/group/group.service";
+import { set } from "lodash";
 const GroupStream = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -41,9 +43,10 @@ const GroupStream = () => {
     const bodyRef = useRef(null);
     const bottomLineRef = useRef();
     const PAGE_SIZE = 10;
-
+    const { profile } = useSelector((state) => state.user);  
+    const userId = profile?._id ;
     useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
-
+    
     // Posts functionality
     function fetchPostData() {
         if (loadingMore) {
@@ -89,69 +92,78 @@ const GroupStream = () => {
     }, []);
 
     // Mock data for groups
-    const [joinedGroups] = useState([
-        {
-            id: "1",
-            name: "React Developers",
-            description: "Community for React developers to share knowledge and experiences",
-            memberCount: 15420,
-            visibility: "public",
-            category: "Technology",
-            avatar: null,
-            isAdmin: true,
-            recentActivity: "2 hours ago",
-            unreadPosts: 5
-        },
-        {
-            id: "2", 
-            name: "UI/UX Design Masters",
-            description: "Advanced UI/UX design discussions and portfolio reviews",
-            memberCount: 8932,
-            visibility: "private",
-            category: "Design",
-            avatar: null,
-            isAdmin: false,
-            recentActivity: "1 day ago",
-            unreadPosts: 0
-        }
-    ]);
+    const [joinedGroups, setJoinedGroups] = useState([]);
+    const [invitations, setinvitations] = useState([]);
+    const [exploreGroups, setExploreGroups] = useState([]);
+    // const [exploreGroups] = useState([
+    //   {
+    //     id: "3",
+    //     name: "Machine Learning Hub",
+    //     description: "Latest trends and discussions in ML and AI",
+    //     memberCount: 25678,
+    //     visibility: "public",
+    //     category: "Technology",
+    //     avatar: null,
+    //     suggested: true,
+    //   },
+    //   {
+    //     id: "4",
+    //     name: "Photography Enthusiasts",
+    //     description: "Share your best shots and learn from professionals",
+    //     memberCount: 12456,
+    //     visibility: "public",
+    //     category: "Arts",
+    //     avatar: null,
+    //     suggested: false,
+    //   },
+    // ]);
 
-    const [exploreGroups] = useState([
-        {
-            id: "3",
-            name: "Machine Learning Hub",
-            description: "Latest trends and discussions in ML and AI",
-            memberCount: 25678,
-            visibility: "public",
-            category: "Technology",
-            avatar: null,
-            suggested: true
-        },
-        {
-            id: "4",
-            name: "Photography Enthusiasts",
-            description: "Share your best shots and learn from professionals",
-            memberCount: 12456,
-            visibility: "public", 
-            category: "Arts",
-            avatar: null,
-            suggested: false
-        }
-    ]);
 
-    const [invitations] = useState([
-        {
-            id: "5",
-            name: "Startup Founders Network",
-            description: "Connect with fellow entrepreneurs and startup founders",
-            memberCount: 5432,
-            visibility: "private",
-            category: "Business",
-            avatar: null,
-            invitedBy: "John Doe",
-            invitedAt: "2 days ago"
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState(null);
+    // const [invitations] = useState([
+    //   {
+    //     id: "5",
+    //     name: "Startup Founders Network",
+    //     description: "Connect with fellow entrepreneurs and startup founders",
+    //     memberCount: 5432,
+    //     visibility: "private",
+    //     category: "Business",
+    //     avatar: null,
+    //     invitedBy: "John Doe",
+    //     invitedAt: "2 days ago",
+    //   },
+    // ]);
+    useEffect(() => {
+      const fetchGroups = async () => {
+        try {
+          setLoading(true);
+          
+          const groups = await groupService.getGroupByUserId(userId); // Gọi service
+          console.log("Fetched groups:", groups);
+          const groupInvitations = await groupService.getGroupByinvitations();
+          console.log("Fetched invitations:", groupInvitations);
+          const exploreGroups = await groupService.getGroupNotJoinByGroupId(); // Giả định API trả về mảng groups
+          setExploreGroups(exploreGroups.data.groups || []); // Giả định API trả về mảng groups
+          setinvitations(groupInvitations.data.groups || []); 
+          setJoinedGroups(groups.data.groups);
+          
+          console.log(joinedGroups, "join") // Giả định API trả về mảng groups
+        } catch (err) {
+          setError("Failed to fetch groups");
+          console.error("Error fetching groups:", err.message);
+        } finally {
+          setLoading(false);
         }
-    ]);
+      };
+
+      if (userId) {
+        fetchGroups();
+      }
+    }, [userId]);
+
+    
+    
 
     const tabs = [
         { 
@@ -178,19 +190,65 @@ const GroupStream = () => {
         "all", "Technology", "Design", "Business", "Arts", "Education", "Health", "Sports"
     ];
 
-    const handleJoinGroup = (groupId) => {
+    const handleJoinGroup = async (groupId) => {
         console.log("Joining group:", groupId);
+        try {
+          const response = await groupService.joinGroup(groupId);
+          Utils.dispatchNotification(
+              response.data?.message || "Successfully joined the group",
+              "success",
+              dispatch
+          );
+          // Move group from exploreGroups to joinedGroups
+          // const joinedGroup = exploreGroups.find(group => group.id === groupId);
+          // if (joinedGroup) {
+          //     setJoinedGroups(prev => [...prev, { ...joinedGroup, recentActivity: "Just joined" }]);
+          //     setExploreGroups(prev => prev.filter(group => group.id !== groupId));
+          // }
+      } catch (error) {
+          Utils.dispatchNotification(
+              error.response?.data?.message || "Failed to join group",
+              "error",
+              dispatch
+          );
+      }
         // API call to join group
     };
 
-    const handleAcceptInvitation = (groupId) => {
-        console.log("Accepting invitation:", groupId);
-        // API call to accept invitation
+    const handleAcceptInvitation = async (groupId) => {
+      try {
+        const response = await groupService.acceptGroupInvitation(groupId);
+        Utils.dispatchNotification(
+          response.data?.message || "Group invitation accepted successfully",
+          "success",
+          dispatch
+        );
+        
+      } catch (error) {
+        Utils.dispatchNotification(
+          error.response?.data?.message || "Failed to accept group invitation",
+          "error",
+          dispatch
+        );
+      }
     };
 
-    const handleDeclineInvitation = (groupId) => {
-        console.log("Declining invitation:", groupId);
-        // API call to decline invitation
+    const handleDeclineInvitation = async (groupId) => {
+      try {
+        const response = await groupService.declineGroupInvitation(groupId);
+        Utils.dispatchNotification(
+          response.data?.message || "Group invitation declined successfully",
+          "success",
+          dispatch
+        );
+        
+      } catch (error) {
+        Utils.dispatchNotification(
+          error.response?.data?.message || "Failed to decline group invitation",
+          "error",
+          dispatch
+        );
+      }
     };
 
     const renderGroupCard = (group, type) => {
@@ -206,117 +264,129 @@ const GroupStream = () => {
         };
 
         return (
-            <div 
-                key={group.id}
-                className="bg-white rounded-lg border hover:shadow-md transition-all duration-200 cursor-pointer"
-                onClick={() => navigate(`/app/social/group/${group.id}`)}
-            >
-                <div className="p-3 md:p-3">
-                    <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                            {group.avatar || group.name.charAt(0).toUpperCase()}
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-semibold text-gray-900 truncate text-sm md:text-sm">
-                                    {group.name}
-                                </h3>
-                                <button 
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="p-1 hover:bg-gray-100 rounded-full"
-                                >
-                                    <HiDotsVertical size={14} />
-                                </button>
-                            </div>
-                            
-                            <p className="text-xs text-gray-600 line-clamp-2 mt-1">
-                                {group.description}
-                            </p>
-                            
-                            <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-                                <div className="flex items-center gap-1">
-                                    {getVisibilityIcon()}
-                                    <span className="capitalize">{group.visibility}</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <FaUsers size={10} />
-                                    <span>{group.memberCount.toLocaleString()}</span>
-                                </div>
-                            </div>
-
-                            {/* Type-specific content */}
-                            {type === "joined" && (
-                                <div className="flex items-center justify-between mt-2">
-                                    <div className="text-xs text-gray-500">
-                                        {group.recentActivity}
-                                        {group.unreadPosts > 0 && (
-                                            <span className="ml-2 bg-blue-500 text-white px-2 py-1 rounded-full">
-                                                {group.unreadPosts}
-                                            </span>
-                                        )}
-                                    </div>
-                                    {group.isAdmin && (
-                                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                                            Admin
-                                        </span>
-                                    )}
-                                </div>
-                            )}
-
-                            {type === "explore" && (
-                                <div className="flex items-center justify-between mt-2">
-                                    {group.suggested && (
-                                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                                            Suggested
-                                        </span>
-                                    )}
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleJoinGroup(group.id);
-                                        }}
-                                        className="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center gap-1"
-                                    >
-                                        <FaUserPlus size={10} />
-                                        Join
-                                    </button>
-                                </div>
-                            )}
-
-                            {type === "invitation" && (
-                                <div className="mt-2">
-                                    <div className="text-xs text-gray-500 mb-2">
-                                        Invited by {group.invitedBy} • {group.invitedAt}
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleAcceptInvitation(group.id);
-                                            }}
-                                            className="text-xs bg-green-500 text-white px-2 py-1 rounded-lg hover:bg-green-600 flex items-center gap-1"
-                                        >
-                                            <FaCheck size={10} />
-                                            Accept
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDeclineInvitation(group.id);
-                                            }}
-                                            className="text-xs bg-gray-500 text-white px-2 py-1 rounded-lg hover:bg-gray-600 flex items-center gap-1"
-                                        >
-                                            <FaTimes size={10} />
-                                            Decline
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+          <div
+            key={group.id}
+            className="bg-white rounded-lg border hover:shadow-md transition-all duration-200 cursor-pointer"
+            onClick={() => navigate(`/app/social/group/${group.id}`)}
+          >
+            <div className="p-3 md:p-3">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 md:w-10 md:h-10 rounded-lg overflow-hidden flex items-center justify-center">
+                  {group.profileImage ? (
+                    <img
+                      src={group.profileImage}
+                      alt={`${group.name} group`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                      {group.name.charAt(0).toUpperCase()}
                     </div>
+                  )}
                 </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900 truncate text-sm md:text-sm">
+                      {group.name}
+                    </h3>
+                    <button
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-1 hover:bg-gray-100 rounded-full"
+                    >
+                      <HiDotsVertical size={14} />
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-gray-600 line-clamp-2 mt-1">
+                    {group.description}
+                  </p>
+
+                  <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                    <div className="flex items-center gap-1">
+                      {getVisibilityIcon()}
+                      <span className="capitalize">{group.privacy}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <FaUsers size={10} />
+                      <span>
+                        {(group.members?.length || 0).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Type-specific content */}
+                  {type === "joined" && (
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="text-xs text-gray-500">
+                        {group.recentActivity}
+                        {group.unreadPosts > 0 && (
+                          <span className="ml-2 bg-blue-500 text-white px-2 py-1 rounded-full">
+                            {group.unreadPosts}
+                          </span>
+                        )}
+                      </div>
+                      {group.createdBy == userId && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {type === "explore" && (
+                    <div className="flex items-center justify-between mt-2">
+                      {group.suggested && (
+                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                          Suggested
+                        </span>
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleJoinGroup(group.id);
+                        }}
+                        className="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center gap-1"
+                      >
+                        <FaUserPlus size={10} />
+                        Join
+                      </button>
+                    </div>
+                  )}
+
+                  {type === "invitation" && (
+                    <div className="mt-2">
+                      <div className="text-xs text-gray-500 mb-2">
+                        Invited by {group.invitedBy} • {group.joinedAt}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAcceptInvitation(group.id);
+                          }}
+                          className="text-xs bg-green-500 text-white px-2 py-1 rounded-lg hover:bg-green-600 flex items-center gap-1"
+                        >
+                          <FaCheck size={10} />
+                          Accept
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeclineInvitation(group.id);
+                          }}
+                          className="text-xs bg-gray-500 text-white px-2 py-1 rounded-lg hover:bg-gray-600 flex items-center gap-1"
+                        >
+                          <FaTimes size={10} />
+                          Decline
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
+          </div>
         );
     };
 
@@ -346,6 +416,7 @@ const GroupStream = () => {
         let filteredGroups = groups;
 
         if (searchTerm) {
+            
             filteredGroups = groups.filter(group =>
                 group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 group.description.toLowerCase().includes(searchTerm.toLowerCase())
