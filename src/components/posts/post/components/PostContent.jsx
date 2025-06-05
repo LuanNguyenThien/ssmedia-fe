@@ -28,7 +28,7 @@ const PostContent = ({
     const htmlContentRef = useRef(null);
     const regularContentRef = useRef(null);
     
-    const MAX_HEIGHT = 350; // Maximum height in pixels before showing "see more"
+    const MAX_HEIGHT = 500; // Maximum height in pixels before showing "see more"
 
     // Check HTML content height
     useEffect(() => {
