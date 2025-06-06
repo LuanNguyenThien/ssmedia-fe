@@ -9,7 +9,7 @@ import { includes } from "lodash";
 import useIsMobile from "@hooks/useIsMobile";
 
 const layout_1_4_list = ["streams", "profile", "save", "people", "post"];
-const layout_0_5_list = ["chat", "groups","group", "meeting", "search"];
+const layout_0_5_list = ["chat", "groups", "group", "meeting", "search"];
 
 const Social = () => {
     const isMobile = useIsMobile();
@@ -54,12 +54,16 @@ const Social = () => {
         );
     };
     return (
-        <div className={`!bg-secondary sm:px-12`}>
+        <div className={`!bg-secondary h-screen sm:px-12`}>
             {isMobile ? <HeaderMb /> : <Header />}
-            <div className={`grid grid-cols-10 ${isMobile ? "pb-[8dvh]" : ""}`}>
+            <div
+                className={`grid grid-cols-10 h-full ${
+                    isMobile ? "pb-[16dvh]" : ""
+                }`}
+            >
                 {getLayout()}
             </div>
-            {isMobile && <SidebarMb />}
+            {isMobile && <SidebarMb />}          
         </div>
     );
 };

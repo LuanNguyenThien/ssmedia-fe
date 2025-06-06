@@ -245,6 +245,7 @@ const PostContent = ({
                                         post.imgVersion
                                     )}`}
                                     alt=""
+                                    loading="lazy"
                                 />
                             </div>
                         )}
@@ -279,6 +280,7 @@ const PostContent = ({
                                     style={{ objectFit: "contain" }}
                                     src={`${post?.gifUrl}`}
                                     alt=""
+                                    loading="lazy"
                                 />
                             </div>
                         )}

@@ -262,9 +262,9 @@ const Streams = () => {
             {loading ? (
                 <StreamsSkeleton />
             ) : (
-                <div className="streams-content col-span-full !rounded-t-2xl">
+                <div className="streams-content col-span-full h-full !rounded-t-2xl">
                     <div
-                        className="streams-post relative sm:pt-6 sm:px-6 bg-background-blur  sm:rounded-3xl gap-1 sm:gap-4"
+                        className="streams-post h-full relative sm:pt-6 sm:px-6 bg-background-blur  sm:rounded-3xl gap-1 sm:gap-4"
                         ref={bodyRef}
                     >
                         <PostForm />
@@ -292,7 +292,7 @@ const Streams = () => {
                             )}
                         </div>
                     </div>
-                    <div className="streams-suggestions pl-4">
+                    <div className="streams-suggestions pl-5">
                         <Suggestions />
                     </div>
                 </div>

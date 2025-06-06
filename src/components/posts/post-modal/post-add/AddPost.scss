@@ -416,3 +416,30 @@ hr {
     width: 0;
     background: transparent;
 }
+
+// iOS Safari specific fixes for AddAnswer modal
+@media screen and (max-width: 768px) {
+    .modal-box {
+        // Fix for iOS Safari viewport issues
+        &.ios-modal-fix {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            min-height: 100vh !important;
+            -webkit-overflow-scrolling: touch;
+            
+            // Ensure proper flexbox layout
+            display: flex !important;
+            flex-direction: column !important;
+            
+            // Fix for Safari address bar
+            height: -webkit-fill-available !important;
+            min-height: -webkit-fill-available !important;
+        }
+    }
+}
