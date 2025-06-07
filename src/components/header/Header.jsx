@@ -404,7 +404,10 @@ const Header = () => {
                                         setIsSettingsActive(false);
                                     }}
                                 >
-                                    <span className="header-list-name relative group">
+                                    <span
+                                        title="Message"
+                                        className="header-list-name relative group"
+                                    >
                                         <img
                                             src={assets.message}
                                             className="h-7 w-7 group-hover:scale-110 duration-200"
@@ -445,7 +448,10 @@ const Header = () => {
                                         setIsSettingsActive(false);
                                     }}
                                 >
-                                    <span className="header-list-name group relative">
+                                    <span
+                                        title="Notifications"
+                                        className="header-list-name group relative"
+                                    >
                                         {notificationCount > 0 && (
                                             <span
                                                 className="bg-danger-dots dots group-hover:scale-110 duration-200"

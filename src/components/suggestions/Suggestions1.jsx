@@ -10,6 +10,7 @@ import { filter } from "lodash";
 import { addToSuggestions } from "@redux/reducers/suggestions/suggestions.reducer";
 import { ProfileUtils } from "@services/utils/profile-utils.service";
 import SuggestionsSkeletons from "./SuggestionsSkeleton";
+import { FaChevronDown } from "react-icons/fa";
 
 export default function Suggestions() {
     const { suggestions } = useSelector((state) => state);
@@ -93,10 +94,11 @@ export default function Suggestions() {
                         ))}
                         {users.length > 8 && (
                             <div
-                                className="view-more cursor-pointer"
+                                className="view-more cursor-pointer w-full text-center text-sm text-gray-500 flex items-center justify-center gap-2"
                                 onClick={() => navigate("/app/social/people")}
                             >
                                 View More
+                                <FaChevronDown />
                             </div>
                         )}
                     </div>

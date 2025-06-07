@@ -72,7 +72,7 @@ import threeD5 from "./3d/3d5.png";
 import threeD6 from "./3d/3d6.png";
 import threeD7 from "./3d/3d7.png";
 import threeD8 from "./3d/3d8.png";
-
+import blocked from "./3d/blocked.png";
 //post privacy
 import publicIcon from "./icons/post-privacy/public.png";
 import privateIcon from "./icons/post-privacy/private.png";
@@ -120,6 +120,7 @@ export const assets = {
     logo,
     notification,
     message,
+    blocked
 };
 
 export const postPrivacy = {

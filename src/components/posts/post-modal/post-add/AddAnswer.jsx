@@ -297,7 +297,7 @@ export default function AddAnswer({ questionId }) {
                     className={`modal-box ${
                         isMobile
                             ? "ios-modal-fix"
-                            : "!w-screen !h-[90vh] sm:!h-[80vh] sm:!max-w-4xl"
+                            : "!w-screen !h-[90vh] sm:!h-[80vh] sm:!max-w-1/2"
                     }`}
                 >
                     {loading && (
