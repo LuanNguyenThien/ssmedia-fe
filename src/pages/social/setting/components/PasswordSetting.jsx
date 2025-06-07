@@ -79,7 +79,7 @@ const PasswordSetting = () => {
                         handleChange={(event) =>
                             setCurrentPassword(event.target.value)
                         }
-                        className=" border rounded-[15px] px-4 py-2"
+                        className=" border rounded-md px-4 py-2"
                     />
                 </div>
                 <div>
@@ -93,7 +93,7 @@ const PasswordSetting = () => {
                         handleChange={(event) =>
                             setNewPassword(event.target.value)
                         }
-                        className=" border rounded-[15px] px-4 py-2"
+                        className=" border rounded-md px-4 py-2"
                     />
                     <p className="mt-1 text-xs text-gray-500">
                         Password must be at least 8 characters and include a mix
@@ -111,7 +111,7 @@ const PasswordSetting = () => {
                         handleChange={(event) =>
                             setConfirmPassword(event.target.value)
                         }
-                        className=" border rounded-[15px] px-4 py-2"
+                        className=" border rounded-md px-4 py-2"
                     />
                 </div>
                 <div className="flex items-center justify-between mt-4">
