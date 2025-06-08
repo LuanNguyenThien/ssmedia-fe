@@ -106,18 +106,33 @@ const ChatWindow = () => {
         }
 
         ChatUtils.callWindow = window.open(
-            "",
+            "about:blank",
             "_blank",
             "width=800,height=600,top=100,left=100,scrollbars=no"
         );
 
-        ChatUtils.callWindow.document.title = `${
-            callType === "video" ? "Video" : "Voice"
-        } Call`;
-        ChatUtils.callWindow.document.body.style.margin = "0";
-        ChatUtils.callWindow.document.body.overflow = "hidden";
-        ChatUtils.callWindow.document.body.innerHTML =
-            '<div id="call-root"></div>';
+        if (!ChatUtils.callWindow) {
+            alert("Popup bị chặn. Vui lòng cho phép popup cho trang web này.");
+            return;
+        }
+
+        ChatUtils.callWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>${callType === "video" ? "Video" : "Voice"} Call</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body { margin: 0; padding: 0; overflow: hidden; background-color: #000; }
+                    #call-root { width: 100%; height: 100%; }
+                </style>
+            </head>
+            <body>
+                <div id="call-root"></div>
+            </body>
+            </html>
+        `);
+        ChatUtils.callWindow.document.close();
 
         try {
             const stream = await ChatUtils.callWindow.navigator.mediaDevices.getUserMedia({
@@ -130,12 +145,14 @@ const ChatWindow = () => {
                 <VideoCallWindow
                     callData={callData}
                     stream={stream}
-                    onClose={() => 
-                        {
-                            ChatUtils.callWindow.close();
-                            ChatUtils.callWindow = null; // Đặt lại tham chiếu cửa sổ popup
-                        }}
-                    popupWindowRef={ChatUtils.callWindow} // Truyền tham chiếu cửa sổ popup
+                    onClose={() => {
+                        if (stream) {
+                            stream.getTracks().forEach(track => track.stop());
+                        }
+                        ChatUtils.callWindow.close();
+                        ChatUtils.callWindow = null;
+                    }}
+                    popupWindowRef={ChatUtils.callWindow}
                 />
             );
         } catch (error) {

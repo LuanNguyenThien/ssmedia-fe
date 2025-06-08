@@ -199,7 +199,9 @@ export class ChatUtils {
                         remove(
                             chatMessageList,
                             (chat) =>
-                                chat.receiverUsername === data.receiverUsername
+                                (chat.receiverUsername === data.receiverUsername && chat.senderUsername === data.senderUsername ||
+                                    chat.senderUsername === data.receiverUsername && chat.receiverUsername === data.senderUsername
+                                )
                         );
                         chatMessageList = [data, ...chatMessageList];
                     }
