@@ -3,12 +3,12 @@ import axios from "axios";
 export let BASE_ENDPOINT = "";
 
 // when developing locally, change this value to local
-export const APP_ENVIRONMENT = "local";
+export const APP_ENVIRONMENT = "development";
 
 if (APP_ENVIRONMENT === "local") {
     BASE_ENDPOINT = "";
 } else if (APP_ENVIRONMENT === "development") {
-    BASE_ENDPOINT = "https://api.dev.younghub.online";
+    BASE_ENDPOINT = "https://api.dev.brainet.online";
 } else if (APP_ENVIRONMENT === "staging") {
     BASE_ENDPOINT = "https://api.stg.<your-backend-domain>";
 } else if (APP_ENVIRONMENT === "production") {
