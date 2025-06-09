@@ -243,6 +243,7 @@ const   GroupActionButtons = ({
                 isOpen={showInviteModal}
                 onClose={() => setShowInviteModal(false)}
                 groupId={groupId}
+                group={group}
                 groupName={group?.name || ""}
             />
         </>

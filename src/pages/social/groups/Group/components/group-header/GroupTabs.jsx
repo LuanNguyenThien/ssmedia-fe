@@ -24,7 +24,7 @@ const GroupTabs = ({ activeTab, onTabChange, membershipStatus, pendingRequestsCo
         },
         {
             id: "media",
-            label: "Media",
+            label: "PendingPost",
             icon: <FaImages className="text-lg" />,
             requiresMembership: true,
         },
@@ -59,11 +59,11 @@ const GroupTabs = ({ activeTab, onTabChange, membershipStatus, pendingRequestsCo
                             }`}
                         >
                             {tab.label}
-                            {tab.count > 0 && (
+                            {/* {tab.count > 0 && (
                                 <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full min-w-[20px] flex items-center justify-center font-bold">
                                     {tab.count}
                                 </span>
-                            )}
+                            )} */}
                         </button>
                     ))}
                 </div>

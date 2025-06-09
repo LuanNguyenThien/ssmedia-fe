@@ -65,6 +65,11 @@ class GroupService {
     return response;
   }
 
+  async updateGroup(groupId, body) {
+    const response = await axios.put(`/group/${groupId}`, body);
+    return response;
+  }
+
   async deleteGroup(groupId) {
     const response = await axios.delete(`/group/${groupId}`);
     return response;

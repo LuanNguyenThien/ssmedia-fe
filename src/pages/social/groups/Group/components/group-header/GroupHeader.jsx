@@ -12,7 +12,7 @@ const GroupHeader = ({
     setIsShowEditGroup,
 }) => {
     const getVisibilityIcon = () => {
-        switch (group?.visibility) {
+        switch (group?.privacy    ) {
             case "public":
                 return <FaGlobe className="text-blue-500" />;
             case "private":

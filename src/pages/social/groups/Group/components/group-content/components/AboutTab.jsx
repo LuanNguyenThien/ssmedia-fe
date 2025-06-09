@@ -19,10 +19,7 @@ export default function AboutTab({ group }) {
                             <span className="font-medium">Category:</span>{" "}
                             {group.category}
                         </li>
-                        <li>
-                            <span className="font-medium">Location:</span>{" "}
-                            {group.location}
-                        </li>
+                        
                         <li>
                             <span className="font-medium">Created:</span>{" "}
                             {new Date(group.createdAt).toLocaleDateString()}

@@ -67,9 +67,16 @@ const Group = () => {
       const isMember = groupData.members.some(
         (member) => member.userId === userId && member.status === "active"
       );
-      if(!isMember) {
-        setMembershipStatus("not_member");}
-      console.log("Group Data:", groupData);
+      const isPendingAdmin = groupData.members.some(
+        (member) =>
+          member.userId === userId && member.status === "pending_admin"
+      );
+
+      if (isPendingAdmin) {
+        setMembershipStatus("pending");
+      } else if (!isMember) {
+        setMembershipStatus("not_member");
+      } 
 
       // const userMembershipStatus =
       //     mockMembershipStatus[groupId] || "not_member";
@@ -126,27 +133,27 @@ const Group = () => {
 
   const handleJoinGroup = async () => {
     try {
-      // Simulate API call
-      if (group.privacy.whoCanJoin === "anyone") {
-        setMembershipStatus("member");
-        Utils.dispatchNotification(
-          "You have joined the group!",
-          "success",
-          dispatch
-        );
-      } else {
-        setMembershipStatus("pending");
-        Utils.dispatchNotification(
-          "Join request sent! Waiting for approval.",
-          "info",
-          dispatch
-        );
-      }
-    } catch (err) {
-      console.error("Failed to join group:", err);
-      Utils.dispatchNotification("Failed to join group", "error", dispatch);
-    }
-  };
+              const response = await groupService.joinGroup(groupId);
+              setMembershipStatus("pending");
+              Utils.dispatchNotification(
+                  response.data?.message || "Successfully joined the group",
+                  "success",
+                  dispatch
+              );
+              // Move group from exploreGroups to joinedGroups
+              // const joinedGroup = exploreGroups.find(group => group.id === groupId);
+              // if (joinedGroup) {
+              //     setJoinedGroups(prev => [...prev, { ...joinedGroup, recentActivity: "Just joined" }]);
+              //     setExploreGroups(prev => prev.filter(group => group.id !== groupId));
+              // }
+          } catch (error) {
+              Utils.dispatchNotification(
+                  error.response?.data?.message || "Failed to join group",
+                  "error",
+                  dispatch
+              );
+    t
+  };}
 
   const handleLeaveGroup = async () => {
     try {

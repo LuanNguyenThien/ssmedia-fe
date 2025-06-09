@@ -32,7 +32,13 @@ const GroupContent = ({ group, activeTab, canViewContent, onJoinGroup, membershi
                     />
                 );
             case "media":
-                return <MediaTab canViewContent={canViewContent} />;
+                return (
+                  <MediaTab
+                    group={group}
+                    canViewContent={canViewContent}
+                    onJoinGroup={onJoinGroup}
+                  />
+                );
             case "about":
                 return <AboutTab group={group} />;
             default:
