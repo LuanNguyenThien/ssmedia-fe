@@ -32,19 +32,19 @@ export default defineConfig({
         '40ba-2001-ee0-5201-5e20-cc4c-d8d4-2703-1165.ngrok-free.app', // Host ngrok hiện tại
         '*.ngrok-free.app'                          // Cho phép tất cả subdomains của ngrok
         ],
-        proxy: {
-          '/api': {
-            target: 'http://localhost:5000',
-            changeOrigin: true,
-            secure: false
-          },
-          '/socket.io': {
-            target: 'http://localhost:5000',
-            ws: true,           // Hỗ trợ WebSocket cho Socket.IO
-            changeOrigin: true,
-            secure: false
-          }
-        }
+        // proxy: {
+        //   '/api': {
+        //     target: 'http://localhost:5000',
+        //     changeOrigin: true,
+        //     secure: false
+        //   },
+        //   '/socket.io': {
+        //     target: 'http://localhost:5000',
+        //     ws: true,           // Hỗ trợ WebSocket cho Socket.IO
+        //     changeOrigin: true,
+        //     secure: false
+        //   }
+        // }
     },
     resolve: {
         alias: {
