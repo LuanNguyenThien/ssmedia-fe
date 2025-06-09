@@ -11,6 +11,11 @@ class PostService {
     return response;
   }
 
+  async getAllPostsGroup(groupId, page) {
+    const response = await axios.get(`/group/${groupId}/posts/${page}`);
+    return response;
+  }
+
   async getAllQuestions(page) {
     const response = await axios.get(`/question/all/${page}`);
     return response;
@@ -26,8 +31,18 @@ class PostService {
     return response;
   }
 
+  async reportPost(body) {
+    const response = await axios.post("/reportpost", body);
+    return response;
+  }
+
   async createPost(body) {
     const response = await axios.post("/post", body);
+    return response;
+  }
+
+  async createPostGroup(groupId, body) {
+    const response = await axios.post(`/post/${groupId}`, body);
     return response;
   }
 
@@ -169,7 +184,7 @@ class PostService {
   }
 
   async searchWithImage(body) {
-    const response = await axios.post('/search/image', body);
+    const response = await axios.post("/search/image", body);
     return response;
   }
 }

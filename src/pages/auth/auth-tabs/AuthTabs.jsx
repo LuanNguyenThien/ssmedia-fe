@@ -14,30 +14,37 @@ export default function AuthTabs() {
         if (keepLoggedIn) navigate("/app/social/streams");
     }, [keepLoggedIn, navigate]);
 
-    // Filter icons for mobile - show fewer on mobile devices
     const getFilteredIcons = () => {
         const icons = [
             {
                 icon: threeD[0],
-                position: isMobile ? "top-[15%] left-[15%]" : "top-[12%] left-[12%]",
+                position: isMobile
+                    ? "top-[15%] left-[15%]"
+                    : "top-[12%] left-[12%]",
                 animation: "animate-float-slow",
                 size: isMobile ? "w-[120px] h-[120px]" : "w-[180px] h-[180px]",
             },
             {
                 icon: threeD[1],
-                position: isMobile ? "top-[10%] -right-[20%]" : "top-[8%] -right-[2%]",
+                position: isMobile
+                    ? "top-[10%] -right-[20%]"
+                    : "top-[8%] -right-[2%]",
                 animation: "animate-float-medium",
                 size: isMobile ? "w-[130px] h-[130px]" : "w-[190px] h-[190px]",
             },
             {
                 icon: threeD[2],
-                position: isMobile ? "bottom-[10%] left-[10%]" : "bottom-[15%] left-[8%]",
+                position: isMobile
+                    ? "bottom-[10%] left-[10%]"
+                    : "bottom-[15%] left-[8%]",
                 animation: "animate-float-fast",
                 size: isMobile ? "w-[140px] h-[140px]" : "w-[200px] h-[200px]",
             },
             {
                 icon: threeD[3],
-                position: isMobile ? "bottom-[8%] -right-[5%]" : "bottom-[12%] -right-[3%]",
+                position: isMobile
+                    ? "bottom-[8%] -right-[5%]"
+                    : "bottom-[12%] -right-[3%]",
                 animation: "animate-float-slow",
                 size: isMobile ? "w-[125px] h-[125px]" : "w-[185px] h-[185px]",
             },
@@ -72,7 +79,7 @@ export default function AuthTabs() {
                 }
             );
         }
-        
+
         return icons;
     };
 
@@ -107,12 +114,16 @@ export default function AuthTabs() {
                             willChange: "transform",
                         }}
                     >
-                        <div className={`${isMobile ? 'size-[100px]' : 'size-[180px]'}`}>
+                        <div
+                            className={`${
+                                isMobile ? "size-[100px]" : "size-[180px]"
+                            }`}
+                        >
                             <img
                                 src={social.icon}
                                 alt="logo"
                                 className="w-full h-full object-cover"
-                                loading="lazy"
+                                loading="eager"
                             />
                         </div>
                     </div>
@@ -125,8 +136,16 @@ export default function AuthTabs() {
                 {activeTab === "login" && (
                     <div className="text-center mb-4 space-y-2">
                         <div className="flex flex-col items-center justify-center gap-2">
-                            <span className={`${isMobile ? 'text-3xl' : 'text-4xl'} font-extrabold text-primary-black w-max flex items-center gap-2`}>
-                                <div className={`${isMobile ? 'size-12' : 'size-16'}`}>
+                            <span
+                                className={`${
+                                    isMobile ? "text-3xl" : "text-4xl"
+                                } font-extrabold text-primary-black w-max flex items-center gap-2`}
+                            >
+                                <div
+                                    className={`${
+                                        isMobile ? "size-12" : "size-16"
+                                    }`}
+                                >
                                     <img
                                         src={assets.logo}
                                         alt="logo"
@@ -141,9 +160,15 @@ export default function AuthTabs() {
                 )}
 
                 {/* Auth form card */}
-                <div className={`animate__animated animate__fadeInUpBig shadow-md bg-primary-white ${isMobile ? 'p-6' : 'p-8'} rounded-3xl transition-all duration-300 ease-linear hover:shadow-2xl hover:shadow-blue-500/20 backdrop-blur-sm animate-fade-in`}>
+                <div
+                    className={`animate__animated animate__fadeInUpBig shadow-md bg-primary-white ${
+                        isMobile ? "p-6" : "p-8"
+                    } rounded-3xl transition-all duration-300 ease-linear hover:shadow-2xl hover:shadow-blue-500/20 backdrop-blur-sm animate-fade-in`}
+                >
                     <h2
-                        className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-center text-gray-800 ${
+                        className={`${
+                            isMobile ? "text-2xl" : "text-3xl"
+                        } font-bold text-center text-gray-800 ${
                             activeTab === "login" ? "" : "mb-6 "
                         }`}
                     >

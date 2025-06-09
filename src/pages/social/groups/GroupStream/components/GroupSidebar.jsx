@@ -30,17 +30,17 @@ const GroupSidebar = ({
                 {/* Your Groups Header */}
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-extrabold text-gray-800">
-                        Your Groups
+                        Explore Groups
                     </h2>
                     <button
-                        className="flex items-center gap-2 text-blue-500 p-1.5 rounded-full hover:underline transition-colors"
+                        className="flex items-center gap-1 text-gray-400 text-xs p-1.5 rounded-full hover:underline transition-colors"
                         aria-label="Create new group"
                         tabIndex="0"
                         onClick={handleCreateGroup}
                         onKeyDown={handleKeyDown}
                     >
-                        <FaPlus size={12} />
-                        Create your group
+                        <FaPlus />
+                        Create your own group
                     </button>
                 </div>
 

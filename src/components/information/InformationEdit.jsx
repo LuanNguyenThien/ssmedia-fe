@@ -6,6 +6,8 @@ import { InfoField } from "./display/InfoField";
 import { useDispatch } from "react-redux";
 import { DynamicSVG } from "@components/sidebar/components/SidebarItems";
 import { profileInfo } from "@assets/assets";
+import { isValidSocialUrl } from "./display/SocialInfoItem";
+import Tooltip from "@components/common/Tooltip";
 
 const InformationEdit = ({
     setIsEditing,
@@ -86,79 +88,124 @@ const InformationEdit = ({
 
     const renderSocialInfo = () => (
         <>
-            <InfoField
-                icon={
-                    <div className="size-4 flex items-center justify-center">
-                        <img
-                            src={profileInfo.social_facebook}
-                            className="size-full object-cover"
-                            alt=""
-                        />
-                    </div>
+            <Tooltip
+                message={
+                    editableSocialInputs.facebook &&
+                    !isValidSocialUrl(editableSocialInputs.facebook, "facebook")
+                        ? "Invalid Facebook URL. Please use a valid Facebook link."
+                        : null
                 }
-                value={editableSocialInputs.facebook}
-                placeholder={noSocialInfo.facebookMsg}
-                onChange={(value) =>
-                    setEditableSocialInputs({
-                        ...editableSocialInputs,
-                        facebook: value,
-                    })
-                }
-                isEditing={isEdit.social}
-                link
-            />
-            <InfoField
-                icon={
-                    <div className="size-4">
-                        <img src={profileInfo.social_instagram} alt="" />
-                    </div>
-                }
-                value={editableSocialInputs.instagram}
-                placeholder={noSocialInfo.instagramMsg}
-                onChange={(value) =>
-                    setEditableSocialInputs({
-                        ...editableSocialInputs,
-                        instagram: value,
-                    })
-                }
-                isEditing={isEdit.social}
-                link
-            />
-            <InfoField
-                icon={
-                    <div className="size-4">
-                        <img src={profileInfo.social_twitter} alt="" />
-                    </div>
-                }
-                value={editableSocialInputs.twitter}
-                placeholder={noSocialInfo.twitterMsg}
-                onChange={(value) =>
-                    setEditableSocialInputs({
-                        ...editableSocialInputs,
-                        twitter: value,
-                    })
-                }
-                isEditing={isEdit.social}
-                link
-            />
+                variant="error"
+            >
+                <InfoField
+                    icon={
+                        <div className="size-4 flex items-center justify-center">
+                            <img
+                                src={profileInfo.social_facebook}
+                                className="size-full object-cover"
+                                alt=""
+                            />
+                        </div>
+                    }
+                    value={editableSocialInputs.facebook}
+                    placeholder={noSocialInfo.facebookMsg}
+                    onChange={(value) =>
+                        setEditableSocialInputs({
+                            ...editableSocialInputs,
+                            facebook: value,
+                        })
+                    }
+                    isEditing={isEdit.social}
+                    link
+                />
+            </Tooltip>
 
-            <InfoField
-                icon={
-                    <div className="size-4">
-                        <img src={profileInfo.social_youtube} alt="" />
-                    </div>
+            <Tooltip
+                message={
+                    editableSocialInputs.instagram &&
+                    !isValidSocialUrl(
+                        editableSocialInputs.instagram,
+                        "instagram"
+                    )
+                        ? "Invalid Instagram URL. Please use a valid Instagram link."
+                        : null
                 }
-                value={editableSocialInputs.youtube}
-                placeholder={noSocialInfo.youtubeMsg}
-                onChange={(value) =>
-                    setEditableSocialInputs({
-                        ...editableSocialInputs,
-                        youtube: value,
-                    })
+                variant="error"
+            >
+                <InfoField
+                    icon={
+                        <div className="size-4">
+                            <img src={profileInfo.social_instagram} alt="" />
+                        </div>
+                    }
+                    value={editableSocialInputs.instagram}
+                    placeholder={noSocialInfo.instagramMsg}
+                    onChange={(value) =>
+                        setEditableSocialInputs({
+                            ...editableSocialInputs,
+                            instagram: value,
+                        })
+                    }
+                    isEditing={isEdit.social}
+                    link
+                />
+            </Tooltip>
+
+            <Tooltip
+                message={
+                    editableSocialInputs.twitter &&
+                    !isValidSocialUrl(editableSocialInputs.twitter, "twitter")
+                        ? "Invalid Twitter/X URL. Please use a valid Twitter or X link."
+                        : null
                 }
-                isEditing={isEdit.social}
-                link
-            />
+                variant="error"
+            >
+                <InfoField
+                    icon={
+                        <div className="size-4">
+                            <img src={profileInfo.social_twitter} alt="" />
+                        </div>
+                    }
+                    value={editableSocialInputs.twitter}
+                    placeholder={noSocialInfo.twitterMsg}
+                    onChange={(value) =>
+                        setEditableSocialInputs({
+                            ...editableSocialInputs,
+                            twitter: value,
+                        })
+                    }
+                    isEditing={isEdit.social}
+                    link
+                />
+            </Tooltip>
+
+            <Tooltip
+                message={
+                    editableSocialInputs.youtube &&
+                    !isValidSocialUrl(editableSocialInputs.youtube, "youtube")
+                        ? "Invalid YouTube URL. Please use a valid YouTube link."
+                        : null
+                }
+                variant="error"
+            >
+                <InfoField
+                    icon={
+                        <div className="size-4">
+                            <img src={profileInfo.social_youtube} alt="" />
+                        </div>
+                    }
+                    value={editableSocialInputs.youtube}
+                    placeholder={noSocialInfo.youtubeMsg}
+                    onChange={(value) =>
+                        setEditableSocialInputs({
+                            ...editableSocialInputs,
+                            youtube: value,
+                        })
+                    }
+                    isEditing={isEdit.social}
+                    link
+                />
+            </Tooltip>
         </>
     );
 
@@ -223,21 +270,25 @@ const InformationEdit = ({
     };
 
     return (
-        <div className="fixed inset-0 w-screen h-screen backdrop-blur-sm flex justify-center items-center z-50">
-            <div className="h-auto max-h-[80%] overflow-y-scroll lg:w-1/3 shadow-md bg-primary-white gap-4 flex flex-col justify-start items-start px-10 pb-10 rounded-[10px]">
-                <div className="w-full flex items-center justify-between pt-6">
-                    <span className="text-2xl font-bold text-primary-black">
+        <div className="fixed inset-0 bg-primary-black/50 w-screen h-screen backdrop-blur-sm flex justify-center items-center z-50">
+            <div className="h-auto max-h-[80dvh] overflow-y-scroll lg:w-1/3 shadow-md bg-primary-white gap-4 flex flex-col justify-start items-start p-6 rounded-[10px]">
+                <div className="w-full flex items-center justify-between">
+                    <span className="text-xl font-bold text-primary-black">
                         Edit Information
                     </span>
                     <button
-                        className="text-red-500 hover:text-red-200 text-[16px] font-bold"
+                        className=" text-gray-400 hover:text-red-200 hover:underline text-sm font-bold p-1 rounded-md"
                         onClick={() => setIsEditing(false)}
                     >
                         Cancel
                     </button>
                 </div>
 
-                <div className="w-full flex flex-col justify-start items-start gap-3">
+                <div className="w-full flex place-content-center">
+                    <div className="w-1/2 h-1 border-t"></div>
+                </div>
+
+                <div className="w-full flex flex-col justify-start items-start gap-2">
                     <div className="w-full flex justify-between items-center">
                         <span className="font-bold text-lg text-primary-black ">
                             Bio
@@ -282,7 +333,7 @@ const InformationEdit = ({
                             })
                         }
                         value={editableInputs.quote}
-                        className={`w-full h-[100px] text-slate-600 border border-slate-300 appearance-none rounded-lg px-3.5 py-2.5 outline-none focus:bg-primary-white focus:border-primary focus:ring-2 focus:ring-indigo-100
+                        className={`w-full h-auto text-slate-600 border border-slate-300 appearance-none rounded-lg px-3.5 py-2.5 outline-none focus:bg-primary-white focus:border-primary focus:ring-2 focus:ring-indigo-100
                             ${
                                 !isEdit.status
                                     ? "cursor-not-allowed bg-background-blur"
@@ -293,7 +344,7 @@ const InformationEdit = ({
                         placeholder="Describe yourself..."
                     ></textarea>
                 </div>
-                <div className="w-full flex flex-col justify-start items-start gap-3">
+                <div className="w-full flex flex-col justify-start items-start gap-2">
                     <div className="w-full flex justify-between items-center">
                         <span className="font-bold text-lg text-primary-black ">
                             Information

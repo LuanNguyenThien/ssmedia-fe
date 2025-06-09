@@ -14,8 +14,8 @@ const GroupPosts = forwardRef(({
     bottomLineRef 
 }, bodyRef) => {
     return (
-        <div className="col-span-7 rounded-2xl shadow-sm h-full w-full overflow-hidden flex justify-center items-center">
-            <div className="h-full overflow-y-auto w-full lg:w-2/3 " ref={bodyRef}>
+        <div className="rounded-2xl shadow-sm h-full w-full overflow-hidden flex justify-center items-center">
+            <div className="h-full overflow-y-scroll w-full lg:w-full" ref={bodyRef}>
                 {/* Posts */}
                 <Posts
                     allPosts={posts}

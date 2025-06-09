@@ -1,7 +1,7 @@
 import useEffectOnce from "@hooks/useEffectOnce";
 import { postService } from "@services/api/post/post.service";
 import { Utils } from "@services/utils/utils.service";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 // Import components
@@ -14,7 +14,16 @@ const CommentsModal = () => {
     const [postComments, setPostComments] = useState([]);
     const [openReplies, setOpenReplies] = useState({});
     const [loading, setLoading] = useState(false);
+    const [currentPostId, setCurrentPostId] = useState(null);
     const dispatch = useDispatch();
+
+    // Reset openReplies when post changes
+    useEffect(() => {
+        if (post?._id !== currentPostId) {
+            setOpenReplies({});
+            setCurrentPostId(post?._id);
+        }
+    }, [post?._id, currentPostId]);
 
     const getPostComments = useCallback(async () => {
         if (!post?._id) return;

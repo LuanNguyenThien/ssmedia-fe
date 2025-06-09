@@ -182,6 +182,45 @@
                         border: none; /* Đảm bảo không có border nào được áp dụng */
                         box-shadow: none; /* Đảm bảo không có box-shadow nào gây hiệu ứng tương tự */
                     }
+                    .bn-block-group {
+                        ul, ol {
+                            margin: 0;
+                            padding-left: 24px;
+                            
+                            li {
+                                list-style-position: outside;
+                                margin: 4px 0;
+                                
+                                &::marker {
+                                    content: normal;
+                                }
+                            }
+                        }
+                        
+                        ul li {
+                            list-style-type: disc;
+                        }
+                        
+                        ol li {
+                            list-style-type: decimal;
+                        }
+                        
+                        ul ul li {
+                            list-style-type: circle;
+                        }
+                        
+                        ul ul ul li {
+                            list-style-type: square;
+                        }
+                    }
+                    
+                    .bn-block-group[data-level="1"] {
+                        margin-left: 24px;
+                    }
+                    
+                    .bn-block-group[data-level="2"] {
+                        margin-left: 48px;
+                    }
                 }
             }
 
@@ -260,15 +299,55 @@
             max-height: 400px;
             object-fit: contain;
         }
-        .bn-block-content .bn-inline-content .ProseMirror-trailingBreak {
-            display: none;
-            padding: 0;
+        .bn-block-group {
+            ul, ol {
+                margin: 0;
+                padding-left: 24px;
+                
+                li {
+                    list-style-position: outside;
+                    margin: 4px 0;
+                    
+                    &::marker {
+                        content: normal;
+                    }
+                }
+            }
+            
+            ul li {
+                list-style-type: disc;
+            }
+            
+            ol li {
+                list-style-type: decimal;
+            }
+            
+            ul ul li {
+                list-style-type: circle;
+            }
+            
+            ul ul ul li {
+                list-style-type: square;
+            }
         }
+        
+        .bn-block-group[data-level="1"] {
+            margin-left: 24px;
+        }
+        
+        .bn-block-group[data-level="2"] {
+            margin-left: 48px;
+        }
+        
+        .bn-inline-content .ProseMirror-trailingBreak {
+            display: none;
+        }
+        
         .bn-block-content.ProseMirror-selectednode > *,
         .ProseMirror-selectednode > .bn-block-content > * {
-            outline: none; /* Loại bỏ outline (thường là nguyên nhân của viền xanh) */
-            border: none; /* Đảm bảo không có border nào được áp dụng */
-            box-shadow: none; /* Đảm bảo không có box-shadow nào gây hiệu ứng tương tự */
+            outline: none;
+            border: none;
+            box-shadow: none;
         }
     }
 }

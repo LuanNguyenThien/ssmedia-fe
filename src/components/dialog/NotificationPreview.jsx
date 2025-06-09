@@ -111,7 +111,7 @@ const NotificationPreview = ({
                             </span>
                         )}
                         {comment && (
-                            <span className="dialog-body-comment truncate w-full">
+                            <span className="dialog-body-comment truncate w-full max-w-96">
                                 <span className="dialog-body-reaction-text">
                                     <span className="font-bold">
                                         {senderName}

@@ -2,12 +2,11 @@ import Avatar from "@components/avatar/Avatar";
 import SelectDropdown from "@components/select-dropdown/SelectDropdown";
 import { privacyList } from "@services/utils/static.data";
 import { useRef, useState, useCallback, useEffect } from "react";
-import { FaGlobe, FaLock, FaUserCheck } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { find } from "lodash";
 import React from "react";
 import useHandleOutsideClick from "@/hooks/useHandleOutsideClick";
-
+import { postPrivacy } from "@/assets/assets";
 const ModalBoxContent = () => {
     // const privacyList = [
     //   {
@@ -29,13 +28,11 @@ const ModalBoxContent = () => {
 
     const { profile } = useSelector((state) => state.user);
     const { privacy } = useSelector((state) => state.post);
-    const { feeling } = useSelector((state) => state.modal);
     const privacyRef = useRef(null);
     const [selectedItem, setSelectedItem] = useState({
         topText: "Public",
-        subText: "Anyone on Chatty",
-        icon: () =>
-            React.createElement(FaGlobe, { className: "globe-icon globe" }),
+        subText: "Anyone on Brainet",
+        icon: postPrivacy.publicIcon,
     });
     const [tooglePrivacy, setTogglePrivacy] = useState(false);
 
@@ -70,7 +67,7 @@ const ModalBoxContent = () => {
                 <h5 className="inline-title-display" data-testid="box-username">
                     {profile?.username}
                 </h5>
-                {feeling?.name && (
+                {/* {feeling?.name && (
                     <p
                         className="inline-display !text-primary-black"
                         data-testid="box-feeling"
@@ -83,15 +80,21 @@ const ModalBoxContent = () => {
                         />
                         <span className="font-semibold">{feeling?.name}</span>
                     </p>
-                )}
+                )} */}
                 <div
                     data-testid="box-text-display"
-                    className="flex items-center gap-1 cursor-pointer"
+                    className="flex items-center justify-center gap-1 cursor-pointer w-max"
                     onClick={() => setTogglePrivacy(!tooglePrivacy)}
                 >
-                    {selectedItem.icon()}
+                    <div className="size-3">
+                        <img
+                            src={selectedItem.icon}
+                            className="size-full object-cover"
+                            alt=""
+                        />
+                    </div>
                     <div
-                        className="selected-item-text"
+                        className="selected-item-text w-max h-4 text-sm"
                         data-testid="box-item-text"
                     >
                         {selectedItem.topText}

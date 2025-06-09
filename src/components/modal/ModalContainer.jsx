@@ -8,10 +8,10 @@ const ModalContainer = () => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-container">
+    <>
       {type === 'edit' && <EditPost />}
       {type === 'add' && <PostTab />}
-    </div>
+    </>
   );
 };
 

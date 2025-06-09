@@ -4,6 +4,7 @@ import { GoBlocked } from "react-icons/go";
 import { CgUnblock } from "react-icons/cg";
 
 import InformationButton from "./InformationButton";
+import { FaFlag } from "react-icons/fa";
 
 const ActionSelector = ({
     isFollow,
@@ -13,6 +14,7 @@ const ActionSelector = ({
     onClickBlock,
     onClickUnblock,
     user,
+    onClickReport,
 }) => {
     const [showActions, setShowActions] = useState(false);
     const actionsRef = useRef(null);
@@ -105,6 +107,15 @@ const ActionSelector = ({
                             className="!bg-primary-white hover:!text-red-500"
                         />
                     )}
+                    <InformationButton
+                        title="Report"
+                        icon={<FaFlag />}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onClickReport(user);
+                        }}
+                        className="!bg-primary-white hover:!text-red-500"
+                    />
                 </div>
             )}
         </div>
