@@ -1,5 +1,4 @@
 import { Utils } from "@services/utils/utils.service";
-import CountContainerSkeleton from "@/components/information/count-container/CountContainerSkeleton";
 import "@components/timeline/Timeline.scss";
 import { TbMessageCircle } from "react-icons/tb";
 import InformationButton from "./InformationButton";
@@ -17,6 +16,7 @@ const CountContainer = ({
     followings,
     isCurrentUser,
     setRendered,
+    handleReportUser,
 }) => {
     const {
         isFollow,
@@ -89,6 +89,7 @@ const CountContainer = ({
                         onClickUnfollow={unFollowUser}
                         onClickBlock={blockUser}
                         onClickUnblock={unblockUser}
+                        onClickReport={handleReportUser}
                         user={user}
                     />
                 </div>

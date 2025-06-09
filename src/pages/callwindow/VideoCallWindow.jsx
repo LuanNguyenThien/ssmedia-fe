@@ -6,18 +6,19 @@ import { Utils } from "@services/utils/utils.service"
 const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
   const closingDueToRemoteEnd = useRef(false)
   const [retryCount, setRetryCount] = useState(0)
-  const MAX_RETRIES = 5 // Tăng số lần thử để phủ hết 30 giây
+  const MAX_RETRIES = 6 // Tăng số lần thử để phủ hết 45 giây
   const callAcceptedRef = useRef(false)
   const callEndedRef = useRef(false)
   const signalDataRef = useRef(null)
   const retryTimeoutsRef = useRef([])
   const [callTimeout, setCallTimeout] = useState(null)
-  const [timeRemaining, setTimeRemaining] = useState(30)
+  const [timeRemaining, setTimeRemaining] = useState(45)
   const [callAccepted, setCallAccepted] = useState(false)
   const [callEnded, setCallEnded] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [isVideoOff, setIsVideoOff] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isLocalVideoHidden, setIsLocalVideoHidden] = useState(false)
   const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 0)
   const [windowHeight, setWindowHeight] = useState(typeof window !== "undefined" ? window.innerHeight : 0)
   const [visualViewportHeight, setVisualViewportHeight] = useState(
@@ -146,6 +147,10 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
       }
     }
   }
+
+  const toggleLocalVideo = () => {
+    setIsLocalVideoHidden(!isLocalVideoHidden);
+  };
 
   // Function to toggle screen sharing
   // const toggleScreenShare = async () => {
@@ -401,7 +406,7 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
 
     // Tính toán thời gian giữa các lần thử
     // Ví dụ với MAX_RETRIES = 5, sẽ có các lần thử tại giây thứ: 5, 10, 15, 20, 25
-    const interval = Math.floor(25000 / MAX_RETRIES) // 25000ms = 25 giây (để kết thúc trước timeout 30s)
+    const interval = Math.floor(36000 / MAX_RETRIES) // 36000ms = 36 giây (để kết thúc trước timeout 45s)
 
     for (let i = 0; i < MAX_RETRIES; i++) {
       const timeoutId = setTimeout(
@@ -440,11 +445,11 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
     if (!callData.isReceivingCall) {
       const timeout = setTimeout(() => {
         if (!callAccepted.current && !callEnded.current) {
-          console.log("Call not answered after 30 seconds, closing window...")
+          console.log("Call not answered after 45 seconds, closing window...")
           retryTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId))
           endCall()
         }
-      }, 30000) // 30 giây
+      }, 45000) // 45 giây
 
       setCallTimeout(timeout)
 
@@ -958,13 +963,13 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
     remoteVideo: {
       width: "100%",
       height: "100%",
-      objectFit: "cover",
+      objectFit: "contain",
       backgroundColor: "#000",
     },
     localVideoContainer: {
       position: "absolute",
-      bottom: isLandscape ? "80px" : isMobile ? "80px" : "20px", // Increased for mobile to avoid overlap with controls
-      right: isMobile || isLandscape ? "10px" : "20px",
+      bottom: isLandscape ? "10px" : isMobile ? "90px" : "10px",
+      right: isLocalVideoHidden ? "-200px" : (isMobile || isLandscape ? "10px" : "20px"),
       width: isMobile ? "30%" : isLandscape ? "20%" : "25%",
       maxWidth: isLandscape ? "150px" : "180px",
       minWidth: isMobile ? "80px" : "120px",
@@ -980,6 +985,33 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
       display: isVideoOff ? "flex" : "block",
       alignItems: isVideoOff ? "center" : "initial",
       justifyContent: isVideoOff ? "center" : "initial",
+    },
+    toggleLocalVideoButton: {
+      position: "fixed",
+      bottom: "90px",
+      right: isLocalVideoHidden ? "0px" : "-20px", // Slide in/out từ cạnh màn hình
+      transform: "translateY(-50%)",
+      width: "40px",
+      height: "80px",
+      borderRadius: "20px 0 0 20px", // Bo tròn bên trái
+      backgroundColor: isLocalVideoHidden 
+        ? "rgba(59, 130, 246, 0.9)" 
+        : "rgba(0, 0, 0, 0.7)",
+      backdropFilter: "blur(8px)",
+      border: "2px solid rgba(255, 255, 255, 0.3)",
+      borderRight: "none", // Không có border bên phải
+      color: "white",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      // transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      zIndex: 50,
+      boxShadow: isLocalVideoHidden 
+        ? "-4px 0 20px rgba(59, 130, 246, 0.4)" 
+        : "-2px 0 8px rgba(0, 0, 0, 0.3)",
+      // Thêm pulse effect
+      animation: isLocalVideoHidden ? "pulse 2s infinite" : "none",
     },
     localVideo: {
       width: "100%",
@@ -1131,6 +1163,47 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
             : `Call will end in ${timeRemaining}s if not answered`}
         </div>
       )}
+      <button
+        style={styles.toggleLocalVideoButton}
+        onClick={toggleLocalVideo}
+        onTouchStart={(e) => {
+          e.currentTarget.style.right = isLocalVideoHidden ? "-5px" : "-15px";
+          e.currentTarget.style.backgroundColor = isLocalVideoHidden 
+            ? "rgba(59, 130, 246, 1)" 
+            : "rgba(0, 0, 0, 1)";
+        }}
+        onTouchEnd={(e) => {
+          e.currentTarget.style.right = isLocalVideoHidden ? "-10px" : "-20px";
+          e.currentTarget.style.backgroundColor = isLocalVideoHidden 
+            ? "rgba(59, 130, 246, 0.9)" 
+            : "rgba(0, 0, 0, 0.7)";
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.right = isLocalVideoHidden ? "-5px" : "-15px";
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.right = isLocalVideoHidden ? "-10px" : "-20px";
+        }}
+        aria-label={isLocalVideoHidden ? "Show Local Video" : "Hide Local Video"}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {isLocalVideoHidden ? (
+            <path d="M15 18l-6-6 6-6" />
+          ) : (
+            <path d="M9 18l6-6-6-6" />
+          )}
+        </svg>
+      </button>
       <audio ref={waitingRingtoneRef} src={waitingRingtone} />
       <div style={styles.videoWrapper}>
         <video

@@ -9,21 +9,11 @@ import { cloneDeep, filter, find } from "lodash";
 import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 import { icons } from "@/assets/assets";
 import { FaSpinner } from "react-icons/fa";
-import { openModal } from "@redux/reducers/modal/modal.reducer";
 import VoteList from "./VoteList";
-import { useNavigate } from "react-router-dom";
-import AddAnswer from "@components/posts/post-modal/post-add/AddAnswer";
 
 const PostVoteBar = ({ post }) => {
     const { profile } = useSelector((state) => state.user);
     let { reactions } = useSelector((state) => state.userPostReactions);
-    const isCurrentPostModal = useSelector((state) => 
-        state.modal.isOpen && 
-        state.modal.type === "add" && 
-        state.modal.modalType === "createanswer" &&
-        state.modal.data?.questionId === post._id
-    );
-    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [userSelectedReaction, setUserSelectedReaction] = useState("like");
     const [upvotePop, setUpvotePop] = useState(false);
@@ -31,46 +21,6 @@ const PostVoteBar = ({ post }) => {
     const debounceRef = useRef({ upvote: false, downvote: false });
     const [postReactions, setPostReactions] = useState([]);
     const [isShowVoteList, setIsShowVoteList] = useState(false);
-    const [answerCount, setAnswerCount] = useState(post.answerCount || 0);
-
-    const openAnswerForm = () => {
-        dispatch(openModal({
-            type: 'add',
-            data: {
-                questionId: post._id,
-                question: post.post,
-                questionUserId: post.userId,
-                username: post.username,
-                gifUrl: post.gifUrl,
-                imgId: post.imgId,
-                imgVersion: post.imgVersion,
-                videoId: post.videoId,
-                videoVersion: post.videoVersion,
-            },
-            modalType: 'createanswer',
-        }));
-    };
-
-    const navigateToQuestionDetail = () => {
-        navigate(`/app/social/question/${post._id}`);
-    };
-
-    const getAnswerCount = useCallback(async () => {
-        if (!post.htmlPost) { // Chỉ lấy answer count cho questions
-            try {
-                setAnswerCount(post.answersCount || 0);
-            } catch (error) {
-                console.error('Error fetching answer count:', error);
-            }
-        }
-    }, [post._id, post.htmlPost]);
-
-     useEffect(() => {
-        if (!post.htmlPost) { // Chỉ lấy số lượng câu trả lời cho questions
-            getAnswerCount();
-        }
-    }, [getAnswerCount, post.htmlPost]);
-
     const getPostReactions = async () => {
         try {
             const response = await postService.getPostReactions(post?._id);
@@ -336,34 +286,7 @@ const PostVoteBar = ({ post }) => {
                         className="size-5 md:size-6 rotate-180"
                     />
                 </button>
-
-                {!post.htmlPost && (
-                    <>
-                        {/* Nút Answer */}
-                        <button
-                            aria-label="Answer"
-                            className="mt-2 flex flex-col items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full focus:outline-none transition-all duration-200 ease-linear text-primary hover:bg-primary-light hover:text-primary-dark"
-                            onClick={openAnswerForm}
-                            type="button"
-                        >
-                            <span className="">Answer</span>
-                        </button>
-                        
-                        {/* Số lượng answers và link */}
-                        {answerCount > 0 && (
-                            <div 
-                                className="mt-1 text-xs md:text-sm text-center font-medium text-primary cursor-pointer hover:underline"
-                                onClick={navigateToQuestionDetail}
-                            >
-                                {answerCount} {answerCount === 1 ? 'answer' : 'answers'}
-                            </div>
-                        )}
-                    </>
-                )}
             </div>
-            {isCurrentPostModal && (
-                <AddAnswer questionId={isCurrentPostModal.data?.questionId} />
-            )}
         </>
     );
 };

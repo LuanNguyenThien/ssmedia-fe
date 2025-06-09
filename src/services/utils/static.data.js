@@ -9,6 +9,7 @@ import {
     FaUserCheck,
 } from "react-icons/fa";
 import { feelings, reactions, icons } from "@/assets/assets";
+import { postPrivacy } from "@/assets/assets";
 import React from "react";
 
 export const bgColors = [
@@ -20,7 +21,7 @@ export const bgColors = [
     "#2196f3",
     "#00bcd4",
     "#cddc39",
-    "#ffffff"
+    "#ffffff",
 ];
 
 export const avatarColors = [
@@ -54,40 +55,40 @@ export const sideBarItems = [
     },
     {
         index: 2,
+        name: "Questions",
+        url: "/app/social/questions",
+        iconName: icons.question,
+    },
+    {
+        index: 3,
         name: "Chat",
         url: "/app/social/chat/messages",
         iconName: icons.chats,
     },
     {
-        index: 3,
+        index: 4,
         name: "Group",
         url: "/app/social/groups",
         iconName: icons.groups,
     },
     {
-        index: 4,
+        index: 5,
         name: "People",
         url: "/app/social/people",
         iconName: icons.people,
     },
     {
-        index: 5,
+        index: 6,
         name: "Profile",
         url: "/app/social/profile",
         iconName: icons.profile,
     },
     {
-        index: 6,
+        index: 7,
         name: "Save",
         url: "/app/social/save",
         iconName: icons.saves,
     },
-    {
-        index: 7,
-        name: "Questions",
-        url: "/app/social/questions",
-        iconName: icons.home,
-    }
 ];
 
 export const feelingsList = [
@@ -100,21 +101,18 @@ export const feelingsList = [
 export const privacyList = [
     {
         topText: "Public",
-        subText: "Anyone on Chatty",
-        icon: () =>
-            React.createElement(FaGlobe, { className: "globe-icon globe" }),
+        subText: "Anyone on Brainet",
+        icon: postPrivacy.publicIcon,
     },
     {
         topText: "Followers",
-        subText: "Your followers on Chatty",
-        icon: () =>
-            React.createElement(FaUserCheck, { className: "globe-icon globe" }),
+        subText: "Your followers on Brainet",
+        icon: postPrivacy.followersIcon,
     },
     {
         topText: "Private",
         subText: "For you only",
-        icon: () =>
-            React.createElement(FaLock, { className: "globe-icon globe" }),
+        icon: postPrivacy.privateIcon,
     },
 ];
 

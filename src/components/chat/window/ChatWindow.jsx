@@ -27,7 +27,7 @@ import { DynamicSVG } from "@components/sidebar/components/SidebarItems";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosVideocam } from "react-icons/io";
 import { PiPhoneFill } from "react-icons/pi";
-import { icons } from "@assets/assets";
+import { assets, icons } from "@assets/assets";
 
 import useIsMobile from "@hooks/useIsMobile";
 
@@ -36,7 +36,6 @@ const ChatWindow = () => {
     const navigate = useNavigate();
     const isMobile = useIsMobile();
     const { profile } = useSelector((state) => state.user);
-    
 
     const [receiver, setReceiver] = useState();
     const [conversationId, setConversationId] = useState("");
@@ -106,36 +105,56 @@ const ChatWindow = () => {
         }
 
         ChatUtils.callWindow = window.open(
-            "",
+            "about:blank",
             "_blank",
             "width=800,height=600,top=100,left=100,scrollbars=no"
         );
 
-        ChatUtils.callWindow.document.title = `${
-            callType === "video" ? "Video" : "Voice"
-        } Call`;
-        ChatUtils.callWindow.document.body.style.margin = "0";
-        ChatUtils.callWindow.document.body.overflow = "hidden";
-        ChatUtils.callWindow.document.body.innerHTML =
-            '<div id="call-root"></div>';
+        if (!ChatUtils.callWindow) {
+            alert("Popup bị chặn. Vui lòng cho phép popup cho trang web này.");
+            return;
+        }
+
+        ChatUtils.callWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>${callType === "video" ? "Video" : "Voice"} Call</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body { margin: 0; padding: 0; overflow: hidden; background-color: #000; }
+                    #call-root { width: 100%; height: 100%; }
+                </style>
+            </head>
+            <body>
+                <div id="call-root"></div>
+            </body>
+            </html>
+        `);
+        ChatUtils.callWindow.document.close();
 
         try {
-            const stream = await ChatUtils.callWindow.navigator.mediaDevices.getUserMedia({
-                video: callType === "video",
-                audio: true,
-            });
-        
-            const root = createRoot(ChatUtils.callWindow.document.getElementById("call-root"));
+            const stream =
+                await ChatUtils.callWindow.navigator.mediaDevices.getUserMedia({
+                    video: callType === "video",
+                    audio: true,
+                });
+
+            const root = createRoot(
+                ChatUtils.callWindow.document.getElementById("call-root")
+            );
             root.render(
                 <VideoCallWindow
                     callData={callData}
                     stream={stream}
-                    onClose={() => 
-                        {
-                            ChatUtils.callWindow.close();
-                            ChatUtils.callWindow = null; // Đặt lại tham chiếu cửa sổ popup
-                        }}
-                    popupWindowRef={ChatUtils.callWindow} // Truyền tham chiếu cửa sổ popup
+                    onClose={() => {
+                        if (stream) {
+                            stream.getTracks().forEach(track => track.stop());
+                        }
+                        ChatUtils.callWindow.close();
+                        ChatUtils.callWindow = null;
+                    }}
+                    popupWindowRef={ChatUtils.callWindow}
                 />
             );
         } catch (error) {
@@ -659,12 +678,20 @@ const ChatWindow = () => {
         navigate("/app/social/chat/messages");
     }, [navigate]);
 
+
+    //check privacy
     const isGroupMember = useMemo(
         () =>
             isGroup &&
             !GroupChatUtils.userIsGroupMember(receiver?.members, profile?._id),
         [isGroup, receiver, profile]
     );
+    const [isBlocked, setIsBlocked] = useState(false);
+    useEffect(() => {
+        setIsBlocked(
+            Utils.checkIfUserIsBlocked(profile?.blockedBy, receiver?._id)
+        );
+    }, [profile?.blockedBy, receiver?._id]);
 
     // Modify the membership check effect
     useEffect(() => {
@@ -704,6 +731,55 @@ const ChatWindow = () => {
         }
     }, [isLoading, searchParamsId, isGroupMember, isGroup]);
 
+    if (isBlocked || isGroupMember) {
+        return (
+            <div
+                className="chat-window-container gap-2 sm:px-4 sm:py-2 relative"
+                data-testid="chat WindowContainer"
+            >
+                <div className="absolute inset-0 flex justify-center items-center bg-primary-white z-10 transition-all duration-300 ease-in-out animate-fadeIn">
+                    {/* Decorative floating elements */}
+                    <div className="absolute top-20 left-10 w-3 h-3 bg-red-300 rounded-full opacity-60"></div>
+                    <div className="absolute top-32 right-16 w-2 h-2 bg-blue-400 rounded-full opacity-50"></div>
+                    <div className="absolute bottom-40 left-20 w-4 h-4 bg-yellow-300 rounded-full opacity-40"></div>
+                    <div className="absolute bottom-60 right-12 w-2 h-2 bg-purple-400 rounded-full opacity-50"></div>
+
+                    <div className="size-full flex flex-col justify-center items-center p-8 text-center max-w-md mx-auto">
+                        <div className="size-80 flex flex-col justify-center items-center">
+                            <img
+                                src={assets.blocked}
+                                className="size-full object-cover"
+                                alt="blocked"
+                            />
+                        </div>
+
+                        {/* Main message */}
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                            Conversation{" "}
+                            <span className="text-blue-600">unavailable</span>
+                        </h2>
+
+                        {/* Description */}
+                        <p className="text-gray-600 text-base leading-relaxed mb-8 px-4">
+                            This conversation is currently not accessible. The
+                            user may have restricted access or the chat is
+                            temporarily unavailable.
+                        </p>
+
+                        {/* Action button */}
+                        <button
+                            onClick={handleBackClick}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2"
+                        >
+                            <IoIosArrowBack className="text-lg" />
+                            Return to Chats
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div
             className="chat-window-container gap-2 sm:px-4 sm:py-2 relative"
@@ -721,7 +797,7 @@ const ChatWindow = () => {
                             <span className="text-sm">Back to your chats</span>
                         </div>
                     )}
-                    <span
+                    {/* <span
                         className={`font-semibold size-full flex flex-col justify-center items-center rounded-xl  p-4 text-gray-500 text-xl ${
                             isGroupMember || !contentVisible
                                 ? "opacity-100 bg-primary-white"
@@ -733,7 +809,7 @@ const ChatWindow = () => {
                             className={"size-[100px]"}
                         />
                         You are not currently a member of this group.
-                    </span>
+                    </span> */}
                 </div>
             )}
             {isLoading ? (

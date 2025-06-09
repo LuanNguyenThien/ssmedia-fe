@@ -2,8 +2,10 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { icons } from "@assets/assets";
 import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
-
+import { Utils } from "@/services/utils/utils.service";
+import { useNavigate } from "react-router-dom";
 const SearchInputMb = ({ searchTerm, setSearchTerm, handleSearchKeyPress }) => {
+    const navigate = useNavigate();
     const [isExpanded, setIsExpanded] = useState(false);
     const inputRef = useRef(null);
     const containerRef = useRef(null);
@@ -11,6 +13,15 @@ const SearchInputMb = ({ searchTerm, setSearchTerm, handleSearchKeyPress }) => {
 
     const toggleSearch = (event) => {
         event.stopPropagation();
+
+        if (Utils.isMobileDevice()) {
+            navigate("search", {
+                state: {
+                    query: "common",
+                },
+            });
+        }
+        
         setIsExpanded((prev) => !prev);
         if (!isExpanded) {
             setTimeout(() => inputRef.current?.focus(), 100);
