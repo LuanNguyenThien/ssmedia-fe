@@ -107,6 +107,11 @@ class UserService {
         return response;
     }
 
+    async reportUser(body) {
+        const response = await axios.post(`/reportprofile`, body);
+        return response;
+    }
+
     async ChangeStatusAppeal(body) {
         const response = await axios.put(`/admin/appeal/status`, body);
         return response;

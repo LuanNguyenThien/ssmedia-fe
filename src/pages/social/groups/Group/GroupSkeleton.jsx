@@ -1,9 +1,9 @@
 const GroupSkeleton = () => {
     return (
-        <div className="bg-background-blur h-full w-full col-span-full rounded-t-3xl p-6">
+        <div className="bg-background-blur h-full w-full col-span-full rounded-t-3xl p-6 lg:px-[10%]">
             <div className="animate-skeleton-animation space-y-4">
                 {/* Cover Image Skeleton */}
-                <div className="h-48 bg-gray-300 rounded-lg"></div>
+                <div className="h-72 bg-gray-300 rounded-lg"></div>
                 
                 {/* Header Section Skeleton */}
                 <div className="bg-white rounded-lg p-6 shadow-sm">
