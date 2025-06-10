@@ -807,7 +807,7 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
       config: {
         iceServers: [
           { urls: "stun:stun.l.google.com:19302" },
-          // { urls: 'turn:<PUBLIC_IP>:3478', username: 'test', credential: 'test123' }
+          { urls: 'turn:13.229.212.244:3478', username: 'luan', credential: 'luan921458' }
         ],
       },
     })
@@ -846,7 +846,7 @@ const VideoCallWindow = ({ callData, stream, onClose, popupWindowRef }) => {
       config: {
         iceServers: [
           { urls: "stun:stun.l.google.com:19302" },
-          // { urls: 'turn:<PUBLIC_IP>:3478', username: 'test', credential: 'test123' }
+          { urls: 'turn:13.229.212.244:3478', username: 'luan', credential: 'luan921458' }
         ],
       },
     })
