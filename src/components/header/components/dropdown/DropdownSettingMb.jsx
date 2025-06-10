@@ -4,9 +4,12 @@ import { FaQuestion, FaUsers } from "react-icons/fa";
 import { RiGroupLine } from "react-icons/ri";
 import { BsBookmarkFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getQuestions } from "@redux/api/posts";
 import { SettingUtils } from "@/services/utils/setting-utils.service";
 
 const DropdownSettingMb = ({ id, name, onLogout, ref }) => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const navigateToPage = (pageName, url) => {
@@ -21,6 +24,9 @@ const DropdownSettingMb = ({ id, name, onLogout, ref }) => {
         } else if (pageName === "Sign out") {
             onLogout && onLogout();
         } else {
+            if (pageName === "Questions") {
+                dispatch(getQuestions());
+            }
             navigate(`/app/social${url}`);
         }
     };

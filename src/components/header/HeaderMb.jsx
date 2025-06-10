@@ -1,3 +1,4 @@
+import { getPosts, getQuestions } from "@redux/api/posts";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatUtils } from "@services/utils/chat-utils.service";
 import NotificationPermissionPrompt from "@components/call-noti/NotificationPermissionPrompt";
@@ -76,6 +77,8 @@ const HeaderMb = () => {
     };
 
     useEffectOnce(() => {
+        if (location.pathname === "/app/social/streams") dispatch(getPosts());
+        else dispatch(getQuestions());
         ChatUtils.usersOnlines();
         socketService?.socket.emit("setup", { userId: storedUsername });
     }, []);
