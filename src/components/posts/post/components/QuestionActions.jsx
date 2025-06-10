@@ -74,7 +74,7 @@ const QuestionActions = ({ post }) => {
                     <button
                         aria-label="Answer this question"
                         className=" py-1 px-2 flex items-center justify-center w-auto h-full rounded-lg focus:outline-none 
-                    transition-all duration-200 ease-linear border border-gray-300 hover:text-primary gap-1"
+                    transition-all duration-200 ease-linear border text-primary-black/50 border-gray-300 hover:text-primary gap-1"
                         onClick={openAnswerForm}
                         type="button"
                         tabIndex={0}

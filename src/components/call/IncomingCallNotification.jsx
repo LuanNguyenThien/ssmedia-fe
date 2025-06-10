@@ -4,6 +4,7 @@ import logo from "@assets/logo.png";
 import ringtoneSound from "@assets/sounds/ringtone.mp3";
 import { socketService } from "@services/socket/socket.service";
 import useIsMobile from "@hooks/useIsMobile";
+import { Utils } from "@/services/utils/utils.service";
 
 const IncomingCallNotification = ({ callData, onAccept, onReject }) => {
     const audioRef = useRef(null);
@@ -22,7 +23,7 @@ const IncomingCallNotification = ({ callData, onAccept, onReject }) => {
                         console.error("Autoplay prevented:", error);
                     });
                 }
-                if(!isMobile) {
+                if(!Utils.isMobileDevice()) {
                     showNotification();
                 }
             } else {

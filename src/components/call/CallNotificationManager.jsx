@@ -61,17 +61,34 @@ const CallNotificationManager = () => {
             
             // Mở cửa sổ cuộc gọi mới
             const callWindow = window.open(
-                "",
+                "about:blank",
                 "_blank",
                 "width=800,height=600,top=100,left=100,scrollbars=no"
             );
-            
-            // Thiết lập tiêu đề và style cho cửa sổ
-            callWindow.document.title = `${callData.callType === "video" ? "Video" : "Voice"} Call`;
-            callWindow.document.body.style.margin = '0';
-            callWindow.document.body.style.overflow = 'hidden';
-            callWindow.document.body.innerHTML = '<div id="call-root"></div>';
-            
+
+            if (!callWindow) {
+                alert("Popup bị chặn. Vui lòng cho phép popup cho trang web này.");
+                return;
+            }
+
+            callWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${callData.callType === "video" ? "Video" : "Voice"} Call</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        body { margin: 0; padding: 0; overflow: hidden; background-color: #000; }
+                        #call-root { width: 100%; height: 100%; }
+                    </style>
+                </head>
+                <body>
+                    <div id="call-root"></div>
+                </body>
+                </html>
+            `);
+            callWindow.document.close();
+
             try {
                 // Lấy stream của người dùng trong ngữ cảnh của cửa sổ mới
                 const stream = await callWindow.navigator.mediaDevices.getUserMedia({

@@ -13,226 +13,236 @@ import { ImageUtils } from "@services/utils/image-utils.service";
 import loadable from "@loadable/component";
 
 const EmojiPickerComponent = loadable(
-  () => import("@components/posts/comments/comment-input/EmojiPicker"),
-  {
-    fallback: <p id="loading">Loading...</p>,
-  }
+    () => import("@components/posts/comments/comment-input/EmojiPicker"),
+    {
+        fallback: <p id="loading">Loading...</p>,
+    }
 );
 
-const CommentInputBox = ({ post, parentId = null, onCommentAdded, placeholder = "Write your message...", className = "" }) => {
-  const { profile } = useSelector((state) => state.user);
-  const [comment, setComment] = useState("");
-  const [showEmojiContainer, setShowEmojiContainer] = useState(false);
-  const [showImagePreview, setShowImagePreview] = useState(false);
-  const [file, setFile] = useState();
-  const [base64File, setBase64File] = useState("");
-  const [isZoomed, setIsZoomed] = useState(false);
-  const fileInputRef = useRef();
-  const commentInputRef = useRef(null);
-  const dispatch = useDispatch();
+const CommentInputBox = ({
+    post,
+    parentId = null,
+    onCommentAdded,
+    placeholder = "Write your message...",
+    className = "",
+}) => {
+    const { profile } = useSelector((state) => state.user);
+    const [comment, setComment] = useState("");
+    const [showEmojiContainer, setShowEmojiContainer] = useState(false);
+    const [showImagePreview, setShowImagePreview] = useState(false);
+    const [file, setFile] = useState();
+    const [base64File, setBase64File] = useState("");
+    const [isZoomed, setIsZoomed] = useState(false);
+    const fileInputRef = useRef();
+    const commentInputRef = useRef(null);
+    const dispatch = useDispatch();
 
-  const addToPreview = async (file) => {
-    let type;
-    if (file.type.startsWith("image/")) {
-      type = "image";
-    } else if (file.type.startsWith("video/")) {
-      type = "video";
-    } else {
-      window.alert(`File ${file.name} is not a valid image or video.`);
-      return;
-    }
-    ImageUtils.checkFile(file, type);
-    setFile(URL.createObjectURL(file));
-    const result = await ImageUtils.readAsBase64(file);
-    setBase64File(result);
-    setShowImagePreview(true);
-    setShowEmojiContainer(false);
-  };
-
-  const fileInputClicked = () => {
-    fileInputRef.current.click();
-  };
-
-  const reset = () => {
-    setBase64File("");
-    setShowImagePreview(false);
-    setShowEmojiContainer(false);
-    setFile("");
-  };
-
-  const submitComment = async (event) => {
-    event.preventDefault();
-    try {
-      const updatedPost = cloneDeep(post);
-      updatedPost.commentsCount += 1;
-      const commentBody = {
-        userTo: updatedPost?.userId,
-        postId: updatedPost?._id,
-        comment: comment.trim(),
-        selectedImage: base64File || "",
-        commentsCount: updatedPost.commentsCount,
-        profilePicture: profile?.profilePicture,
-        parentId,
-      };
-      socketService?.socket?.emit("comment", commentBody);
-      await postService.addComment(commentBody);
-      reset();
-      setComment("");
-      if (onCommentAdded) {
-        onCommentAdded();
-      }
-    } catch (error) {
-      Utils.dispatchNotification(
-        error.response?.data?.message || "Đã xảy ra lỗi",
-        "error",
-        dispatch
-      );
-    }
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      if (comment.trim() || showImagePreview) {
-        submitComment(event);
-      }
-    }
-    
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      if (showEmojiContainer) {
+    const addToPreview = async (file) => {
+        let type;
+        if (file.type.startsWith("image/")) {
+            type = "image";
+        } else if (file.type.startsWith("video/")) {
+            type = "video";
+        } else {
+            window.alert(`File ${file.name} is not a valid image or video.`);
+            return;
+        }
+        ImageUtils.checkFile(file, type);
+        setFile(URL.createObjectURL(file));
+        const result = await ImageUtils.readAsBase64(file);
+        setBase64File(result);
+        setShowImagePreview(true);
         setShowEmojiContainer(false);
-      } else if (showImagePreview) {
-        setFile("");
+    };
+
+    const fileInputClicked = () => {
+        fileInputRef.current.click();
+    };
+
+    const reset = () => {
         setBase64File("");
         setShowImagePreview(false);
-      } else if (comment) {
-        setComment("");
-      }
-    }
-  };
+        setShowEmojiContainer(false);
+        setFile("");
+    };
 
-  useEffect(() => {
-    if (commentInputRef?.current) {
-      commentInputRef.current.focus();
-    }
-  }, []);
+    const submitComment = async (event) => {
+        event.preventDefault();
+        try {
+            const updatedPost = cloneDeep(post);
+            updatedPost.commentsCount += 1;
+            const commentBody = {
+                userTo: updatedPost?.userId,
+                postId: updatedPost?._id,
+                comment: comment.trim(),
+                selectedImage: base64File || "",
+                commentsCount: updatedPost.commentsCount,
+                profilePicture: profile?.profilePicture,
+                parentId,
+            };
+            socketService?.socket?.emit("comment", commentBody);
+            await postService.addComment(commentBody);
+            reset();
+            setComment("");
+            if (onCommentAdded) {
+                onCommentAdded();
+            }
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response?.data?.message || "Đã xảy ra lỗi",
+                "error",
+                dispatch
+            );
+        }
+    };
 
-  return (
-    <>
-      <div className="w-full max-w-full mx-auto mt-2">
-        {showEmojiContainer && (
-          <div className=" w-2xl max-w-1/2 z-10">
-            <EmojiPickerComponent
-              onEmojiClick={(emoji) => {
-                setComment((prev) => prev + emoji.emoji);
-              }}
-              onClose={() => setShowEmojiContainer(false)}
-            />
-          </div>
-        )}
-        {showImagePreview && (
-          <div className="relative w-full z-10">
-            <ImagePreview
-              image={file}
-              onClick={() => setIsZoomed(true)}
-              onRemoveImage={() => {
+    const handleKeyDown = (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            if (comment.trim() || showImagePreview) {
+                submitComment(event);
+            }
+        }
+
+        if (event.key === "Escape") {
+            event.preventDefault();
+            if (showEmojiContainer) {
+                setShowEmojiContainer(false);
+            } else if (showImagePreview) {
                 setFile("");
                 setBase64File("");
                 setShowImagePreview(false);
-              }}
-            />
-          </div>
-        )}
-        <div className={`relative flex items-center gap-2 p-1 bg-slate-50 rounded-2xl ${className}`}>
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder={placeholder}
-              className="w-full bg-transparent pl-4 py-2 outline-none text-gray-600 placeholder:text-gray-500 focus:ring-0"
-              ref={commentInputRef}
-              name="comment"
-              value={comment}
-              onChange={(event) => setComment(event.target.value)}
-              onKeyDown={handleKeyDown}
-              onFocus={() => {}}
-              onBlur={() => {}}
-            />
-          </div>
-          <div className="flex items-center gap-2 pr-2">
-            <Input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onClick={() => {
-                if (fileInputRef.current) {
-                  fileInputRef.current.value = null;
-                }
-              }}
-              handleChange={(event) => addToPreview(event.target.files[0])}
-            />
+            } else if (comment) {
+                setComment("");
+            }
+        }
+    };
 
-            <button
-              type="button"
-              onClick={() => {
-                fileInputClicked();
-                setShowEmojiContainer(false);
-              }}
-              className="flex items-center justify-center text-blue-500 h-8 w-8 rounded-full hover:bg-blue-50 transition-colors"
-            >
-              <Image className="h-5 w-5" />
-              <span className="sr-only">Upload image</span>
-            </button>
+    useEffect(() => {
+        if (commentInputRef?.current) {
+            commentInputRef.current.focus();
+        }
+    }, []);
 
-            <button
-              type="button"
-              className="flex items-center justify-center text-amber-500 h-8 w-8 rounded-full hover:bg-amber-50 transition-colors"
-              onClick={() => {
-                setShowEmojiContainer(!showEmojiContainer);
-                setShowImagePreview(false);
-              }}
-            >
-              <SmilePlus className="h-5 w-5" />
-              <span className="sr-only">Add emoji</span>
-            </button>
+    return (
+        <>
+            <div className="w-full max-w-full mx-auto mt-2">
+                {showEmojiContainer && (
+                    <div className=" w-2xl max-w-1/2 z-10">
+                        <EmojiPickerComponent
+                            onEmojiClick={(emoji) => {
+                                setComment((prev) => prev + emoji.emoji);
+                            }}
+                            onClose={() => setShowEmojiContainer(false)}
+                        />
+                    </div>
+                )}
+                {showImagePreview && (
+                    <div className="relative w-full z-10">
+                        <ImagePreview
+                            image={file}
+                            onClick={() => setIsZoomed(true)}
+                            onRemoveImage={() => {
+                                setFile("");
+                                setBase64File("");
+                                setShowImagePreview(false);
+                            }}
+                        />
+                    </div>
+                )}
+                <div
+                    className={`relative flex items-center gap-2 p-1 bg-slate-50 rounded-2xl ${className}`}
+                >
+                    <div className="flex-1">
+                        <input
+                            type="text"
+                            placeholder={placeholder}
+                            className="w-full bg-transparent pl-4 py-2 outline-none text-gray-600 placeholder:text-gray-500 focus:ring-0"
+                            ref={commentInputRef}
+                            name="comment"
+                            value={comment}
+                            onChange={(event) => setComment(event.target.value)}
+                            onKeyDown={handleKeyDown}
+                            onFocus={() => {}}
+                            onBlur={() => {}}
+                        />
+                    </div>
+                    <div className="flex items-center gap-2 pr-2">
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            style={{ display: "none" }}
+                            onClick={() => {
+                                if (fileInputRef.current) {
+                                    fileInputRef.current.value = null;
+                                }
+                            }}
+                            handleChange={(event) =>
+                                addToPreview(event.target.files[0])
+                            }
+                        />
 
-            <button
-              type="button"
-              className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white h-9 w-9 rounded-full disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
-              onClick={submitComment}
-              disabled={!comment && !showImagePreview}
-            >
-              <Send className="h-4 w-4" />
-              <span className="sr-only">Send message</span>
-            </button>
-          </div>
-        </div>
-      </div>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                fileInputClicked();
+                                setShowEmojiContainer(false);
+                            }}
+                            className="flex items-center justify-center text-blue-500 h-8 w-8 rounded-full hover:bg-blue-50 transition-colors"
+                        >
+                            <Image className="h-5 w-5" />
+                            <span className="sr-only">Upload image</span>
+                        </button>
 
-      {isZoomed && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-          onClick={() => setIsZoomed(false)}
-        >
-          <img
-            src={file}
-            alt="zoomed"
-            className="max-w-full max-h-full rounded-lg shadow-lg transition-transform duration-300 scale-100"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
-    </>
-  );
+                        <button
+                            type="button"
+                            className="flex items-center justify-center text-amber-500 h-8 w-8 rounded-full hover:bg-amber-50 transition-colors"
+                            onClick={() => {
+                                setShowEmojiContainer(!showEmojiContainer);
+                                setShowImagePreview(false);
+                            }}
+                        >
+                            <SmilePlus className="h-5 w-5" />
+                            <span className="sr-only">Add emoji</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white h-9 w-9 rounded-full disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
+                            onClick={submitComment}
+                            disabled={!comment && !showImagePreview}
+                        >
+                            <Send className="h-4 w-4" />
+                            <span className="sr-only">Send message</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {isZoomed && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+                    onClick={() => setIsZoomed(false)}
+                >
+                    <img
+                        src={file}
+                        alt="zoomed"
+                        className="max-w-full max-h-full rounded-lg shadow-lg transition-transform duration-300 scale-100"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
+        </>
+    );
 };
 
 CommentInputBox.propTypes = {
-  post: PropTypes.object,
-  parentId: PropTypes.string,
-  onCommentAdded: PropTypes.func,
-  placeholder: PropTypes.string,
-  className: PropTypes.string
+    post: PropTypes.object,
+    parentId: PropTypes.string,
+    onCommentAdded: PropTypes.func,
+    placeholder: PropTypes.string,
+    className: PropTypes.string,
 };
 
 export default CommentInputBox;

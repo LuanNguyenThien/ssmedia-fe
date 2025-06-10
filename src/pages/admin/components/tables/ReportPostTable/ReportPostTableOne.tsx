@@ -11,22 +11,19 @@ import React, { useState, useCallback, useEffect } from "react";
 import { postService } from "@services/api/post/post.service";
 import useEffectOnce from "@hooks/useEffectOnce";
 import { useDispatch } from "react-redux";
-import reducer, {
-  addNotification,
-  
-} from "@redux/reducers/notifications/notification.reducer";
+import { addNotification } from "@redux/reducers/notifications/notification.reducer";
 import { useNavigate } from "react-router-dom";
 import { ProfileUtils } from "@services/utils/profile-utils.service";
+
 interface ReportData {
   reportId: string;
-
   postId: string;
   user: {
     image: string;
     username: string;
     role: string;
-    _id: string; // Assuming user has an _id field
-    uId: string; // Assuming user has a uid field
+    _id: string;
+    uId: string;
   };
   content: string;
   status: string;
@@ -43,48 +40,47 @@ export default function BasicTableOne() {
   const [itemsPerPage] = useState(5);
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
   const dispatch = useDispatch();
-    const getAllReports = useCallback(async () => {
-      try {
-        setLoading(true);
-        const response = await postService.getAllReportPost(currentPage);
-        const rawReports = response.data.reportposts.reportposts;
-        console.log("Raw", rawReports);
-        const mappedReports: ReportData[] = rawReports.map((r: any) => ({
-          reportId: r.report._id,
-          postId: r.report.postId,
-          user: {
-            image: r.user?.profilePicture || "/default-avatar.jpg",
-            username: r.user?.username,
-            role: "Member",
-            _id: r.user?._id || "", 
-            uId: r.user?.uId || "", 
-          },
-          content: r.report.content,
-          post: r.post?.post ?? "Bài viết không tồn tại",
-          status: r.report.status,
-          reportDate: new Date(r.report.createdAt).toLocaleDateString("vi-VN"),
-        }));
 
-        setReports(mappedReports);
-        setTotal(response.data.reportposts.total);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching reports:", error);
-        setLoading(false);
-      }
-    }, [currentPage]);
+  const getAllReports = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await postService.getAllReportPost(currentPage);
+      const rawReports = response.data.reportposts.reportposts;
+      const mappedReports: ReportData[] = rawReports.map((r: any) => ({
+        reportId: r.report._id,
+        postId: r.report.postId,
+        user: {
+          image: r.user?.profilePicture || "/default-avatar.jpg",
+          username: r.user?.username,
+          role: "Member",
+          _id: r.user?._id || "",
+          uId: r.user?.uId || "",
+        },
+        content: r.report.content,
+        post: r.post?.post ?? "Bài viết không tồn tại",
+        status: r.report.status,
+        reportDate: new Date(r.report.createdAt).toLocaleDateString("vi-VN"),
+      }));
 
-    useEffectOnce(() => {
-      getAllReports();
-    });
+      setReports(mappedReports);
+      setTotal(response.data.reportposts.total);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching reports:", error);
+      setLoading(false);
+    }
+  }, [currentPage]);
 
-    useEffect(() => {
-      getAllReports();
-    }, [getAllReports]);
+  useEffectOnce(() => {
+    getAllReports();
+  });
+
+  useEffect(() => {
+    getAllReports();
+  }, [getAllReports]);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
-    console.log("Response:", reports);
   };
 
   const hirePost = async (reportId: string, postId: string, reason: string) => {
@@ -92,21 +88,16 @@ export default function BasicTableOne() {
       await postService.ChangeStatus({ reportId, status: "reviewed" });
       await postService.HirePost({ postId, reason });
       dispatch(
-                    addNotification({
-                      message: "ban success",
-                      type: "success",
-                    })
-                  );
+        addNotification({ message: "Ẩn bài viết thành công", type: "success" })
+      );
       getAllReports();
-    } catch (error) {
-      console.error("Ban user thất bại:", error.response?.data.message);
+    } catch (error: any) {
       dispatch(
         addNotification({
-          message: error.response?.data.message || "Ban failed",
+          message: error.response?.data.message || "Ẩn bài viết thất bại",
           type: "error",
         })
       );
-   
     }
   };
 
@@ -115,7 +106,6 @@ export default function BasicTableOne() {
       await postService.ChangeStatus({ reportId, status: "reviewed" });
       getAllReports();
     } catch (error) {
-      console.error("Duyệt thất bại:", error);
       alert("Duyệt thất bại");
     }
   };
@@ -125,42 +115,42 @@ export default function BasicTableOne() {
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
       <div className="max-h-[450px] overflow-y-auto overflow-x-auto">
-        <Table className="table-fixed min-w-full">
-          <TableHeader className="border-b border-gray-100">
+        <Table className="min-w-full table-fixed">
+          <TableHeader className="sticky top-0 z-10 bg-white border-b border-gray-100">
             <TableRow>
               <TableCell
                 isHeader
-                className="w-[180px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
+                className="w-[180px] px-5 py-3 text-start text-theme-xs font-medium text-gray-500"
               >
                 User
               </TableCell>
               <TableCell
                 isHeader
-                className="w-[300px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
+                className="w-[300px] px-5 py-3 text-start text-theme-xs font-medium text-gray-500"
               >
                 Post
               </TableCell>
               <TableCell
                 isHeader
-                className="w-[200px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
+                className="w-[200px] px-5 py-3 text-start text-theme-xs font-medium text-gray-500"
               >
                 Reason
               </TableCell>
               <TableCell
                 isHeader
-                className="w-[120px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
+                className="w-[120px] px-5 py-3 text-start text-theme-xs font-medium text-gray-500"
               >
                 Status
               </TableCell>
               <TableCell
                 isHeader
-                className="w-[150px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
+                className="w-[150px] px-5 py-3 text-start text-theme-xs font-medium text-gray-500"
               >
                 Report Date
               </TableCell>
               <TableCell
                 isHeader
-                className="w-[200px] px-5 py-3 font-medium text-gray-500 text-start text-theme-xs"
+                className="w-[200px] px-5 py-3 text-start text-theme-xs font-medium text-gray-500"
               >
                 Actions
               </TableCell>
@@ -174,12 +164,12 @@ export default function BasicTableOne() {
                 onClick={() => setSelectedReport(report)}
                 className="cursor-pointer hover:bg-gray-50"
               >
-                <TableCell className="px-5 py-4 sm:px-6 text-start">
+                <TableCell className="px-5 py-4 text-start">
                   <div
                     className="flex items-center gap-3"
                     onClick={(e) => {
                       e.stopPropagation();
-                      ProfileUtils.navigateToProfileAdmin(report.user)
+                      ProfileUtils.navigateToProfileAdmin(report.user);
                     }}
                   >
                     <div className="w-10 h-10 overflow-hidden rounded-full">

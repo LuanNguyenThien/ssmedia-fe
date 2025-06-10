@@ -1,12 +1,15 @@
 import { IoIosSettings } from "react-icons/io";
 import { PiSignOutBold } from "react-icons/pi";
-import { FaUsers } from "react-icons/fa";
+import { FaQuestion, FaUsers } from "react-icons/fa";
 import { RiGroupLine } from "react-icons/ri";
 import { BsBookmarkFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getQuestions } from "@redux/api/posts";
 import { SettingUtils } from "@/services/utils/setting-utils.service";
 
 const DropdownSettingMb = ({ id, name, onLogout, ref }) => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const navigateToPage = (pageName, url) => {
@@ -21,11 +24,19 @@ const DropdownSettingMb = ({ id, name, onLogout, ref }) => {
         } else if (pageName === "Sign out") {
             onLogout && onLogout();
         } else {
+            if (pageName === "Questions") {
+                dispatch(getQuestions());
+            }
             navigate(`/app/social${url}`);
         }
     };
 
     const menuItems = [
+        {
+            name: "Questions",
+            icon: <FaQuestion className="text-3xl text-gray-500" />,
+            url: "/questions",
+        },
         {
             name: "People",
             icon: <FaUsers className="text-4xl text-gray-500" />,

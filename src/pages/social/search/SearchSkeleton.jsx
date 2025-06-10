@@ -1,7 +1,7 @@
 // SearchSkeleton.tsx
 export default function SearchSkeleton() {
     return (
-        <div className="p-6 size-full max-w-full mx-auto space-y-8">
+        <div className=" p-1 sm:p-6 size-full max-w-full mx-auto space-y-8">
             {/* Users Section */}
             <div>
                 <h2 className="text-xl font-semibold mb-4">People</h2>

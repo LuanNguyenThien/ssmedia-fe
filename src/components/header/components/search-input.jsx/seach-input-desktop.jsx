@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { icons } from "@assets/assets";
 import { Image, X } from "lucide-react";
+import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 
 const SearchInputDesktop = ({
     onClick,
@@ -50,16 +51,23 @@ const SearchInputDesktop = ({
 
     return (
         <div className="relative">
-            <div className="relative rounded-xl max-w-2/3 overflow-hidden shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]">
-                <div className="h-full absolute flex items-center left-4 text-gray-500">
-                    <img src={icons.search} alt="" className="w-6 h-6" />
+            <div className="relative flex items-center py-3 rounded-xl max-w-2/3 overflow-hidden shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]">
+                <div
+                    title="Search"
+                    onClick={onClick}
+                    className="h-full absolute flex items-center left-4 cursor-pointer hover:scale-105 transition-all duration-300"
+                >
+                    <DynamicSVG
+                        svgData={icons.search}
+                        className={`size-6 object-cover`}
+                    />
                 </div>
                 <input
                     onKeyDown={(e) => e.key === "Enter" && onClick()}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Find friends, communicate..."
-                    className="input border-gray-300 pl-12 pr-9 py-3 rounded-xl w-72 transition-all duration-300 focus:w-96 outline-none ring-0"
+                    className="input border-gray-300 pl-12 pr-9 h-6 rounded-xl w-72 transition-all duration-300 focus:w-96 outline-none ring-0"
                     name="search"
                     type="search"
                 />
@@ -69,10 +77,11 @@ const SearchInputDesktop = ({
                     <div
                         onClick={fileInputClicked}
                         className="size-6 flex place-content-center cursor-pointer transition-all duration-300 hover:scale-105"
+                        title="Search by image"
                     >
                         <img
                             src={icons.search_image}
-                            alt=""
+                            alt="Search by image"
                             className="size-full object-cover"
                         />
                     </div>

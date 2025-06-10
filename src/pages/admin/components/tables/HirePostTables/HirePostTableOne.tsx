@@ -6,7 +6,6 @@ import {
   TableRow,
 } from "../../ui/table";
 
-import Badge from "../../ui/badge/Badge";
 import React, { useState, useCallback, useEffect } from "react";
 import { postService } from "@services/api/post/post.service";
 import useEffectOnce from "@hooks/useEffectOnce";
@@ -38,10 +37,7 @@ export default function BasicTableOne() {
       setLoading(true);
       const response = await postService.GetHirePost(currentPage);
       console.log("response", response);
-
-      
-      const rawReports = response.data.hiddenPosts; 
-      console.log("rawReports", rawReports);
+      const rawReports = response.data.hiddenPosts.posts;
       const mappedReports: ReportData[] = rawReports.map((r: any) => ({
         reportId: r._id,
         postId: r._id,
@@ -51,13 +47,12 @@ export default function BasicTableOne() {
           role: "Member",
         },
         content: r.hiddenReason,
-        
         post: r.post,
         reportDate: new Date(r.hiddenAt).toLocaleDateString("vi-VN"),
       }));
 
       setReports(mappedReports);
-      setTotal(response.data.totalReports); 
+      setTotal(response.data.hiddenPosts.total);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching reports:", error);
@@ -66,16 +61,14 @@ export default function BasicTableOne() {
   }, [currentPage]);
 
   const UnHire = async (postId: string) => {
-        try {
-          
-          await postService.UnHirePost({ postId});
-        
-          getAllReports(); 
-        } catch (error) {
-          console.error("Ban user thất bại:", error);
-          alert("Ban user thất bại");
-        }
-      };
+    try {
+      await postService.UnHirePost({ postId });
+      getAllReports();
+    } catch (error) {
+      console.error("Ban user thất bại:", error);
+      alert("Ban user thất bại");
+    }
+  };
 
   useEffectOnce(() => {
     getAllReports();
@@ -93,117 +86,134 @@ export default function BasicTableOne() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full h-[350px] max-sm:max-h-[calc(100vh-350px)] overflow-x-auto">
-        <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-            <TableRow>
+      <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
+        <Table className="min-w-full table-fixed border-collapse">
+          <TableHeader className="sticky top-0 z-10 bg-white border-b border-gray-100">
+            <TableRow className="dark:bg-gray-800 sticky top-0">
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs   dark:text-gray-400"
               >
                 User
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs  dark:text-gray-400"
               >
                 Post
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs  dark:text-gray-400"
               >
                 Reason
               </TableCell>
-
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs  dark:text-gray-400"
               >
                 HireDate
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs  dark:text-gray-400"
               >
                 Actions
               </TableCell>
             </TableRow>
           </TableHeader>
 
-          <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {reports.map((report) => (
-              <TableRow
-                key={report.reportId}
-                onClick={() => setSelectedReport(report)}
-                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.05]"
-              >
-                <TableCell className="px-5 py-4 sm:px-6 text-start">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 overflow-hidden rounded-full">
-                      <img
-                        className="w-full h-full rounded-full object-cover"
-                        src={report.user.image}
-                        alt={report.user.name}
-                      />
-                    </div>
-                    <div>
-                      <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {report.user.name}
-                      </span>
-                      <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                        {report.user.role}
-                      </span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <a
-                    href={`/app/social/post/${report.postId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {report.post}
-                  </a>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {report.content}
-                </TableCell>
-
-                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {report.reportDate}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-start">
-                  <div className="flex gap-2">
-                    <button
-                      className="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        UnHire(report.postId); // Gọi hàm UnHire với postId
-                      }}
-                    >
-                      UnHide
-                    </button>
-                  </div>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center py-10 text-theme-xs "
+                >
+                  Loading...
                 </TableCell>
               </TableRow>
-            ))}
+            ) : reports.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center py-10 text-theme-xs  text-gray-500"
+                >
+                  No reports found
+                </TableCell>
+              </TableRow>
+            ) : (
+              reports.map((report) => (
+                <TableRow
+                  key={report.reportId}
+                  className="cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.05]"
+                  onClick={() => setSelectedReport(report)}
+                >
+                  <TableCell className="px-5 py-4 sm:px-6 text-start text-theme-xs ">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 overflow-hidden rounded-full">
+                        <img
+                          className="w-full h-full rounded-full object-cover"
+                          src={report.user.image}
+                          alt={report.user.name}
+                        />
+                      </div>
+                      <div>
+                        <span className="block font-medium text-gray-800 dark:text-white/90 text-theme-xs ">
+                          {report.user.name}
+                        </span>
+                        <span className="block text-gray-500 dark:text-gray-400 text-theme-xs ">
+                          {report.user.role}
+                        </span>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-xs  dark:text-gray-400">
+                    <a
+                      href={`/app/social/post/${report.postId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {report.post}
+                    </a>
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-xs  dark:text-gray-400">
+                    {report.content}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-theme-xs  dark:text-gray-400">
+                    {report.reportDate}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-start text-theme-xs ">
+                    <div className="flex gap-2">
+                      <button
+                        className="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          UnHire(report.postId);
+                        }}
+                      >
+                        UnHide
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-end p-4 gap-2">
+      <div className="flex justify-end p-4 gap-2 flex-wrap">
         {Array.from({ length: totalPages }, (_, index) => (
           <button
             key={index + 1}
-            className={`px-3 py-1 rounded ${
+            className={`px-3 py-1 rounded text-theme-xs  ${
               currentPage === index + 1
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
-            }`}
+            } hover:bg-blue-500 hover:text-white transition`}
             onClick={() => handlePageChange(index + 1)}
           >
             {index + 1}
