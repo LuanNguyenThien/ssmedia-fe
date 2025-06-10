@@ -396,14 +396,14 @@ export default function AddAnswer({ questionId }) {
 
                                 {/* Modal Box Content */}
                                 <div
-                                    className={`${isMobile ? "" : "sm:ml-11"}`}
+                                    className={`${isMobile ? "" : ""}`}
                                 >
                                     <ModalBoxContent />
                                 </div>
 
                                 {/* Editor Container */}
                                 <div
-                                    className={`${isMobile ? "" : "sm:ml-11"}`}
+                                    className={`${isMobile ? "" : ""}`}
                                 >
                                     <div
                                         className={`border border-gray-200 rounded-xl overflow-hidden ${
