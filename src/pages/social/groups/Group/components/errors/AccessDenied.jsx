@@ -4,7 +4,7 @@ import { FaLock, FaClock } from "react-icons/fa";
 const AccessDenied = ({ group, onJoinGroup, membershipStatus }) => {
     return (
         <div className="bg-background-blur h-full w-full col-span-full rounded-t-3xl p-6">
-            <div className="max-w-2xl mx-auto text-center py-12 px-4">
+            <div className="bg-primary-white rounded-md max-w-2xl mx-auto text-center py-12 px-4">
                 <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <FaLock className="text-gray-400 text-3xl" />
                 </div>

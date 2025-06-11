@@ -1,13 +1,19 @@
 import PropTypes from "prop-types";
-import DiscussionTab from "./components/DiscussionTab";
-import MembersTab from "./components/MembersTab";
-import MediaTab from "./components/MediaTab";
+import DiscussionTab from "./components/DiscussionTab/DiscussionTab";
+import MembersTab from "./components/MembersTab/MembersTab";
 import AboutTab from "./components/AboutTab";
-import ApprovalTab from "./components/ApprovalTab";
+import ApprovalTab from "./components/MemberRequests/MemberRequests";
+import PendingPosts from "./components/PendingPosts";
 
-const GroupContent = ({ group, activeTab, canViewContent, onJoinGroup, membershipStatus }) => {
+const GroupContent = ({
+    group,
+    activeTab,
+    canViewContent,
+    onJoinGroup,
+    membershipStatus,
+}) => {
     const isGroupAdmin = membershipStatus === "admin";
-    
+
     // Render the appropriate tab content
     const renderContent = () => {
         switch (activeTab) {
@@ -21,23 +27,27 @@ const GroupContent = ({ group, activeTab, canViewContent, onJoinGroup, membershi
                 );
             case "members":
                 return (
-                    <MembersTab group={group} canViewContent={canViewContent} />
+                    <MembersTab
+                        isGroupAdmin={isGroupAdmin}
+                        group={group}
+                        canViewContent={canViewContent}
+                    />
                 );
-            case "approvals":
+            case "approvals-members":
                 return (
-                    <ApprovalTab 
-                        group={group} 
-                        canViewContent={canViewContent} 
+                    <ApprovalTab
+                        group={group}
+                        canViewContent={canViewContent}
                         isGroupAdmin={isGroupAdmin}
                     />
                 );
-            case "media":
+            case "approvals-posts":
                 return (
-                  <MediaTab
-                    group={group}
-                    canViewContent={canViewContent}
-                    onJoinGroup={onJoinGroup}
-                  />
+                    <PendingPosts
+                        group={group}
+                        canViewContent={canViewContent}
+                        onJoinGroup={onJoinGroup}
+                    />
                 );
             case "about":
                 return <AboutTab group={group} />;
@@ -79,11 +89,6 @@ ApprovalTab.propTypes = {
     canViewContent: PropTypes.bool.isRequired,
     isGroupAdmin: PropTypes.bool.isRequired,
 };
-
-MediaTab.propTypes = {
-    canViewContent: PropTypes.bool.isRequired,
-};
-
 AboutTab.propTypes = {
     group: PropTypes.object.isRequired,
 };

@@ -1,7 +1,19 @@
 import PropTypes from "prop-types";
-import { FaComments, FaUsers, FaImages, FaInfoCircle, FaUserCheck } from "react-icons/fa";
+import {
+    FaComments,
+    FaUsers,
+    FaImages,
+    FaInfoCircle,
+    FaUserCheck,
+} from "react-icons/fa";
+import { useMemo } from "react";
 
-const GroupTabs = ({ activeTab, onTabChange, membershipStatus, pendingRequestsCount = 0 }) => {
+const GroupTabs = ({
+    activeTab,
+    onTabChange,
+    membershipStatus,
+    pendingRequestsCount = 0,
+}) => {
     const tabs = [
         {
             id: "discussion",
@@ -16,17 +28,17 @@ const GroupTabs = ({ activeTab, onTabChange, membershipStatus, pendingRequestsCo
             showAlways: true,
         },
         {
-            id: "approvals",
-            label: "Approvals",
+            id: "approvals-members",
+            label: "Approvals Members",
             icon: <FaUserCheck className="text-lg" />,
             adminOnly: true,
             count: pendingRequestsCount,
         },
         {
-            id: "media",
-            label: "PendingPost",
+            id: "approvals-posts",
+            label: "Approvals Posts",
             icon: <FaImages className="text-lg" />,
-            requiresMembership: true,
+            adminOnly: true,
         },
         {
             id: "about",
@@ -36,12 +48,17 @@ const GroupTabs = ({ activeTab, onTabChange, membershipStatus, pendingRequestsCo
         },
     ];
 
-    const visibleTabs = tabs.filter(
-        (tab) =>
-            tab.showAlways ||
-            (tab.requiresMembership &&
-                (membershipStatus === "member" || membershipStatus === "admin")) ||
-            (tab.adminOnly && membershipStatus === "admin")
+    const visibleTabs = useMemo(
+        () =>
+            tabs.filter(
+                (tab) =>
+                    tab.showAlways ||
+                    (tab.requiresMembership &&
+                        (membershipStatus === "member" ||
+                            membershipStatus === "admin")) ||
+                    (tab.adminOnly && membershipStatus === "admin")
+            ),
+        [membershipStatus]
     );
 
     return (

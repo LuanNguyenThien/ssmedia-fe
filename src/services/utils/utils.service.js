@@ -184,4 +184,8 @@ export class Utils {
   static convertStringToArray(string) {
     return string.split(' ');
   }
+
+  static getRandomColor() {
+    return avatarColors[floor(random(0.9) * avatarColors.length)];
+  }
 }

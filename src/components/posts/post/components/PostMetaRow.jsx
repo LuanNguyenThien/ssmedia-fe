@@ -286,45 +286,57 @@ const PostMetaRow = ({ post }) => {
                             {/* <FaEllipsisV className="w-4 h-4 text-gray-500" /> */}
                         </button>
 
-                        {isDropdownOpen && (
-                            <div className="absolute right-0 bottom-0 mt-1 w-max bg-white rounded-md shadow-lg z-10 border border-gray-100 ">
-                                {!isPostOwner && (
-                                    <button
-                                        className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50"
-                                        onClick={() =>
-                                            setIsReportModalOpen(true)
-                                        }
-                                    >
-                                        <div className="flex items-center gap-2 bg-gray-200 rounded-full p-2">
-                                            <FaFlag className="size-4" />
-                                        </div>
-                                        <span>Report post</span>
-                                    </button>
-                                )}
-                                {isPostOwner && (
-                                    <>
-                                        <button
-                                            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-blue-700 hover:bg-gray-50"
-                                            onClick={handleEditPost}
-                                        >
-                                            <div className="flex items-center gap-2 bg-gray-200 rounded-full p-2">
-                                                <FaEdit className="size-4" />
-                                            </div>
-                                            <span>Edit post</span>
-                                        </button>
-                                        <button
-                                            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-red-700 hover:bg-gray-50"
-                                            onClick={handleDeletePost}
-                                        >
-                                            <div className="flex items-center gap-2 bg-gray-200 rounded-full p-2">
-                                                <FaTrash className="size-4" />
-                                            </div>
-                                            <span>Delete post</span>
-                                        </button>
-                                    </>
-                                )}
+                        <div 
+                            className={`
+                              absolute right-0 bottom-0 mt-2 w-max 
+                              bg-white border border-gray-200 rounded-lg shadow-lg z-10 
+                              transform transition-all duration-200 ease-in-out
+                              ${isDropdownOpen ? 'scale-100 opacity-100 visible' : 'scale-95 opacity-0 invisible'}
+                              font-medium
+                            `}
+                            style={{
+                              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                            }}
+                          >
+                            <div className="py-2">
+                              <div className="px-3 py-2 text-xs text-gray-500 uppercase tracking-wide font-semibold border-b border-gray-100">
+                                Actions
+                              </div>
+                              {!isPostOwner && (
+                                <button
+                                  className="flex items-center gap-3 w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-red-500 hover:text-white transition-all duration-200 group focus:outline-none focus:bg-red-500 focus:text-white"
+                                  onClick={() => setIsReportModalOpen(true)}
+                                >
+                                  <div className="flex items-center justify-center bg-gray-200 group-hover:bg-white group-focus:bg-white rounded-full p-2 transition-colors duration-200">
+                                    <FaFlag className="size-4 text-red-500 group-hover:text-red-500 group-focus:text-red-500" />
+                                  </div>
+                                  <span className="font-medium">Report post</span>
+                                </button>
+                              )}
+                              {isPostOwner && (
+                                <>
+                                  <button
+                                    className="flex items-center gap-1 w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-primary hover:text-white transition-all duration-200 group focus:outline-none focus:bg-primary focus:text-white"
+                                    onClick={handleEditPost}
+                                  >
+                                    <div className="flex items-center justify-center bg-gray-200 group-hover:bg-white group-focus:bg-white rounded-full p-2 transition-colors duration-200">
+                                      <FaEdit className="size-4 text-primary group-hover:text-primary group-focus:text-primary" />
+                                    </div>
+                                    <span className="font-medium">Edit post</span>
+                                  </button>
+                                  <button
+                                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-red-500 hover:text-white transition-all duration-200 group focus:outline-none focus:bg-red-500 focus:text-white"
+                                    onClick={handleDeletePost}
+                                  >
+                                    <div className="flex items-center justify-center bg-gray-200 group-hover:bg-white group-focus:bg-white rounded-full p-2 transition-colors duration-200">
+                                      <FaTrash className="size-4 text-red-500 group-hover:text-red-500 group-focus:text-red-500" />
+                                    </div>
+                                    <span className="font-medium">Delete post</span>
+                                  </button>
+                                </>
+                              )}
                             </div>
-                        )}
+                          </div>
                     </div>
                 </div>
             </div>

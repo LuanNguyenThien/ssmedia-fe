@@ -11,8 +11,8 @@ import { PostUtils } from "@services/utils/post-utils.service";
 import { socketService } from "@services/socket/socket.service";
 import { followerService } from "@services/api/followers/follower.service";
 import Spinner from "@components/spinner/Spinner";
-import { useParams } from "react-router-dom";   
-export default function DiscussionTab({ group, canViewContent, onJoinGroup }) {
+import { useParams } from "react-router-dom";
+export default function PendingPosts({ group, canViewContent, onJoinGroup }) {
     const dispatch = useDispatch();
     const { profile } = useSelector((state) => state.user);
     const socket = socketService?.socket;
@@ -43,17 +43,14 @@ export default function DiscussionTab({ group, canViewContent, onJoinGroup }) {
 
     const getAllGroupPosts = async () => {
         try {
-            // In real implementation, this would be a group-specific endpoint
-            // For now, we'll use the general posts endpoint but filter for group
-            const response = await postService.getAllPostsGroup(groupId, currentPage);
-            console.log("Fetched group posts:", response.data);
-            if (response.data.posts && response.data.posts.length > 0) {
-                // Filter posts that belong to this group (in real app, this would be done server-side)
-                const groupPosts = response.data.posts.filter(
-                    (post) => post.groupId === group.id || Math.random() > 0.5 // Mock filtering
-                );
+            const response = await postService.getAllPostsPendingGroup(
+                groupId,
+                currentPage
+            );
 
-                appPosts.current = [...posts, ...groupPosts];
+            if (response.data.posts && response.data.posts.length > 0) {
+                appPosts.current = [...posts, ...response.data.posts];
+
                 const allPosts = uniqBy(appPosts.current, "_id");
                 setPosts(allPosts);
                 setCurrentPage((prevPage) => prevPage + 1);
@@ -185,9 +182,6 @@ export default function DiscussionTab({ group, canViewContent, onJoinGroup }) {
 
     return (
         <div className="space-y-4" ref={bodyRef}>
-            {/* Post Form - only show if user can post */}
-            <PostForm groupId={group.id} />
-
             {/* Posts List */}
             <Posts
                 allPosts={posts}
