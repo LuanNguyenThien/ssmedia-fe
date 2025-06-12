@@ -23,11 +23,11 @@ const PostContent = ({
     const [showHtmlToggle, setShowHtmlToggle] = useState(false);
     const [isRegularExpanded, setIsRegularExpanded] = useState(false);
     const [showRegularToggle, setShowRegularToggle] = useState(false);
-    
+
     // Separate refs for different content types
     const htmlContentRef = useRef(null);
     const regularContentRef = useRef(null);
-    
+
     const MAX_HEIGHT = 500; // Maximum height in pixels before showing "see more"
 
     // Check HTML content height
@@ -37,27 +37,31 @@ const PostContent = ({
             const checkHeight = () => {
                 if (htmlContentRef.current) {
                     const contentHeight = htmlContentRef.current.scrollHeight;
-                    
+
                     // Try multiple selectors to find BlockNote content
                     const blockNoteSelectors = [
-                        '.bn-editor',
-                        '.ProseMirror',
-                        '.bn-block-content',
-                        '.blocknote-editor',
-                        '[data-node-type]'
+                        ".bn-editor",
+                        ".ProseMirror",
+                        ".bn-block-content",
+                        ".blocknote-editor",
+                        "[data-node-type]",
                     ];
-                    
+
                     let blockNoteContent = null;
                     for (const selector of blockNoteSelectors) {
-                        blockNoteContent = htmlContentRef.current.querySelector(selector);
+                        blockNoteContent =
+                            htmlContentRef.current.querySelector(selector);
                         if (blockNoteContent) break;
                     }
-                    
+
                     // Check both the container and the BlockNote editor content
                     let actualHeight = contentHeight;
                     if (blockNoteContent) {
-                        actualHeight = Math.max(contentHeight, blockNoteContent.scrollHeight);
-                        
+                        actualHeight = Math.max(
+                            contentHeight,
+                            blockNoteContent.scrollHeight
+                        );
+
                         // If BlockNote content has children, check their total height too
                         const children = blockNoteContent.children;
                         if (children.length > 0) {
@@ -65,10 +69,13 @@ const PostContent = ({
                             for (let child of children) {
                                 childrenHeight += child.offsetHeight;
                             }
-                            actualHeight = Math.max(actualHeight, childrenHeight);
+                            actualHeight = Math.max(
+                                actualHeight,
+                                childrenHeight
+                            );
                         }
                     }
-                    
+
                     // console.log('HTML Content Height Check:', {
                     //     containerHeight: contentHeight,
                     //     blockNoteHeight: blockNoteContent?.scrollHeight,
@@ -76,31 +83,31 @@ const PostContent = ({
                     //     threshold: MAX_HEIGHT,
                     //     willShow: actualHeight > MAX_HEIGHT
                     // });
-                    
+
                     setShowHtmlToggle(actualHeight > MAX_HEIGHT);
                 }
             };
 
             // Initial check with delay to allow BlockNote to render
             const timeoutId = setTimeout(checkHeight, 100);
-            
+
             // Check again after a longer delay to be sure
             const secondTimeoutId = setTimeout(checkHeight, 500);
-            
+
             // Final check after an even longer delay
             const thirdTimeoutId = setTimeout(checkHeight, 1000);
-            
+
             // Also observe for content changes in BlockNote
             let observer;
             let resizeObserver;
-            
+
             if (htmlContentRef.current) {
                 // Mutation observer for DOM changes
                 observer = new MutationObserver(checkHeight);
                 observer.observe(htmlContentRef.current, {
                     childList: true,
                     subtree: true,
-                    attributes: true
+                    attributes: true,
                 });
 
                 // Resize observer for size changes
@@ -122,19 +129,20 @@ const PostContent = ({
         }
     }, [post.htmlPost, editor]);
 
-    // Check regular content height  
+    // Check regular content height
     useEffect(() => {
         if (!post.htmlPost && regularContentRef.current) {
             const checkHeight = () => {
                 if (regularContentRef.current) {
-                    const contentHeight = regularContentRef.current.scrollHeight;
+                    const contentHeight =
+                        regularContentRef.current.scrollHeight;
                     setShowRegularToggle(contentHeight > MAX_HEIGHT);
                 }
             };
 
             // Small delay to ensure content is rendered
             const timeoutId = setTimeout(checkHeight, 50);
-            
+
             return () => clearTimeout(timeoutId);
         }
     }, [post, post.htmlPost]);
@@ -158,12 +166,13 @@ const PostContent = ({
                     <div
                         ref={htmlContentRef}
                         className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                            !isHtmlExpanded && showHtmlToggle 
-                                ? '' 
-                                : ''
+                            !isHtmlExpanded && showHtmlToggle ? "" : ""
                         }`}
                         style={{
-                            maxHeight: !isHtmlExpanded && showHtmlToggle ? `${MAX_HEIGHT}px` : 'none'
+                            maxHeight:
+                                !isHtmlExpanded && showHtmlToggle
+                                    ? `${MAX_HEIGHT}px`
+                                    : "none",
                         }}
                     >
                         <BlockNoteView
@@ -178,10 +187,14 @@ const PostContent = ({
                         <button
                             onClick={handleHtmlToggleExpand}
                             className="mt-2 text-primary-black hover:text-gray-700 font-extrabold text-sm transition-colors duration-200 bg-transparent border-none cursor-pointer"
-                            aria-label={isHtmlExpanded ? "Show less content" : "Show more content"}
+                            aria-label={
+                                isHtmlExpanded
+                                    ? "Show less content"
+                                    : "Show more content"
+                            }
                             tabIndex={0}
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
+                                if (e.key === "Enter" || e.key === " ") {
                                     e.preventDefault();
                                     handleHtmlToggleExpand();
                                 }
@@ -205,7 +218,10 @@ const PostContent = ({
                         ref={regularContentRef}
                         className={`transition-all duration-300 ease-in-out overflow-hidden`}
                         style={{
-                            maxHeight: !isRegularExpanded && showRegularToggle ? `${MAX_HEIGHT}px` : 'none'
+                            maxHeight:
+                                !isRegularExpanded && showRegularToggle
+                                    ? `${MAX_HEIGHT}px`
+                                    : "none",
                         }}
                     >
                         {post?.post && post?.bgColor === "#ffffff" && (
@@ -222,33 +238,50 @@ const PostContent = ({
                                 {post?.post}
                             </div>
                         )}
-                        {post?.imgId && !post?.gifUrl && post.bgColor === "#ffffff" && (
-                            <div
-                                data-testid="post-image"
-                                className="image-display-flex flex justify-center"
-                                style={{
-                                    height: "auto",
-                                    backgroundColor: `${backgroundImageColor}`,
-                                }}
-                                onClick={() => {
-                                    setImageUrl(
-                                        Utils.getImage(post.imgId, post.imgVersion)
-                                    );
-                                    setShowImageModal(!showImageModal);
-                                }}
-                            >
-                                <img
-                                    className="post-image w-max h-auto max-h-[400px]"
-                                    style={{ objectFit: "contain" }}
-                                    src={`${Utils.getImage(
-                                        post.imgId,
-                                        post.imgVersion
-                                    )}`}
-                                    alt=""
-                                    loading="lazy"
-                                />
-                            </div>
-                        )}
+                        {post?.imgId &&
+                            !post?.gifUrl &&
+                            post.bgColor === "#ffffff" && (
+                                <div
+                                    data-testid="post-image"
+                                    className="!relative image-display-flex flex justify-center overflow-hidden rounded-md"
+                                    // style={{
+                                    //     height: "auto",
+                                    //     backgroundColor: `${backgroundImageColor}`,
+                                    // }}
+                                    onClick={() => {
+                                        setImageUrl(
+                                            Utils.getImage(
+                                                post.imgId,
+                                                post.imgVersion
+                                            )
+                                        );
+                                        setShowImageModal(!showImageModal);
+                                    }}
+                                >
+                                    <div className="absolute w-full h-full top-0 left-0 z-10 bg-black/20 opacity-20 blur-md flex items-center justify-center">
+                                        <img
+                                            className="post-image size-full object-cover max-h-[400px] scale-[5]"
+                                            style={{ objectFit: "contain" }}
+                                            src={`${Utils.getImage(
+                                                post.imgId,
+                                                post.imgVersion
+                                            )}`}
+                                            alt=""
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                    <img
+                                        className="post-image w-max h-auto max-h-[400px] z-20"
+                                        style={{ objectFit: "contain" }}
+                                        src={`${Utils.getImage(
+                                            post.imgId,
+                                            post.imgVersion
+                                        )}`}
+                                        alt=""
+                                        loading="lazy"
+                                    />
+                                </div>
+                            )}
                         {post?.videoId && post.bgColor === "#ffffff" && (
                             <div
                                 data-testid="post-image"
@@ -289,10 +322,14 @@ const PostContent = ({
                         <button
                             onClick={handleRegularToggleExpand}
                             className="mt-2 text-primary-black hover:text-gray-700 font-extrabold text-sm transition-colors duration-200 bg-transparent border-none cursor-pointer"
-                            aria-label={isRegularExpanded ? "Show less content" : "Show more content"}
+                            aria-label={
+                                isRegularExpanded
+                                    ? "Show less content"
+                                    : "Show more content"
+                            }
                             tabIndex={0}
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
+                                if (e.key === "Enter" || e.key === " ") {
                                     e.preventDefault();
                                     handleRegularToggleExpand();
                                 }

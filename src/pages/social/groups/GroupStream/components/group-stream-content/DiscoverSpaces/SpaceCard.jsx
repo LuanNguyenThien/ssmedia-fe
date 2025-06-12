@@ -27,15 +27,15 @@ const SpaceCard = ({
     return (
         <div className={`group col-span-1 size-full relative ${className}`}>
             <div
-                className={`bg-white rounded-xl overflow-hidden flex flex-col justify-between items-center relative cursor-pointer transition-all duration-300 ease-out shadow-[0_14px_26px_rgba(0,0,0,0.04)] w-full ${cardHeight} ${borderRadius}
+                className={`bg-white rounded-xl overflow-hidden flex flex-col justify-between items-center relative cursor-pointer transition-all duration-300 ease-out shadow-[0_14px_26px_rgba(0,0,0,0.04)] w-full h-[45dvh] ${borderRadius}
                     hover:transform hover:-translate-y-1 hover:scale-[1.005] hover:shadow-[0_24px_36px_rgba(0,0,0,0.11),0_24px_46px_rgba(206,178,252,0.48)]`}
             >
                 <div className="flex-1 flex items-center justify-center w-full">
                     <div
-                        className={`absolute rounded-full ${colorClass} top-[${overlayTop}px] left-[1/2] z-0 transition-transform duration-300 ease-out w-[${innerCircle}px] h-[${innerCircle}px] group-hover:scale-[5]`}
+                        className={`absolute rounded-full ${colorClass} top-[${overlayTop}px] left-[1/2] z-0 transition-transform duration-300 ease-out size-[95px] group-hover:scale-[6]`}
                     />
                     <div
-                        className={`absolute border top-[${overlayTop}px] left-[1/2] bg-white border-2 flex justify-center items-center z-10 transition-all duration-300 ease-out overflow-hidden w-[${circleSize}px] h-[${circleSize}px] rounded-full border-white  group-hover:bg-primary/70`}
+                        className={`absolute border top-[${overlayTop}px] left-[1/2] bg-white border-2 flex justify-center items-center z-10 transition-all duration-300 ease-out overflow-hidden size-[100px] rounded-full border-white  group-hover:bg-primary/70`}
                     >
                         {/* Image or Fallback */}
                         {space.profileImage ? (
