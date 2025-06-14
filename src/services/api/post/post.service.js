@@ -47,7 +47,7 @@ class PostService {
   }
 
   async createPostGroup(groupId, body) {
-    const response = await axios.post(`/post/${groupId}`, body);
+    const response = await axios.post(`/post/group/${groupId}`, body);
     return response;
   }
 

@@ -50,8 +50,10 @@ export default function PendingPosts({ group, canViewContent, onJoinGroup }) {
 
             if (response.data.posts && response.data.posts.length > 0) {
                 appPosts.current = [...posts, ...response.data.posts];
-
+                console.log(
+                    `Fetched`,response.data.posts);
                 const allPosts = uniqBy(appPosts.current, "_id");
+                console.log("allPosts", allPosts );
                 setPosts(allPosts);
                 setCurrentPage((prevPage) => prevPage + 1);
 
