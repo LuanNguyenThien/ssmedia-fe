@@ -14,10 +14,10 @@ const SpaceCard = ({
     const navigate = useNavigate();
     const overlayTop = Math.round(size * 0.218);
     const borderRadius = `rounded-tr-[${radius}px]`;
-
+    // console.log("space", space);
     const handleView = (e) => {
         e.stopPropagation();
-        navigate(`/app/social/group/${space.id}`);
+        navigate(`/app/social/group/${space._id}`);
     };
 
     return (
