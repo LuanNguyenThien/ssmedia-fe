@@ -211,6 +211,7 @@ const Header = () => {
                     setNotificationDialogContent
                 );
             }
+            getUserNotifications();
         } catch (error) {
             Utils.dispatchNotification(
                 error.response.data.message,

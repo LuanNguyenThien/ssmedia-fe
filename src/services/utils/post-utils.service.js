@@ -237,6 +237,7 @@ export class PostUtils {
     });
 
     socketService?.socket?.on("update like", (reactionData) => {
+      console.log("reactionData", reactionData);
       const postData = find(posts, (post) => post._id === reactionData?.postId);
       if (postData) {
         postData.reactions = reactionData.postReactions;

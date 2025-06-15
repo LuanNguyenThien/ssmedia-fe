@@ -257,7 +257,7 @@ const GroupStream = () => {
                     </div>
 
                     {/* Main Content Area */}
-                    <div className="col-span-full sm:col-span-6 lg:col-span-8 ">
+                    <div className="col-span-full lg:col-span-8 ">
                         <GroupStreamContent
                             exploreGroups={exploreGroups.slice(0, 12)}
                             joinedGroups={joinedGroups}

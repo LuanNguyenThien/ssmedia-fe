@@ -258,7 +258,7 @@ const PostContent = ({
                                         setShowImageModal(!showImageModal);
                                     }}
                                 >
-                                    <div className="absolute w-full h-full top-0 left-0 z-10 bg-black/20 opacity-20 blur-md flex items-center justify-center">
+                                    <div className="absolute w-full h-full top-0 left-0 z-[1] bg-black/20 opacity-20 blur-md flex items-center justify-center">
                                         <img
                                             className="post-image size-full object-cover max-h-[400px] scale-[5]"
                                             style={{ objectFit: "contain" }}
@@ -271,7 +271,7 @@ const PostContent = ({
                                         />
                                     </div>
                                     <img
-                                        className="post-image w-max h-auto max-h-[400px] z-20"
+                                        className="post-image w-max h-auto max-h-[400px] z-[2]"
                                         style={{ objectFit: "contain" }}
                                         src={`${Utils.getImage(
                                             post.imgId,
@@ -294,6 +294,7 @@ const PostContent = ({
                                         post.videoId,
                                         post.videoVersion
                                     )}`}
+                                    autoPlay={false}
                                 />
                             </div>
                         )}

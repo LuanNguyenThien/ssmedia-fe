@@ -16,7 +16,7 @@ const QuestionDetail = () => {
     const { type, isOpen } = useSelector((state) => state.modal);
     const { questionId } = useParams();
     const { profile } = useSelector((state) => state.user);
-    const [question, setQuestion] = useState(null);
+    const [question, setQuestion] = useState([]);
     const [answers, setAnswers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [answersLoading, setAnswersLoading] = useState(false);
@@ -30,7 +30,7 @@ const QuestionDetail = () => {
             try {
                 const response = await postService.getPost(questionId);
                 if (response.data && response.data.post) {
-                    setQuestion(response.data.post);
+                    setQuestion([response.data.post]);
                 } else {
                     Utils.dispatchNotification(
                         "Question not found",
@@ -74,8 +74,10 @@ const QuestionDetail = () => {
             }
         };
 
-        fetchQuestion();
-        loadAnswers();
+        const fetchingData = Promise.all([fetchQuestion(), loadAnswers()]);
+        fetchingData.then(() => {
+            setLoading(false);
+        });
     }, [questionId, dispatch]);
 
     const handleAddAnswer = () => {
@@ -103,6 +105,17 @@ const QuestionDetail = () => {
         setCurrentPage(nextPage);
         loadAnswers(nextPage);
     };
+
+    useEffect(() => {
+        PostUtils.socketIOPost(
+            question,
+            (updatedQuestion) => {
+                setQuestion(updatedQuestion);
+            },
+            profile
+        );
+        PostUtils.socketIOPost(answers, setAnswers, profile);
+    }, [question, profile, answers]);
 
     return (
         <>
@@ -137,26 +150,27 @@ const QuestionDetail = () => {
                                 </div>
                             </div>
                             {/* Question Section */}
-                            {!loading && question && (
+                            {!loading && question[0] && (
                                 <div
-                                    key={question._id}
+                                    key={question[0]._id}
                                     data-testid="question-item"
                                     className=" bg-primary-white !border-t-none"
                                 >
                                     {(!Utils.checkIfUserIsBlocked(
                                         profile?.blockedBy,
-                                        question?.userId
+                                        question[0]?.userId
                                     ) ||
-                                        question?.userId === profile?._id) && (
+                                        question[0]?.userId ===
+                                            profile?._id) && (
                                         <>
                                             {PostUtils.checkPrivacy(
-                                                question,
+                                                question[0],
                                                 profile,
                                                 profile?.following
                                             ) && (
                                                 <>
                                                     <Post
-                                                        post={question}
+                                                        post={question[0]}
                                                         showIcons={false}
                                                     />
                                                 </>
@@ -167,21 +181,21 @@ const QuestionDetail = () => {
                             )}
 
                             {/* Loading skeleton for question */}
-                            {loading && !question && (
+                            {loading && !question[0] && (
                                 <div className="mb-4">
                                     <PostSkeleton />
                                 </div>
                             )}
 
                             {/* Divider */}
-                            {!loading && question && (
+                            {!loading && question[0] && (
                                 <div className="w-full flex justify-center items-center">
                                     <div className="border-t border-gray-200 my-3 w-1/3"></div>
                                 </div>
                             )}
 
                             {/* Answers Header */}
-                            {!loading && question && (
+                            {!loading && question[0] && (
                                 <div className="bg-white rounded-lg shadow-sm mb-2">
                                     <div className="p-4 border-b border-gray-200">
                                         <div className="flex justify-between items-center">
@@ -206,7 +220,7 @@ const QuestionDetail = () => {
                             )}
 
                             {/* Answers List */}
-                            {!loading && question && answers.length > 0 && (
+                            {!loading && question[0] && answers.length > 0 && (
                                 <div className="space-y-4">
                                     {answers.map((answer, index) => (
                                         <div
@@ -255,30 +269,32 @@ const QuestionDetail = () => {
                             )}
 
                             {/* No Answers State */}
-                            {!loading && question && answers.length === 0 && (
-                                <div className="bg-white rounded-lg shadow-sm">
-                                    <div className="text-center py-12">
-                                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <span className="text-gray-400 text-2xl">
-                                                💬
-                                            </span>
+                            {!loading &&
+                                question[0] &&
+                                answers.length === 0 && (
+                                    <div className="bg-white rounded-lg shadow-sm">
+                                        <div className="text-center py-12">
+                                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                <span className="text-gray-400 text-2xl">
+                                                    💬
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-500 text-lg mb-2">
+                                                No answers yet
+                                            </p>
+                                            <p className="text-gray-400 mb-6">
+                                                Be the first to answer this
+                                                question!
+                                            </p>
+                                            <button
+                                                onClick={handleAddAnswer}
+                                                className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full"
+                                            >
+                                                Write First Answer
+                                            </button>
                                         </div>
-                                        <p className="text-gray-500 text-lg mb-2">
-                                            No answers yet
-                                        </p>
-                                        <p className="text-gray-400 mb-6">
-                                            Be the first to answer this
-                                            question!
-                                        </p>
-                                        <button
-                                            onClick={handleAddAnswer}
-                                            className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full"
-                                        >
-                                            Write First Answer
-                                        </button>
                                     </div>
-                                </div>
-                            )}
+                                )}
                         </div>
                     </div>
                 </div>

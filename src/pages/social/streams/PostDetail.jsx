@@ -13,7 +13,7 @@ const PostDetail = () => {
     const { type, isOpen } = useSelector((state) => state.modal);
     const { postId } = useParams();
     const { profile } = useSelector((state) => state.user);
-    const [post, setPost] = useState(null);
+    const [post, setPost] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const dispatch = useDispatch();
@@ -45,6 +45,17 @@ const PostDetail = () => {
         fetchPost();
     }, [postId, dispatch]);
 
+    useEffect(() => {
+        PostUtils.socketIOPost(
+            [post],
+            (updatedPost) => {
+                setPost(updatedPost[0]);
+            },
+            profile
+        );
+    }, [post]);
+
+    console.log("post", post);
     return (
         <>
             <div

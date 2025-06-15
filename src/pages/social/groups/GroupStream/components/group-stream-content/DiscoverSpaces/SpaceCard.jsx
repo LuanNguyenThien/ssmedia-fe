@@ -12,10 +12,6 @@ const SpaceCard = ({
     radius = 10,
 }) => {
     const navigate = useNavigate();
-    // const cardWidth = `w-[${size}px]`;
-    const cardHeight = `h-[${Math.round(size * 1.46)}px]`;
-    const circleSize = Math.round(size * 0.595);
-    const innerCircle = Math.round(size * 0.536);
     const overlayTop = Math.round(size * 0.218);
     const borderRadius = `rounded-tr-[${radius}px]`;
 

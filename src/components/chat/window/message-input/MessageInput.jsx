@@ -117,6 +117,27 @@ const MessageInput = memo(({ setChatMessage }) => {
         setShowImagePreview(false);
     }, []);
 
+    // Handle paste event for images
+    const handlePaste = useCallback(
+        (event) => {
+            const items = event.clipboardData?.items;
+            if (!items) return;
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.type.startsWith("image/")) {
+                    const file = item.getAsFile();
+                    if (file) {
+                        addToPreview(file);
+                        event.preventDefault();
+                        return;
+                    }
+                }
+            }
+        },
+        [addToPreview]
+    );
+
     return (
         <>
             
@@ -175,6 +196,7 @@ const MessageInput = memo(({ setChatMessage }) => {
                             handleChange={(event) =>
                                 setMessage(event.target.value)
                             }
+                            onPaste={handlePaste}
                         />
                         <div className="chat-list gap-0 sm:gap-2">
                             <div

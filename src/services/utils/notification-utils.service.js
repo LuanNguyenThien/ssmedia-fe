@@ -134,7 +134,7 @@ export class NotificationUtils {
         return items;
     }
 
-    static async markMessageAsRead(
+    static markMessageAsRead(
         messageId,
         notification,
         setNotificationDialogContent
@@ -166,7 +166,7 @@ export class NotificationUtils {
             setNotificationDialogContent &&
                 setNotificationDialogContent(notificationDialog);
         }
-        await notificationService.markNotificationAsRead(messageId);
+        notificationService.markNotificationAsRead(messageId);
     }
 
     static async socketIOMessageNotification(

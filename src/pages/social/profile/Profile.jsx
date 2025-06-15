@@ -28,7 +28,6 @@ import { Utils } from "@services/utils/utils.service";
 import Follower from "../followers/Followers";
 import Following from "../following/Following";
 import ProfileSkeleton from "./ProfileSkeleton";
-import { postService } from "@/services/api/post/post.service";
 
 // Hooks
 // Removed useEffectOnce - we'll use useEffect with dependencies instead
@@ -47,7 +46,6 @@ const Profile = () => {
 
     // State management
     const [user, setUser] = useState(null);
-    const [userProfileData, setUserProfileData] = useState(null);
     const [following, setFollowing] = useState([]);
     const [galleryImages, setGalleryImages] = useState([]);
 
@@ -80,13 +78,11 @@ const Profile = () => {
     const getUserProfileByUsername = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await userService.getUserProfileByUsername(
-                username,
-                searchParams.get("id"),
-                searchParams.get("uId")
+            const response = await userService.getUserProfileByUserId(
+                searchParams.get("id")
             );
             setUser(response.data.user);
-            setUserProfileData(response.data);
+            console.log(response.data.user);
             setBgUrl(
                 Utils.getImage(
                     response.data.user?.bgImageId,
@@ -282,7 +278,7 @@ const Profile = () => {
     const renderContent = useCallback(() => {
         switch (displayContent) {
             case "Posts":
-                return <Timeline userProfileData={userProfileData} />;
+                return <Timeline userProfileData={user} />;
             case "Answers":
                 return <TimelineAnswers loading={loading} />;
             case "Followers":
@@ -292,15 +288,13 @@ const Profile = () => {
             default:
                 return null;
         }
-    }, [displayContent, userProfileData, user, following]);
+    }, [displayContent, user, following]);
 
     // Toggle image modal
     const toggleImageModal = useCallback(() => {
         setShowImageModal((prev) => !prev);
     }, []);
 
-    // Replace useEffectOnce with useEffect and add dependencies
-    // This will refetch data when username or searchParams change
     useEffect(() => {
         getUserProfileByUsername();
         getUserImages();
@@ -457,14 +451,14 @@ const Profile = () => {
                     {/* main post section */}
                     {!Utils.checkIfUserIsBlocked(
                         profile?.blockedBy,
-                        userProfileData?.user._id
-                    ) || userProfileData?.user._id === profile?._id ? (
+                        user?._id
+                    ) || user?._id === profile?._id ? (
                         <div className="profile-content flex-1 h-[72vh] pt-4 sm:px-4 col-span-3 flex flex-col lg:grid grid-cols-3">
                             <div className="col-span-1 w-full h-max lg:h-full lg:pr-4 rounded-[10px] flex flex-col gap-2 lg:overflow-y-scroll">
                                 <Information
                                     following={following}
                                     isCurrentUser={isCurrentUser}
-                                    userProfileData={userProfileData}
+                                    userProfileData={user}
                                     setRendered={getUserProfileByUsername}
                                     setShowReportModal={() =>
                                         setShowReportModal(true)

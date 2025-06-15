@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { postService } from "@services/api/post/post.service";
 import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
 import { socketService } from "@services/socket/socket.service";
@@ -10,6 +10,7 @@ import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 import { icons } from "@/assets/assets";
 import { FaSpinner } from "react-icons/fa";
 import VoteList from "./VoteList";
+import Counter from "./PostCount";
 
 const PostVoteBar = ({ post }) => {
     const { profile } = useSelector((state) => state.user);
@@ -33,6 +34,21 @@ const PostVoteBar = ({ post }) => {
             );
         }
     };
+
+    const chevronUp = useMemo(() => {
+        return (
+            <DynamicSVG svgData={icons.chevron} className="size-6 md:size-8" />
+        );
+    }, []);
+
+    const chevronDown = useMemo(() => {
+        return (
+            <DynamicSVG
+                svgData={icons.chevron}
+                className="size-6 md:size-8 rotate-180"
+            />
+        );
+    }, []);
 
     const selectedUserReaction = useCallback(
         (postReactions) => {
@@ -113,85 +129,125 @@ const PostVoteBar = ({ post }) => {
 
     const addReactionPost = async (reaction) => {
         try {
+            console.time("part1");
             const reactionResponse =
                 await postService.getSinglePostReactionByUsername(
                     post?._id,
                     profile?.username
                 );
+            const currentReactions = reactionResponse.data.reactions;
+            const currentReactionType = currentReactions?.type;
+            const hasReacted = !!Object.keys(currentReactions).length;
 
             const updatedPost = updatePostReactions(
                 reaction,
-                Object.keys(reactionResponse.data.reactions).length,
-                reactionResponse.data.reactions?.type
+                Object.keys(currentReactions).length,
+                currentReactionType
             );
+
             const postReactions = addNewReaction(
                 reaction,
-                Object.keys(reactionResponse.data.reactions).length,
-                reactionResponse.data.reactions?.type
+                Object.keys(currentReactions).length,
+                currentReactionType
             );
-            reactions = [...postReactions];
-            dispatch(addReactions(reactions));
-            sendSocketIOReactions(
-                updatedPost,
-                reaction,
-                Object.keys(reactionResponse.data.reactions).length,
-                reactionResponse.data.reactions?.type
-            );
+            const reactions = [...postReactions];
+
             const reactionsData = {
                 userTo: post?.userId,
                 postId: post?._id,
                 type: reaction,
                 postReactions: updatedPost.reactions,
                 profilePicture: profile?.profilePicture,
-                previousReaction: Object.keys(reactionResponse.data.reactions)
-                    .length
-                    ? reactionResponse.data.reactions?.type
-                    : "",
+                previousReaction: hasReacted ? currentReactionType : "",
             };
-            if (!Object.keys(reactionResponse.data.reactions).length) {
-                await postService.addReaction(reactionsData);
-            } else {
-                reactionsData.previousReaction =
-                    reactionResponse.data.reactions?.type;
-                if (reaction === reactionsData.previousReaction) {
-                    await postService.removeReaction(
-                        post?._id,
-                        reactionsData.previousReaction,
-                        updatedPost.reactions
-                    );
-                } else {
-                    await postService.addReaction(reactionsData);
-                }
-            }
-        } catch (error) {
-            Utils.dispatchNotification(
-                error?.response?.data?.message,
-                "error",
-                dispatch
+            dispatch(addReactions(reactions));
+            sendSocketIOReactions(
+                updatedPost,
+                reaction,
+                Object.keys(currentReactions).length,
+                currentReactionType
             );
+
+            if (!hasReacted) {
+                await postService.addReaction(reactionsData);
+                return;
+            }
+            if (reaction === currentReactionType) {
+                postService.removeReaction(
+                    post?._id,
+                    currentReactionType,
+                    updatedPost.reactions
+                );
+            } else {
+                postService.addReaction(reactionsData);
+            }
+            console.timeEnd("part1");
+        } catch (error) {
+            // Optionally: show user feedback or log error
+            console.error("Failed to update reaction:", error);
+            // Optionally: dispatch error state or show toast
         }
     };
 
-    const handleUpvote = () => {
+    const handleUpvote = async () => {
+        console.time("handleUpvote");
         if (debounceRef.current.upvote) return;
         debounceRef.current.upvote = true;
         setUpvotePop(true);
-        addReactionPost("upvote");
+        await addReactionPost("upvote");
+        console.timeEnd("handleUpvote");
         setTimeout(() => {
             setUpvotePop(false);
             debounceRef.current.upvote = false;
-        }, 500);
+        }, 300);
     };
 
-    const handleDownvote = () => {
+    const handleDownvote = async () => {
+        console.time("handleDownvote");
         if (debounceRef.current.downvote) return;
         debounceRef.current.downvote = true;
         setDownvotePop(true);
-        addReactionPost("downvote");
+        await addReactionPost("downvote");
+        console.timeEnd("handleDownvote");
         setTimeout(() => {
             setDownvotePop(false);
             debounceRef.current.downvote = false;
-        }, 500);
+        }, 300);
+    };
+
+    const calculatePlaces = (value) => {
+        if (value === 0) return [1];
+        if (value < 10) return [1];
+        if (value < 100) return [10, 1];
+        if (value < 1000) return [100, 10, 1];
+        if (value < 10000) return [1000, 100, 10, 1];
+        return [10000, 1000, 100, 10, 1];
+    };
+
+    const upvoteCounterConfig = {
+        fontSize: 14,
+        padding: 2,
+        places: calculatePlaces(post.reactions["upvote"]),
+        gap: 1,
+        borderRadius: 4,
+        horizontalPadding: 6,
+        textColor: "#1f2937",
+        fontWeight: "bold",
+        gradientHeight: 8,
+        gradientFrom: "transparent",
+        gradientTo: "transparent",
+        containerStyle: {
+            cursor: "pointer",
+        },
+        counterStyle: {
+            minHeight: "18px",
+            backgroundColor: "transparent",
+        },
+    };
+
+    const downvoteCounterConfig = {
+        ...upvoteCounterConfig,
+        places: calculatePlaces(post.reactions["downvote"]),
     };
 
     return (
@@ -203,37 +259,78 @@ const PostVoteBar = ({ post }) => {
                     onClose={() => setIsShowVoteList(false)}
                 />
             )}
-            <div className="vote-bar flex flex-row md:flex-col md:justify-end items-center gap-1 md:w-14 h-full">
+            <div className="vote-bar flex flex-col items-center justify-center sm:justify-end gap-1 w-max md:w-14 h-full sm:py-2">
+                {/* Upvote Button */}
                 <button
+                    title="Upvote this post"
                     aria-label="Upvote"
-                    className={`flex flex-col transition-all duration-200 ease-linear items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full focus:outline-none
-            ${
-                userSelectedReaction.toLowerCase() === "upvote"
-                    ? "text-green-600 bg-green-50"
-                    : "text-gray-700 hover:scale-110 hover:text-green-500"
-            }
-            ${upvotePop ? "scale-110" : ""}`}
+                    className={`flex items-center justify-center w-10 h-8 md:w-10 md:h-8 rounded transition-all duration-200 ease-linear focus:outline-none
+                        ${
+                            userSelectedReaction.toLowerCase() === "upvote"
+                                ? "text-blue-300 "
+                                : "text-gray-300 hover:scale-110 hover:text-blue-300"
+                        }
+                        ${upvotePop ? "scale-110" : ""}`}
                     onClick={handleUpvote}
                     type="button"
                 >
                     <span className="sr-only">Upvote</span>
-                    <DynamicSVG
-                        svgData={icons.chevron}
-                        className="size-5 md:size-6"
-                    />
+                    {chevronUp}
                 </button>
-                {/* show upvote and downvote point */}
-                <div className="relative group">
-                    <span
-                        onClick={() => {
-                            setIsShowVoteList(!isShowVoteList);
+
+                {/* Upvotes Count with Animation */}
+                <div
+                    onClick={() => {
+                        getPostReactions();
+                        setIsShowVoteList(!isShowVoteList);
+                    }}
+                    className="flex flex-row sm:flex-col items-center justify-center"
+                >
+                    <div
+                        // onClick={() => {
+                        //     setIsShowVoteList(!isShowVoteList);
+                        // }}
+                        // onMouseEnter={getPostReactions}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`${post.reactions["upvote"]} upvotes - click to view details`}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setIsShowVoteList(!isShowVoteList);
+                            }
                         }}
-                        onMouseEnter={getPostReactions}
-                        className="text-center font-medium text-primary-black select-none text-sm md:text-lg md:my-1 cursor-pointer hover:underline block"
+                        className="hover:scale-105 transition-transform duration-200 flex items-start"
                     >
-                        {post.reactions["upvote"] - post.reactions["downvote"]}
-                    </span>
-                    {postReactions.length > 0 && (
+                        <Counter
+                            value={post.reactions["upvote"]}
+                            {...upvoteCounterConfig}
+                        />
+                    </div>
+                    {/* Horizontal Divider */}
+                    <div className="w-3 h-[2px] bg-gray-300 my-4"></div>
+
+                    {/* Downvotes Count with Animation */}
+                    <div
+                        // onMouseEnter={getPostReactions}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`${post.reactions["downvote"]} downvotes - click to view details`}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setIsShowVoteList(!isShowVoteList);
+                            }
+                        }}
+                        className="hover:scale-105 transition-transform duration-200 flex items-end "
+                    >
+                        <Counter
+                            value={post.reactions["downvote"]}
+                            {...downvoteCounterConfig}
+                        />
+                    </div>
+
+                    {/* {postReactions.length > 0 && (
                         <div
                             className="invisible group-hover:visible absolute w-[200px] bg-[var(--gray-15)] rounded-md z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-600 p-[5px_8px] top-[115%] left-1/2 -translate-x-[45px]"
                             data-testid="tooltip-container"
@@ -266,25 +363,25 @@ const PostVoteBar = ({ post }) => {
                                 )}
                             </div>
                         </div>
-                    )}
+                    )} */}
                 </div>
+
+                {/* Downvote Button */}
                 <button
+                    title="Downvote this post"
                     aria-label="Downvote"
-                    className={`flex flex-col items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full focus:outline-none transition-all duration-200 ease-linear
+                    className={`flex items-center justify-center w-10 h-6 md:w-10 md:h-8 rounded transition-all duration-200 ease-linear focus:outline-none
             ${
                 userSelectedReaction.toLowerCase() === "downvote"
-                    ? "text-red-600 bg-red-50"
-                    : "text-gray-400 hover:scale-110 hover:text-red-500"
+                    ? "text-blue-300 "
+                    : "text-gray-300 hover:scale-110 hover:text-blue-300"
             }
             ${downvotePop ? "scale-110" : ""}`}
                     onClick={handleDownvote}
                     type="button"
                 >
                     <span className="sr-only">Downvote</span>
-                    <DynamicSVG
-                        svgData={icons.chevron}
-                        className="size-5 md:size-6 rotate-180"
-                    />
+                    {chevronDown}
                 </button>
             </div>
         </>

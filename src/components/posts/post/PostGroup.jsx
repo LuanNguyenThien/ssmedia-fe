@@ -185,7 +185,7 @@ const Post = ({ post }) => {
 
                         {/* Mobile only: Vote bar above meta row */}
                         <div className="flex md:hidden w-full items-center justify-between mt-3 mb-1">
-                            <div className="mobile-vote-bar border rounded-full py-1 px-1">
+                            <div className="mobile-vote-bar rounded-full py-1 px-1">
                                 <PostVoteBar post={post} />
                             </div>
                             {/* Mobile QuestionActions */}

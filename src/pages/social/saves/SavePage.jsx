@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "@pages/social/saves/SavePage.scss";
 import useEffectOnce from "@hooks/useEffectOnce";
 import Posts from "@components/posts/Posts";
@@ -10,45 +10,61 @@ import useInfiniteScroll from "@hooks/useInfiniteScroll";
 import useLocalStorage from "@hooks/useLocalStorage";
 import { addReactions } from "@redux/reducers/post/user-post-reaction.reducer";
 import { followerService } from "@services/api/followers/follower.service";
+import { PostUtils } from "@/services/utils/post-utils.service";
+import LoadingSpinner from "@/components/state/LoadingSpinner";
+import LoadingMessage from "@/components/state/loading-message/LoadingMessage";
 
 const SavePage = () => {
+    const { profile } = useSelector((state) => state.user);
     const [postSaves, setPosts] = useState([]);
     const [following, setFollowing] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPostsCount, setTotalPostsCount] = useState(0);
     const bodyRef = useRef(null);
     const bottomLineRef = useRef();
-    let appPosts = useRef([]);
+    const appPosts = useRef([]);
     const dispatch = useDispatch();
     const storedUsername = useLocalStorage("username", "get");
     const [deleteSelectedPostId] = useLocalStorage("selectedPostId", "delete");
     useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
-    const PAGE_SIZE = 10;
+    const PAGE_SIZE = 5;
 
     function fetchPostData() {
-        let pageNum = currentPage;
-        if (currentPage <= Math.round(totalPostsCount / PAGE_SIZE)) {
-            pageNum += 1;
-            setCurrentPage(pageNum);
+        if (
+            currentPage === 1 ||
+            currentPage > Math.ceil(totalPostsCount / PAGE_SIZE)
+        ) {
+            setCurrentPage(currentPage + 1);
             getAllFavPosts();
         }
     }
 
     const getAllFavPosts = async () => {
         try {
+            setIsLoading(true);
             const response = await postService.getAllFavPosts(currentPage);
-            if (response.data.favposts.length >= 0) {
-                appPosts = [...postSaves, ...response.data.favposts];
-                const allPosts = uniqBy(appPosts, "_id");
-                const orderedPosts = orderBy(allPosts, ["createdAt"], ["desc"]);
-                setPosts(orderedPosts);
+            if (response.data.favposts.length > 0) {
+                if (currentPage === 1) {
+                    appPosts.current = [...response.data.favposts];
+                    setPosts(response.data.favposts);
+                } else {
+                    setPosts([...postSaves, ...response.data.favposts]);
+                    console.log(postSaves);
+                }
             }
             setLoading(false);
+            setIsLoading(false);
         } catch (error) {
             Utils.dispatchNotification(error, "error", dispatch);
+            setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        setTotalPostsCount(postSaves.length);
+    }, [postSaves]);
 
     const getUserFollowing = async () => {
         try {
@@ -82,10 +98,15 @@ const SavePage = () => {
         getUserFollowing();
         getReactionsByUsername();
         deleteSelectedPostId();
-        getAllFavPosts();
+        fetchPostData();
+        // getAllFavPosts();
         // dispatch(getFavPosts());
         // dispatch(getUserSuggestions());
     });
+
+    useEffect(() => {
+        PostUtils.socketIOPost(postSaves, setPosts, profile);
+    }, [postSaves]);
 
     // useEffect(() => {
     //   setLoading(allPosts?.isLoading);
@@ -99,29 +120,30 @@ const SavePage = () => {
     // }, [postSaves]);
 
     return (
-        // <div className="saves" data-testid="saves">
-
-        // </div>
-        <div className="saves col-span-full w-full sm:rounded-t-3xl pt-1 sm:pt-4">
-            {(loading || postSaves.length > 0) && (
-                <div className="saves-content">
+        <div className="saves col-span-full w-full sm:rounded-t-3xl pt-1 sm:pt-4 relative">
+            {postSaves.length > 0 && (
+                <div
+                    ref={bodyRef}
+                    className="saves-post sm:!px-[10vw] flex-col w-full h-full !max-h-[85vh] overflow-y-scroll"
+                >
+                    <Posts
+                        allPosts={postSaves}
+                        postsLoading={loading}
+                        userFollowing={following}
+                    />
                     <div
-                        className="saves-post w-full"
-                        ref={bodyRef}
-                        style={{ height: "85vh" }}
+                        ref={bottomLineRef}
+                        className="h-max mb-[60px] w-full relative"
                     >
-                        <Posts
-                            allPosts={postSaves}
-                            postsLoading={loading}
-                            userFollowing={following}
-                        />
-                        <div
-                            ref={bottomLineRef}
-                            style={{ marginBottom: "60px", height: "60px" }}
-                        ></div>
+                        {isLoading && (
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-max flex justify-center items-center">
+                                <LoadingMessage />
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
+
             {!loading && postSaves.length === 0 && (
                 <div
                     className="empty-page"

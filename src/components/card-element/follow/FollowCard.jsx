@@ -62,15 +62,13 @@ const FollowCard = ({
                     data-testid="card-following-button"
                 >
                     <InformationButton
-                        title={
-                            isBlocked ? "Unblock this user" : "Block this user"
-                        }
+                        title={isBlocked ? "Unblock " : "Block "}
                         icon={isBlocked ? <CgUnblock /> : <GoBlocked />}
                         onClick={isBlocked ? unblockUser : blockUser}
                         className={
                             isBlocked
                                 ? "!bg-background-blur !text-primary-black hover:!bg-background-blur/70"
-                                : "!bg-red-500 !text-primary-white hover:!bg-red-300"
+                                : "!bg-background-blur  !text-primary-black hover:!bg-background-blur/70"
                         }
                     />
                 </div>
@@ -81,7 +79,7 @@ const FollowCard = ({
                     data-testid="card-following-button"
                 >
                     <InformationButton
-                        title={"Unfollow this user"}
+                        title={"Unfollow"}
                         icon={<RiUserUnfollowLine />}
                         onClick={unFollowUser}
                         className={

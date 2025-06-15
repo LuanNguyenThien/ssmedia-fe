@@ -1,8 +1,5 @@
 .saves {
     margin-top: 10px;
-    max-width: 100%;
-    margin: auto;
-    height: 100vh;
     background-color: #f5f7fb;
 
     &-content {
@@ -25,7 +22,6 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-bottom: 20dvh;
         }
     }
 

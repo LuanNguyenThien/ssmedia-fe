@@ -6,6 +6,12 @@ class PostService {
     return response;
   }
 
+  // '/post/user/:userId/:page'
+  async getPostByUserId(userId, page) {
+    const response = await axios.get(`/post/user/${userId}/${page}`);
+    return response;
+  }
+
   async getAllPosts(page) {
     const response = await axios.get(`/post/all/${page}`);
     return response;

@@ -45,6 +45,7 @@ const NotificationPreview = ({
                 data-testid="notification-preview"
             >
                 <div
+                    onClick={(e) => e.stopPropagation()}
                     className={`dialog flex flex-col gap-2 bg-white max-w-2xl p-5 backdrop-blur-sm rounded-md shadow-lg`}
                 >
                     <div

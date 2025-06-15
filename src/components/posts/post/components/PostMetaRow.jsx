@@ -196,7 +196,7 @@ const PostMetaRow = ({ post }) => {
                         size={28}
                         avatarSrc={post?.profilePicture}
                     />
-                    <div className="flex flex-col gap-1 sm:gap-2 sm:flex-row">
+                    <div className="flex flex-col gap-1 sm:gap-2 lg:flex-row">
                         <div className="flex items-center gap-1">
                             <span className="text-xs text-gray-400">
                                 Posted by
