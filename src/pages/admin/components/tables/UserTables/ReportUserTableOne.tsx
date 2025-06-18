@@ -146,7 +146,7 @@ export default function BasicTableOne() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full">
+      <div className="max-w-full overflow-x-auto">
         {/* Đặt header và body trong cùng 1 bảng */}
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
@@ -191,10 +191,7 @@ export default function BasicTableOne() {
           </TableHeader>
 
           {/* Phần này giới hạn chiều cao + scroll cho tbody */}
-          <TableBody
-            className="divide-y divide-gray-100 dark:divide-white/[0.05]"
-           
-          >
+          <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {loading ? (
               <tr
                 style={{
@@ -225,7 +222,6 @@ export default function BasicTableOne() {
                   key={order._id}
                   onClick={() => {}}
                   className="cursor-default"
-                  
                 >
                   <TableCell className="px-5 py-4 sm:px-6 text-start">
                     <div
