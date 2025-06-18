@@ -56,8 +56,12 @@ export default function BasicTableOne() {
       const response = await userService.getAllUsersReportAdminRole(
         currentPage
       );
-
-      const rawUsers = response.data.reportusers;
+      
+      const rawUsers = response.data.results;
+      ;
+      console.log(response.data.total);
+      setTotal(response.data.total);
+      
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
         _id: u._id,
         reportId: u._id,
@@ -85,7 +89,7 @@ export default function BasicTableOne() {
       }));
 
       setUsers(mappedUsers);
-      setTotal(response.data.totalUsers);
+     
       setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);

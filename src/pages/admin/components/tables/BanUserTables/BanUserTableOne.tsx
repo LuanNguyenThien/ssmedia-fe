@@ -10,10 +10,7 @@ import Badge from "../../ui/badge/Badge";
 import React, { useState, useCallback, useEffect } from "react";
 import { userService } from "@services/api/user/user.service";
 import useEffectOnce from "@hooks/useEffectOnce";
-import reducer, {
-  addNotification,
-  clearNotification,
-} from "@redux/reducers/notifications/notification.reducer";
+import { addNotification } from "@redux/reducers/notifications/notification.reducer";
 import { useDispatch } from "react-redux";
 
 interface UserData {
@@ -38,11 +35,13 @@ export default function BanUserTableOne() {
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(5);
   const dispatch = useDispatch();
+
   const getAllUsers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await userService.getAllBanUsersAdminRole(currentPage);
       const rawUsers = response.data.data;
+      setTotal(response.data.total);
 
       const mappedUsers: UserData[] = rawUsers.map((u: any) => ({
         _id: u._id,
@@ -60,7 +59,6 @@ export default function BanUserTableOne() {
       }));
 
       setUsers(mappedUsers);
-      setTotal(response.data.totalUsers);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -70,16 +68,14 @@ export default function BanUserTableOne() {
 
   const UnbanUser = async (userId: string, reason: string) => {
     try {
-      // await userService.ChangeStatus({ reportId, status: "reviewed" });
       await userService.UnBanUser({ userId, reason });
-      // alert("Ban user thành công");
-       dispatch(
-              addNotification({
-                message: "Unban success",
-                type: "success",
-              })
-            );
-      getAllUsers(); // gọi lại API để cập nhật danh sách
+      dispatch(
+        addNotification({
+          message: "Unban success",
+          type: "success",
+        })
+      );
+      getAllUsers();
     } catch (error) {
       console.error("Ban user thất bại:", error);
       alert("Ban user thất bại");
@@ -102,44 +98,47 @@ export default function BanUserTableOne() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full h-[350px] max-sm:max-h-[calc(100vh-350px)] overflow-x-auto">
+      {/* Table Header cố định */}
+      <Table>
+        <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+          <TableRow>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+            >
+              User
+            </TableCell>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+            >
+              Reason
+            </TableCell>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+            >
+              Status
+            </TableCell>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+            >
+              Ban Date
+            </TableCell>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+            >
+              Actions
+            </TableCell>
+          </TableRow>
+        </TableHeader>
+      </Table>
+
+      {/* Table Body scroll riêng */}
+      <div className="max-h-[300px] overflow-y-auto">
         <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-            <TableRow>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                User
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Reason
-              </TableCell>
-
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Status
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Ban Date
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHeader>
-
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {users.map((order) => (
               <TableRow key={order._id}>
@@ -165,7 +164,6 @@ export default function BanUserTableOne() {
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {order.projectName}
                 </TableCell>
-
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge size="sm" color={order.status ? "error" : "success"}>
                     {order.status ? "Cancel" : "Active"}
@@ -178,7 +176,7 @@ export default function BanUserTableOne() {
                   <button
                     className="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600 transition"
                     onClick={(e) => {
-                      e.stopPropagation(); // không trigger click vào row
+                      e.stopPropagation();
                       UnbanUser(
                         order._id,
                         order.projectName || "Vi phạm nội quy"
