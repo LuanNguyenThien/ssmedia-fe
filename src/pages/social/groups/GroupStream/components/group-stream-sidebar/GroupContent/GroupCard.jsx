@@ -172,13 +172,37 @@ const GroupCard = ({
                   {group.members.some(
                     (member) => member.userId === profile._id
                   ) ? (
-                    <button
-                      disabled
-                      className="text-xs bg-yellow-300 text-white px-3 py-1 rounded-lg flex items-center gap-1 cursor-not-allowed"
-                    >
-                      <FaUserPlus size={10} />
-                      Pending
-                    </button>
+                    (() => {
+                      const currentMember = group.members.find(
+                        (member) => member.userId === profile._id
+                      );
+
+                      if (currentMember?.status === "pending_admin") {
+                        return (
+                          <button
+                            disabled
+                            className="text-xs bg-yellow-300 text-white px-3 py-1 rounded-lg flex items-center gap-1 cursor-not-allowed"
+                          >
+                            <FaUserPlus size={10} />
+                            Pending
+                          </button>
+                        );
+                      }
+
+                      if (currentMember?.status === "rejected") {
+                        return (
+                          <button
+                            disabled
+                            className="text-xs bg-red-400 text-white px-3 py-1 rounded-lg flex items-center gap-1 cursor-not-allowed"
+                          >
+                            <FaTimes size={10} />
+                            Rejected
+                          </button>
+                        );
+                      }
+
+                      return null; // Không hiển thị gì nếu là member nhưng không thuộc 2 status trên
+                    })()
                   ) : (
                     <button
                       onClick={handleJoinClick}
