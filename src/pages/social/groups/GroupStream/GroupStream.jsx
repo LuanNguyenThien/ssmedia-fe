@@ -37,19 +37,20 @@ const GroupStream = () => {
     const [invitations, setinvitations] = useState([]);
     const [exploreGroups, setExploreGroups] = useState([]);
     const [loading, setLoading] = useState(false);
-
+    const [allgruops, setAllGroups] = useState([]);
     const fetchGroups = async () => {
         try {
             setLoading(true);
 
-            const [groups, groupInvitations, exploreGroups] = await Promise.all(
+            const [groups, groupInvitations, exploreGroups, allgroups] = await Promise.all(
                 [
                     groupService.getGroupByUserId(userId),
                     groupService.getGroupByinvitations(),
                     groupService.getGroupNotJoinByGroupId(),
+                    groupService.getAllGroup(),
                 ]
             );
-
+            setAllGroups(allgroups.data.groups || []);
             setExploreGroups(exploreGroups.data.groups || []);
             setinvitations(groupInvitations.data.groups || []);
             setJoinedGroups(groups.data.groups);
@@ -259,7 +260,8 @@ const GroupStream = () => {
                     {/* Main Content Area */}
                     <div className="col-span-full lg:col-span-8 ">
                         <GroupStreamContent
-                            exploreGroups={exploreGroups.slice(0, 12)}
+                            // exploreGroups={exploreGroups.slice(0, 12)}
+                            exploreGroups={allgruops}
                             joinedGroups={joinedGroups}
                             onJoinGroup={handleJoinGroup}
                         />

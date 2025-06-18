@@ -15,7 +15,12 @@ class GroupService {
     const response = await axios.get(`/group/invitations`);
     return response;
   }
+  
 
+  async getAllGroup() {
+    const response = await axios.get(`/group/allgroups`);
+    return response;
+  }
   async getGroupByGroupId(groupId) {
     const response = await axios.get(`/group/${groupId}`);
     return response;
