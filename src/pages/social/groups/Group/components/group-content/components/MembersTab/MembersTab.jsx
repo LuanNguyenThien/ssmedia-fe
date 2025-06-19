@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { FaLock } from "react-icons/fa";
 import MemberOptions from "./MemberOptions";
+import { useDispatch, useSelector } from "react-redux";
 import { groupService } from "@/services/api/group/group.service";
-import { useDispatch } from "react-redux";
 import { Utils } from "@services/utils/utils.service";
 
 export default function MembersTab({ group, canViewContent, isGroupAdmin }) {
     const [activeMembers, setActiveMembers] = useState([]);
     const [loading, setLoading] = useState(true);
     const dispatch = useDispatch();
+    const [showReportModal, setShowReportModal] = useState(false);
 
     useEffect(() => {
         if (group && group.members) {
@@ -54,8 +55,12 @@ export default function MembersTab({ group, canViewContent, isGroupAdmin }) {
         }
     };
 
+    
+
     const handleReportMember = (member) => {
         console.log("Reporting member:", member);
+        // setShowReportModal(true);
+        console.log("Show report modal:", showReportModal);
         // Add your report logic here
     };
 
@@ -74,7 +79,7 @@ export default function MembersTab({ group, canViewContent, isGroupAdmin }) {
             </div>
         );
     }
-
+    
     if (loading) {
         return (
             <div className="bg-white rounded-lg shadow-sm p-4">

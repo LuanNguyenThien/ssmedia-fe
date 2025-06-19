@@ -32,10 +32,11 @@ export default function DiscussionTab({ group, canViewContent, onJoinGroup }) {
     const bottomLineRef = useRef();
     const appPosts = useRef([]);
     const PAGE_SIZE = 10;
-
+    const [ismember, setIsMember] = useState(false);
     useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
 
     function fetchPostData() {
+       
         if (loadingMore) {
             return;
         }
@@ -45,39 +46,42 @@ export default function DiscussionTab({ group, canViewContent, onJoinGroup }) {
     }
 
     const getAllGroupPosts = async () => {
-        try {
-            // In real implementation, this would be a group-specific endpoint
-            // For now, we'll use the general posts endpoint but filter for group
-            const response = await postService.getAllPostsGroup(
-                groupId,
-                currentPage
-            );
-            if (response.data.posts && response.data.posts.length > 0) {
-                appPosts.current = [...posts, ...response.data.posts];
-                const allPosts = uniqBy(appPosts.current, "_id");
-                setPosts(allPosts);
-                setCurrentPage((prevPage) => prevPage + 1);
+        const isMember = group?.members?.some(
+          (member) =>
+            member.userId === profile?._id && member.status === "active"
+        );
+        setIsMember(isMember);
+      try {
+        // In real implementation, this would be a group-specific endpoint
+        // For now, we'll use the general posts endpoint but filter for group
+        const response = await postService.getAllPostsGroup(
+          groupId,
+          currentPage
+        );
+        if (response.data.posts && response.data.posts.length > 0) {
+          appPosts.current = [...posts, ...response.data.posts];
+          const allPosts = uniqBy(appPosts.current, "_id");
+          setPosts(allPosts);
+          setCurrentPage((prevPage) => prevPage + 1);
 
-                if (response.data.totalPosts) {
-                    setTotalPostsCount(
-                        Math.floor(response.data.totalPosts / 2)
-                    ); // Mock group posts count
-                }
+          if (response.data.totalPosts) {
+            setTotalPostsCount(Math.floor(response.data.totalPosts / 2)); // Mock group posts count
+          }
 
-                return true;
-            } else {
-                return false;
-            }
-        } catch (error) {
-            Utils.dispatchNotification(
-                error.response?.data?.message || "Failed to load group posts.",
-                "error",
-                dispatch
-            );
-            return false;
-        } finally {
-            setLoading(false);
+          return true;
+        } else {
+          return false;
         }
+      } catch (error) {
+        Utils.dispatchNotification(
+          error.response?.data?.message || "Failed to load group posts.",
+          "error",
+          dispatch
+        );
+        return false;
+      } finally {
+        setLoading(false);
+      }
     };
 
     const getUserFollowing = async () => {
@@ -149,9 +153,10 @@ export default function DiscussionTab({ group, canViewContent, onJoinGroup }) {
         <div className="w-full max-w-full">
             <div className="flex flex-col space-y-1 sm:space-y-4" ref={bodyRef}>
                 {/* Post Form - Enhanced styling */}
+                {ismember && (
                 <div className="w-full">
                     <PostForm groupId={group.id} />
-                </div>
+                </div>)}
 
                 {/* Posts List Container */}
                 <div className="w-full">
