@@ -261,9 +261,11 @@ const PostMetaRow = ({ post }) => {
                         <span className="text-xs text-gray-400 flex items-center gap-1">
                             {generatePrivacy(post?.privacy)}
                             <span className="mx-2 h-4 border-r border-gray-200" />
-                            <span onClick={() => {
-                                PostUtils.na;
-                            }}>
+                            <span
+                                onClick={() => {
+                                    navigate(`/app/social/post/${post?._id}`);
+                                }}
+                            >
                                 {timeAgo.transform(post?.createdAt)}
                             </span>
                         </span>
