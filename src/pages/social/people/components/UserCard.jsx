@@ -15,14 +15,15 @@ const UserCard = ({ user, following, navigate, follow, unFollow }) => {
     return (
         <div
             onClick={handleClickMessageButton}
-            className="w-full  sm:h-[30vh] lg:h-[50vh] cursor-pointer col-span-1 flex flex-col bg-primary-white rounded-lg shadow-sm border-2 hover:border-primary/50 transition-all duration-200 ease-in-out"
+            className="w-full rounded-xl sm:overflow-hidden  sm:h-max max-h-[450px] lg:h-[50vh] cursor-pointer col-span-1 flex flex-col bg-primary-white shadow-sm border-2 hover:border-primary/50 transition-all duration-200 ease-in-out"
         >
             {/* image */}
-            <div className="flex border-white justify-center items-center w-full min-h-[50%] max-h-[50%] ">
+            <div className="flex border-white justify-center items-center w-full min-h-[50%] sm:max-h-[200px] overflow-hidden ">
                 <img
                     src={user.profilePicture}
                     alt={user.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                 />
             </div>
             {/* name and email */}

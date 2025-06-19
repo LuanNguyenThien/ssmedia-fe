@@ -5,6 +5,9 @@ import { useState, useEffect } from "react";
 import { commentService } from "@services/api/comment/comment.service";
 import { useSelector, useDispatch } from "react-redux";
 import { Utils } from "@services/utils/utils.service";
+import { useMemo } from "react";
+import { ProfileUtils } from "@/services/utils/profile-utils.service";
+// import { useNavigate } from "react-router-dom";
 
 const CommentItem = ({
     comment,
@@ -13,30 +16,39 @@ const CommentItem = ({
     onReply,
     isReply = false,
     onCommentUpdated,
-    postId
+    postId,
+    allComments = [],
 }) => {
+    // const navigate = useNavigate();
     const { profile } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const [userReaction, setUserReaction] = useState(null);
     const [reactions, setReactions] = useState({
         upvote: comment?.reactions?.upvote || 0,
-        downvote: comment?.reactions?.downvote || 0
+        downvote: comment?.reactions?.downvote || 0,
     });
     const [loading, setLoading] = useState(false);
-    
+
     const timeAgo = comment?.createdAt
         ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: false })
         : "Just now";
-    
+
+    const replyCount = useMemo(
+        () => allComments.filter((c) => c.parentId === comment._id).length,
+        [allComments, comment._id]
+    );
+
     // Fetch user's reaction to this comment
     useEffect(() => {
         const fetchUserReaction = async () => {
             try {
                 if (!comment?._id) return;
-                const { data } = await commentService.getUserReaction(comment._id);
+                const { data } = await commentService.getUserReaction(
+                    comment._id
+                );
                 setUserReaction(data.reaction);
             } catch (error) {
-                console.error('Error fetching user reaction:', error);
+                console.error("Error fetching user reaction:", error);
             }
         };
 
@@ -50,18 +62,18 @@ const CommentItem = ({
         if (comment?.reactions) {
             setReactions({
                 upvote: comment.reactions.upvote || 0,
-                downvote: comment.reactions.downvote || 0
+                downvote: comment.reactions.downvote || 0,
             });
         }
     }, [comment?.reactions]);
 
     const handleReaction = async (type) => {
         if (loading) return;
-        
+
         if (!profile) {
             Utils.dispatchNotification(
-                'Please log in to react to comments',
-                'error',
+                "Please log in to react to comments",
+                "error",
                 dispatch
             );
             return;
@@ -69,55 +81,69 @@ const CommentItem = ({
 
         try {
             setLoading(true);
-            
+
             // Determine if we're adding or removing a reaction
             let reactionType = type;
-            
+
             // If the user is clicking the same reaction they already have, remove it
             if (userReaction === type) {
                 reactionType = `${type}-remove`;
             }
-            
+
             // Send the reaction to the server
             await commentService.addReaction({
                 commentId: comment._id,
                 postId: postId,
                 reaction: reactionType,
-                profilePicture: profile.profilePicture
+                profilePicture: profile.profilePicture,
             });
-            
+
             // Update local state optimistically
             if (userReaction === type) {
                 // Remove the reaction
                 setUserReaction(null);
-                setReactions(prev => ({
+                setReactions((prev) => ({
                     ...prev,
-                    [type]: Math.max(0, prev[type] - 1)
+                    [type]: Math.max(0, prev[type] - 1),
                 }));
             } else if (userReaction) {
                 // Change reaction type
                 setUserReaction(type);
-                setReactions(prev => ({
-                    upvote: type === 'upvote' ? prev.upvote + 1 : Math.max(0, prev.upvote - (userReaction === 'upvote' ? 1 : 0)),
-                    downvote: type === 'downvote' ? prev.downvote + 1 : Math.max(0, prev.downvote - (userReaction === 'downvote' ? 1 : 0))
+                setReactions((prev) => ({
+                    upvote:
+                        type === "upvote"
+                            ? prev.upvote + 1
+                            : Math.max(
+                                  0,
+                                  prev.upvote -
+                                      (userReaction === "upvote" ? 1 : 0)
+                              ),
+                    downvote:
+                        type === "downvote"
+                            ? prev.downvote + 1
+                            : Math.max(
+                                  0,
+                                  prev.downvote -
+                                      (userReaction === "downvote" ? 1 : 0)
+                              ),
                 }));
             } else {
                 // Add new reaction
                 setUserReaction(type);
-                setReactions(prev => ({
+                setReactions((prev) => ({
                     ...prev,
-                    [type]: prev[type] + 1
+                    [type]: prev[type] + 1,
                 }));
             }
-            
+
             // Callback to update parent component if needed
             if (onCommentUpdated) {
                 onCommentUpdated();
             }
         } catch (error) {
             Utils.dispatchNotification(
-                error.response?.data?.message || 'Failed to update reaction',
-                'error',
+                error.response?.data?.message || "Failed to update reaction",
+                "error",
                 dispatch
             );
         } finally {
@@ -131,15 +157,19 @@ const CommentItem = ({
         try {
             setLoading(true);
             await commentService.deleteComment(comment._id);
-            Utils.dispatchNotification('Comment deleted successfully', 'success', dispatch);
-            
+            Utils.dispatchNotification(
+                "Comment deleted successfully",
+                "success",
+                dispatch
+            );
+
             if (onCommentUpdated) {
                 onCommentUpdated();
             }
         } catch (error) {
             Utils.dispatchNotification(
-                error.response?.data?.message || 'Failed to delete comment',
-                'error',
+                error.response?.data?.message || "Failed to delete comment",
+                "error",
                 dispatch
             );
         } finally {
@@ -148,14 +178,25 @@ const CommentItem = ({
     };
 
     const isCommentOwner = profile?.username === comment?.username;
-        
+
     return (
         <li
             className="pb-2 last:pb-0 group transition-all duration-200"
             data-testid="modal-list-item"
         >
             <div className="flex gap-3 relative">
-                <div className="flex-shrink-0 transition-transform hover:scale-105">
+                <div
+                    className="flex-shrink-0 transition-transform hover:scale-105"
+                    // onClick={() => {
+                    //     ProfileUtils.navigateToProfile(
+                    //         {
+                    //             username: comment?.username,
+                    //             _id: comment?._id,
+                    //         },
+                    //         navigate
+                    //     );
+                    // }}
+                >
                     <Avatar
                         name={comment?.username}
                         bgColor={comment?.avatarColor}
@@ -167,20 +208,44 @@ const CommentItem = ({
                 <div className="flex-1">
                     <div className="bg-gray-50 rounded-2xl px-4 py-3 relative hover:bg-gray-100 transition-colors duration-200">
                         <div className="flex items-center mb-1.5">
-                            <span className="font-semibold text-gray-900 mr-2 hover:underline">
+                            <span
+                                // onClick={() => {
+                                //     ProfileUtils.navigateToProfile(
+                                //         {
+                                //             username: comment?.username,
+                                //             _id: comment?._id,
+                                //         },
+                                //         navigate
+                                //     );
+                                // }}
+                                className="font-semibold text-gray-900 mr-2 hover:underline"
+                            >
                                 {comment?.username}
                             </span>
-                            <span className="text-gray-500 text-xs">{timeAgo}</span>
-                            
+                            <span className="text-gray-500 text-xs">
+                                {timeAgo}
+                            </span>
+
                             {isCommentOwner && (
-                                <button 
+                                <button
                                     onClick={handleDelete}
                                     className="ml-auto text-gray-400 hover:text-red-500 transition-colors duration-200 opacity-0 group-hover:opacity-100"
                                     disabled={loading}
                                     aria-label="Delete comment"
                                 >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                        />
                                     </svg>
                                 </button>
                             )}
@@ -202,34 +267,70 @@ const CommentItem = ({
                     </div>
 
                     <div className="flex items-center gap-5 mt-2 ml-3">
-                        <button 
-                            onClick={() => handleReaction('upvote')}
+                        <button
+                            onClick={() => handleReaction("upvote")}
                             className={`flex items-center gap-1.5 rounded-full px-2 py-1 transition-all duration-200 
-                                ${userReaction === 'upvote' 
-                                    ? 'text-blue-500 font-medium bg-blue-50' 
-                                    : 'text-gray-500 hover:bg-gray-100'}`}
+                                ${
+                                    userReaction === "upvote"
+                                        ? "text-blue-500 font-medium bg-blue-50"
+                                        : "text-gray-500 hover:bg-gray-100"
+                                }`}
                             disabled={loading}
                             aria-label="Upvote"
                         >
-                            <svg className="w-4 h-4" fill={userReaction === 'upvote' ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
+                            <svg
+                                className="w-4 h-4"
+                                fill={
+                                    userReaction === "upvote"
+                                        ? "currentColor"
+                                        : "none"
+                                }
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M5 15l7-7 7 7"
+                                />
                             </svg>
                             <span className="text-sm">{reactions.upvote}</span>
                         </button>
 
-                        <button 
-                            onClick={() => handleReaction('downvote')}
+                        <button
+                            onClick={() => handleReaction("downvote")}
                             className={`flex items-center gap-1.5 rounded-full px-2 py-1 transition-all duration-200
-                                ${userReaction === 'downvote' 
-                                    ? 'text-red-500 font-medium bg-red-50' 
-                                    : 'text-gray-500 hover:bg-gray-100'}`}
+                                ${
+                                    userReaction === "downvote"
+                                        ? "text-red-500 font-medium bg-red-50"
+                                        : "text-gray-500 hover:bg-gray-100"
+                                }`}
                             disabled={loading}
                             aria-label="Downvote"
                         >
-                            <svg className="w-4 h-4" fill={userReaction === 'downvote' ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                            <svg
+                                className="w-4 h-4"
+                                fill={
+                                    userReaction === "downvote"
+                                        ? "currentColor"
+                                        : "none"
+                                }
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M19 9l-7 7-7-7"
+                                />
                             </svg>
-                            <span className="text-sm">{reactions.downvote}</span>
+                            <span className="text-sm">
+                                {reactions.downvote}
+                            </span>
                         </button>
 
                         {/* Only show reply button for top-level comments, not for replies */}
@@ -258,7 +359,13 @@ const CommentItem = ({
                                         d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
                                     />
                                 </svg>
-                                <span className="text-sm">Reply</span>
+                                <span className="text-sm">
+                                    {replyCount > 0
+                                        ? replyCount > 1
+                                            ? `View ${replyCount} replies`
+                                            : "View 1 reply"
+                                        : "Reply"}
+                                </span>
                             </button>
                         )}
                     </div>
@@ -281,7 +388,7 @@ CommentItem.propTypes = {
     onReply: PropTypes.func,
     isReply: PropTypes.bool,
     onCommentUpdated: PropTypes.func,
-    postId: PropTypes.string
+    postId: PropTypes.string,
 };
 
 export default CommentItem;

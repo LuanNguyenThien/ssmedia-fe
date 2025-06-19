@@ -6,6 +6,12 @@ class PostService {
     return response;
   }
 
+  // '/post/user/:userId/:page'
+  async getPostByUserId(userId, page) {
+    const response = await axios.get(`/post/user/${userId}/${page}`);
+    return response;
+  }
+
   async getAllPosts(page) {
     const response = await axios.get(`/post/all/${page}`);
     return response;
@@ -13,6 +19,11 @@ class PostService {
 
   async getAllPostsGroup(groupId, page) {
     const response = await axios.get(`/group/${groupId}/posts/${page}`);
+    return response;
+  }
+
+  async getAllPostsPendingGroup(groupId, page) {
+    const response = await axios.get(`/group/${groupId}/postspending/${page}`);
     return response;
   }
 
@@ -42,7 +53,7 @@ class PostService {
   }
 
   async createPostGroup(groupId, body) {
-    const response = await axios.post(`/post/${groupId}`, body);
+    const response = await axios.post(`/post/group/${groupId}`, body);
     return response;
   }
 
@@ -185,6 +196,16 @@ class PostService {
 
   async searchWithImage(body) {
     const response = await axios.post("/search/image", body);
+    return response;
+  }
+
+  async acceptPost(postId) {
+    const response = await axios.put(`/group/post/${postId}/accept`);
+    return response;
+  }
+
+  async declinePost(postId) {
+    const response = await axios.put(`/group/post/${postId}/decline`);
     return response;
   }
 }

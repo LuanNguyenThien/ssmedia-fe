@@ -117,6 +117,8 @@ const Notification = () => {
                     imgUrl={notificationDialogContent?.imgUrl}
                     comment={notificationDialogContent?.comment}
                     reaction={notificationDialogContent?.reaction}
+                    post_analysis={notificationDialogContent?.post_analysis}
+                    answer={notificationDialogContent?.answer}
                     senderName={notificationDialogContent?.senderName}
                     entityId={notificationDialogContent?.entityId}
                     secondButtonText="Close"
@@ -130,6 +132,10 @@ const Notification = () => {
                             entityId: "",
                         });
                     }}
+                    notificationType={
+                        notificationDialogContent?.notificationType
+                    }
+                    htmlPost={notificationDialogContent?.htmlPost}
                 />
             )}
             {!loading && (

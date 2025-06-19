@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import PersonalizeItem from "./components/PersonalizeItem";
 import { INTERESTS } from "./constant";
+import "@components/personalize/PersonalizeModal.scss";
 
 const PersonalizeModal = ({
     alreadyPersonalized,
@@ -66,7 +67,7 @@ const PersonalizeModal = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-black bg-opacity-30">
-            <div className="w-full max-w-4xl h-[90dvh] sm:h-auto overflow-y-scroll bg-primary-white rounded-2xl shadow-lg p-8 animate__animated animate__faster animate__fadeInUp">
+            <div className="personalize-modal w-full max-w-4xl overflow-y-scroll bg-primary-white rounded-2xl shadow-lg p-8 animate__animated animate__faster animate__fadeInUp">
                 <h2 className="text-2xl font-bold text-primary-black mb-2">
                     {title ? title : (
                         <>
@@ -94,7 +95,7 @@ const PersonalizeModal = ({
                         />
                     ))}
                 </div>
-                <div className="flex flex-col items-center justify-center pb-8  sm:pb-0 ">
+                <div className="flex flex-col items-center justify-center pb-0  sm:pb-0 ">
                     <button
                         onClick={() => handleContinue(true)}
                         className="mt-6 w-full py-3 rounded-lg bg-primary text-white font-bold text-lg disabled:bg-primary/40 disabled:cursor-not-allowed transition-colors"

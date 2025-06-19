@@ -1,0 +1,8 @@
+.personalize-modal {
+    height: auto;
+    @media screen and (max-width: 1200px) {
+        // padding: 0;
+        height: calc(var(--root-height) - var(--header-footer-height) - 15px);
+        -webkit-overflow-scrolling: touch; /* Thêm để cuộn mượt trên iOS */
+    }
+}

@@ -1,0 +1,8 @@
+.report-modal {
+    height: calc(var(--root-height) - var(--header-footer-height));
+    @media screen and (max-width: 1200px) {
+        // padding: 0;
+        height: calc(var(--root-height) - var(--header-footer-height) - 10px);
+        -webkit-overflow-scrolling: touch; /* Thêm để cuộn mượt trên iOS */
+    }
+}

@@ -25,6 +25,11 @@ class AnswerService {
     const response = await axios.get(`/user/${userId}/answers?page=${page}`);
     return response;
   }
+
+  async deleteAnswer(answerId, questionId) {
+    const response = await axios.delete(`/answer/${answerId}?questionId=${questionId}`);
+    return response;
+  }
 }
 
 export const answerService = new AnswerService();

@@ -52,19 +52,19 @@ const Information = ({
 
     // Memoized function that only changes when userProfileData changes
     const getUserByUsername = useCallback(() => {
-        if (userProfileData?.user) {
-            setUser(userProfileData.user);
+        if (userProfileData) {
+            setUser(userProfileData);
 
             // Update state directly instead of using refs
             setEditableInputs({
-                quote: userProfileData.user.quote || "",
-                work: userProfileData.user.work || "",
-                school: userProfileData.user.school || "",
-                location: userProfileData.user.location || "",
+                quote: userProfileData.quote || "",
+                work: userProfileData.work || "",
+                school: userProfileData.school || "",
+                location: userProfileData.location || "",
             });
 
             setEditableSocialInputs(
-                userProfileData.user?.social || {
+                userProfileData?.social || {
                     instagram: "",
                     twitter: "",
                     facebook: "",
@@ -148,7 +148,7 @@ const Information = ({
                     setEditableSocialInputs={setEditableSocialInputs}
                 />
             )}
-            <div className="w-full h-max bg-primary-white rounded-[10px] pt-[9vh] sm:pt-[5vh] lg:pt-[8vh] pb-[20px]">
+            <div className="w-full h-max bg-primary-white rounded-[10px] pt-[8dvh] lg:pt-[8vh] pb-[20px]">
                 <MemoizedCountContainer
                     user={user}
                     setUser={setUser}

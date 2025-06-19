@@ -30,6 +30,7 @@ import { PiPhoneFill } from "react-icons/pi";
 import { assets, icons } from "@assets/assets";
 
 import useIsMobile from "@hooks/useIsMobile";
+import { ProfileUtils } from "@/services/utils/profile-utils.service";
 
 const ChatWindow = () => {
     const dispatch = useDispatch();
@@ -149,7 +150,7 @@ const ChatWindow = () => {
                     stream={stream}
                     onClose={() => {
                         if (stream) {
-                            stream.getTracks().forEach(track => track.stop());
+                            stream.getTracks().forEach((track) => track.stop());
                         }
                         ChatUtils.callWindow.close();
                         ChatUtils.callWindow = null;
@@ -678,7 +679,6 @@ const ChatWindow = () => {
         navigate("/app/social/chat/messages");
     }, [navigate]);
 
-
     //check privacy
     const isGroupMember = useMemo(
         () =>
@@ -847,7 +847,22 @@ const ChatWindow = () => {
                                 )}
 
                                 {receiver && (
-                                    <div className="chat-title-avatar min-w-fit">
+                                    <div
+                                        onClick={
+                                            !isGroup &&
+                                            (() => {
+                                                ProfileUtils.navigateToProfile(
+                                                    {
+                                                        username:
+                                                            receiver?.username,
+                                                        _id: receiver?._id,
+                                                    },
+                                                    navigate
+                                                );
+                                            })
+                                        }
+                                        className="chat-title-avatar min-w-fit cursor-pointer"
+                                    >
                                         <Avatar
                                             name={receiver?.username}
                                             bgColor={receiver.avatarColor}
@@ -860,7 +875,20 @@ const ChatWindow = () => {
                                 <div className="chat-title-items flex-shrink truncate pr-2">
                                     {/* name */}
                                     <div
-                                        className={`chat-name max-w-full truncate  ${
+                                        onClick={
+                                            !isGroup &&
+                                            (() => {
+                                                ProfileUtils.navigateToProfile(
+                                                    {
+                                                        username:
+                                                            receiver?.username,
+                                                        _id: receiver?._id,
+                                                    },
+                                                    navigate
+                                                );
+                                            })
+                                        }
+                                        className={`chat-name max-w-full truncate hover:underline cursor-pointer  ${
                                             isReceiverOnline
                                                 ? ""
                                                 : "user-not-online"
@@ -877,16 +905,23 @@ const ChatWindow = () => {
                                     )}
                                 </div>
                                 {/* Call buttons */}
-                                <div className="chat-call-buttons flex justify-end items-center gap-4 ml-auto pr-2">
-                                    <PiPhoneFill
-                                        className="size-6 text-primary/80 hover:text-primary/60"
-                                        onClick={() => initiateCall("voice")}
-                                    />
-                                    <IoIosVideocam
-                                        className="size-6 text-primary/80 hover:text-primary/70"
-                                        onClick={() => initiateCall("video")}
-                                    />
-                                </div>
+                                {!isGroup && (
+                                    <div className="chat-call-buttons flex justify-end items-center gap-4 ml-auto pr-2">
+                                        <PiPhoneFill
+                                            className="size-6 text-primary/80 hover:text-primary/60"
+                                            onClick={() =>
+                                                initiateCall("voice")
+                                            }
+                                        />
+                                        <IoIosVideocam
+                                            className="size-6 text-primary/80 hover:text-primary/70"
+                                            onClick={() =>
+                                                initiateCall("video")
+                                            }
+                                        />
+                                    </div>
+                                )}
+
                                 {/* Add info button for group chats */}
                                 {isGroup && (
                                     <div
@@ -896,7 +931,7 @@ const ChatWindow = () => {
                                                 !isShowInfoGroup
                                             );
                                         }}
-                                        className="ml-2 cursor-pointer text-primary-black/60 hover:text-primary-black"
+                                        className="ml-2 cursor-pointer text-primary-black/60 hover:text-primary-black flex justify-end w-full"
                                     >
                                         <DynamicSVG
                                             svgData={icons.info}

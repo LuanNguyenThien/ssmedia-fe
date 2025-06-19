@@ -27,12 +27,13 @@ const Following = () => {
 
     async function fetchData() {
         setLoading(true);
-
         if (
-            currentPage <= Math.round(totalFollowersCount / PAGE_SIZE) &&
-            !loading
+            (currentPage > Math.round(totalFollowersCount / PAGE_SIZE) &&
+                !loading) ||
+            currentPage === 1
         ) {
             setCurrentPage((prevPage) => prevPage + 1);
+
             await getUserFollowing();
         }
 
@@ -42,8 +43,18 @@ const Following = () => {
     const getUserFollowing = async () => {
         setLoading(true);
         try {
-            const response = await followerService.getUserFollowing();
-            setFollowing(response.data.following);
+            const response = await followerService.getUserFollowingByPage(
+                currentPage
+            );
+            console.log("response", response);
+            if (currentPage === 1) {
+                setFollowing(response.data.following);
+            } else {
+                setFollowing([...following, ...response.data.following]);
+            }
+            // if (response.data.following.length > 0) {
+            //     setFollowing([...following, ...response.data.following]);
+            // }
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -56,6 +67,9 @@ const Following = () => {
             setLoading(false);
         }
     };
+    useEffect(() => {
+        setTotalFollowersCount(following.length);
+    }, [following]);
 
     // const followUser = async (user) => {
     //     try {
@@ -84,6 +98,7 @@ const Following = () => {
 
     useEffectOnce(() => {
         getUserFollowing();
+        setCurrentPage(2);
     });
 
     useEffect(() => {
@@ -94,13 +109,13 @@ const Following = () => {
         <>
             <div
                 ref={bodyRef}
-                className="size-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"
+                className="size-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 overflow-y-scroll"
             >
                 {following.length > 0 &&
-                    following.map((data) => {
+                    following.map((data, index) => {
                         return (
                             <FollowCard
-                                key={data._id}
+                                key={index}
                                 cardData={data}
                                 unFollowUser={(e) => {
                                     e.stopPropagation();
@@ -112,7 +127,7 @@ const Following = () => {
 
                 <div
                     ref={bottomRef}
-                    className="py-5 col-span-full size-full flex justify-center items-start "
+                    className="py-5 col-span-full h-[90px] flex justify-center items-center "
                 >
                     {loading && (
                         <div className="flex justify-center items-center w-full h-full">

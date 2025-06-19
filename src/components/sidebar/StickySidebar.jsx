@@ -3,7 +3,7 @@ import { DynamicSVG } from "./components/SidebarItems";
 import { useLocation, createSearchParams, useNavigate } from "react-router-dom";
 import "@components/sidebar/Sidebar.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { getPosts } from "@redux/api/posts";
+import { getPosts, getQuestions } from "@redux/api/posts";
 import { Utils } from "@services/utils/utils.service";
 import { ChatUtils } from "@services/utils/chat-utils.service";
 import { chatService } from "@services/api/chat/chat.service";
@@ -34,6 +34,10 @@ const StickySidebar = () => {
         }
         if (name === "Streams") {
             dispatch(getPosts());
+        }
+
+        if (name === "Questions") {
+            dispatch(getQuestions());
         }
 
         if (name === "Chat") {

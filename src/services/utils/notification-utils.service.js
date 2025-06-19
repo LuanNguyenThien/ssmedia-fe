@@ -24,7 +24,9 @@ export class NotificationUtils {
     ) {
         socketService?.socket?.on("insert notification", (data, userToData) => {
             if (profile?._id === userToData.userTo) {
-                Utils.dispatchNotification("You have new notification", "success", dispatch);
+                if(data[0]?.notificationType !== "post-analysis") {
+                    Utils.dispatchNotification("You have new notification", "success", dispatch);
+                }
                 notifications = [...data];
                 if (type === "notificationPage") {
                     setNotifications(notifications);
@@ -134,7 +136,7 @@ export class NotificationUtils {
         return items;
     }
 
-    static async markMessageAsRead(
+    static markMessageAsRead(
         messageId,
         notification,
         setNotificationDialogContent
@@ -166,7 +168,7 @@ export class NotificationUtils {
             setNotificationDialogContent &&
                 setNotificationDialogContent(notificationDialog);
         }
-        await notificationService.markNotificationAsRead(messageId);
+        notificationService.markNotificationAsRead(messageId);
     }
 
     static async socketIOMessageNotification(

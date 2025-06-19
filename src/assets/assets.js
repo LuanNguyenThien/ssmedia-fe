@@ -14,6 +14,9 @@ import search_image from "./icons/common/search-image.png";
 // import setting from "./icons/common/setting.svg";
 import chevron from "./icons/common/chevron-up.svg";
 import comment from "./icons/common/comment.svg";
+import arrowUp from "./icons/common/arrow-up.svg";
+import arrowDown from "./icons/common/arrow-down.svg";
+
 
 //messages
 import check from "./icons/messages/checked.png";
@@ -188,7 +191,9 @@ export const icons = {
     edit,
     envelope,
     block,
-    question
+    question,
+    arrowUp,
+    arrowDown,
 };
 
 export const personalize = {

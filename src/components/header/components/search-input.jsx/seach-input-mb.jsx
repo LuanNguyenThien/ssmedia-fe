@@ -16,9 +16,9 @@ const SearchInputMb = ({ searchTerm, setSearchTerm, handleSearchKeyPress }) => {
 
         if (Utils.isMobileDevice()) {
             navigate("search", {
-                state: {
-                    query: "common",
-                },
+                // state: {
+                //     query: "",
+                // },
             });
         }
         

@@ -30,6 +30,18 @@ const NotificationPreview = ({
         secondBtnHandler();
     };
     const handleGoToQuestion = () => {
+        const currentUrl = window.location.href;
+        const targetUrl = `${window.location.origin}/app/social/question/${entityId}`;
+        
+        if (currentUrl === targetUrl) {
+            // Dispatch custom event để refresh question page
+            window.dispatchEvent(new CustomEvent('refreshQuestion', { 
+                detail: { questionId: entityId } 
+            }));
+            secondBtnHandler();
+            return;
+        }
+        
         navigate(`/app/social/question/${entityId}`);
         secondBtnHandler();
     };
@@ -45,6 +57,7 @@ const NotificationPreview = ({
                 data-testid="notification-preview"
             >
                 <div
+                    onClick={(e) => e.stopPropagation()}
                     className={`dialog flex flex-col gap-2 bg-white max-w-2xl p-5 backdrop-blur-sm rounded-md shadow-lg`}
                 >
                     <div

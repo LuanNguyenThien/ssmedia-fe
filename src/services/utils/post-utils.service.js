@@ -214,8 +214,26 @@ export class PostUtils {
     element.focus();
   }
 
+  static socketIOAnswer(answers, setAnswers, profile) {
+    answers = cloneDeep(answers);
+    socketService?.socket?.on("add answer", (answer) => {
+      if (profile._id === answer.userId && answer.type === "answer") {
+        answers = [answer, ...answers];
+        setAnswers(answers);
+      }
+    });
+  }
+
   static socketIOPost(posts, setPosts, profile) {
     posts = cloneDeep(posts);
+
+    // socketService?.socket?.on("add answer", (post) => {
+    //   if (profile._id === post.userId && post.type === "answer") {
+    //     posts = [post, ...posts];
+    //     setPosts(posts);
+    //   }
+    // });
+
     socketService?.socket?.on("add post", (post) => {
       if (profile._id === post.userId) {
         posts = [post, ...posts];
@@ -237,6 +255,7 @@ export class PostUtils {
     });
 
     socketService?.socket?.on("update like", (reactionData) => {
+      console.log("reactionData", reactionData);
       const postData = find(posts, (post) => post._id === reactionData?.postId);
       if (postData) {
         postData.reactions = reactionData.postReactions;
