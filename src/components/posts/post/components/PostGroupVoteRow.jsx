@@ -19,6 +19,7 @@ import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 import { icons, postPrivacy } from "@/assets/assets";
 import { ProfileUtils } from "@/services/utils/profile-utils.service";
 import ReportModal from "@/components/modal/ReportModal";
+import { PostUtils } from "@/services/utils/post-utils.service";
 
 const PostMetaRow = ({ post }) => {
     const navigate = useNavigate();
@@ -260,7 +261,11 @@ const PostMetaRow = ({ post }) => {
                         <span className="text-xs text-gray-400 flex items-center gap-1">
                             {generatePrivacy(post?.privacy)}
                             <span className="mx-2 h-4 border-r border-gray-200" />
-                            {timeAgo.transform(post?.createdAt)}
+                            <span onClick={() => {
+                                PostUtils.na;
+                            }}>
+                                {timeAgo.transform(post?.createdAt)}
+                            </span>
                         </span>
                     </div>
                 </div>
@@ -303,13 +308,17 @@ const PostMetaRow = ({ post }) => {
                                 }`}
                             />
                         )}
-                        <span
-                            className={`font-medium ${
-                                isFavorite ? "text-blue-700" : "text-gray-400 "
-                            }`}
-                        >
-                            {isFavorite ? "Saved" : "Save"}
-                        </span>
+                        {!Utils.isMobileDevice() && (
+                            <span
+                                className={`font-medium ${
+                                    isFavorite
+                                        ? "text-blue-700"
+                                        : "text-gray-400 "
+                                }`}
+                            >
+                                {isFavorite ? "Saved" : "Save"}
+                            </span>
+                        )}
                     </button>
 
                     {/* Conditionally render Accept and Decline buttons for pending posts */}

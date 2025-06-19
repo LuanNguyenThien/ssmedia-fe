@@ -140,10 +140,8 @@ const MessageInput = memo(({ setChatMessage }) => {
 
     return (
         <>
-            
-
             {showGifContainer && (
-                <GiphyContainer handleGiphyClick={handleGiphyClick} />
+                <GiphyContainer  ref={gifRef} handleGiphyClick={handleGiphyClick} />
             )}
             <div
                 className={`chat-inputarea size-full`}
@@ -231,8 +229,7 @@ const MessageInput = memo(({ setChatMessage }) => {
                                 />
                             </div>
                             <div
-                                onMouseDown={(e) => e.preventDefault()}
-                                ref={gifRef}
+                                onMouseDown={(e) => e.preventDefault()}                           
                                 className="chat-list-item"
                                 onClick={(e) => {
                                     e.stopPropagation();

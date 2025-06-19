@@ -20,9 +20,12 @@ const userSlice = createSlice({
     },
     updateUserProfile: (state, action) => {
       state.profile = action.payload;
+    },
+    updatePersonalizeSettings: (state, action) => {
+      state.profile.personalizeSettings.allowPersonalize = action.payload.allowPersonalize;
     }
   }
 });
 
-export const { addUser, clearUser, updateUserProfile } = userSlice.actions;
+export const { addUser, clearUser, updateUserProfile, updatePersonalizeSettings } = userSlice.actions;
 export default userSlice.reducer;

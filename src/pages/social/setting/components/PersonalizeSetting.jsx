@@ -3,8 +3,8 @@ import Toggle from "@components/toggle/Toggle";
 import ConfirmModal from "@components/confirm-modal/ConfirmModal";
 import { useDispatch, useSelector } from "react-redux";
 import { userService } from "@/services/api/user/user.service";
-import { NotificationUtils } from "@/services/utils/notification-utils.service";
 import { Utils } from "@/services/utils/utils.service";
+import { updatePersonalizeSettings } from "@/redux-toolkit/reducers/user/user.reducer";
 
 const tooltipContent = {
     clearAllPersonalize: `Remove all your personalized settings and activity history. \n
@@ -41,6 +41,7 @@ const PersonalizeSetting = () => {
 
     // Debounced API call for toggle
     const debouncedToggle = useDebounce(async (newValue) => {
+        dispatch(updatePersonalizeSettings({ allowPersonalize: newValue }));
         await userService.updatePersonalizeSettings({
             allowPersonalize: newValue,
         });

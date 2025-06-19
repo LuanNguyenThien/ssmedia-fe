@@ -2,12 +2,12 @@ import Input from "@components/input/Input";
 import Spinner from "@components/spinner/Spinner";
 import { Utils } from "@services/utils/utils.service";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import "@components/chat/giphy-container/GiphyContainer.scss";
 import { GiphyUtils } from "@services/utils/giphy-utils.service";
 
-const GiphyContainer = ({ handleGiphyClick }) => {
+const GiphyContainer = forwardRef(({ handleGiphyClick }, ref) => {
     const [gifs, setGifs] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -16,7 +16,15 @@ const GiphyContainer = ({ handleGiphyClick }) => {
     }, []);
 
     return (
-        <div className="giphy-search-container bottom-14 left-5" data-testid="giphy-container">
+        <div
+            onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }}
+            ref={ref}
+            className="giphy-search-container bottom-14 left-5"
+            data-testid="giphy-container"
+        >
             <div className="giphy-search-input">
                 <FaSearch className="search" />
                 <Input
@@ -42,9 +50,9 @@ const GiphyContainer = ({ handleGiphyClick }) => {
                         className="gif-result"
                         data-testid="list-item"
                         key={Utils.generateString(10)}
-                        onClick={() =>
-                            handleGiphyClick(gif.images.original.url)
-                        }
+                        onClick={() => {
+                            handleGiphyClick(gif.images.original.url);
+                        }}
                     >
                         <img src={`${gif.images.original.url}`} alt="" />
                     </li>
@@ -52,7 +60,7 @@ const GiphyContainer = ({ handleGiphyClick }) => {
             </ul>
         </div>
     );
-};
+});
 
 GiphyContainer.propTypes = {
     handleGiphyClick: PropTypes.func,

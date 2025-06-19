@@ -76,6 +76,14 @@ const Header = () => {
     const [searchImage, setSearchImage] = useState(null);
     const [isSearch, setIsSearch] = useState(false);
 
+    useEffect(() => {
+        if (section !== "search") {
+            setSearchTerm("");
+            setSearchImage(null);
+            setIsSearch(false);
+        }
+    }, [section]);
+
     //notifications
     const notificationRef = useRef(null);
     const [notifications, setNotifications] = useState([]);

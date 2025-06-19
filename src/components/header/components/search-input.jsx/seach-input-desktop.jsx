@@ -67,7 +67,7 @@ const SearchInputDesktop = ({
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Find friends, communicate..."
-                    className="input border-gray-300 pl-12 pr-9 h-6 rounded-xl w-72 transition-all duration-300 focus:w-96 outline-none ring-0"
+                    className="input border-gray-300 pl-12 pr-9 h-6 rounded-xl w-72 transition-all duration-300 focus:w-96 outline-none ring-0 focus:bg-white"
                     name="search"
                     type="search"
                 />

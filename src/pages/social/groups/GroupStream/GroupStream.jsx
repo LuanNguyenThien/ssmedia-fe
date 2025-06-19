@@ -226,7 +226,7 @@ const GroupStream = () => {
                 <div className="justify-between items-start grid grid-cols-12 gap-4">
                     {/* Groups Sidebar */}
                     <div
-                        className={`col-span-full sm:col-span-6 lg:col-span-4 ${
+                        className={`col-span-full lg:col-span-4 ${
                             isGroupsSidebarOpen ? "block" : "hidden lg:block"
                         }`}
                     >
