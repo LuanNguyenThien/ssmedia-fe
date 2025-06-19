@@ -86,9 +86,8 @@ export default function BasicTableOne() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="w-full">
-        {/* Table header cố định */}
-        <table className="w-full table-fixed">
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-[800px] w-full">
           <thead className="border-b border-gray-100 dark:border-white/[0.05] bg-white dark:bg-white/[0.03]">
             <tr>
               <th className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs dark:text-gray-400">
@@ -108,12 +107,7 @@ export default function BasicTableOne() {
               </th>
             </tr>
           </thead>
-        </table>
-      </div>
 
-      {/* Scrollable body */}
-      <div className="h-[350px] overflow-y-auto w-full">
-        <table className="w-full table-fixed">
           <tbody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {users.map((order) => (
               <tr key={order._id}>

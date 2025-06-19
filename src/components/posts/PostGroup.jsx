@@ -39,16 +39,16 @@ const Posts = ({
                             post?.userId
                         );
                         const isOwnPost = post?.userId === profile?._id;
-                        const meetsPrivacyRequirements = PostUtils.checkPrivacy(
-                            post,
-                            profile,
-                            following
-                        );
+                        // const meetsPrivacyRequirements = PostUtils.checkPrivacy(
+                        //     post,
+                        //     profile,
+                        //     following
+                        // );
                         const isPending =
                             post?.status === "pending" && type === "discussion";
                         if (
                             (isBlocked && !isOwnPost) ||
-                            !meetsPrivacyRequirements ||
+                            // !meetsPrivacyRequirements ||
                             isPending
                         ) {
                             return null;
