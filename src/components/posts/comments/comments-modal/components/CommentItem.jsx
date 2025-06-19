@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Utils } from "@services/utils/utils.service";
 import { useMemo } from "react";
 import { ProfileUtils } from "@/services/utils/profile-utils.service";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const CommentItem = ({
     comment,
@@ -19,8 +19,7 @@ const CommentItem = ({
     postId,
     allComments = [],
 }) => {
-    const navigate = useNavigate();
-    console.log("comment", comment);
+    // const navigate = useNavigate();
     const { profile } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const [userReaction, setUserReaction] = useState(null);
@@ -188,15 +187,15 @@ const CommentItem = ({
             <div className="flex gap-3 relative">
                 <div
                     className="flex-shrink-0 transition-transform hover:scale-105"
-                    onClick={() => {
-                        ProfileUtils.navigateToProfile(
-                            {
-                                username: comment?.username,
-                                _id: comment?._id,
-                            },
-                            navigate
-                        );
-                    }}
+                    // onClick={() => {
+                    //     ProfileUtils.navigateToProfile(
+                    //         {
+                    //             username: comment?.username,
+                    //             _id: comment?._id,
+                    //         },
+                    //         navigate
+                    //     );
+                    // }}
                 >
                     <Avatar
                         name={comment?.username}
@@ -210,15 +209,15 @@ const CommentItem = ({
                     <div className="bg-gray-50 rounded-2xl px-4 py-3 relative hover:bg-gray-100 transition-colors duration-200">
                         <div className="flex items-center mb-1.5">
                             <span
-                                onClick={() => {
-                                    ProfileUtils.navigateToProfile(
-                                        {
-                                            username: comment?.username,
-                                            _id: comment?._id,
-                                        },
-                                        navigate
-                                    );
-                                }}
+                                // onClick={() => {
+                                //     ProfileUtils.navigateToProfile(
+                                //         {
+                                //             username: comment?.username,
+                                //             _id: comment?._id,
+                                //         },
+                                //         navigate
+                                //     );
+                                // }}
                                 className="font-semibold text-gray-900 mr-2 hover:underline"
                             >
                                 {comment?.username}

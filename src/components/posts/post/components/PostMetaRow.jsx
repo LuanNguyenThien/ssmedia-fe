@@ -280,7 +280,7 @@ const PostMetaRow = ({ post }) => {
                         </span>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-500 cursor-pointer">
+                <div className="flex items-center gap-0 sm:gap-1 text-xs text-gray-400 hover:text-gray-500 cursor-pointer">
                     <div
                         className="flex items-center gap-1"
                         onClick={openCommentsComponent}

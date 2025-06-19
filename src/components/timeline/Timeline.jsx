@@ -19,7 +19,7 @@ import LoadingMessage from "@/components/state/loading-message/LoadingMessage";
 import { uniqBy } from "lodash";
 
 import { socketService } from "@services/socket/socket.service";
-const Timeline = ({ userProfileData, loading }) => {
+const Timeline = ({ userProfileData }) => {
     const { profile } = useSelector((state) => state.user);
     const { username } = useParams();
     const dispatch = useDispatch();
@@ -30,6 +30,7 @@ const Timeline = ({ userProfileData, loading }) => {
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
     const [loadingMore, setLoadingMore] = useState(false);
+    const [loading, setLoading] = useState(true);
     const bodyRef = useRef(null);
     const bottomRef = useRef(null);
     const appPosts = useRef([]);
@@ -48,7 +49,12 @@ const Timeline = ({ userProfileData, loading }) => {
     // Modified getPosts function to support pagination
     const getPosts = useCallback(async () => {
         try {
-            setLoadingMore(true);
+            // setLoadingMore(true);
+            if (currentPage === 1) {
+                setLoading(true);
+            } else {
+                setLoadingMore(true);
+            }
             const response = await postService.getPostByUserId(
                 userProfileData?._id,
                 currentPage
@@ -78,9 +84,16 @@ const Timeline = ({ userProfileData, loading }) => {
                 "error",
                 dispatch
             );
+            if (currentPage === 1) {
+                setPosts([]);
+            }
             return false;
         } finally {
-            setLoadingMore(false);
+            if (currentPage === 1) {
+                setLoading(false);
+            } else {
+                setLoadingMore(false);
+            }
         }
     }, [userProfileData?._id, currentPage, posts, dispatch]);
 
@@ -89,6 +102,7 @@ const Timeline = ({ userProfileData, loading }) => {
     // Reset pagination when user changes
     useEffect(() => {
         if (userProfileData) {
+            setLoading(true);
             setCurrentPage(1);
             setPosts([]);
             appPosts.current = [];
@@ -202,6 +216,15 @@ const Timeline = ({ userProfileData, loading }) => {
                 ref={bodyRef}
                 className="size-full flex flex-col gap-2 overflow-y-scroll"
             >
+
+                {!loading && posts.length === 0 && (
+                    <div className="timeline-wrapper-container-main">
+                        <div className="empty-page" data-testid="empty-page">
+                            No post available
+                        </div>
+                    </div>
+                )}
+
                 {username === profile?.username && <PostForm />}
 
                 {posts.length > 0 && (
@@ -262,13 +285,6 @@ const Timeline = ({ userProfileData, loading }) => {
                 </div>
             </div>
 
-            {posts.length === 0 && (
-                <div className="timeline-wrapper-container-main">
-                    <div className="empty-page" data-testid="empty-page">
-                        No post available
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
