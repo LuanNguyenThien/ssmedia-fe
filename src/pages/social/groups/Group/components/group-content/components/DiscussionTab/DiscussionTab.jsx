@@ -147,7 +147,7 @@ export default function DiscussionTab({ group, canViewContent, onJoinGroup }) {
 
     return (
         <div className="w-full max-w-full">
-            <div className="flex flex-col space-y-1 sm:space-y-1" ref={bodyRef}>
+            <div className="flex flex-col space-y-1 sm:space-y-4" ref={bodyRef}>
                 {/* Post Form - Enhanced styling */}
                 <div className="w-full">
                     <PostForm groupId={group.id} />

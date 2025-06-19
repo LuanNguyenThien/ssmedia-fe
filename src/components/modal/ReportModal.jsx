@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { FaTimes, FaExclamationTriangle, FaFlag } from "react-icons/fa";
 import { defaultUserReasons, defaultPostReasons } from "./report.constants.js";
+import "@components/modal/ReportModal.scss";
+
 const ReportModal = ({
     isOpen = false,
     onClose,
@@ -96,7 +98,7 @@ const ReportModal = ({
     return (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div
-                className={`bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-gray-100 ${className}`}
+                className={`report-modal bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-gray-100 ${className}`}
             >
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">

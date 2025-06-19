@@ -59,11 +59,13 @@ const PostDetail = () => {
     return (
         <>
             <div
-                className="savess py-6 bg-background-blur col-span-full sm:rounded-t-3xl size-full flex justify-center items-start max-h-[90dvh] overflow-scroll"
+                className="saves py-2 sm:py-0 bg-background-blur col-span-full sm:rounded-t-3xl size-full flex justify-center items-start max-h-[90dvh] overflow-scroll"
                 data-testid="post-detail"
             >
                 {!loading && post && (
-                    <div key={post?._id} data-testid="posts-item">
+                    <div key={post?._id} data-testid="posts-item"
+                        className="saves-post sm:!px-[10vw] sm:pb-3 flex-col w-full h-full max-h-[88vh] overflow-y-scroll"
+                    >
                         {(!Utils.checkIfUserIsBlocked(
                             profile?.blockedBy,
                             post?.userId

@@ -21,6 +21,7 @@ import {
     useDisclosure,
     Text,
 } from "@chakra-ui/react";
+import { useViewportHeight } from "@hooks/useViewportHeight";
 import useHandleOutsideClick from "@hooks/useHandleOutsideClick";
 import Logo from "./components/logo/Logo";
 import SearchInputMb from "./components/search-input.jsx/seach-input-mb";
@@ -29,6 +30,7 @@ import DropdownSettingMb from "./components/dropdown/DropdownSettingMb";
 import { Utils } from "@/services/utils/utils.service";
 
 const HeaderMb = () => {
+    useViewportHeight();
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const containerRef = useRef(null);
     const navigate = useNavigate();

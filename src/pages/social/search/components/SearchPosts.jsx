@@ -146,7 +146,7 @@ const SearchPosts = ({
         }
     };
     return (
-        <div className="size-full max-h-full overflow-y-scroll scroll-smooth flex flex-col gap-4 sm:px-4">
+        <div className="pt-4 pb-4 size-full max-h-full overflow-y-scroll scroll-smooth flex flex-col gap-4 sm:px-4">
             {renderContent()}
         </div>
     );

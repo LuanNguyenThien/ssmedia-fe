@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { postService } from "@services/api/post/post.service";
@@ -10,10 +10,12 @@ import { PostUtils } from "@services/utils/post-utils.service";
 import AddAnswer from "@components/posts/post-modal/post-add/AddAnswer";
 import { openModal } from "@redux/reducers/modal/modal.reducer";
 import { FaPlus } from "react-icons/fa";
+import EditPost from "@components/posts/post-modal/post-edit/EditPost1";
+// import EditAnswer from "@components/posts/post-modal/post-edit/EditAnswer";
 import "@pages/social/saves/SavePage.scss";
 
 const QuestionDetail = () => {
-    const { type, isOpen } = useSelector((state) => state.modal);
+    const { type, isOpen, modalType } = useSelector((state) => state.modal);
     const { questionId } = useParams();
     const { profile } = useSelector((state) => state.user);
     const [question, setQuestion] = useState([]);
@@ -25,12 +27,38 @@ const QuestionDetail = () => {
 
     const dispatch = useDispatch();
 
+    const loadAnswers = async (page = 1) => {
+        try {
+            setAnswersLoading(true);
+            const response = await answerService.getAnswersForQuestion(
+                questionId,
+                page
+            );
+            if (response?.data?.answers) {
+                if (page === 1) {
+                    setAnswers(response.data.answers);
+                } else {
+                    setAnswers((prev) => [
+                        ...prev,
+                        ...response.data.answers,
+                    ]);
+                }
+                setHasMoreAnswers(response.data.answers.length === 10);
+            }
+        } catch (error) {
+            console.error("Error loading answers:", error);
+        } finally {
+            setAnswersLoading(false);
+        }
+    };
+
     useEffect(() => {
         const fetchQuestion = async () => {
             try {
                 const response = await postService.getPost(questionId);
+                console.log(response.data);
                 if (response.data && response.data.post) {
-                    setQuestion([response.data.post]);
+                    setQuestion(response.data.post);
                 } else {
                     Utils.dispatchNotification(
                         "Question not found",
@@ -49,36 +77,44 @@ const QuestionDetail = () => {
             }
         };
 
-        const loadAnswers = async (page = 1) => {
-            try {
-                setAnswersLoading(true);
-                const response = await answerService.getAnswersForQuestion(
-                    questionId,
-                    page
-                );
-                if (response?.data?.answers) {
-                    if (page === 1) {
-                        setAnswers(response.data.answers);
-                    } else {
-                        setAnswers((prev) => [
-                            ...prev,
-                            ...response.data.answers,
-                        ]);
-                    }
-                    setHasMoreAnswers(response.data.answers.length === 10);
-                }
-            } catch (error) {
-                console.error("Error loading answers:", error);
-            } finally {
-                setAnswersLoading(false);
-            }
-        };
-
         const fetchingData = Promise.all([fetchQuestion(), loadAnswers()]);
         fetchingData.then(() => {
             setLoading(false);
         });
     }, [questionId, dispatch]);
+
+    const refreshQuestionData = useCallback(async () => {
+        setLoading(true);
+        setCurrentPage(1);
+        
+        try {
+            // Reload answers
+            const answersResponse = await answerService.getAnswersForQuestion(questionId, 1);
+            if (answersResponse?.data?.answers) {
+                setAnswers(answersResponse.data.answers);
+                setHasMoreAnswers(answersResponse.data.answers.length === 10);
+            }
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response?.data?.message || "Error refreshing data",
+                "error",
+                dispatch
+            );
+        } finally {
+            setLoading(false);
+        }
+    }, [questionId, dispatch]);
+
+    useEffect(() => {
+        const handleRefreshQuestion = (event) => {
+            if (event.detail.questionId === questionId) {
+                refreshQuestionData();
+            }
+        };
+
+        window.addEventListener('refreshQuestion', handleRefreshQuestion);
+        return () => window.removeEventListener('refreshQuestion', handleRefreshQuestion);
+    }, [questionId, refreshQuestionData]);
 
     const handleAddAnswer = () => {
         dispatch(
@@ -108,19 +144,20 @@ const QuestionDetail = () => {
 
     useEffect(() => {
         PostUtils.socketIOPost(
-            question,
+            [question],
             (updatedQuestion) => {
-                setQuestion(updatedQuestion);
+                setQuestion(updatedQuestion[0]);
             },
             profile
         );
         PostUtils.socketIOPost(answers, setAnswers, profile);
+        PostUtils.socketIOAnswer(answers, setAnswers, profile);
     }, [question, profile, answers]);
 
     return (
         <>
             <div
-                className="saves col-span-full sm:rounded-t-3xl size-full flex justify-center items-center pt-4"
+                className="saves col-span-full sm:rounded-t-3xl size-full flex justify-center items-center pt-1 sm:pt-0"
                 data-testid="question-detail"
             >
                 <div
@@ -129,7 +166,7 @@ const QuestionDetail = () => {
                 >
                     <div
                         className="saves-post w-full"
-                        style={{ height: "85vh" }}
+                        // style={{ height: "80vh" }}
                     >
                         <div
                             className="posts-container w-full overflow-y-auto"
@@ -150,27 +187,27 @@ const QuestionDetail = () => {
                                 </div>
                             </div>
                             {/* Question Section */}
-                            {!loading && question[0] && (
+                            {!loading && question && (
                                 <div
-                                    key={question[0]._id}
+                                    key={question._id}
                                     data-testid="question-item"
                                     className=" bg-primary-white !border-t-none"
                                 >
                                     {(!Utils.checkIfUserIsBlocked(
                                         profile?.blockedBy,
-                                        question[0]?.userId
+                                        question?.userId
                                     ) ||
-                                        question[0]?.userId ===
+                                        question?.userId ===
                                             profile?._id) && (
                                         <>
                                             {PostUtils.checkPrivacy(
-                                                question[0],
+                                                question,
                                                 profile,
                                                 profile?.following
                                             ) && (
                                                 <>
                                                     <Post
-                                                        post={question[0]}
+                                                        post={question}
                                                         showIcons={false}
                                                     />
                                                 </>
@@ -181,21 +218,21 @@ const QuestionDetail = () => {
                             )}
 
                             {/* Loading skeleton for question */}
-                            {loading && !question[0] && (
+                            {loading && !question._id && (
                                 <div className="mb-4">
                                     <PostSkeleton />
                                 </div>
                             )}
 
                             {/* Divider */}
-                            {!loading && question[0] && (
+                            {!loading && question && (
                                 <div className="w-full flex justify-center items-center">
                                     <div className="border-t border-gray-200 my-3 w-1/3"></div>
                                 </div>
                             )}
 
                             {/* Answers Header */}
-                            {!loading && question[0] && (
+                            {!loading && question && (
                                 <div className="bg-white rounded-lg shadow-sm mb-2">
                                     <div className="p-4 border-b border-gray-200">
                                         <div className="flex justify-between items-center">
@@ -220,7 +257,7 @@ const QuestionDetail = () => {
                             )}
 
                             {/* Answers List */}
-                            {!loading && question[0] && answers.length > 0 && (
+                            {!loading && question && answers.length > 0 && (
                                 <div className="space-y-4">
                                     {answers.map((answer, index) => (
                                         <div
@@ -270,7 +307,7 @@ const QuestionDetail = () => {
 
                             {/* No Answers State */}
                             {!loading &&
-                                question[0] &&
+                                question &&
                                 answers.length === 0 && (
                                     <div className="bg-white rounded-lg shadow-sm">
                                         <div className="text-center py-12">
@@ -302,6 +339,7 @@ const QuestionDetail = () => {
 
             {/* Answer Modal */}
             {isOpen && type === "add" && <AddAnswer />}
+            {isOpen && type === "edit" && <EditPost />}
         </>
     );
 };

@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { groupService } from "@services/api/group/group.service";
 import { groupCategories } from "../group.constants";
 import { NotificationUtils } from "@/services/utils/notification-utils.service";
+import "@pages/social/groups/Group.scss";
 
 // Import new components
 import {
@@ -183,7 +184,7 @@ const GroupStream = () => {
     }
 
     return (
-        <div className="bg-background-blur h-full w-full col-span-full rounded-t-3xl max-h-screen overflow-y-auto">
+        <div className="group-page bg-background-blur h-full w-full col-span-full rounded-t-3xl max-h-screen overflow-y-auto">
             <div className="p-4 md:p-6">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-2">

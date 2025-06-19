@@ -14,6 +14,7 @@ import useIsMobile from "@hooks/useIsMobile";
 import GroupEditModal from "./components/GroupEditModal";
 import { groupService } from "@services/api/group/group.service";
 import ImageModal from "@components/image-modal/ImageModal";
+import "@pages/social/groups/Group.scss";
 
 const Group = () => {
     const { profile } = useSelector((state) => state.user);
@@ -233,7 +234,7 @@ const Group = () => {
 
     if (error === "server_error") {
         return (
-            <div className="bg-background-blur h-full w-full col-span-full rounded-t-3xl p-6">
+            <div className="group-page bg-background-blur h-full w-full col-span-full rounded-t-3xl p-6">
                 <div className="text-center py-12">
                     <h2 className="text-xl font-semibold text-gray-800 mb-2">
                         Server Error
@@ -298,7 +299,7 @@ const Group = () => {
                     onSave={() => fetchGroupData()}
                 />
             )}
-            <div className="bg-background-blur h-full w-full col-span-full rounded-t-3xl max-h-screen overflow-y-auto">
+            <div className="group-page bg-background-blur w-full col-span-full rounded-t-3xl max-h-screen overflow-y-auto">
                 <div className="relative sm:px-4 lg:px-[10%]">
                     {/* Cover Image */}
                     <div className="h-72 bg-gradient-to-r from-blue-400 to-purple-500 relative">
@@ -370,7 +371,7 @@ const Group = () => {
                             </div>
                         )}
 
-                        <div className="col-span-full sm:col-span-3 h-[14dvh] sm:h-[5vh]"></div>
+                        <div className="col-span-full sm:col-span-3 h-[0dvh] sm:h-[0vh]"></div>
                     </div>
                 </div>
             </div>

@@ -120,11 +120,11 @@ const SavePage = () => {
     // }, [postSaves]);
 
     return (
-        <div className="saves col-span-full w-full sm:rounded-t-3xl pt-1 sm:pt-4 relative">
+        <div className="saves col-span-full w-full sm:rounded-t-3xl pt-1 sm:pt-0 relative">
             {postSaves.length > 0 && (
                 <div
                     ref={bodyRef}
-                    className="saves-post sm:!px-[10vw] flex-col w-full h-full !max-h-[85vh] overflow-y-scroll"
+                    className="saves-post sm:!px-[10vw] flex-col w-full h-full max-h-[88vh] overflow-y-scroll"
                 >
                     <Posts
                         allPosts={postSaves}

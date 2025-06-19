@@ -37,6 +37,10 @@ const SearchPage = () => {
     const [sidebarState, setSidebarState] = useState("All");
 
     useEffect(() => {
+        if(!searchQuery && !searchImage) {
+            console.warn("No search query or image provided.");
+            return;
+        }
         resetState();
         fetchSearchResults();
     }, [searchQuery, searchImage, hasImage]);
@@ -84,7 +88,7 @@ const SearchPage = () => {
     }, [allPosts, profile]);
 
     return (
-        <div className="search-pagee col-span-full max-h-[84dvh] sm:max-h-full size-full overflow-y-scroll bg-background-blur rounded-t-[30px] px-2 pt-4 flex flex-col sm:flex-row gap-4">
+        <div className="search-pagee col-span-full max-h-[88dvh] sm:max-h-full size-full overflow-y-scroll bg-background-blur rounded-t-[30px] px-2 pt-2 sm:pt-0 flex flex-col sm:flex-row gap-4">
             <SearchSidebar state={sidebarState} setState={setSidebarState} />{" "}
             {isMobile && (
                 <div

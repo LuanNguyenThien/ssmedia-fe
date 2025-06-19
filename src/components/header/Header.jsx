@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useViewportHeight } from "@hooks/useViewportHeight";
 import { IoIosArrowBack } from "react-icons/io";
 
 import { assets } from "@assets/assets";
@@ -44,6 +45,7 @@ import SearchInputDesktop from "./components/search-input.jsx/seach-input-deskto
 import Dropdown from "@components/dropdown/Dropdown";
 import MessageSidebar from "@components/message-sidebar/MessageSidebar";
 const Header = () => {
+    useViewportHeight();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
