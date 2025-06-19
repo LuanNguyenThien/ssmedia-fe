@@ -19,12 +19,21 @@ import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 import { icons, postPrivacy } from "@/assets/assets";
 import { ProfileUtils } from "@/services/utils/profile-utils.service";
 import ReportModal from "@/components/modal/ReportModal";
+import EditAnswer from "@components/posts/post-modal/post-edit/EditAnswer";
 
 const PostMetaRow = ({ post }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { profile } = useSelector((state) => state.user);
     const { commentsModalIsOpen } = useSelector((state) => state.modal);
+
+    const isCurrentPostModal = useSelector(
+        (state) =>
+            state.modal.isOpen &&
+            state.modal.type === "editanswer" &&
+            state.modal.modalType === "editanswer" &&
+            state.modal.data?._id === post._id
+    );
 
     const dropdownRef = useRef(null);
     const [setSelectedPostCommentId] = useLocalStorage(
@@ -92,9 +101,37 @@ const PostMetaRow = ({ post }) => {
         setIsDropdownOpen(false);
     };
 
+    const handleEditAnswer = () => {
+        dispatch(updatePostItem(post));
+        dispatch(
+            openModal({
+                type: "editanswer",
+                data: {
+                    _id: post?._id,
+                    htmlPost: post?.htmlPost,
+                    post: post?.post,
+                    questionId: post?.questionId,
+                    feelings: post?.feelings,
+                    privacy: post?.privacy,
+                    gifUrl: post?.gifUrl,
+                    userId: post?.userId,
+                },
+                modalType: "editanswer",
+            })
+        );
+        setIsDropdownOpen(false);
+    };
+
     const handleDeletePost = () => {
         dispatch(
             toggleDeleteDialog({ toggle: true, data: post, dialogType: "post" })
+        );
+        setIsDropdownOpen(false);
+    };
+
+    const handleDeleteAnswer = () => {
+        dispatch(
+            toggleDeleteDialog({ toggle: true, data: post, dialogType: "answer" })
         );
         setIsDropdownOpen(false);
     };
@@ -310,28 +347,28 @@ const PostMetaRow = ({ post }) => {
                                   <div className="flex items-center justify-center bg-gray-200 group-hover:bg-white group-focus:bg-white rounded-full p-2 transition-colors duration-200">
                                     <FaFlag className="size-4 text-red-500 group-hover:text-red-500 group-focus:text-red-500" />
                                   </div>
-                                  <span className="font-medium">Report post</span>
+                                  <span className="font-medium">{ (post?.questionId || post?.type === 'answer') ? `Report answer` : `Report post`}</span>
                                 </button>
                               )}
                               {isPostOwner && (
                                 <>
                                   <button
                                     className="flex items-center gap-1 w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-primary hover:text-white transition-all duration-200 group focus:outline-none focus:bg-primary focus:text-white"
-                                    onClick={handleEditPost}
+                                    onClick={ (post?.questionId || post?.type === 'answer') ? handleEditAnswer : handleEditPost}
                                   >
                                     <div className="flex items-center justify-center bg-gray-200 group-hover:bg-white group-focus:bg-white rounded-full p-2 transition-colors duration-200">
                                       <FaEdit className="size-4 text-primary group-hover:text-primary group-focus:text-primary" />
                                     </div>
-                                    <span className="font-medium">Edit post</span>
+                                    <span className="font-medium">{ (post?.questionId || post?.type === 'answer') ? `Edit answer` : `Edit post`}</span>
                                   </button>
                                   <button
                                     className="flex items-center gap-3 w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-red-500 hover:text-white transition-all duration-200 group focus:outline-none focus:bg-red-500 focus:text-white"
-                                    onClick={handleDeletePost}
+                                    onClick={(post?.questionId || post?.type === 'answer') ? handleDeleteAnswer : handleDeletePost}
                                   >
                                     <div className="flex items-center justify-center bg-gray-200 group-hover:bg-white group-focus:bg-white rounded-full p-2 transition-colors duration-200">
                                       <FaTrash className="size-4 text-red-500 group-hover:text-red-500 group-focus:text-red-500" />
                                     </div>
-                                    <span className="font-medium">Delete post</span>
+                                    <span className="font-medium">{(post?.questionId || post?.type === 'answer') ? `Delete answer` : `Delete post`}</span>
                                   </button>
                                 </>
                               )}
@@ -340,6 +377,7 @@ const PostMetaRow = ({ post }) => {
                     </div>
                 </div>
             </div>
+            {isCurrentPostModal && <EditAnswer />}
         </>
     );
 };

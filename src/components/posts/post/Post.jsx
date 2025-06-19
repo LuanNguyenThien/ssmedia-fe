@@ -11,6 +11,7 @@ import { useCreateBlockNote } from "@blocknote/react";
 
 import { Utils } from "@services/utils/utils.service";
 import { ImageUtils } from "@services/utils/image-utils.service";
+import { answerService } from "@services/api/answer/answer.service";
 import { postService } from "@services/api/post/post.service";
 import useLocalStorage from "@hooks/useLocalStorage";
 import ReactionsModal from "@components/posts/reactions/reactions-modal/ReactionsModal";
@@ -47,6 +48,23 @@ const Post = ({ post }) => {
     );
     const selectedPostReactId = useLocalStorage("selectedPostReactId", "get");
     const editor = useCreateBlockNote();
+
+    const handleDeleteAnswer = async () => {
+        try {
+            await answerService.deleteAnswer(post._id, post.questionId);
+            Utils.dispatchNotification(
+                "Answer deleted successfully",
+                "success",
+                dispatch
+            );
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response?.data?.message || "Failed to delete answer",
+                "error",
+                dispatch
+            );
+        }
+    }
 
     const handleDeletePost = async () => {
         try {
@@ -146,6 +164,20 @@ const Post = ({ post }) => {
                         firstButtonText="Delete"
                         secondButtonText="Cancel"
                         firstBtnHandler={handleDeletePost}
+                        secondBtnHandler={() =>
+                            dispatch(toggleDeleteDialog({ toggle: false }))
+                        }
+                    />
+                )}
+            {deleteDialogIsOpen &&
+                deleteDialogType === "answer" &&
+                data &&
+                data._id === post?._id && (
+                    <Dialog
+                        title="Are you sure you want to delete this answer?"
+                        firstButtonText="Delete"
+                        secondButtonText="Cancel"
+                        firstBtnHandler={handleDeleteAnswer}
                         secondBtnHandler={() =>
                             dispatch(toggleDeleteDialog({ toggle: false }))
                         }

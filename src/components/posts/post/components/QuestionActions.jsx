@@ -126,7 +126,16 @@ const QuestionActions = ({ post }) => {
                             {answerCount > 1 ? "answers" : "answer"}
                         </div>
                     ) : (
-                        <div className="text-xs md:text-sm text-center font-medium text-primary-black/50 cursor-pointer hover:underline hover:text-primary transition-colors duration-200">
+                        <div className="text-xs md:text-sm text-center font-medium text-primary-black/50 cursor-pointer hover:underline hover:text-primary transition-colors duration-200"
+                            onClick={navigateToQuestionDetail}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    navigateToQuestionDetail();
+                                }
+                            }} tabIndex={0} role="button"
+                            aria-label={`View answers to this question`}
+                        >
                             No answers yet
                         </div>
                     )}

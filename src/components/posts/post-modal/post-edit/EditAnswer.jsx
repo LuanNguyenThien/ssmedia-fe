@@ -1,6 +1,6 @@
 import ModalBoxContent from "@components/posts/post-modal/modal-box-content/ModalBoxContent";
 import PostWrapper from "@components/posts/modal-wrappers/post-wrapper/PostWrapper";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useCreateBlockNote } from "@blocknote/react";
@@ -9,16 +9,18 @@ import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 import { FaTimes } from "react-icons/fa";
 import { PostUtils } from "@services/utils/post-utils.service";
-import { closeModal } from "@redux/reducers/modal/modal.reducer";
-import { answerService } from "@services/api/answer/answer.service";
+import { closeModal, addPostFeeling } from "@redux/reducers/modal/modal.reducer";
 import { Utils } from "@services/utils/utils.service";
 import Spinner from "@components/spinner/Spinner";
 import Avatar from "@components/avatar/Avatar";
 import ImageModal from "@components/image-modal/ImageModal";
 import "@components/posts/post-modal/post-add/AddPost.scss";
 import useIsMobile from "@hooks/useIsMobile";
+import { find } from "lodash";
+import { feelingsList } from "@services/utils/static.data";
+import { postService } from "@services/api/post/post.service";
 
-export default function AddAnswer({ questionId }) {
+export default function EditAnswer() {
     const modalRef = useRef(null);
     const headerRef = useRef(null);
     const footerRef = useRef(null);
@@ -28,22 +30,29 @@ export default function AddAnswer({ questionId }) {
     const [selectedImageUrl, setSelectedImageUrl] = useState("");
 
     const { feeling, data } = useSelector((state) => state.modal);
-    const { privacy } = useSelector((state) => state.post);
+    const postData = useSelector((state) => state.post);
     const { profile } = useSelector((state) => state.user);
     const isMobile = useIsMobile();
     const [loading, setLoading] = useState(false);
+    const [isTextEdited, setIsTextEdited] = useState(false);
+    const [apiResponse, setApiResponse] = useState("");
+    const [questionData, setQuestionData] = useState(null);
+    const [loadingQuestion, setLoadingQuestion] = useState(false);
+    
     const [answerData, setAnswerData] = useState({
         htmlPost: "",
         post: "",
-        questionId: questionId || data?.questionId,
+        questionId: "",
         bgColor: "#ffffff",
         privacy: "",
         feelings: "",
         profilePicture: "",
+        type: "answer"
     });
     const [disable, setDisable] = useState(true);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    
     const editor = useCreateBlockNote({ uploadFile });
 
     const modalClasses = useMemo(() => {
@@ -56,17 +65,37 @@ export default function AddAnswer({ questionId }) {
         return `${base} w-[500px] h-[80vh] mx-auto`;
     }, [isMobile]);
 
-    // Lấy thông tin question từ data trong modal
-    const questionData = data || {};
+    // Lấy thông tin answer từ data trong modal
+    const answerInfo = data || {};
     const {
-        question,
-        username,
-        gifUrl,
-        imgId,
-        imgVersion,
-        videoId,
-        videoVersion,
-    } = questionData;
+        _id: answerId,
+        htmlPost,
+        post,
+        questionId,
+        feelings,
+        privacy,
+        userId,
+    } = answerInfo;
+
+    // Function để fetch question data
+    const fetchQuestionData = async (questionId) => {
+        try {
+            setLoadingQuestion(true);
+            const response = await postService.getPost(questionId);
+            if (response.data && response.data.post) {
+                setQuestionData(response.data.post);
+            }
+        } catch (error) {
+            console.error("Error fetching question:", error);
+            Utils.dispatchNotification(
+                "Error loading question data",
+                "error",
+                dispatch
+            );
+        } finally {
+            setLoadingQuestion(false);
+        }
+    };
 
     // Function để mở image modal
     const openImageModal = (imageUrl) => {
@@ -112,10 +141,24 @@ export default function AddAnswer({ questionId }) {
         PostUtils.postInputEditable(plainText, answerData, setAnswerData);
         PostUtils.postInputHtml(newBlocks, answerData, setAnswerData);
         setDisable(newBlocks.trim().length === 0);
+        setIsTextEdited(true);
     };
 
     const closeAnswerModal = () => {
         dispatch(closeModal());
+    };
+
+    const getFeeling = useCallback(
+        (name) => {
+            const feeling = find(feelingsList, (data) => data.name === name);
+            dispatch(addPostFeeling({ feeling }));
+        },
+        [dispatch]
+    );
+
+    const loadEditor = async (text) => {
+        const blocks = await editor.tryParseHTMLToBlocks(text || "");
+        editor.replaceBlocks(editor.document, blocks);
     };
 
     useEffect(() => {
@@ -128,14 +171,11 @@ export default function AddAnswer({ questionId }) {
                 
                 const availableHeight = modalHeight - headerHeight - footerHeight - padding;
                 const finalHeight = Math.max(availableHeight, 200);
-
-                console.log("Calculated BlockNote height:", finalHeight);
                 
                 setBlockNoteHeight(`${finalHeight}px`);
             }
         };
 
-        // Delay để đảm bảo DOM đã render
         const timer = setTimeout(calculateHeight, 100);
         
         window.addEventListener('resize', calculateHeight);
@@ -160,35 +200,75 @@ export default function AddAnswer({ questionId }) {
         );
     }, [answerData]);
 
-    const createAnswer = async () => {
+    // Load dữ liệu ban đầu
+    useEffect(() => {
+        if (htmlPost) {
+            loadEditor(htmlPost);
+        }
+        
+        // Set initial data từ answer info
+        setAnswerData({
+            htmlPost: htmlPost || "",
+            post: post || "",
+            questionId: questionId || "",
+            bgColor: "#ffffff",
+            privacy: privacy || "Public",
+            feelings: feelings || "",
+            profilePicture: profile?.profilePicture || "",
+            type: "answer"
+        });
+
+        // Set feeling if exists
+        if (feelings) {
+            getFeeling(feelings);
+        }
+
+        // Fetch question data nếu có questionId
+        if (questionId) {
+            fetchQuestionData(questionId);
+        }
+    }, [htmlPost, post, questionId, privacy, feelings, profile?.profilePicture, getFeeling]);
+
+    useEffect(() => {
+        if (!loading && apiResponse === "success") {
+            dispatch(closeModal());
+        }
+    }, [loading, dispatch, apiResponse]);
+
+    const updateAnswer = async () => {
         setLoading(true);
+        setDisable(true);
         try {
             if (Object.keys(feeling).length) {
                 answerData.feelings = feeling?.name;
             }
-            answerData.privacy = privacy || "Public";
+            answerData.privacy = postData.privacy || "Public";
             answerData.profilePicture = profile?.profilePicture;
-            answerData.questionId = questionId || data?.questionId;
+            answerData.type = "answer";
 
-            // Xóa <br>, <br/>, <br></br> ở cuối answer
+            // Xóa <br>, <br/>, <br></br> ở cuối answer và thêm class="none"
             if (typeof answerData.htmlPost === "string") {
                 answerData.htmlPost = answerData.htmlPost
                     .replace(/(<br\s*\/?>|<br><\/br>)+$/gi, "")
                     .replace(/(<p>\s*<\/p>)+$/gi, '<p class="none"></p>');
             }
 
-            const response = await answerService.createAnswer(answerData);
-            if (response) {
-                setLoading(false);
-                closeAnswerModal();
-                // Chuyển hướng đến trang question detail
-                navigate(
-                    `/app/social/question/${questionId || data?.questionId}`
-                );
-            }
+            await PostUtils.sendUpdatePostRequest(
+                answerId,
+                answerData,
+                setApiResponse,
+                setLoading,
+                dispatch
+            );
         } catch (error) {
-            console.error("Error creating answer:", error);
-            setLoading(false);
+            console.error("Error updating answer:", error);
+            PostUtils.dispatchNotification(
+                error.response?.data?.message || "Error updating answer",
+                "error",
+                setApiResponse,
+                setLoading,
+                dispatch
+            );
         }
     };
 
@@ -212,9 +292,35 @@ export default function AddAnswer({ questionId }) {
 
     // Render question preview
     const renderQuestionPreview = () => {
+        if (loadingQuestion) {
+            return (
+                <div className={`${isMobile ? "pb-6" : "pb-8"}`}>
+                    <div className="animate-pulse">
+                        <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                            <div className="flex-1">
+                                <div className="h-4 bg-gray-200 rounded w-32 mb-2"></div>
+                                <div className="h-6 bg-gray-200 rounded w-full mb-2"></div>
+                                <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        if (!questionData) {
+            return (
+                <div className={`${isMobile ? "pb-6" : "pb-8"}`}>
+                    <div className="text-center py-4">
+                        <p className="text-gray-500">Unable to load question data</p>
+                    </div>
+                </div>
+            );
+        }
+
         return (
             <div className={`${isMobile ? "pb-6" : "pb-8"}`}>
-                {/* Question */}
                 <div className="space-y-4">
                     <div
                         className={`flex items-start ${
@@ -240,7 +346,7 @@ export default function AddAnswer({ questionId }) {
                                     isMobile ? "text-xs" : "text-sm"
                                 } mb-2 font-medium`}
                             >
-                                {username} asked
+                                {questionData.username} asked
                             </p>
                             <h1
                                 className={`${
@@ -249,36 +355,36 @@ export default function AddAnswer({ questionId }) {
                                         : "text-xl leading-7 mb-4"
                                 } font-medium text-gray-900`}
                             >
-                                {question}
+                                {questionData.post}
                             </h1>
                         </div>
                     </div>
 
                     {/* Question Media - only show if exists */}
-                    {(gifUrl ||
-                        (imgId && imgVersion) ||
-                        (videoId && videoVersion)) && (
+                    {(questionData.gifUrl ||
+                        (questionData.imgId && questionData.imgVersion) ||
+                        (questionData.videoId && questionData.videoVersion)) && (
                         <div className={`${isMobile ? "ml-8" : "ml-11"}`}>
                             {/* GIF */}
-                            {gifUrl && (
+                            {questionData.gifUrl && (
                                 <div className="rounded-lg overflow-hidden bg-gray-50 mb-4">
                                     <img
-                                        src={gifUrl}
+                                        src={questionData.gifUrl}
                                         alt="Question attachment"
                                         className="w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
-                                        onClick={() => openImageModal(gifUrl)}
+                                        onClick={() => openImageModal(questionData.gifUrl)}
                                         loading="lazy"
                                     />
                                 </div>
                             )}
 
                             {/* Image */}
-                            {imgId && imgVersion && (
+                            {questionData.imgId && questionData.imgVersion && (
                                 <div className="rounded-lg overflow-hidden bg-gray-50 mb-4">
                                     <img
                                         src={Utils.appImageUrl(
-                                            imgVersion,
-                                            imgId
+                                            questionData.imgVersion,
+                                            questionData.imgId
                                         )}
                                         alt="Question attachment"
                                         className={`w-full h-auto ${
@@ -287,8 +393,8 @@ export default function AddAnswer({ questionId }) {
                                         onClick={() =>
                                             openImageModal(
                                                 Utils.appImageUrl(
-                                                    imgVersion,
-                                                    imgId
+                                                    questionData.imgVersion,
+                                                    questionData.imgId
                                                 )
                                             )
                                         }
@@ -298,7 +404,7 @@ export default function AddAnswer({ questionId }) {
                             )}
 
                             {/* Video */}
-                            {videoId && videoVersion && (
+                            {questionData.videoId && questionData.videoVersion && (
                                 <div className="rounded-lg overflow-hidden bg-gray-50 mb-4">
                                     <video
                                         controls
@@ -306,8 +412,8 @@ export default function AddAnswer({ questionId }) {
                                             isMobile ? "max-h-48" : "max-h-96"
                                         }`}
                                         src={Utils.appImageUrl(
-                                            videoVersion,
-                                            videoId
+                                            questionData.videoVersion,
+                                            questionData.videoId
                                         )}
                                         preload="metadata"
                                     >
@@ -344,7 +450,7 @@ export default function AddAnswer({ questionId }) {
                             className="modal-box-loading"
                             data-testid="modal-box-loading"
                         >
-                            <span>Publishing your answer...</span>
+                            <span>Updating your answer...</span>
                             <Spinner />
                         </div>
                     )}
@@ -374,7 +480,7 @@ export default function AddAnswer({ questionId }) {
                                     {profile?.username}
                                 </div>
                                 <div className="text-gray-500 text-sm">
-                                    Writing an answer
+                                    Editing answer
                                 </div>
                             </div>
                         </div>
@@ -457,7 +563,7 @@ export default function AddAnswer({ questionId }) {
                                             editor={editor}
                                             onChange={handleEditorDataChange}
                                             theme="light"
-                                            placeholder="Write your answer here. Share your knowledge and help others learn..."
+                                            placeholder="Edit your answer here..."
                                         />
                                     </div>
                                 </div>
@@ -484,7 +590,7 @@ export default function AddAnswer({ questionId }) {
                                     isMobile ? "text-center" : ""
                                 }`}
                             >
-                                Be helpful and kind in your answer
+                                Update your answer to help others
                             </div>
                             <div
                                 className={`flex gap-3 ${
@@ -500,7 +606,7 @@ export default function AddAnswer({ questionId }) {
                                     Cancel
                                 </button>
                                 <button
-                                    onClick={createAnswer}
+                                    onClick={updateAnswer}
                                     disabled={disable}
                                     className={`${
                                         isMobile ? "px-4 py-2" : "px-6 py-2.5"
@@ -510,7 +616,7 @@ export default function AddAnswer({ questionId }) {
                                             : "bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md"
                                     }`}
                                 >
-                                    Publish
+                                    Update
                                 </button>
                             </div>
                         </div>
