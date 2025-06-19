@@ -30,6 +30,18 @@ const NotificationPreview = ({
         secondBtnHandler();
     };
     const handleGoToQuestion = () => {
+        const currentUrl = window.location.href;
+        const targetUrl = `${window.location.origin}/app/social/question/${entityId}`;
+        
+        if (currentUrl === targetUrl) {
+            // Dispatch custom event để refresh question page
+            window.dispatchEvent(new CustomEvent('refreshQuestion', { 
+                detail: { questionId: entityId } 
+            }));
+            secondBtnHandler();
+            return;
+        }
+        
         navigate(`/app/social/question/${entityId}`);
         secondBtnHandler();
     };

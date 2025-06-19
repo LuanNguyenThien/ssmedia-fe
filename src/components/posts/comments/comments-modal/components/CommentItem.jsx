@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { commentService } from "@services/api/comment/comment.service";
 import { useSelector, useDispatch } from "react-redux";
 import { Utils } from "@services/utils/utils.service";
+import { useMemo } from 'react'
 
 const CommentItem = ({
     comment,
@@ -13,7 +14,8 @@ const CommentItem = ({
     onReply,
     isReply = false,
     onCommentUpdated,
-    postId
+    postId,
+    allComments = []
 }) => {
     const { profile } = useSelector((state) => state.user);
     const dispatch = useDispatch();
@@ -27,6 +29,11 @@ const CommentItem = ({
     const timeAgo = comment?.createdAt
         ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: false })
         : "Just now";
+
+    const replyCount = useMemo(() => 
+        allComments.filter(c => c.parentId === comment._id).length,
+        [allComments, comment._id]
+    );
     
     // Fetch user's reaction to this comment
     useEffect(() => {
@@ -258,7 +265,9 @@ const CommentItem = ({
                                         d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
                                     />
                                 </svg>
-                                <span className="text-sm">Reply</span>
+                                <span className="text-sm">
+                                    {replyCount > 0 ? (replyCount > 1 ? `View ${replyCount} replies` : 'View 1 reply') : 'Reply'}
+                                </span>
                             </button>
                         )}
                     </div>
