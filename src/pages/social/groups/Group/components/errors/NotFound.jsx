@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
+import "@pages/social/groups/Group.scss";
 
 const NotFound = () => {
     return (
-        <div className="bg-background-blur h-full w-full col-span-full rounded-t-3xl p-6">
+        <div className="group-page bg-background-blur h-full w-full col-span-full rounded-t-3xl p-6">
             <div className="max-w-2xl mx-auto text-center py-12 px-4">
                 <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <FaSearch className="text-gray-400 text-3xl" />

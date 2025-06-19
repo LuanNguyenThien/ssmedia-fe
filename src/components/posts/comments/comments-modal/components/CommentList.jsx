@@ -40,6 +40,7 @@ const CommentList = ({
             isReply={false}
             onCommentUpdated={handleCommentUpdated}
             postId={post?._id}
+            allComments={comments}
           />
           
           {/* Render replies if open */}
@@ -57,6 +58,7 @@ const CommentList = ({
                     isReply={true}
                     onCommentUpdated={handleCommentUpdated}
                     postId={post?._id}
+                    allComments={comments}
                   />
                 ))}
               

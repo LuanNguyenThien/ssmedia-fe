@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useViewportHeight } from "@hooks/useViewportHeight";
 import { IoIosArrowBack } from "react-icons/io";
 
 import { assets } from "@assets/assets";
@@ -44,6 +45,7 @@ import SearchInputDesktop from "./components/search-input.jsx/seach-input-deskto
 import Dropdown from "@components/dropdown/Dropdown";
 import MessageSidebar from "@components/message-sidebar/MessageSidebar";
 const Header = () => {
+    useViewportHeight();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
@@ -73,6 +75,14 @@ const Header = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchImage, setSearchImage] = useState(null);
     const [isSearch, setIsSearch] = useState(false);
+
+    useEffect(() => {
+        if (section !== "search") {
+            setSearchTerm("");
+            setSearchImage(null);
+            setIsSearch(false);
+        }
+    }, [section]);
 
     //notifications
     const notificationRef = useRef(null);
@@ -211,6 +221,7 @@ const Header = () => {
                     setNotificationDialogContent
                 );
             }
+            getUserNotifications();
         } catch (error) {
             Utils.dispatchNotification(
                 error.response.data.message,

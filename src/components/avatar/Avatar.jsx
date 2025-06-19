@@ -57,6 +57,7 @@ const Avatar = ({
                         height: `${size}px`,
                         borderRadius: `${round ? "50%" : ""}`,
                     }}
+                    loading="lazy"
                 />
             )}
         </>

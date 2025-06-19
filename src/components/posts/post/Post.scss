@@ -12,12 +12,6 @@
         padding: 0;
         width: 3.5rem;
     }
-
-    @media (max-width: 767px) {
-        // Mobile styles
-        flex-direction: row;
-        padding-left: 0.25rem;
-    }
 }
 
 // Mobile vote bar specific styles

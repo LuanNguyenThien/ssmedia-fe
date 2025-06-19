@@ -1,6 +1,6 @@
 import ModalBoxContent from "@components/posts/post-modal/modal-box-content/ModalBoxContent";
 import PostWrapper from "@components/posts/modal-wrappers/post-wrapper/PostWrapper";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useCreateBlockNote } from "@blocknote/react";
@@ -19,6 +19,11 @@ import "@components/posts/post-modal/post-add/AddPost.scss";
 import useIsMobile from "@hooks/useIsMobile";
 
 export default function AddAnswer({ questionId }) {
+    const modalRef = useRef(null);
+    const headerRef = useRef(null);
+    const footerRef = useRef(null);
+    const [blockNoteHeight, setBlockNoteHeight] = useState('350px');
+
     const [showImageModal, setShowImageModal] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState("");
 
@@ -40,6 +45,16 @@ export default function AddAnswer({ questionId }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const editor = useCreateBlockNote({ uploadFile });
+
+    const modalClasses = useMemo(() => {
+        const base = "modal-box flex flex-col";
+        
+        if (isMobile) {
+            return `${base} ios-modal-fix w-full h-full max-h-screen`;
+        }
+        
+        return `${base} w-[500px] h-[80vh] mx-auto`;
+    }, [isMobile]);
 
     // Lấy thông tin question từ data trong modal
     const questionData = data || {};
@@ -102,6 +117,33 @@ export default function AddAnswer({ questionId }) {
     const closeAnswerModal = () => {
         dispatch(closeModal());
     };
+
+    useEffect(() => {
+        const calculateHeight = () => {
+            if (modalRef.current && headerRef.current && footerRef.current) {
+                const modalHeight = modalRef.current.offsetHeight;
+                const headerHeight = headerRef.current.offsetHeight;
+                const footerHeight = footerRef.current.offsetHeight;
+                const padding = 35;
+                
+                const availableHeight = modalHeight - headerHeight - footerHeight - padding;
+                const finalHeight = Math.max(availableHeight, 200);
+
+                console.log("Calculated BlockNote height:", finalHeight);
+                
+                setBlockNoteHeight(`${finalHeight}px`);
+            }
+        };
+
+        // Delay để đảm bảo DOM đã render
+        const timer = setTimeout(calculateHeight, 100);
+        
+        window.addEventListener('resize', calculateHeight);
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('resize', calculateHeight);
+        };
+    }, []);
 
     useEffect(() => {
         const trimmed = answerData.htmlPost.trim();
@@ -294,11 +336,8 @@ export default function AddAnswer({ questionId }) {
             <PostWrapper>
                 <div></div>
                 <div
-                    className={`modal-box ${
-                        isMobile
-                            ? "ios-modal-fix"
-                            : "!w-screen !h-[90vh] sm:!h-[80vh] sm:!max-w-1/2"
-                    }`}
+                    ref={modalRef}
+                    className={modalClasses}
                 >
                     {loading && (
                         <div
@@ -312,6 +351,7 @@ export default function AddAnswer({ questionId }) {
 
                     {/* Header */}
                     <div
+                        ref={headerRef}
                         className={`flex items-center justify-between ${
                             isMobile ? "px-4 py-3" : "px-8 py-6"
                         } border-b border-gray-100`}
@@ -362,7 +402,7 @@ export default function AddAnswer({ questionId }) {
                     >
                         <div
                             className={`${
-                                isMobile ? "px-4 py-4" : "px-8 py-6"
+                                isMobile ? "px-4 py-4" : "px-4 py-4"
                             }`}
                         >
                             {/* Question Preview */}
@@ -406,10 +446,11 @@ export default function AddAnswer({ questionId }) {
                                     className={`${isMobile ? "" : ""}`}
                                 >
                                     <div
-                                        className={`border border-gray-200 rounded-xl overflow-hidden ${
+                                        style={{ height: blockNoteHeight }}
+                                        className={`border border-gray-200 rounded-xl overflow-auto ${
                                             isMobile
-                                                ? "min-h-[200px] max-h-[300px] p-1"
-                                                : "min-h-[350px] p-2"
+                                                ? "p-0"
+                                                : "p-1"
                                         } focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-50 transition-all`}
                                     >
                                         <BlockNoteView
@@ -426,6 +467,7 @@ export default function AddAnswer({ questionId }) {
 
                     {/* Footer */}
                     <div
+                        ref={footerRef}
                         className={`${
                             isMobile ? "px-4 py-4" : "px-8 py-6"
                         } border-t border-gray-100 bg-gray-50/50`}

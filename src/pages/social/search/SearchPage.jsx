@@ -9,11 +9,14 @@ import SearchImageTab from "./components/SearchImageMb";
 import { icons } from "@/assets/assets";
 import { DynamicSVG } from "@/components/sidebar/components/SidebarItems";
 import useIsMobile from "@hooks/useIsMobile";
+import { PostUtils } from "@/services/utils/post-utils.service";
+import { useSelector } from "react-redux";
 
 const PAGE_SIZE = 5;
 
 const SearchPage = () => {
     const isMobile = useIsMobile();
+    const { profile } = useSelector((state) => state.user);
     const [allUsers, setAllUsers] = useState([]);
     const [displayedUsers, setDisplayedUsers] = useState([]);
     const [allPosts, setAllPosts] = useState([]);
@@ -34,6 +37,10 @@ const SearchPage = () => {
     const [sidebarState, setSidebarState] = useState("All");
 
     useEffect(() => {
+        if(!searchQuery && !searchImage) {
+            console.warn("No search query or image provided.");
+            return;
+        }
         resetState();
         fetchSearchResults();
     }, [searchQuery, searchImage, hasImage]);
@@ -76,8 +83,12 @@ const SearchPage = () => {
 
     const hasMoreUsers = displayedUsers.length < allUsers.length;
 
+    useEffect(() => {
+        PostUtils.socketIOPost(allPosts, setAllPosts, profile);
+    }, [allPosts, profile]);
+
     return (
-        <div className="search-pagee col-span-full max-h-[84dvh] sm:max-h-full size-full overflow-y-scroll bg-background-blur rounded-t-[30px] px-2 pt-4 flex flex-col sm:flex-row gap-4">
+        <div className="search-pagee col-span-full max-h-[88dvh] sm:max-h-full size-full overflow-y-scroll bg-background-blur rounded-t-[30px] px-2 pt-2 sm:pt-0 flex flex-col sm:flex-row gap-4">
             <SearchSidebar state={sidebarState} setState={setSidebarState} />{" "}
             {isMobile && (
                 <div

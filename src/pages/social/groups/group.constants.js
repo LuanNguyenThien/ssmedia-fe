@@ -1,0 +1,28 @@
+const groupCategories = [
+    "Technology",
+    "Business",
+    "Education",
+    "Entertainment",
+    "Sports",
+    "Health & Fitness",
+    "Travel",
+    "Food & Cooking",
+    "Art & Design",
+    "Music",
+    "Photography",
+    "Gaming",
+    "Science",
+    "Politics",
+    "Lifestyle",
+    "DIY & Crafts",
+    "Parenting",
+    "Books",
+    "Movies & TV",
+    "Fashion",
+    "Finance",
+    "Real Estate",
+    "Marketing",
+    "Other",
+];
+
+export { groupCategories };

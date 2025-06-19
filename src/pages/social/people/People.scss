@@ -1,6 +1,12 @@
-.people {
-  background-color: var(--white-1);
-}
-.card-container {
+// .people {
+//   background-color: var(--white-1);
+// }
+// .card-container {
   
+// }
+.people {
+    height: calc(var(--root-height) - var(--header-footer-height));
+    -webkit-overflow-scrolling: touch; /* Thêm để cuộn mượt trên iOS */
+    overflow-y: auto;
 }
+

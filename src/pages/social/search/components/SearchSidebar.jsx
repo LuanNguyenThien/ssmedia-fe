@@ -37,7 +37,7 @@ const SearchSidebar = ({ state, setState }) => {
     }
 
     return (
-        <div className="bg-primary-white rounded-[30px] p-6 mb-4 w-full sm:w-1/3 lg:w-1/4 flex flex-col">
+        <div className="bg-primary-white rounded-[30px] p-6 mt-4 mb-4 w-full sm:w-1/3 lg:w-1/4 flex flex-col">
             <span className="text-2xl font-bold pb-2 ">Search results</span>
 
             <div className="flex flex-col w-full gap-1">

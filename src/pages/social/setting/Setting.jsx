@@ -4,6 +4,7 @@ import NotificationSetting from "./components/NotificationSetting";
 import AccountSetting from "./components/AccountSetting";
 import { useSelector } from "react-redux";
 import PersonalizeSetting from "./components/PersonalizeSetting";
+import "@pages/social/setting/Setting.scss";
 
 const Setting = () => {
     const { profile } = useSelector((state) => state.user);
@@ -28,7 +29,7 @@ const Setting = () => {
     };
 
     return (
-        <div className="bg-gray-100 rounded-t-3xl h-[88vh] max-h-[88vh] py-4 px-4 col-span-full overflow-y-scroll ">
+        <div className="setting-page bg-gray-100 rounded-t-3xl max-h-[88vh] py-4 px-4 col-span-full overflow-y-scroll ">
             <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="flex flex-col md:flex-row">
                     {/* Sidebar */}

@@ -11,6 +11,7 @@ import { useCreateBlockNote } from "@blocknote/react";
 
 import { Utils } from "@services/utils/utils.service";
 import { ImageUtils } from "@services/utils/image-utils.service";
+import { answerService } from "@services/api/answer/answer.service";
 import { postService } from "@services/api/post/post.service";
 import useLocalStorage from "@hooks/useLocalStorage";
 import ReactionsModal from "@components/posts/reactions/reactions-modal/ReactionsModal";
@@ -48,6 +49,23 @@ const Post = ({ post }) => {
     const selectedPostReactId = useLocalStorage("selectedPostReactId", "get");
     const editor = useCreateBlockNote();
 
+    const handleDeleteAnswer = async () => {
+        try {
+            await answerService.deleteAnswer(post._id, post.questionId);
+            Utils.dispatchNotification(
+                "Answer deleted successfully",
+                "success",
+                dispatch
+            );
+        } catch (error) {
+            Utils.dispatchNotification(
+                error.response?.data?.message || "Failed to delete answer",
+                "error",
+                dispatch
+            );
+        }
+    }
+
     const handleDeletePost = async () => {
         try {
             await postService.deletePost(post._id);
@@ -73,7 +91,7 @@ const Post = ({ post }) => {
         } else if (post?.gifUrl && post.bgColor === "#ffffff") {
             imageUrl = post?.gifUrl;
         }
-        const bgColor = await ImageUtils.getBackgroundImageColor(imageUrl);
+        const bgColor = ImageUtils.getBackgroundImageColor(imageUrl);
         setBackgroundImageColor(bgColor);
     };
     const loadEditor = async (text) => {
@@ -81,7 +99,7 @@ const Post = ({ post }) => {
         editor.replaceBlocks(editor.document, blocks);
     };
     useEffect(() => {
-        getBackgroundImageColor(post);
+        // getBackgroundImageColor(post);
         loadEditor(post.htmlPost || "");
     }, [post]);
 
@@ -151,6 +169,20 @@ const Post = ({ post }) => {
                         }
                     />
                 )}
+            {deleteDialogIsOpen &&
+                deleteDialogType === "answer" &&
+                data &&
+                data._id === post?._id && (
+                    <Dialog
+                        title="Are you sure you want to delete this answer?"
+                        firstButtonText="Delete"
+                        secondButtonText="Cancel"
+                        firstBtnHandler={handleDeleteAnswer}
+                        secondBtnHandler={() =>
+                            dispatch(toggleDeleteDialog({ toggle: false }))
+                        }
+                    />
+                )}
             <div
                 className={`post-card flex bg-white shadow p-4 md:p-6 md:gap-6 flex-col md:flex-row ${
                     commentsModalIsOpen && selectedPostCommentId === post?._id
@@ -185,7 +217,7 @@ const Post = ({ post }) => {
 
                         {/* Mobile only: Vote bar above meta row */}
                         <div className="flex md:hidden w-full items-center justify-between mt-3 mb-1">
-                            <div className="mobile-vote-bar border rounded-full py-1 px-1">
+                            <div className="mobile-vote-bar w-max border rounded-full py-1 px-1">
                                 <PostVoteBar post={post} />
                             </div>
                             {/* Mobile QuestionActions */}

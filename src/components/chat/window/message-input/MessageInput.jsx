@@ -117,12 +117,31 @@ const MessageInput = memo(({ setChatMessage }) => {
         setShowImagePreview(false);
     }, []);
 
+    // Handle paste event for images
+    const handlePaste = useCallback(
+        (event) => {
+            const items = event.clipboardData?.items;
+            if (!items) return;
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.type.startsWith("image/")) {
+                    const file = item.getAsFile();
+                    if (file) {
+                        addToPreview(file);
+                        event.preventDefault();
+                        return;
+                    }
+                }
+            }
+        },
+        [addToPreview]
+    );
+
     return (
         <>
-            
-
             {showGifContainer && (
-                <GiphyContainer handleGiphyClick={handleGiphyClick} />
+                <GiphyContainer  ref={gifRef} handleGiphyClick={handleGiphyClick} />
             )}
             <div
                 className={`chat-inputarea size-full`}
@@ -175,6 +194,7 @@ const MessageInput = memo(({ setChatMessage }) => {
                             handleChange={(event) =>
                                 setMessage(event.target.value)
                             }
+                            onPaste={handlePaste}
                         />
                         <div className="chat-list gap-0 sm:gap-2">
                             <div
@@ -209,8 +229,7 @@ const MessageInput = memo(({ setChatMessage }) => {
                                 />
                             </div>
                             <div
-                                onMouseDown={(e) => e.preventDefault()}
-                                ref={gifRef}
+                                onMouseDown={(e) => e.preventDefault()}                           
                                 className="chat-list-item"
                                 onClick={(e) => {
                                     e.stopPropagation();

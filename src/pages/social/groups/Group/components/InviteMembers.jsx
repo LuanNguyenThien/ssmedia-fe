@@ -3,72 +3,44 @@ import { useState, useEffect } from "react";
 import { FaTimes, FaSearch, FaUserPlus, FaCheck } from "react-icons/fa";
 import Avatar from "@components/avatar/Avatar";
 import { userService } from "@services/api/user/user.service";
-import { groupService } from "@/services/api/group/group.service";
-import { useDispatch, useSelector } from "react-redux";
+import { groupService } from "@services/api/group/group.service";
+import { useDispatch } from "react-redux";
 import { Utils } from "@services/utils/utils.service";
-const InviteMembers = ({ isOpen, onClose, groupId, groupName }) => {
+
+const InviteMembers = ({ isOpen, onClose, groupId, groupName, group }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResult, setSearchResult] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [invitedUsers, setInvitedUsers] = useState(new Set());
     const [isInviting, setIsInviting] = useState(false);
     const dispatch = useDispatch();
-    // Mock search function - replace with actual API call
+
+    // Search users via API with debounce
     const searchUsers = async (term) => {
         if (!term.trim()) {
             setSearchResult([]);
+            setIsSearching(false);
             return;
         }
-         const response = await userService.searchUsers(term);
-         console.log("Search response:", response);
 
-         setSearchResult(response.data.search || []);
         setIsSearching(true);
-        
-        // Simulate API call delay
-        setTimeout(() => {
-            // Mock user data - replace with actual API call
-            const mockUsers = [
-                {
-                    _id: "1",
-                    username: "john_doe",
-                    profilePicture: "",
-                    avatarColor: "#3B82F6",
-                    email: "john@example.com"
-                },
-                {
-                    _id: "2",
-                    username: "jane_smith",
-                    profilePicture: "",
-                    avatarColor: "#10B981",
-                    email: "jane@example.com"
-                },
-                {
-                    _id: "3",
-                    username: "mike_wilson",
-                    profilePicture: "",
-                    avatarColor: "#F59E0B",
-                    email: "mike@example.com"
-                },
-                {
-                    _id: "4",
-                    username: "sarah_johnson",
-                    profilePicture: "",
-                    avatarColor: "#EF4444",
-                    email: "sarah@example.com"
-                }
-            ];
-
-            const filteredUsers = mockUsers.filter(user =>
-                user.username.toLowerCase().includes(term.toLowerCase()) ||
-                user.email.toLowerCase().includes(term.toLowerCase())
+        try {
+            const response = await userService.searchUsers(term);
+            setSearchResult(response.data.search || []);
+        } catch (error) {
+            console.error("Error searching users:", error);
+            Utils.dispatchNotification(
+                error.response?.data?.message || "Failed to search users",
+                "error",
+                dispatch
             );
-
-           
+            setSearchResult([]);
+        } finally {
             setIsSearching(false);
-        }, 500);
+        }
     };
 
+    // Debounce search input
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             searchUsers(searchTerm);
@@ -77,37 +49,46 @@ const InviteMembers = ({ isOpen, onClose, groupId, groupName }) => {
         return () => clearTimeout(timeoutId);
     }, [searchTerm]);
 
+    // Handle inviting a user
     const handleInviteUser = async (user) => {
-      setIsInviting(true);
-      console.log("Inviting user:", user);
-      const userId = user._id;
-      console.log("Group ID:", userId);
-      try {
-        const response = await groupService.inviteUserToGroup(groupId, [userId]);
-        setInvitedUsers((prev) => new Set([...prev, user._id]));
-        Utils.dispatchNotification(
-          response.data?.message || "Invitation sent successfully",
-          "success",
-          dispatch
-        );
-      } catch (err) {
-        console.error("Error inviting user:", err);
-        Utils.dispatchNotification(
-          err.response?.data?.message || "Failed to invite user",
-          "error",
-          dispatch
-        );
-        
-      } finally {
-        setIsInviting(false);
-      }
+        setIsInviting(true);
+        console.log(user);
+        const userId = user._id;
+        try {
+            const response = await groupService.inviteUserToGroup(groupId, [
+                userId,
+            ]);
+            // Update invitedUsers only after successful API call
+            setInvitedUsers((prev) => new Set([...prev, user._id]));
+            Utils.dispatchNotification(
+                response.data?.message || "Invitation sent successfully",
+                "success",
+                dispatch
+            );
+        } catch (err) {
+            console.error("Error inviting user:", err);
+            Utils.dispatchNotification(
+                err.response?.data?.message || "Failed to invite user",
+                "error",
+                dispatch
+            );
+        } finally {
+            setIsInviting(false);
+        }
     };
 
+    // Handle search input change
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    const isUserInvited = (userId) => invitedUsers.has(userId);
+    // Check if a user is invited or already a member
+    const isUserInvited = (userId) => {
+        return (
+            invitedUsers.has(userId) ||
+            group?.members?.some((member) => member.userId === userId)
+        );
+    };
 
     if (!isOpen) return null;
 
@@ -117,8 +98,12 @@ const InviteMembers = ({ isOpen, onClose, groupId, groupName }) => {
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b">
                     <div>
-                        <h2 className="text-lg font-bold text-gray-900">Invite Members</h2>
-                        <p className="text-sm text-gray-500">Invite people to join {groupName}</p>
+                        <h2 className="text-lg font-bold text-gray-900">
+                            Invite Members
+                        </h2>
+                        <p className="text-sm text-gray-500">
+                            Invite people to join {groupName}
+                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -132,7 +117,10 @@ const InviteMembers = ({ isOpen, onClose, groupId, groupName }) => {
                 {/* Search Input */}
                 <div className="p-4 border-b">
                     <div className="relative">
-                        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                        <FaSearch
+                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                            size={16}
+                        />
                         <input
                             type="text"
                             value={searchTerm}
@@ -172,8 +160,13 @@ const InviteMembers = ({ isOpen, onClose, groupId, groupName }) => {
                                         </div>
 
                                         <button
-                                            onClick={() => handleInviteUser(user)}
-                                            disabled={isUserInvited(user._id) || isInviting}
+                                            onClick={() =>
+                                                handleInviteUser(user)
+                                            }
+                                            disabled={
+                                                isUserInvited(user._id) ||
+                                                isInviting
+                                            }
                                             className={`px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                                                 isUserInvited(user._id)
                                                     ? "bg-green-100 text-green-700 cursor-not-allowed"
@@ -197,21 +190,30 @@ const InviteMembers = ({ isOpen, onClose, groupId, groupName }) => {
                             </div>
                         )}
 
-                        {searchTerm && isSearching && searchResult.length === 0 && (
-                            <div className="text-center py-8">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-                                <p className="mt-3 text-gray-500">Searching...</p>
-                            </div>
-                        )}
+                        {searchTerm &&
+                            isSearching &&
+                            searchResult.length === 0 && (
+                                <div className="text-center py-8">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+                                    <p className="mt-3 text-gray-500">
+                                        Searching...
+                                    </p>
+                                </div>
+                            )}
 
-                        {searchTerm && !isSearching && searchResult.length === 0 && (
-                            <div className="text-center py-8">
-                                <p className="text-gray-500 font-medium">Nothing found</p>
-                                <p className="text-sm text-gray-400 mt-1">
-                                    We couldn't find any match for "{searchTerm}"
-                                </p>
-                            </div>
-                        )}
+                        {searchTerm &&
+                            !isSearching &&
+                            searchResult.length === 0 && (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-500 font-medium">
+                                        Nothing found
+                                    </p>
+                                    <p className="text-sm text-gray-400 mt-1">
+                                        We couldn't find any match for "
+                                        {searchTerm}"
+                                    </p>
+                                </div>
+                            )}
 
                         {!searchTerm && (
                             <div className="text-center py-8">
@@ -228,7 +230,8 @@ const InviteMembers = ({ isOpen, onClose, groupId, groupName }) => {
                 {invitedUsers.size > 0 && (
                     <div className="p-4 border-t bg-gray-50">
                         <p className="text-sm text-gray-600 text-center">
-                            {invitedUsers.size} invitation{invitedUsers.size !== 1 ? 's' : ''} sent
+                            {invitedUsers.size} invitation
+                            {invitedUsers.size !== 1 ? "s" : ""} sent
                         </p>
                     </div>
                 )}
@@ -242,6 +245,7 @@ InviteMembers.propTypes = {
     onClose: PropTypes.func.isRequired,
     groupId: PropTypes.string.isRequired,
     groupName: PropTypes.string.isRequired,
+    group: PropTypes.object.isRequired,
 };
 
-export default InviteMembers; 
+export default InviteMembers;

@@ -1,0 +1,5 @@
+.group-page {
+    height: calc(var(--root-height) - var(--header-footer-height));
+    -webkit-overflow-scrolling: touch; /* Thêm để cuộn mượt trên iOS */
+    overflow-y: auto;
+}

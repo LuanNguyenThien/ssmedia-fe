@@ -30,10 +30,10 @@ const DropdownSetting = ({ avatarSrc, name, onLogout, onNavigate, id }) => {
                     className="header-dropdown-content-item hover:bg-primary/5 "
                     onClick={onNavigate}
                 >
-                    <div>
+                    <div className="h-full w-auto">
                         <img
                             src={avatarSrc}
-                            className="header-dropdown-content-item-avatar"
+                            className="header-dropdown-content-item-avatar !object-cover"
                             alt="header-dropdown-content-item-avatar"
                         />
                     </div>

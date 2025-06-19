@@ -15,7 +15,12 @@ class GroupService {
     const response = await axios.get(`/group/invitations`);
     return response;
   }
+  
 
+  async getAllGroup() {
+    const response = await axios.get(`/group/allgroups`);
+    return response;
+  }
   async getGroupByGroupId(groupId) {
     const response = await axios.get(`/group/${groupId}`);
     return response;
@@ -62,6 +67,11 @@ class GroupService {
 
   async leaveGroup(groupId) {
     const response = await axios.put(`/group/leave/${groupId}`);
+    return response;
+  }
+
+  async updateGroup(groupId, body) {
+    const response = await axios.put(`/group/${groupId}`, body);
     return response;
   }
 
