@@ -347,28 +347,28 @@ const PostMetaRow = ({ post }) => {
                                   <div className="flex items-center justify-center bg-gray-200 group-hover:bg-white group-focus:bg-white rounded-full p-2 transition-colors duration-200">
                                     <FaFlag className="size-4 text-red-500 group-hover:text-red-500 group-focus:text-red-500" />
                                   </div>
-                                  <span className="font-medium">{ (post?.questionId || post?.type === 'answer') ? `Report answer` : `Report post`}</span>
+                                  <span className="font-medium">{ (post?.type === 'answer') ? `Report answer` : `Report post`}</span>
                                 </button>
                               )}
                               {isPostOwner && (
                                 <>
                                   <button
                                     className="flex items-center gap-1 w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-primary hover:text-white transition-all duration-200 group focus:outline-none focus:bg-primary focus:text-white"
-                                    onClick={ (post?.questionId || post?.type === 'answer') ? handleEditAnswer : handleEditPost}
+                                    onClick={ (post?.type === 'answer') ? handleEditAnswer : handleEditPost}
                                   >
                                     <div className="flex items-center justify-center bg-gray-200 group-hover:bg-white group-focus:bg-white rounded-full p-2 transition-colors duration-200">
                                       <FaEdit className="size-4 text-primary group-hover:text-primary group-focus:text-primary" />
                                     </div>
-                                    <span className="font-medium">{ (post?.questionId || post?.type === 'answer') ? `Edit answer` : `Edit post`}</span>
+                                    <span className="font-medium">{ (post?.type === 'answer') ? `Edit answer` : `Edit post`}</span>
                                   </button>
                                   <button
                                     className="flex items-center gap-3 w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-red-500 hover:text-white transition-all duration-200 group focus:outline-none focus:bg-red-500 focus:text-white"
-                                    onClick={(post?.questionId || post?.type === 'answer') ? handleDeleteAnswer : handleDeletePost}
+                                    onClick={(post?.type === 'answer') ? handleDeleteAnswer : handleDeletePost}
                                   >
                                     <div className="flex items-center justify-center bg-gray-200 group-hover:bg-white group-focus:bg-white rounded-full p-2 transition-colors duration-200">
                                       <FaTrash className="size-4 text-red-500 group-hover:text-red-500 group-focus:text-red-500" />
                                     </div>
-                                    <span className="font-medium">{(post?.questionId || post?.type === 'answer') ? `Delete answer` : `Delete post`}</span>
+                                    <span className="font-medium">{(post?.type === 'answer') ? `Delete answer` : `Delete post`}</span>
                                   </button>
                                 </>
                               )}
