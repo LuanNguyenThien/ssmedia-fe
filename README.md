@@ -1,6 +1,8 @@
 <h1>
-  <img src="https://brainet.online/assets/logo-CRUqoA6R.png" alt="icon" width="40" style="vertical-align: middle; margin-right: 0px;">
-  Brainet
+  <a href="https://brainet.online" target="_blank" style="text-decoration: none;">
+    <img src="https://brainet.online/assets/logo-CRUqoA6R.png" alt="icon" width="40" style="vertical-align: middle; margin-right: 8px;">
+    <span style="color: #1264AB;">Brainet</span>
+  </a>
 </h1>
 
 ### Tools & Technologies Usage
