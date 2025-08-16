@@ -22,7 +22,7 @@
 
       @media screen and (max-width: 1200px) {
         // padding: 0;
-        height: calc(var(--root-height) - var(--header-footer-height) - 20px);
+        height: calc(var(--root-height) - var(--header-footer-height));
         -webkit-overflow-scrolling: touch; /* Thêm để cuộn mượt trên iOS */
       }
 
@@ -56,7 +56,6 @@
     grid-template-columns: 1fr;
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
-    padding-bottom: 10px;
     .streams-suggestions {
       display: none;
     }

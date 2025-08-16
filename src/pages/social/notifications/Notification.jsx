@@ -133,10 +133,7 @@ const Notification = () => {
                 />
             )}
             {!loading && (
-                <div className="notifications-container col-span-10 px-4">
-                    <div className="w-full flex justify-center items-center">
-                        <div className="w-1/2 h-[0.1px] bg-primary-black/20 mt-2"></div>
-                    </div>
+                <div className="notifications-container col-span-10 px-4 bg-background-blur rounded-t-[15px]">
                     <div className="flex items-center justify-between py-4">
                         <span className="text-2xl font-bold">
                             Notifications
@@ -151,7 +148,7 @@ const Notification = () => {
                         <div className="notifications-box flex-1 max-h-[80vh] overflow-y-scroll flex flex-col justify-start items-start gap-2">
                             {displayNotification.map((notification) => (
                                 <div
-                                    className={`flex w-full items-center justify-start gap-3 bg-background-blur/50 hover:bg-primary/10 rounded-[20px] px-4 py-2
+                                    className={`flex w-full items-center justify-start gap-3 bg-primary-white hover:bg-primary/10 rounded-[20px] px-4 py-2
                                         ${
                                             notification?.read
                                                 ? "font-light"

@@ -200,10 +200,9 @@ const Questions = () => {
             {loading ? (
                 <StreamsSkeleton />
             ) : (
-                <div className="streams-content col-span-full">
-                    
+                <div className="streams-content col-span-full">                 
                     <div
-                        className="streams-post relative sm:pt-6 sm:px-6 bg-background-blur rounded-3xl gap-1 sm:gap-4"
+                        className="streams-post relative pt-4 sm:pt-6 sm:px-6 bg-background-blur rounded-3xl gap-1 sm:gap-4"
                         ref={bodyRef}
                     >
                         <div className="mb-4 px-4 md:px-6">
@@ -227,7 +226,7 @@ const Questions = () => {
                         </div>
                         <div
                             ref={bottomLineRef}
-                            style={{ marginBottom: "20px", height: "20px" }}
+                            style={{ marginBottom: "50px", height: "50px" }}
                         >
                             {loadingMore && (
                                 <div className="absolute w-full h-max bottom-15 left-0 right-0 flex justify-center items-center">
@@ -236,7 +235,7 @@ const Questions = () => {
                             )}
                         </div>
                     </div>
-                    <div className="streams-suggestions pl-4">
+                    <div className="streams-suggestions pl-5">
                         <Suggestions />
                     </div>
                 </div>

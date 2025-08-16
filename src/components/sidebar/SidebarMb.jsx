@@ -8,9 +8,7 @@ import { Utils } from "@services/utils/utils.service";
 import { ChatUtils } from "@services/utils/chat-utils.service";
 import { chatService } from "@services/api/chat/chat.service";
 import { socketService } from "@services/socket/socket.service";
-import {
-    openModal,
-} from "@redux/reducers/modal/modal.reducer";
+import { openModal } from "@redux/reducers/modal/modal.reducer";
 const SidebarMb = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -62,14 +60,14 @@ const SidebarMb = () => {
     };
 
     return (
-        <div className="fixed bottom-0 h-[auto] py-2 w-full grid grid-cols-5 bg-background shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] z-50 footer-mb">
+        <div className="fixed  bottom-0 h-[8dvh] max-h-[8dvh] py-2 w-full flex justify-around items-center bg-background shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] z-50 footer-mb">
             <div className="flex justify-center items-center col-span-2  gap-8 px-4 ">
                 <div
                     onClick={() =>
                         navigateToPage("Streams", "/app/social/streams")
                     }
                     className={`${
-                        activePage === "streams" ? "text-primary" : ""
+                        activePage === "streams" ? "text-primary/70" : ""
                     }`}
                 >
                     <DynamicSVG svgData={icons.home} className={"size-8"} />
@@ -78,19 +76,19 @@ const SidebarMb = () => {
                     onClick={() =>
                         navigateToPage("Chat", "/app/social/chat/messages")
                     }
-                    className={`${activePage === "chat" ? "text-primary" : ""}`}
+                    className={`${activePage === "chat" ? "text-primary/70" : ""}`}
                 >
                     <DynamicSVG svgData={icons.chats} className={"size-8"} />
                 </div>
             </div>
-            <div className="flex justify-center items-start col-span-1  relative">
+            <div className="flex justify-center items-start col-span-1">
                 <div
-                    className="absolute bottom-0 bg-white rounded-t-full p-1"
+                    className=" bg-white rounded-t-full p-1"
                     onClick={() => dispatch(openModal({ type: "add" }))}
                 >
                     <DynamicSVG
                         svgData={icons.add}
-                        className={"size-10 text-primary/50"}
+                        className={"size-12 text-[#1264AB]"}
                     />
                 </div>
             </div>
@@ -104,7 +102,7 @@ const SidebarMb = () => {
                         )
                     }
                     className={`${
-                        activePage === "notifications" ? "text-primary" : ""
+                        activePage === "notifications" ? "text-primary/70" : ""
                     }`}
                 >
                     <DynamicSVG
@@ -117,7 +115,7 @@ const SidebarMb = () => {
                         navigateToPage("Profile", "/app/social/profile")
                     }
                     className={`${
-                        activePage === "profile" ? "text-primary" : ""
+                        activePage === "profile" ? "text-primary/70" : ""
                     }`}
                 >
                     <DynamicSVG svgData={icons.profile} className={"size-8"} />

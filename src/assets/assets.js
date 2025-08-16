@@ -72,11 +72,38 @@ import threeD5 from "./3d/3d5.png";
 import threeD6 from "./3d/3d6.png";
 import threeD7 from "./3d/3d7.png";
 import threeD8 from "./3d/3d8.png";
-
+import blocked from "./3d/blocked.png";
 //post privacy
 import publicIcon from "./icons/post-privacy/public.png";
 import privateIcon from "./icons/post-privacy/private.png";
 import followersIcon from "./icons/post-privacy/followers.png";
+
+
+//personalize
+import science from "./personalize/science.avif";
+import music from "./personalize/music.avif";
+import books from "./personalize/books.avif";
+import food from "./personalize/food.avif";
+import travel from "./personalize/travel.avif";
+import fitness from "./personalize/fitness.avif";
+import psychology from "./personalize/psychology.avif";
+import history from "./personalize/history.avif";
+import gaming from "./personalize/gaming.avif";
+import photography from "./personalize/photography.avif";
+import filmmaking from "./personalize/filmmaking.avif";
+import gardening from "./personalize/gardening.avif";
+import diy from "./personalize/diy.avif";
+import technology from "./personalize/technology.avif";
+import business from "./personalize/business.avif";
+import education from "./personalize/education.avif";
+import sports from "./personalize/sports.avif";
+import cooking from "./personalize/cooking.avif";
+import fashion from "./personalize/fashion.avif";
+import writing from "./personalize/writing.avif";
+import marketing from "./personalize/marketing.avif";
+import art from "./personalize/art.avif";
+
+
 
 export const threeD = [
     threeD1,
@@ -93,6 +120,7 @@ export const assets = {
     logo,
     notification,
     message,
+    blocked
 };
 
 export const postPrivacy = {
@@ -161,4 +189,29 @@ export const icons = {
     envelope,
     block,
     question
+};
+
+export const personalize = {
+    science,
+    music,
+    books,
+    food,
+    travel,
+    fitness,
+    psychology,
+    history,
+    gaming,
+    photography,
+    filmmaking,
+    gardening,
+    diy,
+    technology,
+    business,
+    education,
+    sports,
+    cooking,
+    fashion,
+    writing,
+    marketing,
+    art,
 };

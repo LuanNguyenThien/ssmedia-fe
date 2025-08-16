@@ -9,6 +9,7 @@ import {
     FaUserCheck,
 } from "react-icons/fa";
 import { feelings, reactions, icons } from "@/assets/assets";
+import { postPrivacy } from "@/assets/assets";
 import React from "react";
 
 export const bgColors = [
@@ -100,21 +101,18 @@ export const feelingsList = [
 export const privacyList = [
     {
         topText: "Public",
-        subText: "Anyone on Chatty",
-        icon: () =>
-            React.createElement(FaGlobe, { className: "globe-icon globe" }),
+        subText: "Anyone on Brainet",
+        icon: postPrivacy.publicIcon,
     },
     {
         topText: "Followers",
-        subText: "Your followers on Chatty",
-        icon: () =>
-            React.createElement(FaUserCheck, { className: "globe-icon globe" }),
+        subText: "Your followers on Brainet",
+        icon: postPrivacy.followersIcon,
     },
     {
         topText: "Private",
         subText: "For you only",
-        icon: () =>
-            React.createElement(FaLock, { className: "globe-icon globe" }),
+        icon: postPrivacy.privateIcon,
     },
 ];
 

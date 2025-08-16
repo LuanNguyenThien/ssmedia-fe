@@ -84,6 +84,15 @@ const EditPost = () => {
         }
     };
 
+    const onPaste = (event) => {
+        const pastedText = event.clipboardData.getData("Text");
+        const currentTextLength = event.target.textContent.length;
+        const counter = maxNumberOfCharacters - currentTextLength;
+        if (pastedText.length > counter) {
+            event.preventDefault();
+        }
+    };
+
     const clearImage = () => {
         setSelectedVideo(null);
         setHasVideo(false);
@@ -308,7 +317,7 @@ const EditPost = () => {
             <PostWrapper>
                 <div></div>
                 {!gifModalIsOpen && (
-                    <div className="modal-box">
+                    <div className="modal-box !w-screen !h-[90vh] sm:!h-[80vh] flex flex-col">
                         {loading && (
                             <div
                                 className="modal-box-loading"
@@ -318,183 +327,215 @@ const EditPost = () => {
                                 <Spinner />
                             </div>
                         )}
-                        <div className="modal-box-header">
-                            <h2>Edit Post</h2>
-                            <button
-                                className="modal-box-header-cancel"
-                                onClick={() => closePostModal()}
-                            >
-                                X
-                            </button>
+
+                        <div className="w-full text-2xl font-bold">
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2">
+                                    <FaArrowLeft
+                                        className="cursor-pointer"
+                                        onClick={closePostModal}
+                                    />
+                                    <span>Edit Post</span>
+                                </div>
+
+                                <div className="flex items-center gap-2"></div>
+                            </div>
                         </div>
-                        <hr />
+
                         <ModalBoxContent />
 
-                        {!postImage && (
-                            <>
-                                <div
-                                    className="modal-box-form"
-                                    data-testid="modal-box-form"
-                                    style={{
-                                        background: `${textAreaBackground}`,
-                                    }}
-                                >
+                        <div className="flex-1 overflow-auto">
+                            {!postImage && (
+                                <>
                                     <div
-                                        className="main"
+                                        className="modal-box-form h-full px-4"
+                                        data-testid="modal-box-form"
                                         style={{
-                                            margin:
-                                                textAreaBackground !== "#ffffff"
-                                                    ? "0 auto"
-                                                    : "",
+                                            background: `${textAreaBackground}`,
                                         }}
                                     >
-                                        <div className="flex-row">
-                                            <div
-                                                data-testid="editable"
-                                                id="editable"
-                                                name="post"
-                                                ref={(el) => {
-                                                    inputRef.current = el;
-                                                    inputRef?.current?.focus();
-                                                }}
-                                                className={`editable flex-item ${
+                                        <div
+                                            className="main h-full"
+                                            style={{
+                                                margin:
                                                     textAreaBackground !==
                                                     "#ffffff"
-                                                        ? "textInputColor"
-                                                        : ""
-                                                } ${
-                                                    postData.post.length ===
-                                                        0 &&
-                                                    textAreaBackground !==
-                                                        "#ffffff"
-                                                        ? "defaultInputTextColor"
-                                                        : ""
-                                                }`}
-                                                contentEditable={true}
-                                                onInput={(e) =>
-                                                    postInputEditable(
-                                                        e,
-                                                        e.currentTarget
-                                                            .textContent
-                                                    )
-                                                }
-                                                onKeyDown={onKeyDown}
-                                                data-placeholder="What's on your mind?..."
-                                            ></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-
-                        {postImage && (
-                            <>
-                                <div className="modal-box-image-form">
-                                    <div
-                                        data-testid="post-editable"
-                                        name="post"
-                                        id="editable"
-                                        ref={(el) => {
-                                            imageInputRef.current = el;
-                                            imageInputRef?.current?.focus();
-                                        }}
-                                        className="post-input flex-item"
-                                        contentEditable={true}
-                                        onInput={(e) =>
-                                            postInputEditable(
-                                                e,
-                                                e.currentTarget.textContent
-                                            )
-                                        }
-                                        onKeyDown={onKeyDown}
-                                        data-placeholder="What's on your mind?..."
-                                    ></div>
-                                    <div className="image-display">
-                                        <div
-                                            className="image-delete-btn"
-                                            data-testid="image-delete-btn"
-                                            style={{
-                                                marginTop: hasVideo
-                                                    ? "-40px"
-                                                    : "0px",
+                                                        ? "0 auto"
+                                                        : "",
                                             }}
-                                            onClick={() => clearImage()}
                                         >
-                                            <FaTimes />
-                                        </div>
-                                        {!hasVideo && (
-                                            <img
-                                                data-testid="post-image"
-                                                className="post-image"
-                                                src={`${postImage}`}
-                                                alt=""
-                                            />
-                                        )}
-                                        {hasVideo && (
-                                            <div style={{ marginTop: "-40px" }}>
-                                                <video
-                                                    width="100%"
-                                                    controls
-                                                    src={`${postImage}`}
-                                                />
+                                            <div className="flex-row h-full">
+                                                <div
+                                                    data-testid="editable"
+                                                    id="editable"
+                                                    name="post"
+                                                    ref={(el) => {
+                                                        inputRef.current = el;
+                                                        inputRef?.current?.focus();
+                                                    }}
+                                                    className={`editable flex-item h-full ${
+                                                        textAreaBackground !==
+                                                        "#ffffff"
+                                                            ? "textInputColor"
+                                                            : ""
+                                                    } ${
+                                                        postData.post.length ===
+                                                            0 &&
+                                                        textAreaBackground !==
+                                                            "#ffffff"
+                                                            ? "defaultInputTextColor"
+                                                            : ""
+                                                    }`}
+                                                    contentEditable={true}
+                                                    onInput={(e) =>
+                                                        postInputEditable(
+                                                            e,
+                                                            e.currentTarget
+                                                                .textContent
+                                                        )
+                                                    }
+                                                    onKeyDown={onKeyDown}
+                                                    onPaste={onPaste}
+                                                    data-placeholder="What's on your mind?..."
+                                                ></div>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
-                                </div>
-                            </>
-                        )}
+                                </>
+                            )}
 
-                        <div className="modal-box-bg-colors">
-                            <ul>
-                                {bgColors.map((color, index) => (
-                                    <li
-                                        data-testid="bg-colors"
-                                        key={index}
-                                        className={`${
-                                            color === "#ffffff"
-                                                ? "whiteColorBorder"
-                                                : ""
-                                        }`}
-                                        style={{ backgroundColor: `${color}` }}
-                                        onClick={() => {
-                                            PostUtils.positionCursor(
-                                                "editable"
-                                            );
-                                            selectBackground(color);
-                                        }}
-                                    ></li>
-                                ))}
-                            </ul>
+                            {postImage && (
+                                <>
+                                    <div className="modal-box-image-form h-full">
+                                        <div
+                                            data-testid="post-editable"
+                                            name="post"
+                                            id="editable"
+                                            ref={(el) => {
+                                                imageInputRef.current = el;
+                                                imageInputRef?.current?.focus();
+                                            }}
+                                            className="post-input flex-item"
+                                            contentEditable={true}
+                                            onInput={(e) =>
+                                                postInputEditable(
+                                                    e,
+                                                    e.currentTarget.textContent
+                                                )
+                                            }
+                                            onKeyDown={onKeyDown}
+                                            onPaste={onPaste}
+                                            data-placeholder="What's on your mind?..."
+                                        ></div>
+                                        <div className="image-display">
+                                            <div
+                                                className="image-delete-btnn z-[10] p-2 cursor-pointer hover:text-red-200  absolute -top-0 right-[10px] left-auto bg-black/50 text-primary-white rounded-full flex place-content-center"
+                                                data-testid="image-delete-btn"
+                                                style={{
+                                                    marginTop: `${
+                                                        hasVideo ? "-40px" : ""
+                                                    }`,
+                                                }}
+                                                onClick={() => clearImage()}
+                                            >
+                                                <FaTimes />
+                                            </div>
+                                            {!hasVideo && (
+                                                <img
+                                                    data-testid="post-image"
+                                                    className="post-image"
+                                                    src={`${postImage}`}
+                                                    alt=""
+                                                />
+                                            )}
+                                            {hasVideo && (
+                                                <div
+                                                    style={{
+                                                        marginTop: "-40px",
+                                                    }}
+                                                >
+                                                    <video
+                                                        width="100%"
+                                                        controls
+                                                        src={`${postImage}`}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
+
                         <span
-                            className="char_count"
+                            className="char_count w-full flex justify-end px-4 "
                             data-testid="allowed-number"
                             ref={counterRef}
                         >
                             {allowedNumberOfCharacters}
                         </span>
 
-                        <ModalBoxSelection
-                            setSelectedPostImage={setSelectedPostImage}
-                            setSelectedVideo={setSelectedVideo}
-                        />
+                        <div className="flex justify-between items-center px-4 pt-2 sm:py-3 border-t border-gray-200 bg-white">
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-1  sm:gap-4 w-full">
+                                <div className="modal-box-bg-colors">
+                                    <ul className="flex items-center justify-center">
+                                        {bgColors.map((color, index) => (
+                                            <li
+                                                data-testid="bg-colors"
+                                                key={index}
+                                                className={`${
+                                                    color === "#ffffff"
+                                                        ? "whiteColorBorder"
+                                                        : ""
+                                                }`}
+                                                style={{
+                                                    backgroundColor: `${color}`,
+                                                }}
+                                                onClick={() => {
+                                                    PostUtils.positionCursor(
+                                                        "editable"
+                                                    );
+                                                    selectBackground(color);
+                                                }}
+                                            ></li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <ModalBoxSelection
+                                    setSelectedPostImage={setSelectedPostImage}
+                                    setSelectedVideo={setSelectedVideo}
+                                />
+                            </div>
+                        </div>
 
                         <div
-                            className="modal-box-button"
+                            className="h-[10%] px-2 w-full py-2"
                             data-testid="edit-button"
                         >
-                            <Button
-                                label="Update"
-                                className="post-button"
+                            <button
                                 disabled={disable}
-                                handleClick={updatePost}
-                            />
+                                onClick={() => updatePost()}
+                                className={`cursor-pointer max-w-[100vw] size-full bg-primary hover:bg-primary-dark transition-colors flex justify-center items-center rounded-[15px] px-4 py-2 text-white ${
+                                    disable
+                                        ? "opacity-50 cursor-not-allowed"
+                                        : ""
+                                }`}
+                                data-testid="edit-button"
+                            >
+                                <Button
+                                    label="Update Post"
+                                    className="post-button"
+                                    disabled={disable}
+                                    handleClick={updatePost}
+                                />
+                            </button>
                         </div>
                     </div>
                 )}
                 {gifModalIsOpen && (
                     <div className="modal-giphy" data-testid="modal-giphy">
-                        <div className="modal-giphy-header">
+                        <div className="modal-giphy-header flex justify-between items-center">
                             <Button
                                 label={<FaArrowLeft />}
                                 className="back-button"
@@ -503,7 +544,9 @@ const EditPost = () => {
                                     dispatch(toggleGifModal(!gifModalIsOpen))
                                 }
                             />
-                            <h2>Choose a GIF</h2>
+                            <h2 className="text-lg font-semibold w-max">
+                                Choose a GIF
+                            </h2>
                         </div>
                         <hr />
                         <Giphy />

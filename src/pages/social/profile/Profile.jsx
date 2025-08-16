@@ -488,7 +488,7 @@ const Profile = () => {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="size-full flex flex-col overflow-y-scroll bg-primary-white p-4 profile-content-posts">
+                                <div className="size-full flex flex-col overflow-y-scroll bg-gray-50 py-2 sm:px-4 profile-content-posts">
                                     {renderContent()}
                                 </div>
                             </div>

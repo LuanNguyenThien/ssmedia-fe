@@ -35,22 +35,26 @@ const InfoDisplay = ({
     );
 
     const renderSocialInfo = () => (
-        <div className="flex flex-col justify-start items-start w-full gap-3 text-sm font-normal underline text-primary-black">
+        <div className="flex flex-col justify-start items-start w-full text-sm font-normal underline text-primary-black">
             <SocialInfoItem
                 icon={profileInfo.social_facebook}
                 value={editableSocialInputs.facebook}
+                type={"facebook"}
             />
             <SocialInfoItem
                 icon={profileInfo.social_instagram}
                 value={editableSocialInputs.instagram}
+                type={"instagram"}
             />
             <SocialInfoItem
                 icon={profileInfo.social_twitter}
                 value={editableSocialInputs.twitter}
+                type={"twitter"}
             />
             <SocialInfoItem
                 icon={profileInfo.social_youtube}
                 value={editableSocialInputs.youtube}
+                type={"youtube"}
             />
         </div>
     );

@@ -1,4 +1,5 @@
 import ModalBoxContent from "@components/posts/post-modal/modal-box-content/ModalBoxContent";
+import PostWrapper from "@components/posts/modal-wrappers/post-wrapper/PostWrapper";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +15,8 @@ import { Utils } from "@services/utils/utils.service";
 import Spinner from "@components/spinner/Spinner";
 import Avatar from "@components/avatar/Avatar";
 import ImageModal from "@components/image-modal/ImageModal";
+import "@components/posts/post-modal/post-add/AddPost.scss";
+import useIsMobile from "@hooks/useIsMobile";
 
 export default function AddAnswer({ questionId }) {
     const [showImageModal, setShowImageModal] = useState(false);
@@ -22,6 +25,7 @@ export default function AddAnswer({ questionId }) {
     const { feeling, data } = useSelector((state) => state.modal);
     const { privacy } = useSelector((state) => state.post);
     const { profile } = useSelector((state) => state.user);
+    const isMobile = useIsMobile();
     const [loading, setLoading] = useState(false);
     const [answerData, setAnswerData] = useState({
         htmlPost: "",
@@ -162,29 +166,57 @@ export default function AddAnswer({ questionId }) {
             "tmpfiles.org/",
             "tmpfiles.org/dl/"
         );
-    };
+    }
 
     // Render question preview
     const renderQuestionPreview = () => {
         return (
-            <div className="pb-8">
+            <div className={`${isMobile ? "pb-6" : "pb-8"}`}>
                 {/* Question */}
                 <div className="space-y-4">
-                    <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                            <span className="text-green-600 font-medium text-sm">Q</span>
+                    <div
+                        className={`flex items-start ${
+                            isMobile ? "gap-2" : "gap-3"
+                        }`}
+                    >
+                        <div
+                            className={`${
+                                isMobile ? "w-6 h-6" : "w-8 h-8"
+                            } bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1`}
+                        >
+                            <span
+                                className={`text-green-600 font-medium ${
+                                    isMobile ? "text-xs" : "text-sm"
+                                }`}
+                            >
+                                Q
+                            </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-gray-500 text-sm mb-2 font-medium">{username} asked</p>
-                            <h1 className="text-xl font-medium text-gray-900 leading-7 mb-4">
+                            <p
+                                className={`text-gray-500 ${
+                                    isMobile ? "text-xs" : "text-sm"
+                                } mb-2 font-medium`}
+                            >
+                                {username} asked
+                            </p>
+                            <h1
+                                className={`${
+                                    isMobile
+                                        ? "text-base leading-5 mb-3"
+                                        : "text-xl leading-7 mb-4"
+                                } font-medium text-gray-900`}
+                            >
                                 {question}
                             </h1>
                         </div>
                     </div>
 
                     {/* Question Media - only show if exists */}
-                    {(gifUrl || (imgId && imgVersion) || (videoId && videoVersion)) && (
-                        <div className="ml-11">
+                    {(gifUrl ||
+                        (imgId && imgVersion) ||
+                        (videoId && videoVersion)) && (
+                        <div className={`${isMobile ? "ml-8" : "ml-11"}`}>
                             {/* GIF */}
                             {gifUrl && (
                                 <div className="rounded-lg overflow-hidden bg-gray-50 mb-4">
@@ -193,6 +225,7 @@ export default function AddAnswer({ questionId }) {
                                         alt="Question attachment"
                                         className="w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                                         onClick={() => openImageModal(gifUrl)}
+                                        loading="lazy"
                                     />
                                 </div>
                             )}
@@ -201,12 +234,20 @@ export default function AddAnswer({ questionId }) {
                             {imgId && imgVersion && (
                                 <div className="rounded-lg overflow-hidden bg-gray-50 mb-4">
                                     <img
-                                        src={Utils.appImageUrl(imgVersion, imgId)}
+                                        src={Utils.appImageUrl(
+                                            imgVersion,
+                                            imgId
+                                        )}
                                         alt="Question attachment"
-                                        className="w-full h-auto max-h-96 object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                                        className={`w-full h-auto ${
+                                            isMobile ? "max-h-48" : "max-h-96"
+                                        } object-contain cursor-pointer hover:opacity-90 transition-opacity`}
                                         onClick={() =>
                                             openImageModal(
-                                                Utils.appImageUrl(imgVersion, imgId)
+                                                Utils.appImageUrl(
+                                                    imgVersion,
+                                                    imgId
+                                                )
                                             )
                                         }
                                         loading="lazy"
@@ -219,11 +260,17 @@ export default function AddAnswer({ questionId }) {
                                 <div className="rounded-lg overflow-hidden bg-gray-50 mb-4">
                                     <video
                                         controls
-                                        className="w-full max-h-96"
-                                        src={Utils.appImageUrl(videoVersion, videoId)}
+                                        className={`w-full ${
+                                            isMobile ? "max-h-48" : "max-h-96"
+                                        }`}
+                                        src={Utils.appImageUrl(
+                                            videoVersion,
+                                            videoId
+                                        )}
                                         preload="metadata"
                                     >
-                                        Your browser does not support the video tag.
+                                        Your browser does not support the video
+                                        tag.
                                     </video>
                                 </div>
                             )}
@@ -243,24 +290,35 @@ export default function AddAnswer({ questionId }) {
                     showArrow={false}
                 />
             )}
-            
-            {loading && (
-                <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-[60]">
-                    <div className="bg-white rounded-xl p-8 flex flex-col items-center gap-4 shadow-lg border">
-                        <Spinner />
-                        <span className="text-gray-600 font-medium">Publishing your answer...</span>
-                    </div>
-                </div>
-            )}
 
-            {/* Main Modal */}
-            <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-start justify-center z-50 p-4 pt-8">
-                <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[92vh] flex flex-col border border-gray-100">
+            <PostWrapper>
+                <div></div>
+                <div
+                    className={`modal-box ${
+                        isMobile
+                            ? "ios-modal-fix"
+                            : "!w-screen !h-[90vh] sm:!h-[80vh] sm:!max-w-1/2"
+                    }`}
+                >
+                    {loading && (
+                        <div
+                            className="modal-box-loading"
+                            data-testid="modal-box-loading"
+                        >
+                            <span>Publishing your answer...</span>
+                            <Spinner />
+                        </div>
+                    )}
+
                     {/* Header */}
-                    <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100">
+                    <div
+                        className={`flex items-center justify-between ${
+                            isMobile ? "px-4 py-3" : "px-8 py-6"
+                        } border-b border-gray-100`}
+                    >
                         <div className="flex items-center gap-4">
                             <Avatar
-                                size={48}
+                                size={isMobile ? 40 : 48}
                                 bgColor={profile?.avatarColor}
                                 textColor="#ffffff"
                                 profilePicture={profile?.profilePicture}
@@ -268,8 +326,16 @@ export default function AddAnswer({ questionId }) {
                                 avatarSrc={profile?.profilePicture}
                             />
                             <div>
-                                <div className="font-semibold text-gray-900 text-lg">{profile?.username}</div>
-                                <div className="text-gray-500 text-sm">Writing an answer</div>
+                                <div
+                                    className={`font-semibold text-gray-900 ${
+                                        isMobile ? "text-base" : "text-lg"
+                                    }`}
+                                >
+                                    {profile?.username}
+                                </div>
+                                <div className="text-gray-500 text-sm">
+                                    Writing an answer
+                                </div>
                             </div>
                         </div>
                         <button
@@ -277,34 +343,75 @@ export default function AddAnswer({ questionId }) {
                             className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
                             aria-label="Close modal"
                         >
-                            <FaTimes className="w-5 h-5 text-gray-400" />
+                            <FaTimes
+                                className={`${
+                                    isMobile ? "w-4 h-4" : "w-5 h-5"
+                                } text-gray-400`}
+                            />
                         </button>
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 overflow-y-auto">
-                        <div className="px-8 py-6">
+                    <div
+                        className={`flex-1 overflow-y-auto ${
+                            isMobile ? "overflow-x-hidden" : ""
+                        }`}
+                        style={
+                            isMobile ? { WebkitOverflowScrolling: "touch" } : {}
+                        }
+                    >
+                        <div
+                            className={`${
+                                isMobile ? "px-4 py-4" : "px-8 py-6"
+                            }`}
+                        >
                             {/* Question Preview */}
                             {renderQuestionPreview()}
 
                             {/* Answer Section */}
-                            <div className="space-y-6">
+                            <div
+                                className={`${
+                                    isMobile ? "space-y-4" : "space-y-6"
+                                }`}
+                            >
                                 {/* Your Answer Label */}
-                                <div className="flex items-center gap-3 pt-6 border-t border-gray-100">
+                                <div
+                                    className={`flex items-center gap-3 ${
+                                        isMobile ? "pt-4" : "pt-6"
+                                    } border-t border-gray-100`}
+                                >
                                     <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
-                                        <span className="text-blue-600 font-medium text-sm">A</span>
+                                        <span className="text-blue-600 font-medium text-sm">
+                                            A
+                                        </span>
                                     </div>
-                                    <h2 className="text-lg font-semibold text-gray-900">Your answer</h2>
+                                    <h2
+                                        className={`${
+                                            isMobile ? "text-base" : "text-lg"
+                                        } font-semibold text-gray-900`}
+                                    >
+                                        Your answer
+                                    </h2>
                                 </div>
 
-                                {/* Modal Box Content - moved outside editor */}
-                                <div className="sm:ml-11">
+                                {/* Modal Box Content */}
+                                <div
+                                    className={`${isMobile ? "" : "sm:ml-11"}`}
+                                >
                                     <ModalBoxContent />
                                 </div>
 
                                 {/* Editor Container */}
-                                <div className="sm:ml-11">
-                                    <div className="border p-2 border-gray-200 rounded-xl overflow-hidden min-h-[350px] focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-50 transition-all">
+                                <div
+                                    className={`${isMobile ? "" : "sm:ml-11"}`}
+                                >
+                                    <div
+                                        className={`border border-gray-200 rounded-xl overflow-hidden ${
+                                            isMobile
+                                                ? "min-h-[200px] max-h-[300px] p-1"
+                                                : "min-h-[350px] p-2"
+                                        } focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-50 transition-all`}
+                                    >
                                         <BlockNoteView
                                             editor={editor}
                                             onChange={handleEditorDataChange}
@@ -318,22 +425,44 @@ export default function AddAnswer({ questionId }) {
                     </div>
 
                     {/* Footer */}
-                    <div className="px-8 py-6 border-t border-gray-100 bg-gray-50/50">
-                        <div className="flex justify-between items-center">
-                            <div className="text-sm text-gray-500">
+                    <div
+                        className={`${
+                            isMobile ? "px-4 py-4" : "px-8 py-6"
+                        } border-t border-gray-100 bg-gray-50/50`}
+                    >
+                        <div
+                            className={`flex ${
+                                isMobile
+                                    ? "flex-col gap-3"
+                                    : "justify-between items-center"
+                            }`}
+                        >
+                            <div
+                                className={`text-sm text-gray-500 ${
+                                    isMobile ? "text-center" : ""
+                                }`}
+                            >
                                 Be helpful and kind in your answer
                             </div>
-                            <div className="flex gap-3">
+                            <div
+                                className={`flex gap-3 ${
+                                    isMobile ? "justify-center" : ""
+                                }`}
+                            >
                                 <button
                                     onClick={closeAnswerModal}
-                                    className="px-5 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium"
+                                    className={`${
+                                        isMobile ? "px-4 py-2" : "px-5 py-2.5"
+                                    } text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium`}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={createAnswer}
                                     disabled={disable}
-                                    className={`px-6 py-2.5 rounded-lg font-semibold transition-all ${
+                                    className={`${
+                                        isMobile ? "px-4 py-2" : "px-6 py-2.5"
+                                    } rounded-lg font-semibold transition-all ${
                                         disable
                                             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                             : "bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md"
@@ -345,7 +474,7 @@ export default function AddAnswer({ questionId }) {
                         </div>
                     </div>
                 </div>
-            </div>
+            </PostWrapper>
         </>
     );
 }

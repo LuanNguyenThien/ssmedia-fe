@@ -1,6 +1,5 @@
 import { assets } from "@/assets/assets";
 import { useEffect, useState } from "react";
-import { Utils } from "@services/utils/utils.service";
 import useIsMobile from "@hooks/useIsMobile";
 const AuthSuspense = () => {
     const [loadingDots, setLoadingDots] = useState("");

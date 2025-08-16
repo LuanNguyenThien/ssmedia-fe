@@ -40,7 +40,7 @@ const AccountSetting = ({ userData, handleAccountChange }) => {
     return (
         <div className="bg-white rounded-lg sm:p-6 max-w-xl mx-auto">
             <h2 className="text-xl font-bold mb-6">Account Settings</h2>
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-2" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-gray-700 text-sm font-medium mb-2">

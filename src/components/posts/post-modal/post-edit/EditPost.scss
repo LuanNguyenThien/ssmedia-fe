@@ -121,10 +121,10 @@
       font-size: 24px;
       border: none;
       outline: none;
-      max-height: 400px;
-      height: 300px;
+      // max-height: 400px;
+      // height: 300px;
       overflow-y: scroll;
-      padding: 0 20px;
+      // padding: 0 20px;
       overflow-x: hidden;
       word-break: break-word;
       white-space: pre-wrap;
@@ -136,11 +136,7 @@
       }
     }
 
-    @media (max-width: 768px) {
-      .editable {
-        height: 140px;
-      }
-    }
+   
 
     .flex-row {
       display: flex;
@@ -258,7 +254,6 @@ hr {
 }
 
 .modal-box-image-form {
-  height: 300px;
   overflow-y: scroll;
   display: grid;
   grid-template-areas:
@@ -314,11 +309,6 @@ hr {
   }
 }
 
-@media (max-width: 768px) {
-  .modal-box-image-form {
-    height: 240px;
-  }
-}
 .modal-box {
   display: flex;
   flex-direction: column;

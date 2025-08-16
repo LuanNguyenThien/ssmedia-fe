@@ -1,6 +1,6 @@
 import { IoIosSettings } from "react-icons/io";
 import { PiSignOutBold } from "react-icons/pi";
-import { FaUsers } from "react-icons/fa";
+import { FaQuestion, FaUsers } from "react-icons/fa";
 import { RiGroupLine } from "react-icons/ri";
 import { BsBookmarkFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +26,11 @@ const DropdownSettingMb = ({ id, name, onLogout, ref }) => {
     };
 
     const menuItems = [
+        {
+            name: "Questions",
+            icon: <FaQuestion className="text-3xl text-gray-500" />,
+            url: "/questions",
+        },
         {
             name: "People",
             icon: <FaUsers className="text-4xl text-gray-500" />,

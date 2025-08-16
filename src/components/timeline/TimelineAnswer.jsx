@@ -162,7 +162,7 @@ const TimelineAnswers = ({ loading: initialLoading }) => {
         const { post, imgId, imgVersion, videoId, videoVersion, gifUrl, _id: questionId } = questionContext;
 
         return (
-            <div className="p-3 bg-gray-50 border-b border-gray-200 rounded-t-lg">
+            <div className="p-3 bg-transparent border-b border-gray-200 rounded-t-lg">
                 {/* Question header */}
                 <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2 text-sm text-gray-600">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import PersonalizeItem from "./components/PersonalizeItem";
 import { INTERESTS } from "./constant";
 
@@ -18,11 +18,13 @@ const PersonalizeModal = ({
         }
     }, [alreadyPersonalized, onClose]);
 
-    const handleToggle = (value) => {
+    // Create a Set for O(1) lookup performance instead of O(n) array operations
+    const selectedSet = useMemo(() => new Set(selected), [selected]);
+
+    // Memoize the toggle handler to prevent recreating on every render
+    const handleToggle = useCallback((value) => {
         const splitValue = value.split(" ");
         const topicKey = splitValue[0];
-
-        // one more step, check the related topics,
 
         setSelected((prev) => {
             const isTopicSelected = prev.some(
@@ -35,27 +37,36 @@ const PersonalizeModal = ({
                 return [...prev, value];
             }
         });
-    };
-    console.log(selected);
+    }, []);
 
-    const handleKeyDown = (e, value) => {
+    // Memoize the keydown handler
+    const handleKeyDown = useCallback((e, value) => {
         if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             handleToggle(value);
         }
-    };
+    }, [handleToggle]);
 
-    const handleContinue = (isContinue = true) => {
+    // Memoize the continue handler
+    const handleContinue = useCallback((isContinue = true) => {
         if (isContinue) {
             onContinue(selected);
         } else {
             onClose();
         }
-    };
+    }, [selected, onContinue, onClose]);
+
+    // Memoize the interests with their selection state to prevent unnecessary re-renders
+    const interestsWithSelection = useMemo(() => {
+        return INTERESTS.map((interest) => ({
+            ...interest,
+            isSelected: selectedSet.has(interest.label.toLowerCase())
+        }));
+    }, [selectedSet]);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-black bg-opacity-30">
-            <div className="w-full max-w-4xl h-[90dvh] sm:h-auto overflow-y-scroll bg-primary-white rounded-2xl shadow-lg p-8 animate__animated animate__fadeInUp">
+            <div className="w-full max-w-4xl h-[90dvh] sm:h-auto overflow-y-scroll bg-primary-white rounded-2xl shadow-lg p-8 animate__animated animate__faster animate__fadeInUp">
                 <h2 className="text-2xl font-bold text-primary-black mb-2">
                     {title ? title : (
                         <>
@@ -72,21 +83,16 @@ const PersonalizeModal = ({
                         ? description
                         : "Tell us more about you. What are your interests?"}
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[420px] overflow-y-auto py-2">
-                    {INTERESTS.map((interest) => {
-                        const isSelected = selected.includes(
-                            interest.label.toLowerCase()
-                        );
-                        return (
-                            <PersonalizeItem
-                                key={interest.value}
-                                interest={interest}
-                                isSelected={isSelected}
-                                onToggle={handleToggle}
-                                onKeyDown={handleKeyDown}
-                            />
-                        );
-                    })}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[420px] scroll-smooth overflow-y-auto py-2">
+                    {interestsWithSelection.map((interest) => (
+                        <PersonalizeItem
+                            key={interest.value}
+                            interest={interest}
+                            isSelected={interest.isSelected}
+                            onToggle={handleToggle}
+                            onKeyDown={handleKeyDown}
+                        />
+                    ))}
                 </div>
                 <div className="flex flex-col items-center justify-center pb-8  sm:pb-0 ">
                     <button
